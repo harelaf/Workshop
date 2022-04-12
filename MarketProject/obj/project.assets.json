@@ -8,23 +8,19 @@
     ".NETCoreApp,Version=v3.1": []
   },
   "packageFolders": {
-    "C:\\Users\\Oren_\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\ronmo\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Oren_\\Source\\Repos\\harelaf\\Workshop\\MarketProject\\MarketProject.csproj",
+      "projectUniqueName": "C:\\Users\\ronmo\\Desktop\\Uni\\Workshop\\MarketProject\\MarketProject.csproj",
       "projectName": "MarketProject",
-      "projectPath": "C:\\Users\\Oren_\\Source\\Repos\\harelaf\\Workshop\\MarketProject\\MarketProject.csproj",
-      "packagesPath": "C:\\Users\\Oren_\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Oren_\\Source\\Repos\\harelaf\\Workshop\\MarketProject\\obj\\",
+      "projectPath": "C:\\Users\\ronmo\\Desktop\\Uni\\Workshop\\MarketProject\\MarketProject.csproj",
+      "packagesPath": "C:\\Users\\ronmo\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ronmo\\Desktop\\Uni\\Workshop\\MarketProject\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Oren_\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\ronmo\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -64,7 +60,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }
