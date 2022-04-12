@@ -1,6 +1,7 @@
 {
   "format": 1,
   "restore": {
+<<<<<<< HEAD
     "C:\\Users\\ronmo\\Desktop\\Uni\\Workshop\\MarketProject\\MarketProject.csproj": {}
   },
   "projects": {
@@ -15,6 +16,22 @@
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ronmo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+=======
+    "C:\\Users\\afikm\\OneDrive\\semester_6\\סדנא\\Workshop\\MarketProject\\MarketProject.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\afikm\\OneDrive\\semester_6\\סדנא\\Workshop\\MarketProject\\MarketProject.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\afikm\\OneDrive\\semester_6\\סדנא\\Workshop\\MarketProject\\MarketProject.csproj",
+        "projectName": "MarketProject",
+        "projectPath": "C:\\Users\\afikm\\OneDrive\\semester_6\\סדנא\\Workshop\\MarketProject\\MarketProject.csproj",
+        "packagesPath": "C:\\Users\\afikm\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\afikm\\OneDrive\\semester_6\\סדנא\\Workshop\\MarketProject\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\afikm\\AppData\\Roaming\\NuGet\\NuGet.Config",
+>>>>>>> e8d11014db0b12bbd6922f93008395687e5b5954
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -49,6 +66,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[3.1.10, 3.1.10]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[3.1.23, 3.1.23]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[3.1.0, 3.1.0]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[3.1.0, 3.1.0]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
