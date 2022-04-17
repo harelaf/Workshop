@@ -29,9 +29,34 @@ namespace MarketProject.Domain
             _founder = founder;
         }
 
-        public String getName()
+        public String GetName()
         {
             return _storeName;
+        }
+
+        public String GetRating()
+        {
+            return "" + _rating.getRating();
+        }
+
+        public List<String> GetItemNames()
+        {
+            return _stock.GetItemNames();
+        }
+
+        public String GetInformation()
+        {
+            String info = $"{_storeName}\n";
+            info += $"- Founded by {"founder.name"}\n";
+            info += $"- Has a rating of {GetRating()}\n";
+            info += "\n";
+            String itemNames = "";
+            foreach (String name in GetItemNames())
+            {
+                itemNames += name + ", ";
+            }
+            info += $"List of items: {itemNames}\n";
+            return info;
         }
     }
 }

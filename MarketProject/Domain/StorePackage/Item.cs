@@ -6,7 +6,14 @@ namespace MarketProject.Domain
 {
     class Item
     {
-        private ICollection<Rating> _ratings;
+        private Rating _rating;
         private ICollection<IDiscount> _discounts;
+        private String _name;
+
+
+        public String GetName()
+        {
+            return _name;
+        }
     }
 }

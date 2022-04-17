@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,13 @@ namespace MarketProject.Service
 {
     internal class MarketAPI
     {
+        private Market _market;
+
+        public MarketAPI()
+        {
+            _market = new Market();
+        }
+
         public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
         {//I.1
             throw new NotImplementedException();
@@ -92,20 +100,22 @@ namespace MarketProject.Service
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean RateItem(String username, int itemID, int storeID, int rating, String review)
+        public Boolean RateItem(String username, int itemID, String storeName, int rating, String review)
         {//II.3.3,  II.3.4
             //should check that this user bought this item by his purches History
             throw new NotImplementedException();
         }
-        public Boolean RateStore(String username, int storeID, int rating, String review)
+        public Boolean RateStore(String username, String storeName, int rating, String review)
         {//II.3.4
             //should check that this user bought in that store by his purches History
             throw new NotImplementedException();
         }
-        public Boolean GetStoreInformation(int storeID)
+        public String GetStoreInformation(String storeName)
         {//II.2.1
          //should return data of store + the items it owns
-            throw new NotImplementedException();
+            if (storeName.Equals(""))
+                return "Invalid Input: Blank store name.\n";
+            return _market.GetStoreInformation(storeName);
         }
         public Boolean GetItemInformation(String itemName, String itemCategory, String keyWord)
         {//II.2.2

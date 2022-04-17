@@ -6,20 +6,28 @@ namespace MarketProject.Domain
 {
     class StoreManagement
     {
-        private List<Store> _stores;
+        private Dictionary<String, Store> _stores; //<storeName:String, Store>
 
         public StoreManagement()
         {
-            _stores = new List<Store>();
+            _stores = new Dictionary<String, Store>();
         }
 
-        public bool openNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+        public bool OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
-            if (_stores.Exists(store => store.getName().Equals(storeName)))
+            if (_stores.ContainsKey(storeName))
                 return false;
             Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
-            _stores.Add(newStore);
+            _stores[storeName] = newStore;
             return true;
+        }
+
+        public String GetStoreInformation(String storeName)
+        {
+            if (!_stores.ContainsKey(storeName))
+                return "Invalid Input: Unknown store name.\n";
+            Store store = _stores[storeName];
+            return store.GetInformation();
         }
     }
 }
