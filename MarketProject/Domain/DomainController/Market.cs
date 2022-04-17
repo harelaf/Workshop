@@ -17,6 +17,11 @@ namespace MarketProject.Domain
             _history = new History();
         }
 
+        public bool OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+        {
+            return _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
+        }
+
         public String GetStoreInformation(String storeName)
         {
             return _storeManagement.GetStoreInformation(storeName);
