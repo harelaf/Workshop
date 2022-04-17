@@ -23,12 +23,12 @@ namespace MarketProject.Service
         {//II.1.3
             throw new NotImplementedException();
         }
-        public Boolean RemoveRegisteredUser(String username)
+        public Boolean RemoveRegisteredUser(String username_actor,String usr_toremove )
         {//II.6.2
             //remmeber to fire him for all its roles
             throw new NotImplementedException();
         }
-        public Boolean AddItemToCart(String username, int itemID, int storeID)
+        public Boolean AddItemToCart(String username, int itemID, int storeID, int amount)
         {//II.2.3
             throw new NotImplementedException();
         }
@@ -175,7 +175,7 @@ namespace MarketProject.Service
             throw new NotImplementedException();
         }
         public Boolean CloseStorePermanently(String username, int storeID)
-        {//II.4.9
+        {//II.6.1
             //send message to all roles in that store
             throw new NotImplementedException();
         }
