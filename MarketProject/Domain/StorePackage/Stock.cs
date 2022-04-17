@@ -42,5 +42,12 @@ namespace MarketProject.Domain
         {
             _itemAndAmount.Add(item, amount);
         }
+        public void UnreserveItem(Item item, int amount)
+        {
+            if (_itemAndAmount.ContainsKey(item))
+                _itemAndAmount[item] = _itemAndAmount[item] + amount;
+            else
+                throw new Exception("can't unreserve item from that doesn't exists is store stock");
+        }
     }
 }

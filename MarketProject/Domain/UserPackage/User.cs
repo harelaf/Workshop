@@ -21,7 +21,17 @@ namespace MarketProject.Domain
                 basket = new ShoppingBasket(store);
                 _shoppingCart.AddShoppingBasket(basket);
             }
-            basket.addItem(item, amount);
+            basket.AddItem(item, amount);
+        }
+        public int RemoveItemFromCart(Item item, Store store)
+        {
+            ShoppingBasket basket = _shoppingCart.GetShoppingBasket(store);
+            if (basket == null)
+                throw new Exception("your cart doesnt contain any basket with the given store");
+            int amount = basket.RemoveItem(item);
+            if (amount < 0)
+                throw new Exception("basket does'nt contain the item that was requested to be removed");
+            return amount;
         }
 
     }

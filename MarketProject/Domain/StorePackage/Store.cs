@@ -37,6 +37,15 @@ namespace MarketProject.Domain
                 throw new Exception("can't reseve amount: " + amount+" of " + itemID + ".the avalable amount is: " + _stock.GetItemAmount(item));
             return item; // else: reservation done secsussfully-> return reserved item
         }
+        public Item GetItem(int itemID)
+        {
+            return _stock.GetItem(itemID);
+        }
+        public void UnReserveItem(Item item, int amount_to_add)
+        {
+            _stock.UnreserveItem(item, amount_to_add);
+        }
+
 
     }
 }
