@@ -4,33 +4,64 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class UserManagement
+    public class UserManagement
     {
-        private ICollection<User> _users;
+        // Dictionary mapping identifier to User
+        private IDictionary<String,Registered> _registeredUsers;
         private ICollection<Registered> _logedinUsers;
         private ICollection<Guest> _visitors_guests;
 
         public UserManagement()
         {
-            _users = new List<User>();
+            _registeredUsers = new Dictionary<String, Registered>();
             _logedinUsers = new List<Registered>();
             _visitors_guests = new List<Guest>();
         }
+
+        // Currently returns whether successful or not (bound to change)
+        public bool Register(String username, String password)
+        {
+            if (_registeredUsers.ContainsKey(username) ||
+                !CheckValidUsername(username) ||
+                !CheckValidPassword(password))
+                // Username taken
+            {
+                return false;
+            }
+            // May want to add username and password validity checks
+            Registered newRegistered = new Registered(username, password);
+
+            _registeredUsers.Add(username, newRegistered);
+
+            return true;
+        }
+
+        private bool CheckValidUsername(String username)
+        {
+            return (username != "");
+        }
+
+        private bool CheckValidPassword(String password)
+        {
+            return (password != "");
+        }
+
+        public Registered GetRegisteredUser(String username)
+        {
+            Registered registered;
+            _registeredUsers.TryGetValue(username,out registered);
+            return registered;
+        }
+
+
+
         public bool isUserAVisitor(String username)
         {
             if (GetVisitorUser(username) == null)
                 return false;
             return true;
         }
-        public Registered GetRegisteredUser(String username)
-        {
-            foreach (Registered registered in _logedinUsers)
-            {
-                if (registered.Username == username)
-                    return registered;
-            }
-            return null;
-        }
+
         public User GetVisitorUser(String username)
         {
             User user = GetRegisteredUser(username);
