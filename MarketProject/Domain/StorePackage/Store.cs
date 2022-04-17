@@ -43,7 +43,10 @@ namespace MarketProject.Domain
         }
         public void UnReserveItem(Item item, int amount_to_add)
         {
-            _stock.UnreserveItem(item, amount_to_add);
+            if (amount_to_add <= 0)
+                throw new Exception("cannt unreserve item with amount<1");
+            if (!_stock.UnreserveItem(item, amount_to_add))
+                throw new Exception("can't unreserve item from that doesn't exists is store stock");
         }
 
 
