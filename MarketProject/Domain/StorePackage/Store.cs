@@ -36,7 +36,7 @@ namespace MarketProject.Domain
 
         public String GetRating()
         {
-            return "" + _rating.getRating();
+            return "" + _rating.GetRating();
         }
 
         public List<String> GetItemNames()
@@ -57,6 +57,11 @@ namespace MarketProject.Domain
             }
             info += $"List of items: {itemNames}\n";
             return info;
+        }
+
+        public bool RateStore(String username, int rating, String review)
+        {
+            return _rating.AddRating(username, rating, review);
         }
     }
 }

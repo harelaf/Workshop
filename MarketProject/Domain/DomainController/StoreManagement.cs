@@ -29,5 +29,13 @@ namespace MarketProject.Domain
             Store store = _stores[storeName];
             return store.GetInformation();
         }
+
+        public bool RateStore(String username, String storeName, int rating, String review)
+        {
+            if (!_stores.ContainsKey(storeName))
+                return false;
+            Store store = _stores[storeName];
+            return store.RateStore(username, rating, review);
+        }
     }
 }

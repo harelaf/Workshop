@@ -21,5 +21,10 @@ namespace MarketProject.Domain
         {
             return _storeManagement.GetStoreInformation(storeName);
         }
+
+        public bool RateStore(String username, String storeName, int rating, String review)
+        {
+            return _storeManagement.RateStore(username, storeName, rating, review);
+        }
     }
 }
