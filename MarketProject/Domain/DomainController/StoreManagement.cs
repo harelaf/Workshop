@@ -6,6 +6,11 @@ namespace MarketProject.Domain
 {
     class StoreManagement
     {
-        private ICollection<Store> _stores;
+        private List<Store> _stores;
+
+        public StoreManagement()
+        {
+            _stores = new List<Store>();
+        }
     }
 }
