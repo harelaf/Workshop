@@ -26,5 +26,12 @@ namespace MarketProject.Domain
         {
             return _storeManagement.RateStore(username, storeName, rating, review);
         }
+
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String username, String storeName)
+        {
+            if (!_storeManagement.CheckStoreNameExists(storeName))
+                return null;
+            return _history.GetStorePurchaseHistory(username, storeName);
+        }
     }
 }
