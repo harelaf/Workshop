@@ -4,9 +4,14 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class Stock
+    public class Stock
     {
         private IDictionary<Item, int> _itemAndAmount;
+
+        public Stock()
+        {
+            _itemAndAmount = new Dictionary<Item, int>();
+        }
 
         public bool ReserveItem(Item item, int amount)
         {
@@ -14,7 +19,7 @@ namespace MarketProject.Domain
                 return false;
             else
             {
-                _itemAndAmount[item]-= amount;
+                _itemAndAmount[item]= _itemAndAmount[item] -amount;
                 return true;
             }
         }
@@ -32,6 +37,10 @@ namespace MarketProject.Domain
         public int GetItemAmount(Item item)
         {
             return _itemAndAmount[item];
+        }
+        public void AddItem(Item item, int amount)
+        {
+            _itemAndAmount.Add(item, amount);
         }
     }
 }

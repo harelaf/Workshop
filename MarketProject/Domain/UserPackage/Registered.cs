@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class Registered : User
+    public class Registered : User
     {
         private ICollection<MessageToUser> _messagesToUser;
         private String _username;

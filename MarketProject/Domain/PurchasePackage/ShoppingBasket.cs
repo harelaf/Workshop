@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class ShoppingBasket
+    public class ShoppingBasket
     {
         private Store _store;
         private IDictionary<Item, int> _items;
@@ -20,6 +20,10 @@ namespace MarketProject.Domain
             if (_items.ContainsKey(item))
                 _items[item] += amount;
             else _items.Add(item, amount);
+        }
+        public int GetAmountOfItem(Item item)
+        {
+            return _items[item];
         }
 
 

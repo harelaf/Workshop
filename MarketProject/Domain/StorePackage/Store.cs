@@ -4,9 +4,10 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class Store
+    public class Store
     {
         private Stock _stock;
+        public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
         private ICollection<MessageToStore> _messagesToStore;
         private ICollection<Rating> _ratings;
@@ -16,13 +17,14 @@ namespace MarketProject.Domain
         private String _storeName;
         public String StoreName => _storeName;
 
-        public Store()
+        public Store(String storeName)
         {
             _stock = new Stock();
             _purchasePolicy = new PurchasePolicy();
             _managers = new List<StoreManager>();
             _owners = new List<StoreOwner>();
             _founder = new StoreFounder();
+            _storeName = storeName;
         }
         public Item ReserveItem(int itemID, int amount)
         {

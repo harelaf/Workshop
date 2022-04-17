@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class Market
+    public class Market
     {
         private StoreManagement _storeManagement;
         private UserManagement _userManagement;
