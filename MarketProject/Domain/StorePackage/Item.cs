@@ -8,5 +8,7 @@ namespace MarketProject.Domain
     {
         private ICollection<Rating> _ratings;
         private ICollection<IDiscount> _discounts;
+        private int _itemID;
+        public int ItemID => _itemID;
     }
 }
