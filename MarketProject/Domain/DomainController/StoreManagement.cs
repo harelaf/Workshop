@@ -12,5 +12,14 @@ namespace MarketProject.Domain
         {
             _stores = new List<Store>();
         }
+
+        public bool openNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+        {
+            if (_stores.Exists(store => store.getName().Equals(storeName)))
+                return false;
+            Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
+            _stores.Add(newStore);
+            return true;
+        }
     }
 }
