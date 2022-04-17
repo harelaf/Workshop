@@ -7,14 +7,14 @@ namespace MarketProject.Domain
     class MessageToStore
     {
         private int _storeId;
-        private int _userSenderId;
+        private String _senderUsername;
         private String _title;
         private String _message;
 
-        public MessageToStore(int storeId, int userSenderId, string title, string message)
+        public MessageToStore(int storeId, int senderUsername, string title, string message)
         {
             _storeId = storeId;
-            _userSenderId = userSenderId;
+            _senderUsername = senderUsername;
             _title = title;
             _message = message;
         }

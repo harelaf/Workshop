@@ -6,7 +6,6 @@ namespace MarketProject.Service
 {
     internal class MarketAPI
     {
-
         public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
         {//I.1
             throw new NotImplementedException();
@@ -48,7 +47,8 @@ namespace MarketProject.Service
         {//II.2.5
             throw new NotImplementedException();
         }
-        public Boolean OpenNewStore(String username, String storeName)// should add purchase and discount policy as params
+        // TODO: WHEN WE KNOW MORE ABOUT DISCOUNT/PURCHASE POLICIES, ADD PARAMETERS HERE:
+        public Boolean OpenNewStore(String username, String storeName)
         {//II.3.2
             throw new NotImplementedException();
         }

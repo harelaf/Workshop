@@ -6,11 +6,11 @@ namespace MarketProject.Domain
 {
     class Rating
     {
-        private Dictionary<String, Tuple<int, String>> _ratings; //<userId:String, <rating:int, review:String>>
+        private Dictionary<String, Tuple<int, String>> _ratings; //<username:String, <rating:int, review:String>>
 
         public Rating()
         {
-            _ratings = new Dictionary<string, Tuple<int, string>>();
+            _ratings = new Dictionary<String, Tuple<int, String>>();
         }
     }
 }
