@@ -19,6 +19,9 @@ namespace MarketProject.Domain
             _password = password;
         }
 
-
+        internal bool hasAccess(Store store, Operation op)
+        {
+            for
+        }
     }
 }

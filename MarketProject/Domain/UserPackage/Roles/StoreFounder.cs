@@ -6,5 +6,44 @@ namespace MarketProject.Domain
 {
     class StoreFounder : SystemRole
     {
+        private Store _store;
+        public StoreFounder(Store store) : base(getOps())
+        {
+            this._store = store;
+        }
+
+        public override bool hasAccess(Store store, Operation op)
+        {
+            return store.Equals(_store) && hasAccess(op);
+        }
+
+        public override bool grantPermission(Operation op, Store store, Registered grantor)
+        {
+            return false;
+        }
+
+        public override bool denyPermission(Operation op, Store store, Registered denier)
+        {
+            return false;
+        }
+
+        private static ISet<Operation> getOps()
+        {
+            ISet<Operation> roles = new HashSet<Operation>();
+            roles.Add(Operation.MANAGE_INVENTORY);
+            roles.Add(Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY);
+            roles.Add(Operation.DEFINE_CONCISTENCY_CONSTRAINT);
+            roles.Add(Operation.APPOINT_OWNER);
+            roles.Add(Operation.REMOVE_OWNER);
+            roles.Add(Operation.APPOINT_MANAGER);
+            roles.Add(Operation.REMOVE_MANAGER);
+            roles.Add(Operation.CHANGE_MANAGER_PREMISSIONS);
+            roles.Add(Operation.CLOSE_STORE);
+            roles.Add(Operation.REOPEN_STORE);
+            roles.Add(Operation.STORE_WORKERS_INFO);
+            roles.Add(Operation.RECEIVE_AND_REPLY_STORE_MESSAGE);
+            roles.Add(Operation.STORE_HISTORY_INFO);
+            return roles;
+        }
     }
 }
