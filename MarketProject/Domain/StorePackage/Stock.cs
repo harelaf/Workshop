@@ -6,7 +6,7 @@ namespace MarketProject.Domain
 {
     public class Stock
     {
-        private IDictionary<Item, int> _itemAndAmount;
+        private Dictionary<Item, int> _itemAndAmount;
 
         public Stock()
         {
@@ -50,6 +50,18 @@ namespace MarketProject.Domain
                 return true;
             }
             return false;   
+        }
+        public List<String> GetItemNames()
+        {
+            List<Item> keyList = new List<Item>(_itemAndAmount.Keys);
+            List<String> names = new List<String>();
+
+            foreach (Item item in keyList)
+            {
+                //names.Add(item.GetName());
+            }
+
+            return names;
         }
     }
 }

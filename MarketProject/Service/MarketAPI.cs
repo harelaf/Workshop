@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,12 @@ namespace MarketProject.Service
 {
     internal class MarketAPI
     {
+        private Market _market;
+
+        public MarketAPI()
+        {
+            _market = new Market();
+        }
 
         public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
         {//I.1
@@ -48,9 +55,15 @@ namespace MarketProject.Service
         {//II.2.5
             throw new NotImplementedException();
         }
-        public Boolean OpenNewStore(String authToken, String storeName)// should add purchase and discount policy as params
+
+        // TODO: WHEN WE KNOW MORE ABOUT DISCOUNT/PURCHASE POLICIES, ADD PARAMETERS HERE:
+        // TODO: HOW DO I GET A STOREFOUNDER?
+        public bool OpenNewStore(String authToken, String storeName)
+
         {//II.3.2
-            throw new NotImplementedException();
+            if (storeName.Equals(""))
+                return false;
+            return _market.OpenNewStore(null, storeName, new PurchasePolicy(), new DiscountPolicy());
         }
         public Boolean AddStoreManager(String authToken, String ownerUsername, String storeName)
         {//II.4.6
@@ -68,6 +81,7 @@ namespace MarketProject.Service
         {//II.4.8
             throw new NotImplementedException();
         }
+
         public Boolean AddItemToStoreStock(String authToken, String storeName, int itemID, int quantity)
         {//II.4.1
             throw new NotImplementedException();
@@ -93,19 +107,29 @@ namespace MarketProject.Service
             throw new NotImplementedException();
         }
         public Boolean RateItem(String authToken, int itemID, String storeName, int rating, String review)
+
         {//II.3.3,  II.3.4
             //should check that this user bought this item by his purches History
             throw new NotImplementedException();
         }
-        public Boolean RateStore(String authToken, String storeName, int rating, String review)
+
+        public bool RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
-            //should check that this user bought in that store by his purches History
-            throw new NotImplementedException();
+            //TODO: add a function in History to check if [username] bought in [storeName].
+            /*if (!_market.UserPurchasedInStore(String username, String storeName))
+                return false;*/
+            if (storeName.Equals(""))
+                return false;
+            if (rating < 0 || rating > 10)
+                return false;
+            return _market.RateStore(authToken, storeName, rating, review);
         }
-        public Boolean GetStoreInformation(String authToken, String storeName)
+
         {//II.2.1
          //should return data of store + the items it owns
-            throw new NotImplementedException();
+            if (storeName.Equals(""))
+                return "Invalid Input: Blank store name.\n";
+            return _market.GetStoreInformation(storeName);
         }
         public Boolean GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {//II.2.2
@@ -162,18 +186,24 @@ namespace MarketProject.Service
             throw new NotImplementedException();
         }
         public Boolean GetStoreMesseage(String authToken, String storeName)
+
         {//II.4.12
             //should return with id
             throw new NotImplementedException();
         }
+
         public Boolean AnswerStoreMesseage(String authToken, String storeName, int messageID, String reply)
         {//II.4.12
             throw new NotImplementedException();
         }
-        public Boolean GetStorePurchasesHistory(String authToken, String storeName)
+
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
-            throw new NotImplementedException();
+            if (storeName.Equals(""))
+                return null;
+            return _market.GetStorePurchaseHistory(authToken, storeName);
         }
+
         public Boolean CloseStorePermanently(String authToken, String storeName)
         {//II.6.1
             //send message to all roles in that store

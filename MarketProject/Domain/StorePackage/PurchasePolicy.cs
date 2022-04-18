@@ -6,5 +6,8 @@ namespace MarketProject.Domain
 {
     class PurchasePolicy
     {
+        public PurchasePolicy()
+        {
+        }
     }
 }
