@@ -125,7 +125,7 @@ namespace MarketProject.Domain
         {
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER))
-             *     throw new Exception($"This user is not an owner in {storeName}.");
+             *     throw new Exception($"This user is not the founder of {storeName}.");
              */
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
@@ -137,12 +137,25 @@ namespace MarketProject.Domain
         {
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER))
-             *     throw new Exception($"This user is not an owner in {storeName}.");
+             *     throw new Exception($"This user is not the founder of {storeName}.");
              */
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             _storeManagement.ReopenStore(storeName);
             // Send Alerts to all roles of [storeName]
+        }
+
+        public void CloseStorePermanently(String username, String storeName)
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, SYSTEM_ADMIN))
+             *     throw new Exception($"This user is not a system admin.");
+             */
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
+            _storeManagement.CloseStorePermanently(storeName);
+            // Remove all owners/managers...
+            // Send alerts to all roles of [storeName]
         }
     }
 }

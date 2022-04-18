@@ -182,7 +182,7 @@ namespace MarketProject.Service
         {//II.4.13
             throw new NotImplementedException();
         }
-        public Boolean CloseStorePermanently(String username, String storeName)
+        public void CloseStorePermanently(String username, String storeName)
         {//II.6.1
             //send message to all roles in that store
             throw new NotImplementedException();

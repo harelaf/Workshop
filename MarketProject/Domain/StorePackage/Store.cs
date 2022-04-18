@@ -136,5 +136,10 @@ namespace MarketProject.Domain
         {
             _state = StoreState.Active;
         }
+
+        public void CloseStorePermanently()
+        {
+            _state = StoreState.Closed;
+        }
     }
 }

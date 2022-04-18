@@ -106,5 +106,13 @@ namespace MarketProject.Domain
                 throw new Exception($"Store {storeName} is not inactive.");
             store.ReopenStore();
         }
+
+        public void CloseStorePermanently(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.CloseStorePermanently();
+        }
     }
 }
