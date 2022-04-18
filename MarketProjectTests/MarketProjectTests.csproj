@@ -17,4 +17,8 @@
     <ProjectReference Include="..\MarketProject\MarketProject.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Domain\StorePackage\" />
+  </ItemGroup>
+
 </Project>
