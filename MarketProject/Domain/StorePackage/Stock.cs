@@ -38,6 +38,13 @@ namespace MarketProject.Domain
         {
             return _itemAndAmount[item];
         }
+        public void AddItem(Item item, int amount)
+        {
+            if (!_itemAndAmount.ContainsKey(item))
+            {
+                _itemAndAmount.Add(item, amount);
+            }
+        }
  
         public bool UnreserveItem(Item item, int amount)
         {

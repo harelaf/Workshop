@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class StoreManagement
+    public class StoreManagement
     {
         private ICollection<Store> _stores;
 
@@ -44,7 +44,7 @@ namespace MarketProject.Domain
 
         
 
-        public void EditItemPrice(String storeName, int itemID, float newPrice)
+        public void EditItemPrice(String storeName, int itemID, double newPrice)
         {
             Item item = GetItem(storeName, itemID);
             item.SetPrice(newPrice);

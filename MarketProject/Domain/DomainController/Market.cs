@@ -42,7 +42,7 @@ namespace MarketProject.Domain
         }
 
       
-        public void EditItemPrice(String username, String storeName, int itemID, float new_price)
+        public void EditItemPrice(String username, String storeName, int itemID, double newPrice)
         {//II.4.1
             throw new NotImplementedException();
         }

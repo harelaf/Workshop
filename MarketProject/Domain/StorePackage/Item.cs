@@ -10,16 +10,16 @@ namespace MarketProject.Domain
         private ICollection<IDiscount> _discounts;
         private int _itemID;
         private String _name;
-        private float _price;
+        private double _price;
         private String _description;
 
 
         public int ItemID => _itemID;
         public String Name => _name;
-        public float Price => _price;
+        public double Price => _price;
         public String Description => _description;
 
-        public Item(int id, String name, float price, String description)
+        public Item(int id, String name, double price, String description)
         {
             if (name == null)
             {
@@ -39,7 +39,7 @@ namespace MarketProject.Domain
             _name = name;
         }
 
-        public void SetPrice(float price)
+        public void SetPrice(double price)
         {
             this._price = price;
         }
