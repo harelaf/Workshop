@@ -160,20 +160,12 @@ namespace MarketProject.Service
         {//II.4.7
             throw new NotImplementedException();
         }
-<<<<<<< HEAD
         public void CloseStore(String username, String storeName)
-=======
-        public Boolean CloseStore(String authToken, String storeName)
->>>>>>> dev
         {//II.4.9
             //state of store is INACTIVE-> which means its data still available
             throw new NotImplementedException();
         }
-<<<<<<< HEAD
         public void ReopenStore(String username, String storeName)
-=======
-        public Boolean ReopenStore(String authToken, String storeName)
->>>>>>> dev
         {//II.4.10
             //SHOULD VALIDATE THAT store state is INACTIVE
             throw new NotImplementedException();
@@ -188,28 +180,15 @@ namespace MarketProject.Service
             //should return with id
             throw new NotImplementedException();
         }
-
         public Boolean AnswerStoreMesseage(String authToken, String storeName, int messageID, String reply)
         {//II.4.12
             throw new NotImplementedException();
         }
-<<<<<<< HEAD
         public ICollection<(DateTime, ShoppingBasket)> GetStorePurchasesHistory(String username, String storeName)
         {//II.4.13
             throw new NotImplementedException();
         }
         public void CloseStorePermanently(String username, String storeName)
-=======
-
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
-        {//II.4.13
-            if (storeName.Equals(""))
-                return null;
-            return _market.GetStorePurchaseHistory(authToken, storeName);
-        }
-
-        public Boolean CloseStorePermanently(String authToken, String storeName)
->>>>>>> dev
         {//II.6.1
             //send message to all roles in that store
             throw new NotImplementedException();
