@@ -19,6 +19,9 @@ namespace MarketProject.Domain
             _password = password;
         }
 
-
+        public bool Login(String password)
+        {
+            return (_password == password);
+        }
     }
 }

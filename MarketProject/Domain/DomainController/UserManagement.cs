@@ -8,6 +8,8 @@ namespace MarketProject.Domain
     {
         // Dictionary mapping identifier to User
         private IDictionary<String,Registered> _registeredUsers;
+        // Dictionary mapping authentication token to user identifier
+        private IDictionary<String, String> _authTokens;
         private ICollection<Registered> _logedinUsers;
         private ICollection<Guest> _visitors_guests;
 
@@ -24,7 +26,7 @@ namespace MarketProject.Domain
             if (_registeredUsers.ContainsKey(username) ||
                 !CheckValidUsername(username) ||
                 !CheckValidPassword(password))
-                // Username taken
+                // May want to move validations to Registered during creation
             {
                 return false;
             }
@@ -44,6 +46,25 @@ namespace MarketProject.Domain
         private bool CheckValidPassword(String password)
         {
             return (password != "");
+        }
+
+        public String Login(String username, String password)
+        {
+            String authToken = null;
+            Registered registered = GetRegisteredUser(username);
+            if (registered != null && registered.Login(password))
+            {
+                authToken = UserManagement.GenerateToken();
+                _authTokens.Add(authToken, username);
+            }
+            return authToken;
+        }
+
+        private static String GenerateToken()
+        {
+            String token = "";
+
+            return token;
         }
 
         public Registered GetRegisteredUser(String username)
