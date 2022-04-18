@@ -42,5 +42,14 @@ namespace MarketProject.Domain
             return _items.ContainsKey(item);
         }
 
+        public bool updateItemQuantity(Item item, int newQuantity)
+        {
+            if (isItemInBasket(item))
+            {
+                _items[item] = newQuantity;
+                return true;
+            }
+            return false;
+        }
     }
 }

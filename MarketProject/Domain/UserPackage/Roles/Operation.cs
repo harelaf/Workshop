@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    enum Operation
+    public enum Operation
     {
     }
 }

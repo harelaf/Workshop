@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class StoreFounder : SystemRole
+    public class StoreFounder : SystemRole
     {
     }
 }
