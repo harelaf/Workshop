@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class Rating
+    public class Rating
     {
         private Dictionary<String, Tuple<int, String>> _ratings; //<username:String, <rating:int, review:String>>
 
