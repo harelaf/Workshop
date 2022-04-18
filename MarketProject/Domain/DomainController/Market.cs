@@ -132,5 +132,17 @@ namespace MarketProject.Domain
             _storeManagement.CloseStore(storeName);
             // Send Alerts to all roles of [storeName]
         }
+
+        public void ReopenStore(string username, String storeName)
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
+             *     throw new Exception($"This user is not an owner in {storeName}.");
+             */
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
+            _storeManagement.ReopenStore(storeName);
+            // Send Alerts to all roles of [storeName]
+        }
     }
 }

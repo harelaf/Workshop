@@ -126,5 +126,10 @@ namespace MarketProject.Domain
         {
             _state = StoreState.Inactive;
         }
+
+        public void ReopenStore()
+        {
+            _state = StoreState.Active;
+        }
     }
 }
