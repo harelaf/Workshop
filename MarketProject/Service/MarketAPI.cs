@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,12 @@ namespace MarketProject.Service
 {
     internal class MarketAPI
     {
+        private Market _market;
+
+        public MarketAPI()
+        {
+            _market = new Market();
+        }
 
         public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
         {//I.1
@@ -48,9 +55,13 @@ namespace MarketProject.Service
         {//II.2.5
             throw new NotImplementedException();
         }
-        public Boolean OpenNewStore(String username, String storeName)// should add purchase and discount policy as params
+        // TODO: WHEN WE KNOW MORE ABOUT DISCOUNT/PURCHASE POLICIES, ADD PARAMETERS HERE:
+        // TODO: HOW DO I GET A STOREFOUNDER?
+        public bool OpenNewStore(String username, String storeName)
         {//II.3.2
-            throw new NotImplementedException();
+            if (storeName.Equals(""))
+                return false;
+            return _market.OpenNewStore(null, storeName, new PurchasePolicy(), new DiscountPolicy());
         }
         public Boolean AddStoreManager(String appointerUsername, String ownerUsername, int storeID)
         {//II.4.6
@@ -68,44 +79,52 @@ namespace MarketProject.Service
         {//II.4.8
             throw new NotImplementedException();
         }
-        public Boolean AddItemToStoreStock(String username, int storeID, int itemID, int quantity)
+        public Boolean AddItemToStoreStock(String username, String storeName, int itemID, int quantity)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean RemoveItemFromStore(String username, int storeID, int itemID)
+        public Boolean RemoveItemFromStore(String username, String storeName, int itemID)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean UpdateStockQuantityOfItem(String username, int storeID, int itemID, int newQuantity)
+        public Boolean UpdateStockQuantityOfItem(String username, String storeName, int itemID, int newQuantity)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemPrice(String username, int storeID, int itemID, int new_price, String newPrice)
+        public Boolean EditItemPrice(String username, String storeName, int itemID, int new_price, String newPrice)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemName(String username, int storeID, int itemID, int new_price, String newName)
+        public Boolean EditItemName(String username, String storeName, int itemID, int new_price, String newName)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemDescription(String username, int storeID, int itemID, String newDescription)
+        public Boolean EditItemDescription(String username, String storeName, int itemID, String newDescription)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean RateItem(String username, int itemID, int storeID, int rating, String review)
+        public Boolean RateItem(String username, int itemID, String storeName, int rating, String review)
         {//II.3.3,  II.3.4
             //should check that this user bought this item by his purches History
             throw new NotImplementedException();
         }
-        public Boolean RateStore(String username, int storeID, int rating, String review)
+        public bool RateStore(String username, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
-            //should check that this user bought in that store by his purches History
-            throw new NotImplementedException();
+            //TODO: add a function in History to check if [username] bought in [storeName].
+            /*if (!_market.UserPurchasedInStore(String username, String storeName))
+                return false;*/
+            if (storeName.Equals(""))
+                return false;
+            if (rating < 0 || rating > 10)
+                return false;
+            return _market.RateStore(username, storeName, rating, review);
         }
-        public Boolean GetStoreInformation(int storeID)
+        public String GetStoreInformation(String storeName)
         {//II.2.1
          //should return data of store + the items it owns
-            throw new NotImplementedException();
+            if (storeName.Equals(""))
+                return "Invalid Input: Blank store name.\n";
+            return _market.GetStoreInformation(storeName);
         }
         public Boolean GetItemInformation(String itemName, String itemCategory, String keyWord)
         {//II.2.2
@@ -161,20 +180,22 @@ namespace MarketProject.Service
         {//II.4.11
             throw new NotImplementedException();
         }
-        public Boolean GetStoreMesseage(String username, int storeID)
+        public Boolean GetStoreMesseage(String username, String storeName)
         {//II.4.12
             //should return with id
             throw new NotImplementedException();
         }
-        public Boolean AnswerStoreMesseage(String username, int storeID, int messageID, String reply)
+        public Boolean AnswerStoreMesseage(String username, String storeName, int messageID, String reply)
         {//II.4.12
             throw new NotImplementedException();
         }
-        public Boolean GetStorePurchasesHistory(String username, int storeID)
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String username, String storeName)
         {//II.4.13
-            throw new NotImplementedException();
+            if (storeName.Equals(""))
+                return null;
+            return _market.GetStorePurchaseHistory(username, storeName);
         }
-        public Boolean CloseStorePermanently(String username, int storeID)
+        public Boolean CloseStorePermanently(String username, String storeName)
         {//II.6.1
             //send message to all roles in that store
             throw new NotImplementedException();
