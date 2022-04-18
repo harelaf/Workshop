@@ -20,15 +20,11 @@ namespace MarketProject.Domain
             return false;
         }
 
-        // Harel: TODO: FINISH THIS FUNCTION
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String username, String storeName)
+        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String storeName)
         {
-            List<Tuple<DateTime, ShoppingBasket>> purchases = new List<Tuple<DateTime, ShoppingBasket>>();
-            foreach (KeyValuePair<String, ICollection<(DateTime, ShoppingBasket)>> entry in _storePurchaseHistory)
-            {
-                
-            }
-            return purchases;
+            if (!_storePurchaseHistory.ContainsKey(storeName))
+                throw new Exception($"There is purchase history for {storeName} yet.");
+            return _storePurchaseHistory[storeName];
         }
     }
 }

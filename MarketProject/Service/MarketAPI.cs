@@ -180,11 +180,9 @@ namespace MarketProject.Service
         {//II.4.12
             throw new NotImplementedException();
         }
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String username, String storeName)
+        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchasesHistory(String username, String storeName)
         {//II.4.13
-            if (storeName.Equals(""))
-                return null;
-            return _market.GetStorePurchaseHistory(username, storeName);
+            throw new NotImplementedException();
         }
         public Boolean CloseStorePermanently(String username, String storeName)
         {//II.6.1

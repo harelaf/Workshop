@@ -88,11 +88,13 @@ namespace MarketProject.Domain
             _storeManagement.RateStore(username, storeName, rating, review);
         }
 
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String username, String storeName)
+        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String username, String storeName)
         {
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
             if (!_storeManagement.CheckStoreNameExists(storeName))
-                return null;
-            return _history.GetStorePurchaseHistory(username, storeName);
+                throw new Exception($"Store {storeName} does not exist.");
+            return _history.GetStorePurchaseHistory(storeName);
         }
     }
 }
