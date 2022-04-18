@@ -77,7 +77,7 @@ namespace MarketProject.Domain
         public void RateStore(String username, String storeName, int rating, String review)
         {
             //TODO: add a function in History to check if [username] bought in [storeName].
-            /*if (!_market.UserPurchasedInStore(String username, String storeName))
+            /*if (!_history.UserPurchasedInStore(String username, String storeName))
                 return false;*/
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Store name is blank.");
