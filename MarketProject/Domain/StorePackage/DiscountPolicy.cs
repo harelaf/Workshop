@@ -4,8 +4,13 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class DiscountPolicy
+    public class DiscountPolicy
     {
         private ICollection<IDiscount> _discounts;
+
+        public DiscountPolicy()
+        {
+            _discounts = new List<IDiscount>();
+        }
     }
 }

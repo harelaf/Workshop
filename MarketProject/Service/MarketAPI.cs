@@ -61,9 +61,7 @@ namespace MarketProject.Service
         public bool OpenNewStore(String authToken, String storeName)
 
         {//II.3.2
-            if (storeName.Equals(""))
-                return false;
-            return _market.OpenNewStore(null, storeName, new PurchasePolicy(), new DiscountPolicy());
+            throw new NotImplementedException();
         }
         public Boolean AddStoreManager(String authToken, String ownerUsername, String storeName)
         {//II.4.6
@@ -115,21 +113,12 @@ namespace MarketProject.Service
 
         public bool RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
-            //TODO: add a function in History to check if [username] bought in [storeName].
-            /*if (!_market.UserPurchasedInStore(String username, String storeName))
-                return false;*/
-            if (storeName.Equals(""))
-                return false;
-            if (rating < 0 || rating > 10)
-                return false;
-            return _market.RateStore(authToken, storeName, rating, review);
+            throw new NotImplementedException();
         }
-
+        public String GetStoreInformation(String username, String storeName)
         {//II.2.1
          //should return data of store + the items it owns
-            if (storeName.Equals(""))
-                return "Invalid Input: Blank store name.\n";
-            return _market.GetStoreInformation(storeName);
+            throw new NotImplementedException();
         }
         public Boolean GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {//II.2.2
@@ -171,12 +160,20 @@ namespace MarketProject.Service
         {//II.4.7
             throw new NotImplementedException();
         }
+<<<<<<< HEAD
+        public void CloseStore(String username, String storeName)
+=======
         public Boolean CloseStore(String authToken, String storeName)
+>>>>>>> dev
         {//II.4.9
             //state of store is INACTIVE-> which means its data still available
             throw new NotImplementedException();
         }
+<<<<<<< HEAD
+        public void ReopenStore(String username, String storeName)
+=======
         public Boolean ReopenStore(String authToken, String storeName)
+>>>>>>> dev
         {//II.4.10
             //SHOULD VALIDATE THAT store state is INACTIVE
             throw new NotImplementedException();
@@ -196,6 +193,13 @@ namespace MarketProject.Service
         {//II.4.12
             throw new NotImplementedException();
         }
+<<<<<<< HEAD
+        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchasesHistory(String username, String storeName)
+        {//II.4.13
+            throw new NotImplementedException();
+        }
+        public void CloseStorePermanently(String username, String storeName)
+=======
 
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
@@ -205,6 +209,7 @@ namespace MarketProject.Service
         }
 
         public Boolean CloseStorePermanently(String authToken, String storeName)
+>>>>>>> dev
         {//II.6.1
             //send message to all roles in that store
             throw new NotImplementedException();

@@ -9,15 +9,22 @@ namespace MarketProject.Domain
         private IDictionary<String, ICollection<(DateTime, ShoppingBasket)>> _storePurchaseHistory; //storeName:String
         private IDictionary<String, ICollection<(DateTime, ShoppingCart)>> _registeredPurchaseHistory; //username:String
 
-        //TODO: FINISH THIS FUNCTION
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String username, String storeName)
+        // Harel: TODO: FINISH THIS FUNCTION.
+        public bool CheckIfUserPurchasedInStore(String username, String storeName)
         {
-            List<Tuple<DateTime, ShoppingBasket>> purchases = new List<Tuple<DateTime, ShoppingBasket>>();
-            foreach (KeyValuePair<String, ICollection<(DateTime, ShoppingBasket)>> entry in _storePurchaseHistory)
-            {
-                
-            }
-            return purchases;
+            if (!_registeredPurchaseHistory.ContainsKey(username))
+                return false;
+            
+            ICollection<(DateTime, ShoppingCart)> purchases = _registeredPurchaseHistory[username];
+
+            return false;
+        }
+
+        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String storeName)
+        {
+            if (!_storePurchaseHistory.ContainsKey(storeName))
+                throw new Exception($"There is purchase history for {storeName} yet.");
+            return _storePurchaseHistory[storeName];
         }
     }
 }

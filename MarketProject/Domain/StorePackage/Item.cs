@@ -13,7 +13,7 @@ namespace MarketProject.Domain
 
         public Item(int id)
         {
-            _ratings = new List<Rating>();
+            _rating = new Rating();
             _discounts = new List<IDiscount>();
             _itemID = id;
         }
