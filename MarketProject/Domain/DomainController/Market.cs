@@ -32,8 +32,6 @@ namespace MarketProject.Domain
                 throw new Exception("the given user is no longer a visitor in system");
             if (!_storeManagement.IsStoreExist(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
-            if (!_storeManagement.isStoreActive(storeName))
-                throw new Exception($"Store {storeName} is currently inactive.");
             Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
             _userManagement.AddItemToUserCart(username, _storeManagement.GetStore(storeName), item, amount);
         }
@@ -109,8 +107,6 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank store name.");
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"Store {storeName} does not exist.");
-            if (!_storeManagement.isStoreActive(storeName)) //&& !_userManagement.CheckUserPermission(username, SYSTEM_ADMIN || STORE_OWNER))
-                throw new Exception($"Store {storeName} is currently inactive.");
             return _history.GetStorePurchaseHistory(storeName);
         }
 
