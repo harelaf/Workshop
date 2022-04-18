@@ -55,5 +55,12 @@ namespace MarketProject.Domain
                 _storeManagement.UnreserveItemInStore(storeName, item, amount_differnce);
             _userManagement.UpdateItemInUserCart(username, _storeManagement.GetStore(storeName), item, newQuantity);
         }
+
+        public Boolean PurchaseMyCart(String username)
+        {//II.2.5
+            if (!_userManagement.IsUserAVisitor(username))
+                throw new Exception("the given user is no longer a visitor in system");
+            return false;
+        }
     }
 }
