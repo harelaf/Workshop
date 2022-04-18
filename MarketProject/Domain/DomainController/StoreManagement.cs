@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class StoreManagement
+    public class StoreManagement
     {
         private Dictionary<String, Store> _stores; //<storeName:String, Store>
 
