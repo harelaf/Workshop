@@ -9,7 +9,7 @@ namespace MarketProject.Domain
         private IDictionary<String, ICollection<(DateTime, ShoppingBasket)>> _storePurchaseHistory; //storeName:String
         private IDictionary<String, ICollection<(DateTime, ShoppingCart)>> _registeredPurchaseHistory; //username:String
 
-        // Harel: TODO: FINISH THIS FUNCITON.
+        // Harel: TODO: FINISH THIS FUNCTION.
         public bool CheckIfUserPurchasedInStore(String username, String storeName)
         {
             if (!_registeredPurchaseHistory.ContainsKey(username))

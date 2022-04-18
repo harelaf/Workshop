@@ -91,6 +91,10 @@ namespace MarketProject.Domain
 
         public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String username, String storeName)
         {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
+             *     throw new Exception($"This user is not an owner in {storeName}.");
+             */
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             if (!_storeManagement.CheckStoreNameExists(storeName))
