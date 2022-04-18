@@ -40,8 +40,12 @@ namespace MarketProject.Domain
         }
         public void AddItem(Item item, int amount)
         {
-            _itemAndAmount.Add(item, amount);
+            if (!_itemAndAmount.ContainsKey(item))
+            {
+                _itemAndAmount.Add(item, amount);
+            }
         }
+ 
         public bool UnreserveItem(Item item, int amount)
         {
             if (_itemAndAmount.ContainsKey(item))

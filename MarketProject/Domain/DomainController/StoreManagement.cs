@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class StoreManagement
+    public class StoreManagement
     {
         private ICollection<Store> _stores;
 
@@ -36,12 +36,28 @@ namespace MarketProject.Domain
                 throw new Exception("there is no item: "+itemID+" in the given store");
             return item;    
         }
-        public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
+        public void UnreserveItemInStore(String storeName, Item item, int amountToAdd)
         {
             Store store = GetStore(storeName);
-            store.UnReserveItem(item, amount_to_add);
+            store.UnReserveItem(item, amountToAdd);
         }
+
         
-        
+
+        public void EditItemPrice(String storeName, int itemID, double newPrice)
+        {
+            Item item = GetItem(storeName, itemID);
+            item.SetPrice(newPrice);
+        }
+        public void EditItemName(String storeName, int itemID, String newName)
+        {
+            Item item = GetItem(storeName, itemID);
+            item.SetName(newName);
+        }
+        public void EditItemDescription(String storeName, int itemID, String newDescription)
+        {
+            Item item = GetItem(storeName, itemID);
+            item.SetDescription(newDescription);
+        }
     }
 }
