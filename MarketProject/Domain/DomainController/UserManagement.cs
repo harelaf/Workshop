@@ -55,7 +55,7 @@ namespace MarketProject.Domain
 
 
 
-        public bool isUserAVisitor(String username)
+        public bool IsUserAVisitor(String username)
         {
             if (GetVisitorUser(username) == null)
                 return false;
@@ -75,15 +75,28 @@ namespace MarketProject.Domain
             }
             return user;
         }
-        public void addItemToUserCart(String username, Store store, Item item, int amount)
+        public void AddItemToUserCart(String username, Store store, Item item, int amount)
         {
             User user = GetVisitorUser(username);
-            user.addItemToCart(store, item, amount);
+            user.AddItemToCart(store, item, amount);
         }
         public int RemoveItemFromCart(String username, Item item, Store store)
         {
             User user = GetVisitorUser(username);
             return user.RemoveItemFromCart(item, store);
+        }
+        public void UpdateItemInUserCart(String username, Store store, Item item, int newQuantity)
+        {
+            if (newQuantity <= 0)
+                throw new ArgumentOutOfRangeException("cant update quantity of item to non-positive amount");
+            User user = GetVisitorUser(username);
+            user.UpdateItemInCart(store, item, newQuantity);
+        }
+        internal int GetUpdatingQuanitityDiffrence(string username, Item item, Store store, int newQuantity)
+        {
+            User user = GetVisitorUser(username);
+            int old_quantity = user.GetQuantityOfItemInCart(store, item);
+            return newQuantity - old_quantity;
         }
     }
 }
