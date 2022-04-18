@@ -69,7 +69,7 @@ namespace MarketProject.Domain
         public String GetStoreInformation(String storeName)
         {
             if (!CheckStoreNameExists(storeName))
-                return "Invalid Input: Unknown store name.\n";
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
             return store.GetInformation();
         }

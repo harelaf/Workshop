@@ -115,9 +115,7 @@ namespace MarketProject.Service
         public String GetStoreInformation(String storeName)
         {//II.2.1
          //should return data of store + the items it owns
-            if (storeName.Equals(""))
-                return "Invalid Input: Blank store name.\n";
-            return _market.GetStoreInformation(storeName);
+            throw new NotImplementedException();
         }
         public Boolean GetItemInformation(String itemName, String itemCategory, String keyWord)
         {//II.2.2

@@ -71,6 +71,8 @@ namespace MarketProject.Domain
 
         public String GetStoreInformation(String storeName)
         {
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
             return _storeManagement.GetStoreInformation(storeName);
         }
 

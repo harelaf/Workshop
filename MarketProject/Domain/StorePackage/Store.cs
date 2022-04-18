@@ -74,6 +74,18 @@ namespace MarketProject.Domain
         {
             String info = $"{_storeName}\n";
             info += $"- Founded by {"founder.name"}\n";
+            String ownerNames = "";
+            foreach (StoreOwner owner in _owners)
+            {
+                //ownerNames += owner.name + ", ";
+            }
+            info += $"- Owners: {ownerNames}\n";
+            String managerNames = "";
+            foreach (StoreManager manager in _managers)
+            {
+                //managerNames += manager.name + ", ";
+            }
+            info += $"- Managers: {managerNames}\n";
             info += $"- Has a rating of {GetRating()}\n";
             info += "\n";
             String itemNames = "";
