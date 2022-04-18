@@ -29,6 +29,11 @@ namespace MarketProject.Domain
 
         public StoreState State => _state;
 
+        public bool isActive()
+        {
+            return _state == StoreState.Active;
+        }
+
         public Store(String storeName, StoreFounder founder, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
             _storeName = storeName;

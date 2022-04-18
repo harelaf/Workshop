@@ -124,7 +124,7 @@ namespace MarketProject.Domain
         public void CloseStore(string username, String storeName)
         {
             /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
+             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER))
              *     throw new Exception($"This user is not an owner in {storeName}.");
              */
             if (storeName.Equals(""))
@@ -136,7 +136,7 @@ namespace MarketProject.Domain
         public void ReopenStore(string username, String storeName)
         {
             /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
+             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER))
              *     throw new Exception($"This user is not an owner in {storeName}.");
              */
             if (storeName.Equals(""))
