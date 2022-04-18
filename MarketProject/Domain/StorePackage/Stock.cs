@@ -6,7 +6,7 @@ namespace MarketProject.Domain
 {
     public class Stock
     {
-        private Dictionary<Item, int> _itemAndAmount;
+        private IDictionary<Item, int> _itemAndAmount;
 
         public Stock()
         {
@@ -23,7 +23,6 @@ namespace MarketProject.Domain
             }
             return false;
         }
-
         public Item GetItem(int itemId)
         {
             ICollection<Item> items = _itemAndAmount.Keys;
@@ -31,8 +30,33 @@ namespace MarketProject.Domain
             {
                 if (item.ItemID == itemId)
                     return item;
+
             }
             return null;
+        }
+        public int GetItemAmount(Item item)
+        {
+            return _itemAndAmount[item];
+        }
+        public void AddItem(Item item, int amount)
+        {
+            if (!_itemAndAmount.ContainsKey(item))
+            {
+                _itemAndAmount.Add(item, amount);
+            }
+        }
+
+        public List<String> GetItemNames()
+        {
+            List<Item> keyList = new List<Item>(_itemAndAmount.Keys);
+            List<String> names = new List<String>();
+
+            foreach (Item item in keyList)
+            {
+                //names.Add(item.GetName());
+            }
+
+            return names;
         }
 
         public void ChangeItemQuantity(int itemId, int quantity)
@@ -48,16 +72,6 @@ namespace MarketProject.Domain
             }
         }
 
-        public int GetItemAmount(Item item)
-        {
-            return _itemAndAmount[item];
-        }
-
-        public void AddItem(Item item, int amount)
-        {
-            _itemAndAmount.Add(item, amount);
-        }
-
         public bool UnreserveItem(Item item, int amount)
         {
             if (_itemAndAmount.ContainsKey(item))
@@ -66,19 +80,6 @@ namespace MarketProject.Domain
                 return true;
             }
             return false;   
-        }
-
-        public List<String> GetItemNames()
-        {
-            List<Item> keyList = new List<Item>(_itemAndAmount.Keys);
-            List<String> names = new List<String>();
-
-            foreach (Item item in keyList)
-            {
-                //names.Add(item.GetName());
-            }
-
-            return names;
         }
     }
 }
