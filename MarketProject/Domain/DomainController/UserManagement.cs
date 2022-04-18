@@ -52,17 +52,39 @@ namespace MarketProject.Domain
         {
             String authToken = null;
             Registered registered = GetRegisteredUser(username);
-            if (registered != null && registered.Login(password))
+            if (registered != null &&  // User with the username exists
+                !_authTokens.Values.Contains(username) && // Not logged in currently
+                registered.Login(password)) // Login details correct
             {
                 authToken = UserManagement.GenerateToken();
-                _authTokens.Add(authToken, username);
+                if (!_authTokens.TryAdd(authToken, username))
+                { // Something went wrong, couldn't add.
+                    authToken = null;
+                }
             }
             return authToken;
         }
 
+        // Currently just a random string, from https://www.educative.io/edpresso/how-to-generate-a-random-string-in-c-sharp
         private static String GenerateToken()
         {
             String token = "";
+            int tokenLength = 30;
+
+            StringBuilder str_build = new StringBuilder();
+            Random random = new Random();
+
+            char letter;
+
+            for (int i = 0; i < tokenLength; i++)
+            {
+                double flt = random.NextDouble();
+                int shift = Convert.ToInt32(Math.Floor(25 * flt));
+                letter = Convert.ToChar(shift + 65);
+                str_build.Append(letter);
+            }
+
+            token = str_build.ToString();
 
             return token;
         }
