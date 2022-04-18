@@ -75,10 +75,12 @@ namespace MarketProject.Domain
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
         }
 
-        public String GetStoreInformation(String storeName)
+        public String GetStoreInformation(String username, String storeName)
         {
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
+            if (!_storeManagement.isStoreActive(storeName)) //&& !_userManagement.CheckUserPermission(username, SYSTEM_ADMIN || STORE_OWNER))
+                throw new Exception($"Store {storeName} is currently inactive.");
             return _storeManagement.GetStoreInformation(storeName);
         }
 

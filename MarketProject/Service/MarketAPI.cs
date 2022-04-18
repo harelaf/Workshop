@@ -110,7 +110,7 @@ namespace MarketProject.Service
         {//II.3.4
             throw new NotImplementedException();
         }
-        public String GetStoreInformation(String storeName)
+        public String GetStoreInformation(String username, String storeName)
         {//II.2.1
          //should return data of store + the items it owns
             throw new NotImplementedException();

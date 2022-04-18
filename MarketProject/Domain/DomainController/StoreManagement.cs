@@ -89,6 +89,14 @@ namespace MarketProject.Domain
             store.UpdateStockQuantityOfItem(itemID, newQuantity);
         }
 
+        public bool isStoreActive(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                return false;
+            Store store = _stores[storeName];
+            return store.isActive();
+        }
+
         public void CloseStore(String storeName)
         {
             if (!CheckStoreNameExists(storeName))
