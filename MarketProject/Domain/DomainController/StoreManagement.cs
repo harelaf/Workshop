@@ -49,7 +49,7 @@ namespace MarketProject.Domain
             if (amount_to_add <= 0)
                 throw new Exception("can't unreserve non-positive amount of item");
             Store store = GetStore(storeName);
-            store.UnReserveItem(item, amountToAdd);
+            store.UnReserveItem(item, amount_to_add);
         }
 
         public void OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
