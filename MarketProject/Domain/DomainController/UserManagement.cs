@@ -49,11 +49,9 @@ namespace MarketProject.Domain
         public Registered GetRegisteredUser(String username)
         {
             Registered registered;
-            _registeredUsers.TryGetValue(username,out registered);
+            _registeredUsers.TryGetValue(username, out registered);
             return registered;
         }
-
-
 
         public bool IsUserAVisitor(String username)
         {
@@ -65,7 +63,7 @@ namespace MarketProject.Domain
         public User GetVisitorUser(String username)
         {
             User user = GetRegisteredUser(username);
-            if (user == null)// user is'nt registered
+            if (user == null)// user isn't registered
             {
                 foreach (Guest guest in _visitors_guests)
                 {
@@ -75,16 +73,19 @@ namespace MarketProject.Domain
             }
             return user;
         }
+
         public void AddItemToUserCart(String username, Store store, Item item, int amount)
         {
             User user = GetVisitorUser(username);
             user.AddItemToCart(store, item, amount);
         }
+
         public int RemoveItemFromCart(String username, Item item, Store store)
         {
             User user = GetVisitorUser(username);
             return user.RemoveItemFromCart(item, store);
         }
+
         public void UpdateItemInUserCart(String username, Store store, Item item, int newQuantity)
         {
             if (newQuantity <= 0)
@@ -92,6 +93,7 @@ namespace MarketProject.Domain
             User user = GetVisitorUser(username);
             user.UpdateItemInCart(store, item, newQuantity);
         }
+
         internal int GetUpdatingQuanitityDiffrence(string username, Item item, Store store, int newQuantity)
         {
             User user = GetVisitorUser(username);

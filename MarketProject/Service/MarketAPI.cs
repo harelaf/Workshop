@@ -110,14 +110,7 @@ namespace MarketProject.Service
         }
         public bool RateStore(String username, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
-            //TODO: add a function in History to check if [username] bought in [storeName].
-            /*if (!_market.UserPurchasedInStore(String username, String storeName))
-                return false;*/
-            if (storeName.Equals(""))
-                return false;
-            if (rating < 0 || rating > 10)
-                return false;
-            return _market.RateStore(username, storeName, rating, review);
+            throw new NotImplementedException();
         }
         public String GetStoreInformation(String storeName)
         {//II.2.1

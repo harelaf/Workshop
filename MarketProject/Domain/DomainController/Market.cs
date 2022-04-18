@@ -35,6 +35,7 @@ namespace MarketProject.Domain
             Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
             _userManagement.AddItemToUserCart(username, _storeManagement.GetStore(storeName), item, amount);
         }
+
         public Item RemoveItemFromCart(String username, int itemID, String storeName)
         {//II.2.4
             if (!_userManagement.IsUserAVisitor(username))
@@ -61,6 +62,7 @@ namespace MarketProject.Domain
             else//remove item from cart and add to store stock
                 _storeManagement.UnreserveItemInStore(storeName, item, amount_differnce);
             _userManagement.UpdateItemInUserCart(username, _storeManagement.GetStore(storeName), item, newQuantity);
+        }
 
         public bool OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
@@ -72,9 +74,16 @@ namespace MarketProject.Domain
             return _storeManagement.GetStoreInformation(storeName);
         }
 
-        public bool RateStore(String username, String storeName, int rating, String review)
+        public void RateStore(String username, String storeName, int rating, String review)
         {
-            return _storeManagement.RateStore(username, storeName, rating, review);
+            //TODO: add a function in History to check if [username] bought in [storeName].
+            /*if (!_market.UserPurchasedInStore(String username, String storeName))
+                return false;*/
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Store name is blank.");
+            if (rating < 0 || rating > 10)
+                throw new Exception("Invalid Input: rating should be in the range [0, 10].");
+            _storeManagement.RateStore(username, storeName, rating, review);
         }
 
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String username, String storeName)

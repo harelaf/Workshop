@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    interface IDiscount
+    public interface IDiscount
     {
         
     }

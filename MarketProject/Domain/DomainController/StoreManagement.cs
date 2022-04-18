@@ -15,17 +15,16 @@ namespace MarketProject.Domain
 
         public Store GetStore(String storeName)
         {
-            foreach (Store store in _stores)
-            {
-                if (store.StoreName == storeName)
-                    return store;
-            }
+            if (_stores.ContainsKey(storeName))
+                return _stores[storeName];
             return null;
         }
+
         public bool IsStoreExist(String storeName)
         {
            return GetStore(storeName) != null;
         }
+
         public Item ReserveItemFromStore(String storeName, int itemID, int amount)
         {
             if (amount <= 0)
@@ -33,6 +32,7 @@ namespace MarketProject.Domain
             Store store = GetStore(storeName);
             return store.ReserveItem(itemID, amount);
         }
+
         public Item GetItem(String storeName, int itemID)
         {
             Store store = GetStore(storeName);
@@ -43,6 +43,7 @@ namespace MarketProject.Domain
                 throw new Exception("there is no item: "+itemID+" in the given store");
             return item;    
         }
+
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {
             if (amount_to_add <= 0)
@@ -73,12 +74,12 @@ namespace MarketProject.Domain
             return store.GetInformation();
         }
 
-        public bool RateStore(String username, String storeName, int rating, String review)
+        public void RateStore(String username, String storeName, int rating, String review)
         {
             if (!CheckStoreNameExists(storeName))
-                return false;
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            return store.RateStore(username, rating, review);
+            store.RateStore(username, rating, review);
         }
     }
 }

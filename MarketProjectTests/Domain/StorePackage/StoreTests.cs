@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain
+namespace MarketProjectTests.Domain.StorePackage
 {
-    public enum Operation
+    class StoreTests
     {
     }
 }

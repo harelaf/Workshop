@@ -23,6 +23,7 @@ namespace MarketProject.Domain
             }
             return false;
         }
+
         public Item GetItem(int itemId)
         {
             ICollection<Item> items = _itemAndAmount.Keys;
@@ -34,14 +35,17 @@ namespace MarketProject.Domain
             }
             return null;
         }
+
         public int GetItemAmount(Item item)
         {
             return _itemAndAmount[item];
         }
+
         public void AddItem(Item item, int amount)
         {
             _itemAndAmount.Add(item, amount);
         }
+
         public bool UnreserveItem(Item item, int amount)
         {
             if (_itemAndAmount.ContainsKey(item))
@@ -51,6 +55,7 @@ namespace MarketProject.Domain
             }
             return false;   
         }
+
         public List<String> GetItemNames()
         {
             List<Item> keyList = new List<Item>(_itemAndAmount.Keys);

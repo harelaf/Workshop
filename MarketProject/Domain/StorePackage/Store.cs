@@ -6,7 +6,6 @@ namespace MarketProject.Domain
 {
     public class Store
     {
-        private String _storeName;
         private Stock _stock;
         public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
@@ -17,17 +16,22 @@ namespace MarketProject.Domain
         private List<StoreOwner> _owners;
         private StoreFounder _founder;
         private String _storeName;
+
         public String StoreName => _storeName;
 
-        public Store(String storeName)
+        public Store(String storeName, StoreFounder founder, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
+            _storeName = storeName;
             _stock = new Stock();
-            _purchasePolicy = new PurchasePolicy();
+            _purchasePolicy = purchasePolicy;
+            _discountPolicy = discountPolicy;
+            _messagesToStore = new Queue<MessageToStore>();
+            _rating = new Rating();
             _managers = new List<StoreManager>();
             _owners = new List<StoreOwner>();
-            _founder = new StoreFounder();
-            _storeName = storeName;
+            _founder = founder;
         }
+
         public Item ReserveItem(int itemID, int amount)
         {
             Item item  = _stock.GetItem(itemID);
@@ -49,20 +53,6 @@ namespace MarketProject.Domain
                 throw new Exception("cannt unreserve item with amount<1");
             if (!_stock.UnreserveItem(item, amount_to_add))
                 throw new Exception("can't unreserve item from that doesn't exists is store stock");
-        }
-
-
-        public Store(String storeName, StoreFounder founder, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
-        {
-            _storeName = storeName;
-            _stock = new Stock();
-            _purchasePolicy = purchasePolicy;
-            _discountPolicy = discountPolicy;
-            _messagesToStore = new Queue<MessageToStore>();
-            _rating = new Rating();
-            _managers = new List<StoreManager>();
-            _owners = new List<StoreOwner>();
-            _founder = founder;
         }
 
         public String GetName()
@@ -95,9 +85,11 @@ namespace MarketProject.Domain
             return info;
         }
 
-        public bool RateStore(String username, int rating, String review)
+        public void RateStore(String username, int rating, String review)
         {
-            return _rating.AddRating(username, rating, review);
+            bool result = _rating.AddRating(username, rating, review);
+            if (!result)
+                throw new Exception($"User {username} already rated this store.");
         }
     }
 }
