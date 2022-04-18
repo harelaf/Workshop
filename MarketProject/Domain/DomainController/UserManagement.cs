@@ -80,5 +80,10 @@ namespace MarketProject.Domain
             User user = GetVisitorUser(username);
             user.addItemToCart(store, item, amount);
         }
+        public int RemoveItemFromCart(String username, Item item, Store store)
+        {
+            User user = GetVisitorUser(username);
+            return user.RemoveItemFromCart(item, store);
+        }
     }
 }

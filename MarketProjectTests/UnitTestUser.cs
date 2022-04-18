@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MarketProject.Domain;
-namespace TestMarket
+namespace MarketProjectTests
 {
     [TestClass]
     public class UnitTestUser

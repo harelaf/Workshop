@@ -28,5 +28,17 @@ namespace MarketProject.Domain
             Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
             _userManagement.addItemToUserCart(username, _storeManagement.GetStore(storeName), item, amount);
         }
+        public Item RemoveItemFromCart(String username, int itemID, String storeName)
+        {//II.2.4
+            if (!_userManagement.isUserAVisitor(username))
+                throw new Exception("the given user is no longer a visitor in system");
+            if (!_storeManagement.IsStoreExist(storeName))
+                throw new Exception("there is no store in system with the givn storeid");
+            Item item = _storeManagement.GetItem(storeName, itemID);
+            int amount_removed= _userManagement.RemoveItemFromCart(username, item, _storeManagement.GetStore(storeName));
+            // now update store stock
+            _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
+            return item;
+        }
     }
 }

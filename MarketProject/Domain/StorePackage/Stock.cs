@@ -15,13 +15,13 @@ namespace MarketProject.Domain
 
         public bool ReserveItem(Item item, int amount)
         {
-            if (GetItemAmount(item) < amount)
-                return false;
-            else
+            int newAmount = GetItemAmount(item) - amount;
+            if ( newAmount >= 0)
             {
-                _itemAndAmount[item]= _itemAndAmount[item] -amount;
+                _itemAndAmount[item] = newAmount;
                 return true;
             }
+            return false;
         }
         public Item GetItem(int itemId)
         {
@@ -41,6 +41,15 @@ namespace MarketProject.Domain
         public void AddItem(Item item, int amount)
         {
             _itemAndAmount.Add(item, amount);
+        }
+        public bool UnreserveItem(Item item, int amount)
+        {
+            if (_itemAndAmount.ContainsKey(item))
+            {
+                _itemAndAmount[item] = _itemAndAmount[item] + amount;
+                return true;
+            }
+            return false;   
         }
     }
 }
