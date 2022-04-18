@@ -59,9 +59,7 @@ namespace MarketProject.Service
         // TODO: HOW DO I GET A STOREFOUNDER?
         public bool OpenNewStore(String username, String storeName)
         {//II.3.2
-            if (storeName.Equals(""))
-                return false;
-            return _market.OpenNewStore(null, storeName, new PurchasePolicy(), new DiscountPolicy());
+            throw new NotImplementedException();
         }
         public Boolean AddStoreManager(String appointerUsername, String ownerUsername, int storeID)
         {//II.4.6

@@ -64,9 +64,15 @@ namespace MarketProject.Domain
             _userManagement.UpdateItemInUserCart(username, _storeManagement.GetStore(storeName), item, newQuantity);
         }
 
-        public bool OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+        public void OpenNewStore(String username, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
-            return _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
+            if (_userManagement.IsUserAVisitor(username))
+                throw new Exception($"Only registered users are allowed to rate stores.");
+            StoreFounder founder = null; // GET A FOUNDER SOMEHOW
+            // Check if he is null or what...
+            _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
         }
 
         public String GetStoreInformation(String storeName)
