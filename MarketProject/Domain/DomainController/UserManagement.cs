@@ -13,11 +13,14 @@ namespace MarketProject.Domain
         private ICollection<Registered> _logedinUsers;
         private ICollection<Guest> _visitors_guests;
 
-        public UserManagement()
+        public UserManagement() : this(new Dictionary<String, Registered>()) { }
+
+        public UserManagement(IDictionary<String, Registered> registeredUsers)
         {
-            _registeredUsers = new Dictionary<String, Registered>();
+            _registeredUsers = registeredUsers;
             _logedinUsers = new List<Registered>();
             _visitors_guests = new List<Guest>();
+            _authTokens = new Dictionary<String, String>();
         }
 
         // Currently returns whether successful or not (bound to change)
@@ -69,7 +72,7 @@ namespace MarketProject.Domain
         private static String GenerateToken()
         {
             String token = "";
-            int tokenLength = 30;
+            int tokenLength = 60;
 
             StringBuilder str_build = new StringBuilder();
             Random random = new Random();
