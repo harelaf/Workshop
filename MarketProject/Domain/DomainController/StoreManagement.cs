@@ -80,5 +80,13 @@ namespace MarketProject.Domain
             Store store = _stores[storeName];
             store.RateStore(username, rating, review);
         }
+
+        public void UpdateStockQuantityOfItem(String storeName, int itemID, int newQuantity)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.UpdateStockQuantityOfItem(itemID, newQuantity);
+        }
     }
 }

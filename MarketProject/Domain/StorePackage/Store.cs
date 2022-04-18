@@ -103,5 +103,12 @@ namespace MarketProject.Domain
             if (!result)
                 throw new Exception($"User {username} already rated this store.");
         }
+
+        public void UpdateStockQuantityOfItem(int itemID, int newQuantity)
+        {
+            if (_stock.GetItem(itemID) == null)
+                throw new Exception($"An item with ID {itemID} doesnt exist in the stock.");
+            _stock.ChangeItemQuantity(itemID, newQuantity);
+        }
     }
 }

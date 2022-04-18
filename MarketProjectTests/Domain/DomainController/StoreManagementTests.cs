@@ -20,7 +20,8 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _storeManagement.OpenNewStore(null, storeName, null, null);
-            } catch (Exception) 
+            }
+            catch (Exception)
             {
                 Assert.Fail();
             }
@@ -51,6 +52,55 @@ namespace MarketProject.Domain.Tests
             }
             catch (Exception)
             {
+            }
+        }
+
+        [TestMethod()]
+        public void UpdateStockQuantityOfItem_StoreExistsItemExists_NoException()
+        {
+            StoreManagement _storeManagement = new StoreManagement();
+            String username = "Sandy Cheeks";
+            String storeName = "Krusty Krab";
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "Delicious";
+            int quantity = 5;
+            int newQuantity = 10;
+            try
+            {
+                _storeManagement.OpenNewStore(null, storeName, null, null);
+                //_store.addItem(...);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _storeManagement.UpdateStockQuantityOfItem(storeName, itemId, newQuantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod()]
+        public void UpdateStockQuantityOfItem_StoreDoesntExist_ThrowsException()
+        {
+            StoreManagement _storeManagement = new StoreManagement();
+            String storeName = "Krusty Krab";
+            int itemId = 1;
+            int newQuantity = 10;
+
+            try
+            {
+                _storeManagement.UpdateStockQuantityOfItem(storeName, itemId, newQuantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
             }
         }
     }

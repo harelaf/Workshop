@@ -107,5 +107,18 @@ namespace MarketProject.Domain
                 throw new Exception($"Store {storeName} does not exist.");
             return _history.GetStorePurchaseHistory(storeName);
         }
+
+        public void UpdateStockQuantityOfItem(String username, String storeName, int itemID, int newQuantity)
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
+             *     throw new Exception($"This user is not an owner in {storeName}.");
+             */
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
+            if (newQuantity < 0)
+                throw new Exception("Invalif Input: Quantity has to be at least 0.");
+            _storeManagement.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
+        }
     }
 }

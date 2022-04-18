@@ -31,9 +31,21 @@ namespace MarketProject.Domain
             {
                 if (item.ItemID == itemId)
                     return item;
-
             }
             return null;
+        }
+
+        public void ChangeItemQuantity(int itemId, int quantity)
+        {
+            ICollection<Item> items = _itemAndAmount.Keys;
+            foreach (Item item in items)
+            {
+                if (item.ItemID == itemId)
+                {
+                    _itemAndAmount[item] = quantity;
+                    break;
+                }
+            }
         }
 
         public int GetItemAmount(Item item)
