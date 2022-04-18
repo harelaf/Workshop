@@ -71,14 +71,12 @@ namespace MarketProject.Service
         public Boolean AddItemToStoreStock(String username, String storeName, int itemID, int quantity)
         {//II.4.1
             throw new NotImplementedException();
-            //User u = UserManagment.getUser();
-            //if(u == null){...}
         }
         public Boolean RemoveItemFromStore(String username, int storeID, int itemID)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean UpdateStockQuantityOfItem(String username, int storeID, int itemID, uint newQuantity)
+        public Boolean UpdateStockQuantityOfItem(String username, int storeID, int itemID, int newQuantity)
         {//II.4.1
             throw new NotImplementedException();
         }

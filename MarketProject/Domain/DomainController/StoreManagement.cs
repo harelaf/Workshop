@@ -36,36 +36,28 @@ namespace MarketProject.Domain
                 throw new Exception("there is no item: "+itemID+" in the given store");
             return item;    
         }
-        public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
+        public void UnreserveItemInStore(String storeName, Item item, int amountToAdd)
         {
             Store store = GetStore(storeName);
-            store.UnReserveItem(item, amount_to_add);
+            store.UnReserveItem(item, amountToAdd);
         }
 
-   
-        public Boolean UpdateStockQuantityOfItem(String username, String storeName, int itemID, uint newQuantity)
-        {//II.4.1
-            Item item = GetItem(storeName, itemID);
-            item.SetQuantity(newQuantity);
-            return true;
-        }
-        public Boolean EditItemPrice(String username, String storeName, int itemID, float newPrice)
-        {//II.4.1
+        
+
+        public void EditItemPrice(String storeName, int itemID, float newPrice)
+        {
             Item item = GetItem(storeName, itemID);
             item.SetPrice(newPrice);
-            return true;
         }
-        public Boolean EditItemName(String username, String storeName, int itemID, String newName)
-        {//II.4.1
+        public void EditItemName(String storeName, int itemID, String newName)
+        {
             Item item = GetItem(storeName, itemID);
             item.SetName(newName);
-            return true;
         }
-        public Boolean EditItemDescription(String username, String storeName, int itemID, String newDescription)
-        {//II.4.1
+        public void EditItemDescription(String storeName, int itemID, String newDescription)
+        {
             Item item = GetItem(storeName, itemID);
             item.SetDescription(newDescription);
-            return true;
         }
     }
 }

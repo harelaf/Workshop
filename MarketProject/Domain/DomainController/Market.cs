@@ -40,5 +40,19 @@ namespace MarketProject.Domain
             _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
             return item;
         }
+
+      
+        public void EditItemPrice(String username, String storeName, int itemID, float new_price)
+        {//II.4.1
+            throw new NotImplementedException();
+        }
+        public void EditItemName(String username, String storeName, int itemID, String newName)
+        {//II.4.1
+            throw new NotImplementedException();
+        }
+        public void EditItemDescription(String username, String storeName, int itemID, String newDescription)
+        {//II.4.1
+            throw new NotImplementedException();
+        }
     }
 }
