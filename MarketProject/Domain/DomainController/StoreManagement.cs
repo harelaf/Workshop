@@ -88,5 +88,13 @@ namespace MarketProject.Domain
             Store store = _stores[storeName];
             store.UpdateStockQuantityOfItem(itemID, newQuantity);
         }
+
+        public void CloseStore(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.CloseStore();
+        }
     }
 }

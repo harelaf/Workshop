@@ -120,5 +120,17 @@ namespace MarketProject.Domain
                 throw new Exception("Invalif Input: Quantity has to be at least 0.");
             _storeManagement.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
         }
+
+        public void CloseStore(string username, String storeName)
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
+             *     throw new Exception($"This user is not an owner in {storeName}.");
+             */
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
+            _storeManagement.CloseStore(storeName);
+            // Send Alerts to all roles of [storeName]
+        }
     }
 }

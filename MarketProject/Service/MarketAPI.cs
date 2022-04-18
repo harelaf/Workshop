@@ -155,7 +155,7 @@ namespace MarketProject.Service
         {//II.4.7
             throw new NotImplementedException();
         }
-        public Boolean CloseStore(String username, int storeID)
+        public Boolean CloseStore(String username, String storeName)
         {//II.4.9
             //state of store is INACTIVE-> which means its data still available
             throw new NotImplementedException();

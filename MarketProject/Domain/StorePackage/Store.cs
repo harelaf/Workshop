@@ -4,6 +4,13 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
+    public enum StoreState
+    {
+        Active,
+        Inactive,
+        Closed
+    }
+
     public class Store
     {
         private Stock _stock;
@@ -16,8 +23,11 @@ namespace MarketProject.Domain
         private List<StoreOwner> _owners;
         private StoreFounder _founder;
         private String _storeName;
+        private StoreState _state;
 
         public String StoreName => _storeName;
+
+        public StoreState State => _state;
 
         public Store(String storeName, StoreFounder founder, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
@@ -30,6 +40,7 @@ namespace MarketProject.Domain
             _managers = new List<StoreManager>();
             _owners = new List<StoreOwner>();
             _founder = founder;
+            _state = StoreState.Active;
         }
 
         public Item ReserveItem(int itemID, int amount)
@@ -109,6 +120,11 @@ namespace MarketProject.Domain
             if (_stock.GetItem(itemID) == null)
                 throw new Exception($"An item with ID {itemID} doesnt exist in the stock.");
             _stock.ChangeItemQuantity(itemID, newQuantity);
+        }
+
+        public void CloseStore()
+        {
+            _state = StoreState.Inactive;
         }
     }
 }
