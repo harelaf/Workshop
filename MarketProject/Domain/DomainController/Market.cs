@@ -60,6 +60,8 @@ namespace MarketProject.Domain
         {//II.2.5
             if (!_userManagement.IsUserAVisitor(username))
                 throw new Exception("the given user is no longer a visitor in system");
+
+            _userManagement.
             return false;
         }
     }
