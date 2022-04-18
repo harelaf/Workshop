@@ -4,16 +4,18 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class Item
+    public class Item
     {
         private Rating _rating;
         private ICollection<IDiscount> _discounts;
-        private String _name;
+        private int _itemID;
+        public int ItemID => _itemID;
 
-
-        public String GetName()
+        public Item(int id)
         {
-            return _name;
+            _ratings = new List<Rating>();
+            _discounts = new List<IDiscount>();
+            _itemID = id;
         }
     }
 }

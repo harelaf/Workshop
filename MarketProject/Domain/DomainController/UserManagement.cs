@@ -4,8 +4,99 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class UserManagement
+    public class UserManagement
     {
-        private ICollection<User> _users;
+        // Dictionary mapping identifier to User
+        private IDictionary<String,Registered> _registeredUsers;
+        private ICollection<Registered> _logedinUsers;
+        private ICollection<Guest> _visitors_guests;
+
+        public UserManagement()
+        {
+            _registeredUsers = new Dictionary<String, Registered>();
+            _logedinUsers = new List<Registered>();
+            _visitors_guests = new List<Guest>();
+        }
+
+        // Currently returns whether successful or not (bound to change)
+        public bool Register(String username, String password)
+        {
+            if (_registeredUsers.ContainsKey(username) ||
+                !CheckValidUsername(username) ||
+                !CheckValidPassword(password))
+                // Username taken
+            {
+                return false;
+            }
+            // May want to add username and password validity checks
+            Registered newRegistered = new Registered(username, password);
+
+            _registeredUsers.Add(username, newRegistered);
+
+            return true;
+        }
+
+        private bool CheckValidUsername(String username)
+        {
+            return (username != "");
+        }
+
+        private bool CheckValidPassword(String password)
+        {
+            return (password != "");
+        }
+
+        public Registered GetRegisteredUser(String username)
+        {
+            Registered registered;
+            _registeredUsers.TryGetValue(username,out registered);
+            return registered;
+        }
+
+
+
+        public bool IsUserAVisitor(String username)
+        {
+            if (GetVisitorUser(username) == null)
+                return false;
+            return true;
+        }
+
+        public User GetVisitorUser(String username)
+        {
+            User user = GetRegisteredUser(username);
+            if (user == null)// user is'nt registered
+            {
+                foreach (Guest guest in _visitors_guests)
+                {
+                    if (guest.System_username == username)
+                        user= guest;
+                }
+            }
+            return user;
+        }
+        public void AddItemToUserCart(String username, Store store, Item item, int amount)
+        {
+            User user = GetVisitorUser(username);
+            user.AddItemToCart(store, item, amount);
+        }
+        public int RemoveItemFromCart(String username, Item item, Store store)
+        {
+            User user = GetVisitorUser(username);
+            return user.RemoveItemFromCart(item, store);
+        }
+        public void UpdateItemInUserCart(String username, Store store, Item item, int newQuantity)
+        {
+            if (newQuantity <= 0)
+                throw new ArgumentOutOfRangeException("cant update quantity of item to non-positive amount");
+            User user = GetVisitorUser(username);
+            user.UpdateItemInCart(store, item, newQuantity);
+        }
+        internal int GetUpdatingQuanitityDiffrence(string username, Item item, Store store, int newQuantity)
+        {
+            User user = GetVisitorUser(username);
+            int old_quantity = user.GetQuantityOfItemInCart(store, item);
+            return newQuantity - old_quantity;
+        }
     }
 }
