@@ -79,6 +79,13 @@ namespace MarketProject.Domain
             return user;
         }
 
+        public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
+        {
+            MessageToUser messageToUser = new MessageToUser(usernameReciever, storeName);
+            Registered reciever = GetRegisteredUser(usernameReciever);
+            reciever.SendMessage(messageToUser);
+        }
+
         public void AddItemToUserCart(String username, Store store, Item item, int amount)
         {
             User user = GetVisitorUser(username);

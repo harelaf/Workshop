@@ -220,5 +220,18 @@ namespace MarketProject.Domain
             }
             _storeManagement.SendMessageToStore(username, storeName, title, message);
         }
+
+        public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
+        {
+            if (!_storeManagement.CheckStoreNameExists(storeName))
+            {            
+                throw new Exception("Store " + storeName + " not found in system");
+            }
+            if (!_userManagement.IsRegistered(usernameReciever))
+            {
+                throw new Exception("User " + usernameReciever + " not found in system");
+            }
+            _userManagement.SendMessageToRegisterd(storeName, usernameReciever, title, message);
+        }
     }
 }
