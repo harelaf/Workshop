@@ -58,6 +58,12 @@ namespace MarketProject.Domain
             _itemAndAmount.Add(item, amount);
         }
 
+        public void RemoveItem(int itemId)
+        {
+            Item item = GetItem(itemId);
+            _itemAndAmount.Remove(item);
+        }
+
         public bool UnreserveItem(Item item, int amount)
         {
             if (_itemAndAmount.ContainsKey(item))

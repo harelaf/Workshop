@@ -105,6 +105,14 @@ namespace MarketProject.Domain
             store.AddItemToStoreStock(itemID, name, price, description, quantity);
         }
 
+        public void RemoveItemFromStore(String storeName, int itemID)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.RemoveItemFromStore(itemID);
+        }
+
         public void CloseStore(String storeName)
         {
             if (!CheckStoreNameExists(storeName))

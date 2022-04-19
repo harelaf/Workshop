@@ -121,19 +121,26 @@ namespace MarketProject.Domain
                 throw new Exception($"User {username} already rated this store.");
         }
 
-        public void UpdateStockQuantityOfItem(int itemID, int newQuantity)
+        public void UpdateStockQuantityOfItem(int itemId, int newQuantity)
         {
-            if (_stock.GetItem(itemID) == null)
-                throw new Exception($"An item with ID {itemID} doesnt exist in the stock.");
-            _stock.ChangeItemQuantity(itemID, newQuantity);
+            if (_stock.GetItem(itemId) == null)
+                throw new Exception($"An item with ID {itemId} doesnt exist in the stock.");
+            _stock.ChangeItemQuantity(itemId, newQuantity);
         }
 
-        public void AddItemToStoreStock(int itemID, String name, double price, String description, int quantity)
+        public void AddItemToStoreStock(int itemId, String name, double price, String description, int quantity)
         {
-            if (_stock.GetItem(itemID) != null)
-                throw new Exception($"An item with ID {itemID} already exists in the stock.");
-            Item newItem = new Item(itemID, name, price, description);
+            if (_stock.GetItem(itemId) != null)
+                throw new Exception($"An item with ID {itemId} already exists in the stock.");
+            Item newItem = new Item(itemId, name, price, description);
             _stock.AddItem(newItem, quantity);
+        }
+
+        public void RemoveItemFromStore(int itemId)
+        {
+            if (_stock.GetItem(itemId) == null)
+                throw new Exception($"An item with ID {itemId} doesnt exist in the stock.");
+            _stock.RemoveItem(itemId);
         }
 
         public void CloseStore()

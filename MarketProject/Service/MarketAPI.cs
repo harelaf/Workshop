@@ -79,15 +79,15 @@ namespace MarketProject.Service
         {//II.4.8
             throw new NotImplementedException();
         }
-        public Boolean AddItemToStoreStock(String username, String storeName, int itemID, int quantity)
+        public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, int quantity)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean RemoveItemFromStore(String authToken, String storeName, int itemID)
+        public void RemoveItemFromStore(String authToken, String storeName, int itemID)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
+        public void UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
         {//II.4.1
             throw new NotImplementedException();
         }

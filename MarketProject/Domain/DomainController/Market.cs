@@ -118,6 +118,19 @@ namespace MarketProject.Domain
             _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, quantity);
         }
 
+        public void RemoveItemFromStore(String username, String storeName, int itemID)
+        {
+            if (_userManagement.IsUserAVisitor(username))
+                throw new Exception($"Only registered users are allowed to rate stores.");
+            /*
+             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
+             *     throw new Exception($"This user is not an owner in {storeName}.");
+             */
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
+            _storeManagement.RemoveItemFromStore(storeName, itemID);
+        }
+
         public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String username, String storeName)
         {
             /*
