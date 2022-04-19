@@ -43,6 +43,25 @@ namespace MarketProject.Domain
                 throw new Exception("there is no item: "+itemID+" in the given store");
             return item;    
         }
+        public void EditItemPrice(String storeName, int itemID, double newPrice)
+        {
+            Item item = GetItem(storeName, itemID);
+            item.SetPrice(newPrice);
+        }
+        public void EditItemName(String storeName, int itemID, int new_price, String newName)
+        { 
+            if(newName == null)
+            {
+                throw new ArgumentNullException("Store name mustn't be empty!");
+            }
+            Item item = GetItem(storeName, itemID); 
+            item.SetName(newName);
+        }
+        public void EditItemDescription(String storeName, int itemID, String newDescription)
+        {
+            Item item = GetItem(storeName, itemID);
+            item.SetName(newDescription);
+        }
 
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {

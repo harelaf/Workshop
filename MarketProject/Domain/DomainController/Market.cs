@@ -159,5 +159,19 @@ namespace MarketProject.Domain
             // Remove all owners/managers...
             // Send alerts to all roles of [storeName]
         }
+
+
+        public void EditItemPrice(String username, String storeName, int itemID, double newPrice)
+        {//II.4.1
+            throw new NotImplementedException();
+        }
+        public void EditItemName(String username, String storeName, int itemID, int new_price, String newName)
+        {//II.4.1
+            throw new NotImplementedException();
+        }
+        public void EditItemDescription(String username, String storeName, int itemID, String newDescription)
+        {//II.4.1
+            throw new NotImplementedException();
+        }
     }
 }
