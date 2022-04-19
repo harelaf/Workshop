@@ -67,7 +67,7 @@ namespace MarketProject.Domain
 
         public User GetVisitorUser(String username)
         {
-            User user = GetRegisteredUser(username);
+            User user = GetRegisteredUser(username); 
             if (user == null)// user isn't registered
             {
                 foreach (Guest guest in _visitors_guests)
