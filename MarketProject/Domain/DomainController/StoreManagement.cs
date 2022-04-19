@@ -54,8 +54,6 @@ namespace MarketProject.Domain
 
         public void OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
-            if (CheckStoreNameExists(storeName))
-                throw new Exception($"A store with the name {storeName} already exists in the system.");
             Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
             _stores[storeName] = newStore;
         }

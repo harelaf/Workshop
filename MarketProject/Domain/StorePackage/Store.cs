@@ -90,6 +90,7 @@ namespace MarketProject.Domain
         public String GetInformation()
         {
             String info = $"{_storeName}\n";
+            // founder.name
             info += $"- Founded by {"founder.name"}\n";
             String ownerNames = "";
             foreach (StoreOwner owner in _owners)

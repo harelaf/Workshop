@@ -72,6 +72,8 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank store name.");
             if (_userManagement.IsUserAVisitor(username))
                 throw new Exception($"Only registered users are allowed to rate stores.");
+            if (_storeManagement.CheckStoreNameExists(storeName))
+                throw new Exception($"A store with the name {storeName} already exists in the system.");
             StoreFounder founder = null; // GET A FOUNDER SOMEHOW
             // Check if he is null or what...
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
@@ -81,7 +83,7 @@ namespace MarketProject.Domain
         {
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            if (!_storeManagement.isStoreActive(storeName)) //&& !_userManagement.CheckUserPermission(username, SYSTEM_ADMIN || STORE_OWNER))
+            if (!_storeManagement.isStoreActive(storeName)) //|| _userManagement.CheckUserPermission(username, SYSTEM_ADMIN || STORE_OWNER))
                 throw new Exception($"Store {storeName} is currently inactive.");
             return _storeManagement.GetStoreInformation(storeName);
         }
@@ -101,8 +103,6 @@ namespace MarketProject.Domain
 
         public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, int quantity)
         {
-            if (_userManagement.IsUserAVisitor(username))
-                throw new Exception($"Only registered users are allowed to rate stores.");
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
              *     throw new Exception($"This user is not an owner in {storeName}.");
@@ -120,8 +120,6 @@ namespace MarketProject.Domain
 
         public void RemoveItemFromStore(String username, String storeName, int itemID)
         {
-            if (_userManagement.IsUserAVisitor(username))
-                throw new Exception($"Only registered users are allowed to rate stores.");
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
              *     throw new Exception($"This user is not an owner in {storeName}.");
@@ -131,7 +129,7 @@ namespace MarketProject.Domain
             _storeManagement.RemoveItemFromStore(storeName, itemID);
         }
 
-        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String username, String storeName)
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String username, String storeName)
         {
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
@@ -141,8 +139,6 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank store name.");
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"Store {storeName} does not exist.");
-            if (!_storeManagement.isStoreActive(storeName)) //&& !_userManagement.CheckUserPermission(username, SYSTEM_ADMIN || STORE_OWNER))
-                throw new Exception($"Store {storeName} is currently inactive.");
             return _history.GetStorePurchaseHistory(storeName);
         }
 
@@ -155,7 +151,7 @@ namespace MarketProject.Domain
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             if (newQuantity < 0)
-                throw new Exception("Invalif Input: Quantity has to be at least 0.");
+                throw new Exception("Invalid Input: Quantity has to be at least 0.");
             _storeManagement.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
         }
 
