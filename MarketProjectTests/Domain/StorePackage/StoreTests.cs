@@ -70,7 +70,8 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _store.UpdateStockQuantityOfItem(itemId, newQuantity);
-            } catch(Exception)
+            }
+            catch (Exception)
             {
                 Assert.Fail();
             }
@@ -86,6 +87,54 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _store.UpdateStockQuantityOfItem(itemId, newQuantity);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [TestMethod()]
+        public void AddItemToStoreStock_ItemIdIsUnique_NoException()
+        {
+            Store _store = new Store("Krusty Krab", null, null, null);
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod()]
+        public void AddItemToStoreStock_ItemIdIsNotUnique_ThrowsException()
+        {
+            Store _store = new Store("Krusty Krab", null, null, null);
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
                 Assert.Fail();
             }
             catch (Exception)

@@ -64,12 +64,13 @@ namespace MarketProject.Domain.Tests
             int itemId = 1;
             String name = "Krabby Patty";
             String description = "Delicious";
+            double price = 5.0;
             int quantity = 5;
             int newQuantity = 10;
             try
             {
                 _storeManagement.OpenNewStore(null, storeName, null, null);
-                //_store.addItem(...);
+                _storeManagement.AddItemToStoreStock(storeName, itemId, name, price, description, quantity);
             }
             catch (Exception)
             {
@@ -97,6 +98,56 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _storeManagement.UpdateStockQuantityOfItem(storeName, itemId, newQuantity);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [TestMethod()]
+        public void AddItemToStoreStock_StoreDoesntExist_ThrowsException()
+        {
+            StoreManagement _storeManagement = new StoreManagement();
+            String storeName = "Krusty Krab";
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+
+            try
+            {
+                _storeManagement.AddItemToStoreStock(storeName, itemId, name, price, description, quantity);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [TestMethod()]
+        public void AddItemToStoreStock_StoreExists_NoException()
+        {
+            StoreManagement _storeManagement = new StoreManagement();
+            String storeName = "Krusty Krab";
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+            try
+            {
+                _storeManagement.OpenNewStore(null, storeName, null, null);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _storeManagement.AddItemToStoreStock(storeName, itemId, name, price, description, quantity);
             }
             catch (Exception)
             {
