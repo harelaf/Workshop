@@ -15,7 +15,7 @@ namespace MarketProjectTests
             Item item = new Item(1);
             int amount = 8;
             //action
-            guest.addItemToCart(store, item, amount);
+            guest.AddItemToCart(store, item, amount);
             // Assert
             ShoppingBasket actual = guest.ShoppingCart.GetShoppingBasket(store);
             Assert.IsNotNull(actual);
@@ -34,8 +34,8 @@ namespace MarketProjectTests
             int amount1 = 8;
             int amount2 = 10;
             //action
-            guest.addItemToCart(store, item1, amount1);
-            guest.addItemToCart(store, item2, amount2);
+            guest.AddItemToCart(store, item1, amount1);
+            guest.AddItemToCart(store, item2, amount2);
             // Assert
             ShoppingBasket actual = guest.ShoppingCart.GetShoppingBasket(store);
             Assert.IsNotNull(actual);
@@ -55,8 +55,8 @@ namespace MarketProjectTests
             int amount2 = 10;
             int expected_amount = amount1 + amount2;
             //action
-            guest.addItemToCart(store, item, amount1);
-            guest.addItemToCart(store, item, amount2);
+            guest.AddItemToCart(store, item, amount1);
+            guest.AddItemToCart(store, item, amount2);
             // Assert
             ShoppingBasket actual = guest.ShoppingCart.GetShoppingBasket(store);
             Assert.IsNotNull(actual);

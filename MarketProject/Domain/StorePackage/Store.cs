@@ -4,28 +4,50 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
+    public enum StoreState
+    {
+        Active,
+        Inactive,
+        Closed
+    }
+
     public class Store
     {
         private Stock _stock;
         public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
-        private ICollection<MessageToStore> _messagesToStore;
-        private ICollection<Rating> _ratings;
-        private ICollection<StoreManager> _managers;
-        private ICollection<StoreOwner> _owners;
+        private DiscountPolicy _discountPolicy;
+        private Queue<MessageToStore> _messagesToStore;
+        private Rating _rating;
+        private List<StoreManager> _managers;
+        private List<StoreOwner> _owners;
         private StoreFounder _founder;
         private String _storeName;
+        private StoreState _state;
+
         public String StoreName => _storeName;
 
-        public Store(String storeName)
+        public StoreState State => _state;
+
+        public bool isActive()
         {
+            return _state == StoreState.Active;
+        }
+
+        public Store(String storeName, StoreFounder founder, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+        {
+            _storeName = storeName;
             _stock = new Stock();
-            _purchasePolicy = new PurchasePolicy();
+            _purchasePolicy = purchasePolicy;
+            _discountPolicy = discountPolicy;
+            _messagesToStore = new Queue<MessageToStore>();
+            _rating = new Rating();
             _managers = new List<StoreManager>();
             _owners = new List<StoreOwner>();
-            _founder = new StoreFounder();
-            _storeName = storeName;
+            _founder = founder;
+            _state = StoreState.Active;
         }
+
         public Item ReserveItem(int itemID, int amount)
         {
             Item item  = _stock.GetItem(itemID);
@@ -50,6 +72,75 @@ namespace MarketProject.Domain
                 throw new Exception("can't unreserve item from that doesn't exists is store stock");
         }
 
+        public String GetName()
+        {
+            return _storeName;
+        }
 
+        public String GetRating()
+        {
+            return "" + _rating.GetRating();
+        }
+
+        public List<String> GetItemNames()
+        {
+            return _stock.GetItemNames();
+        }
+
+        public String GetInformation()
+        {
+            String info = $"{_storeName}\n";
+            info += $"- Founded by {"founder.name"}\n";
+            String ownerNames = "";
+            foreach (StoreOwner owner in _owners)
+            {
+                //ownerNames += owner.name + ", ";
+            }
+            info += $"- Owners: {ownerNames}\n";
+            String managerNames = "";
+            foreach (StoreManager manager in _managers)
+            {
+                //managerNames += manager.name + ", ";
+            }
+            info += $"- Managers: {managerNames}\n";
+            info += $"- Has a rating of {GetRating()}\n";
+            info += "\n";
+            String itemNames = "";
+            foreach (String name in GetItemNames())
+            {
+                itemNames += name + ", ";
+            }
+            info += $"List of items: {itemNames}\n";
+            return info;
+        }
+
+        public void RateStore(String username, int rating, String review)
+        {
+            bool result = _rating.AddRating(username, rating, review);
+            if (!result)
+                throw new Exception($"User {username} already rated this store.");
+        }
+
+        public void UpdateStockQuantityOfItem(int itemID, int newQuantity)
+        {
+            if (_stock.GetItem(itemID) == null)
+                throw new Exception($"An item with ID {itemID} doesnt exist in the stock.");
+            _stock.ChangeItemQuantity(itemID, newQuantity);
+        }
+
+        public void CloseStore()
+        {
+            _state = StoreState.Inactive;
+        }
+
+        public void ReopenStore()
+        {
+            _state = StoreState.Active;
+        }
+
+        public void CloseStorePermanently()
+        {
+            _state = StoreState.Closed;
+        }
     }
 }

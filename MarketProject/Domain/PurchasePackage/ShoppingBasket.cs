@@ -27,6 +27,7 @@ namespace MarketProject.Domain
                 throw new Exception("item doesn't exist in basket");
             return _items[item];
         }
+        //returns the amount that was removed
         public int RemoveItem(Item item)
         {
             int amount = -1;
@@ -42,5 +43,14 @@ namespace MarketProject.Domain
             return _items.ContainsKey(item);
         }
 
+        public bool updateItemQuantity(Item item, int newQuantity)
+        {
+            if (isItemInBasket(item))
+            {
+                _items[item] = newQuantity;
+                return true;
+            }
+            return false;
+        }
     }
 }

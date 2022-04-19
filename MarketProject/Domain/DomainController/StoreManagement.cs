@@ -6,26 +6,33 @@ namespace MarketProject.Domain
 {
     public class StoreManagement
     {
-        private ICollection<Store> _stores;
+        private Dictionary<String, Store> _stores; //<storeName:String, Store>
+
+        public StoreManagement()
+        {
+            _stores = new Dictionary<String, Store>();
+        }
 
         public Store GetStore(String storeName)
         {
-            foreach (Store store in _stores)
-            {
-                if (store.StoreName == storeName)
-                    return store;
-            }
+            if (_stores.ContainsKey(storeName))
+                return _stores[storeName];
             return null;
         }
+
         public bool IsStoreExist(String storeName)
         {
            return GetStore(storeName) != null;
         }
+
         public Item ReserveItemFromStore(String storeName, int itemID, int amount)
         {
+            if (amount <= 0)
+                throw new Exception("can't reserve non-positive amount of item");
             Store store = GetStore(storeName);
             return store.ReserveItem(itemID, amount);
         }
+
         public Item GetItem(String storeName, int itemID)
         {
             Store store = GetStore(storeName);
@@ -36,28 +43,84 @@ namespace MarketProject.Domain
                 throw new Exception("there is no item: "+itemID+" in the given store");
             return item;    
         }
-        public void UnreserveItemInStore(String storeName, Item item, int amountToAdd)
+
+        public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {
+            if (amount_to_add <= 0)
+                throw new Exception("can't unreserve non-positive amount of item");
             Store store = GetStore(storeName);
-            store.UnReserveItem(item, amountToAdd);
+            store.UnReserveItem(item, amount_to_add);
         }
 
-        
+        public void OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+        {
+            if (CheckStoreNameExists(storeName))
+                throw new Exception($"A store with the name {storeName} already exists in the system.");
+            Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
+            _stores[storeName] = newStore;
+        }
 
-        public void EditItemPrice(String storeName, int itemID, double newPrice)
+        public bool CheckStoreNameExists(String storeName)
         {
-            Item item = GetItem(storeName, itemID);
-            item.SetPrice(newPrice);
+            return _stores.ContainsKey(storeName);
         }
-        public void EditItemName(String storeName, int itemID, String newName)
+
+        public String GetStoreInformation(String storeName)
         {
-            Item item = GetItem(storeName, itemID);
-            item.SetName(newName);
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            return store.GetInformation();
         }
-        public void EditItemDescription(String storeName, int itemID, String newDescription)
+
+        public void RateStore(String username, String storeName, int rating, String review)
         {
-            Item item = GetItem(storeName, itemID);
-            item.SetDescription(newDescription);
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.RateStore(username, rating, review);
+        }
+
+        public void UpdateStockQuantityOfItem(String storeName, int itemID, int newQuantity)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.UpdateStockQuantityOfItem(itemID, newQuantity);
+        }
+
+        public bool isStoreActive(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                return false;
+            Store store = _stores[storeName];
+            return store.isActive();
+        }
+
+        public void CloseStore(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.CloseStore();
+        }
+
+        public void ReopenStore(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            if (store.State != StoreState.Inactive)
+                throw new Exception($"Store {storeName} is not inactive.");
+            store.ReopenStore();
+        }
+
+        public void CloseStorePermanently(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.CloseStorePermanently();
         }
     }
 }
