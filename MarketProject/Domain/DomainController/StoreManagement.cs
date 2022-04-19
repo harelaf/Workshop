@@ -79,8 +79,11 @@ namespace MarketProject.Domain
                 {
                     if(itemCategory == null || item.Category == itemCategory)
                     {
-                        filteredItems.Add(item);
-                    }
+                        if(keyWord == null || item.Description == null || item.Category.Contains(keyWord))
+                        {
+                            filteredItems.Add(item);
+                        }
+                                            }
                 }
             }
             return filteredItems;
