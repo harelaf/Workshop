@@ -100,5 +100,9 @@ namespace MarketProject.Domain
             int old_quantity = user.GetQuantityOfItemInCart(store, item);
             return newQuantity - old_quantity;
         }
+        public void PurchaceMyCart(String userToken)
+        {
+
+        }
     }
 }

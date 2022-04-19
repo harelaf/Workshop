@@ -79,8 +79,7 @@ namespace MarketProject.Service
         {//II.4.8
             throw new NotImplementedException();
         }
-
-        public Boolean AddItemToStoreStock(String authToken, String storeName, int itemID, int quantity)
+        public Boolean AddItemToStoreStock(String username, String storeName, int itemID, int quantity)
         {//II.4.1
             throw new NotImplementedException();
         }
@@ -92,11 +91,11 @@ namespace MarketProject.Service
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemPrice(String authToken, String storeName, int itemID, int new_price, String newPrice)
+        public Boolean EditItemPrice(String username, int storeID, int itemID, float new_price)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemName(String authToken, String storeName, int itemID, int new_price, String newName)
+        public Boolean EditItemName(String username, int storeID, int itemID, int new_price, String newName)
         {//II.4.1
             throw new NotImplementedException();
         }
