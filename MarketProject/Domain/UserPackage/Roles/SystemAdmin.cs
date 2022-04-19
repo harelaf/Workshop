@@ -5,16 +5,16 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class SystemAdmin : SystemRole
+    public class SystemAdmin : SystemRole
     {
         public SystemAdmin() : base(getOps()) {}
 
-        public override bool grantPermission(Operation op, string storeName, Registered grantor)
+        public override bool grantPermission(Operation op, string storeName, string grantor)
         {
             return false;
         }
 
-        public override bool denyPermission(Operation op, string storeName, Registered denier)
+        public override bool denyPermission(Operation op, string storeName, string denier)
         {
             return false;
         }

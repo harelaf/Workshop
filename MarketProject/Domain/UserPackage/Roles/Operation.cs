@@ -6,15 +6,15 @@ namespace MarketProject.Domain
 {
     public enum Operation
     {
-        //REGISTERED
-        OPEN_STORE, 
-        REVIEW_PRODUCT, 
-        RATE_PRODUCT_AND_STORE, 
-        SEND_MESSAGE, 
-        SEND_COMPLAINT, 
-        PERSONAL_HISTIRY, 
-        PERSONAL_INFO, 
-        IMPROVE_SECURITY,
+        ////REGISTERED
+        //OPEN_STORE, 
+        //REVIEW_PRODUCT, 
+        //RATE_PRODUCT_AND_STORE, 
+        //SEND_MESSAGE, 
+        //SEND_COMPLAINT, 
+        //PERSONAL_HISTIRY, 
+        //PERSONAL_INFO, 
+        //IMPROVE_SECURITY,
 
         //STORE OWNER
         MANAGE_INVENTORY,

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    abstract class SystemRole
+    public abstract class SystemRole
     {
         protected ISet<Operation> _operations;
         private string _storeName = null;
@@ -25,9 +25,9 @@ namespace MarketProject.Domain
             _operations = operations;
         }
 
-        public abstract bool grantPermission(Operation op, string store, Registered grantor);
+        public abstract bool grantPermission(Operation op, string store, string grantor);
 
-        public abstract bool denyPermission(Operation op, string store, Registered denier);
+        public abstract bool denyPermission(Operation op, string store, string denier);
 
         //internal bool hasAccess(Operation op)
         //{

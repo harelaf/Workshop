@@ -81,9 +81,9 @@ namespace MarketProject.Domain
 
         internal bool checkAccess(string appointerUsername, string storeName, Operation op)
         {
-            Registered user = GetRegisteredUser(appointerUsername);
-            if (user != null)
-                return user.hasAccess(storeName, op);
+            //Registered user = GetRegisteredUser(appointerUsername);
+            //if (user != null)
+            //    return user.hasAccess(storeName, op);
             return false;
         }
 

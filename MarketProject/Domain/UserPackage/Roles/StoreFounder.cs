@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class StoreFounder : SystemRole
+    public class StoreFounder : SystemRole
     {
         private String _storeName;
         public StoreFounder(String storeName) : base(getOps())
@@ -12,12 +12,12 @@ namespace MarketProject.Domain
             base.StoreName = storeName;
         }
 
-        public override bool grantPermission(Operation op, String storeName, Registered grantor)
+        public override bool grantPermission(Operation op, String storeName, string grantor)
         {
             return false;
         }
 
-        public override bool denyPermission(Operation op, String storeName, Registered denier)
+        public override bool denyPermission(Operation op, String storeName, string denier)
         {
             return false;
         }

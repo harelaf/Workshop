@@ -5,11 +5,11 @@ using MarketProject.Domain;
 
 namespace MarketProject.Domain
 {
-    class StoreManager : SystemRole
+    public class StoreManager : SystemRole
     {
         private string _appointer;
 
-        public StoreManager(String storeName, string appointer) : base(getOps())
+        public StoreManager(string storeName, string appointer) : base(getOps())
         {
             StoreName = storeName;
             _appointer = appointer;
@@ -21,7 +21,7 @@ namespace MarketProject.Domain
         /// <param name="op"></param>
         /// <param name="grantor">the user </param>
         /// <returns>true when the permission has been granted to this user, even if he was already permitted. false otherwise.</returns>
-        public override bool grantPermission(Operation op, String storeName, Registered grantor)
+        public override bool grantPermission(Operation op, string storeName, string grantor)
         {
             if (base.StoreName.Equals(storeName) && _appointer.Equals(grantor)) {
                 List<Operation> optOps = new List<Operation>(){  //optional operations
@@ -45,9 +45,9 @@ namespace MarketProject.Domain
         /// <param name="op"></param>
         /// <param name="denier"></param>
         /// <returns>true when the permission has been denied from this user, even if he was never permitted. false otherwise.</returns>
-        public override bool denyPermission(Operation op, String storeName, Registered denier)
+        public override bool denyPermission(Operation op, string storeName, string denier)
         {
-            if (base.StoreName.Equals(storeName) && _appointer.Equals(denier) && denier.hasAccess(storeName, op))
+            if (base.StoreName.Equals(storeName) && _appointer.Equals(denier))
             {
                 operations.Remove(op);
                 return true;
