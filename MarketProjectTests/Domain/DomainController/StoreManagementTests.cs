@@ -103,5 +103,56 @@ namespace MarketProject.Domain.Tests
                 Assert.Fail();
             }
         }
+
+
+        public void SendMessageToStore_StoreExist_Success()
+        {
+            StoreManagement _storeManagement = new StoreManagement();
+            String username = "Sandy Cheeks";
+            String storeName = "Krusty Krab";
+            String title = "reservation";
+            String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
+
+            try
+            {
+                _storeManagement.OpenNewStore(null, storeName, null, null);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _storeManagement.SendMessageToStore(username, storeName, title, message);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            Assert.Fail();
+        }
+
+        public void SendMessageToStore_StoreDoesntExist_Success()
+        {
+            StoreManagement _storeManagement = new StoreManagement();
+            String username = "Sandy Cheeks";
+            String storeName = "Krusty Krab";
+            String title = "reservation";
+            String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
+
+            try
+            {
+                _storeManagement.SendMessageToStore(username, storeName, title, message);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+                Assert.IsTrue(true);
+            }
+
+            Assert.Fail();
+        }
     }
 }
