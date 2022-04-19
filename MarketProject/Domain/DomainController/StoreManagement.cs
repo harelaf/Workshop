@@ -63,6 +63,12 @@ namespace MarketProject.Domain
             item.SetName(newDescription);
         }
 
+        public void RateItem(String username, Item item, String storeName, int rating, String review)
+
+        {
+            item.RateItem(username, rating, review);
+        }
+
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {
             if (amount_to_add <= 0)

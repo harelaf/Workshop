@@ -25,12 +25,20 @@ namespace MarketProject.Domain
             {
                 throw new ArgumentNullException("name");
             }
-            _ratings = new List<Rating>();
+            _rating = new Rating();
             _discounts = new List<IDiscount>();
             _itemID = id;
             _name = Name;
             _price = price;
             _description = description;
+        }
+
+        public void RateItem(String username, int rating, String review)
+        {
+            if (_rating.HasRating(username)){
+                throw new Exception("You can't rate the same item twice or more.");
+            }
+            _rating.AddRating(username, rating, review);
         }
 
         public void SetName(String name)

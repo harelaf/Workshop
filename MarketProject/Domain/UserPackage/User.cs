@@ -15,7 +15,7 @@ namespace MarketProject.Domain
 
         public void AddItemToCart(Store store, Item item, int amount)
         {
-            ShoppingBasket basket= _shoppingCart.GetShoppingBasket(store);
+            ShoppingBasket basket= _shoppingCart.GetShoppingBasket(store.StoreName);
             if (basket == null)
             {
                 basket = new ShoppingBasket(store);
@@ -25,7 +25,7 @@ namespace MarketProject.Domain
         }
         public int RemoveItemFromCart(Item item, Store store)
         {
-            ShoppingBasket basket = _shoppingCart.GetShoppingBasket(store);
+            ShoppingBasket basket = _shoppingCart.GetShoppingBasket(store.StoreName);
             if (basket == null)
                 throw new Exception("your cart doesnt contain any basket with the given store");
             int amount = basket.RemoveItem(item);
@@ -37,7 +37,7 @@ namespace MarketProject.Domain
         {
             if (newQuantity <= 0)
                 throw new Exception("can't update item quantity to a non-positive amount");
-            ShoppingBasket basket = _shoppingCart.GetShoppingBasket(store);
+            ShoppingBasket basket = _shoppingCart.GetShoppingBasket(store.StoreName);
             if (basket == null)
                 throw new Exception("your cart doesnt contain any basket with the given store");
             if (!basket.updateItemQuantity(item, newQuantity))

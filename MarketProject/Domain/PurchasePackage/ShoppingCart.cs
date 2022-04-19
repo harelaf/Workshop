@@ -13,11 +13,11 @@ namespace MarketProject.Domain
             _shoppingBaskets = new List<ShoppingBasket>();
         }
 
-        public ShoppingBasket GetShoppingBasket(Store store)
+        public ShoppingBasket GetShoppingBasket(String storeName)
         {
             foreach (ShoppingBasket basket in _shoppingBaskets)
             {
-                if (basket.Store.StoreName == store.StoreName)
+                if (basket.Store.StoreName == storeName)
                     return basket;
             }
             return null;

@@ -97,7 +97,7 @@ namespace MarketProject.Domain
             _storeManagement.RateStore(username, storeName, rating, review);
         }
 
-        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String username, String storeName)
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String username, String storeName)
         {
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
@@ -162,16 +162,44 @@ namespace MarketProject.Domain
 
 
         public void EditItemPrice(String username, String storeName, int itemID, double newPrice)
-        {//II.4.1
-            throw new NotImplementedException();
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, ???))
+             *     throw new Exception($"This user is not the founder of {storeName}.");
+             */
+            _storeManagement.EditItemPrice(storeName, itemID, newPrice);    
         }
         public void EditItemName(String username, String storeName, int itemID, int new_price, String newName)
-        {//II.4.1
-            throw new NotImplementedException();
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, ???))
+             *     throw new Exception($"This user is not the founder of {storeName}.");
+             */
+            _storeManagement.EditItemName(storeName, itemID, new_price, newName);       
         }
         public void EditItemDescription(String username, String storeName, int itemID, String newDescription)
-        {//II.4.1
-            throw new NotImplementedException();
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, ???))
+             *     throw new Exception($"This user is not the founder of {storeName}.");
+             */
+            _storeManagement.EditItemDescription(storeName, itemID, newDescription);
+        }
+
+        public void RateItem(String username, int itemID, String storeName, int rating, String review)
+
+        {
+            //should check that this user bought this item by his purches History
+            if(rating < 1 || rating > 5)
+            {
+                throw new ArgumentOutOfRangeException("Rate should be beteen 1 to 5");
+            }
+            Item item = _storeManagement.GetItem(storeName, itemID);
+            if (!_history.CheckIfUserPurchasedItemInStore(username, storeName, item))
+            {
+                throw new Exception("This user has never bought item with id: " + itemID +" at " + storeName);
+            }
+            _storeManagement.RateItem(username, item, storeName, rating, review);
         }
     }
 }

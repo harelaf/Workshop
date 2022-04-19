@@ -187,9 +187,7 @@ namespace MarketProject.Service
 
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
-            if (storeName.Equals(""))
-                return null;
-            return _market.GetStorePurchaseHistory(authToken, storeName);
+            throw new NotImplementedException();
         }
 
         public Boolean CloseStorePermanently(String authToken, String storeName)
