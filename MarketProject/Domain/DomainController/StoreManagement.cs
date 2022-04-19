@@ -97,6 +97,14 @@ namespace MarketProject.Domain
             return store.isActive();
         }
 
+        public void AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, int quantity)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.AddItemToStoreStock(itemID, name, price, description, quantity);
+        }
+
         public void CloseStore(String storeName)
         {
             if (!CheckStoreNameExists(storeName))

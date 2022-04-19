@@ -128,6 +128,14 @@ namespace MarketProject.Domain
             _stock.ChangeItemQuantity(itemID, newQuantity);
         }
 
+        public void AddItemToStoreStock(int itemID, String name, double price, String description, int quantity)
+        {
+            if (_stock.GetItem(itemID) != null)
+                throw new Exception($"An item with ID {itemID} already exists in the stock.");
+            Item newItem = new Item(itemID, name, price, description);
+            _stock.AddItem(newItem, quantity);
+        }
+
         public void CloseStore()
         {
             _state = StoreState.Inactive;

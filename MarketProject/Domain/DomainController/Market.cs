@@ -99,6 +99,25 @@ namespace MarketProject.Domain
             _storeManagement.RateStore(username, storeName, rating, review);
         }
 
+        public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, int quantity)
+        {
+            if (_userManagement.IsUserAVisitor(username))
+                throw new Exception($"Only registered users are allowed to rate stores.");
+            /*
+             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
+             *     throw new Exception($"This user is not an owner in {storeName}.");
+             */
+            if (storeName.Equals(""))
+                throw new Exception("Invalid Input: Blank store name.");
+            if (price < 0)
+                throw new Exception("Invalid Input: Price has to be at least 0.");
+            if (name.Equals(""))
+                throw new Exception("Invalid Input: Blank item nam.");
+            if (quantity < 0)
+                throw new Exception("Invalid Input: Quantity has to be at least 0.");
+            _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, quantity);
+        }
+
         public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String username, String storeName)
         {
             /*

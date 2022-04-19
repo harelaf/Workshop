@@ -25,7 +25,7 @@ namespace MarketProject.Domain
             {
                 throw new ArgumentNullException("name");
             }
-            _ratings = new List<Rating>();
+            _rating = new Rating();
             _discounts = new List<IDiscount>();
             _itemID = id;
             _name = Name;
