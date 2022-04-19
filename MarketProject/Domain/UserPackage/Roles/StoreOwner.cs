@@ -6,25 +6,19 @@ namespace MarketProject.Domain
 {
     class StoreOwner : SystemRole
     {
-        private Registered _appointer;
-        private Store _store;
-        public StoreOwner(Store store, Registered appointer) : base(getOps())
+        private string _appointer;
+        public StoreOwner(string storeName, string appointer) : base(getOps())
         {
-            _store = store;
+            StoreName = storeName;
             _appointer = appointer;
         }
 
-        public override bool hasAccess(Store store, Operation op)
-        {
-            return store.Equals(_store) && hasAccess(op);
-        }
-
-        public override bool grantPermission(Operation op, Store store, Registered grantor)
+        public override bool grantPermission(Operation op, string storeName, Registered grantor)
         {
             return false;
         }
 
-        public override bool denyPermission(Operation op, Store store, Registered denier)
+        public override bool denyPermission(Operation op, string storeName, Registered denier)
         {
             return false;
         }

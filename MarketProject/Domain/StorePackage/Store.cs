@@ -11,19 +11,19 @@ namespace MarketProject.Domain
         private PurchasePolicy _purchasePolicy;
         private ICollection<MessageToStore> _messagesToStore;
         private ICollection<Rating> _ratings;
-        private ICollection<StoreManager> _managers;
-        private ICollection<StoreOwner> _owners;
-        private StoreFounder _founder;
-        private String _storeName;
-        public String StoreName => _storeName;
+        private ICollection<string> _managers;
+        private ICollection<string> _owners;
+        private string _founder;
+        private string _storeName;
+        public string StoreName => _storeName;
 
-        public Store(String storeName)
+        public Store(string storeName, string storeFounder)
         {
             _stock = new Stock();
             _purchasePolicy = new PurchasePolicy();
-            _managers = new List<StoreManager>();
-            _owners = new List<StoreOwner>();
-            _founder = new StoreFounder();
+            _managers = new HashSet<string>();
+            _owners = new HashSet<string>();
+            _founder = storeFounder;
             _storeName = storeName;
         }
         public Item ReserveItem(int itemID, int amount)
@@ -41,6 +41,48 @@ namespace MarketProject.Domain
         {
             return _stock.GetItem(itemID);
         }
+
+        internal bool AddStoreOwner(string ownerUserName)
+        {
+            if(!hasRoleInStore(ownerUserName))
+            {
+                _owners.Add(ownerUserName);
+                return true;
+            }
+            return false;
+        }
+
+        internal bool AddStoreManager(string managerUsername)
+        {
+            if (!hasRoleInStore(managerUsername))
+            {
+                _owners.Add(managerUsername);
+                return true;
+            }
+            return false;
+        }
+
+        private bool hasRoleInStore(string username)
+        {
+            return GetOwner(username) != null && GetOwner(username) != null && _founder.Equals(username);
+        }
+
+        private string GetManager(string ownerUserName)
+        {
+            foreach(string manager in _managers)
+                if(manager.Equals(ownerUserName))
+                    return manager;
+            return null;
+        }
+
+        private object GetOwner(string managerUsername)
+        {
+            foreach (string owner in _owners)
+                if (owner.Equals(managerUsername))
+                    return owner;
+            return null;
+        }
+        
         public void UnReserveItem(Item item, int amount_to_add)
         {
             if (amount_to_add <= 0)

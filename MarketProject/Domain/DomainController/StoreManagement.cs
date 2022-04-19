@@ -41,7 +41,5 @@ namespace MarketProject.Domain
             Store store = GetStore(storeName);
             store.UnReserveItem(item, amount_to_add);
         }
-        
-        
     }
 }

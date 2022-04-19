@@ -7,23 +7,35 @@ namespace MarketProject.Domain
     abstract class SystemRole
     {
         protected ISet<Operation> _operations;
+        private string _storeName = null;
+        public string StoreName
+        {
+            get { return _storeName; }
+            protected set {
+                if (value == null || value.Equals(""))
+                    throw new ArgumentNullException("a role must get a unique store name.");
+                _storeName = value; 
+            }
+        }
+
         public ISet<Operation> operations => _operations;
-        
 
         public SystemRole(ISet<Operation> operations)
         {
             _operations = operations;
         }
 
-        public abstract bool grantPermission(Operation op, Store store, Registered grantor);
+        public abstract bool grantPermission(Operation op, string store, Registered grantor);
 
-        public abstract bool denyPermission(Operation op, Store store, Registered denier);
-        
-        internal bool hasAccess(Operation op)
+        public abstract bool denyPermission(Operation op, string store, Registered denier);
+
+        //internal bool hasAccess(Operation op)
+        //{
+        //    return _operations.Contains(op);
+        //}
+        public bool hasAccess(string storeName, Operation op)
         {
-            return _operations.Contains(op);
+            return storeName.Equals(_storeName) && _operations.Contains(op);
         }
-
-        public abstract bool hasAccess(Store store, Operation op);
     }
 }

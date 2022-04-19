@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MarketProject.Domain
 {
@@ -17,11 +16,6 @@ namespace MarketProject.Domain
             _messagesToUser = new List<MessageToUser>();
             _username = username;
             _password = password;
-        }
-
-        internal bool hasAccess(Store store, Operation op)
-        {
-            for
         }
     }
 }

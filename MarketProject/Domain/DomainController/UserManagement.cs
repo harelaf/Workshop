@@ -57,9 +57,7 @@ namespace MarketProject.Domain
 
         public bool isUserAVisitor(String username)
         {
-            if (GetVisitorUser(username) == null)
-                return false;
-            return true;
+            return GetVisitorUser(username) != null;
         }
 
         public User GetVisitorUser(String username)
@@ -80,6 +78,15 @@ namespace MarketProject.Domain
             User user = GetVisitorUser(username);
             user.addItemToCart(store, item, amount);
         }
+
+        internal bool checkAccess(string appointerUsername, string storeName, Operation op)
+        {
+            Registered user = GetRegisteredUser(appointerUsername);
+            if (user != null)
+                return user.hasAccess(storeName, op);
+            return false;
+        }
+
         public int RemoveItemFromCart(String username, Item item, Store store)
         {
             User user = GetVisitorUser(username);

@@ -9,12 +9,12 @@ namespace MarketProject.Domain
     {
         public SystemAdmin() : base(getOps()) {}
 
-        public override bool grantPermission(Operation op, Store store, Registered grantor)
+        public override bool grantPermission(Operation op, string storeName, Registered grantor)
         {
             return false;
         }
 
-        public override bool denyPermission(Operation op, Store store, Registered denier)
+        public override bool denyPermission(Operation op, string storeName, Registered denier)
         {
             return false;
         }
@@ -28,11 +28,6 @@ namespace MarketProject.Domain
             roles.Add(Operation.SYSTEM_STATISTICS);
             roles.Add(Operation.STORE_HISTORY_INFO);
             return roles;
-        }
-
-        public override bool hasAccess(Store store, Operation op)
-        {
-            return hasAccess(op);
         }
     }
 }

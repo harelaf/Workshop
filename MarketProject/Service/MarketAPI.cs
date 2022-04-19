@@ -28,15 +28,15 @@ namespace MarketProject.Service
             //remmeber to fire him for all its roles
             throw new NotImplementedException();
         }
-        public Boolean AddItemToCart(String username, int itemID, int storeID, int amount)
+        public Boolean AddItemToCart(String username, int itemID, String storeName, int amount)
         {//II.2.3
             throw new NotImplementedException();
         }
-        public Boolean RemoveItemFromCart(String username, int itemID, int storeID)
+        public Boolean RemoveItemFromCart(String username, int itemID, String storeName)
         {//II.2.4
             throw new NotImplementedException();
         }
-        public Boolean UpdateQuantityOfItemInCart(String username, int itemID, int storeID, int newQuantity)
+        public Boolean UpdateQuantityOfItemInCart(String username, int itemID, String storeName, int newQuantity)
         {//II.2.4
             throw new NotImplementedException();
         }
@@ -52,57 +52,57 @@ namespace MarketProject.Service
         {//II.3.2
             throw new NotImplementedException();
         }
-        public Boolean AddStoreManager(String appointerUsername, String ownerUsername, int storeID)
+        public Boolean AddStoreManager(String appointerUsername, String ownerUsername, String storeName)
         {//II.4.6
             throw new NotImplementedException();
         }
-        public Boolean AddStoreOwner(String appointerUsername, String ownerUsername, int storeID)
+        public Boolean AddStoreOwner(String appointerUsername, String ownerUsername, String storeName)
         {//II.4.4
             throw new NotImplementedException();
         }
-        public Boolean RemoveStoreOwner(String appointerUsername, String ownerUsername, int storeID)
+        public Boolean RemoveStoreOwner(String appointerUsername, String ownerUsername, String storeName)
         {//II.4.5
             throw new NotImplementedException();
         }
-        public Boolean RemoveStoreManager(String appointerUsername, String ownerUsername, int storeID)
+        public Boolean RemoveStoreManager(String appointerUsername, String ownerUsername, String storeName)
         {//II.4.8
             throw new NotImplementedException();
         }
-        public Boolean AddItemToStoreStock(String username, int storeID, int itemID, int quantity)
+        public Boolean AddItemToStoreStock(String username, String storeName, int itemID, int quantity)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean RemoveItemFromStore(String username, int storeID, int itemID)
+        public Boolean RemoveItemFromStore(String username, String storeName, int itemID)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean UpdateStockQuantityOfItem(String username, int storeID, int itemID, int newQuantity)
+        public Boolean UpdateStockQuantityOfItem(String username, String storeName, int itemID, int newQuantity)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemPrice(String username, int storeID, int itemID, int new_price, String newPrice)
+        public Boolean EditItemPrice(String username, String storeName, int itemID, int new_price, String newPrice)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemName(String username, int storeID, int itemID, int new_price, String newName)
+        public Boolean EditItemName(String username, String storeName, int itemID, int new_price, String newName)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemDescription(String username, int storeID, int itemID, String newDescription)
+        public Boolean EditItemDescription(String username, String storeName, int itemID, String newDescription)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean RateItem(String username, int itemID, int storeID, int rating, String review)
+        public Boolean RateItem(String username, int itemID, String storeName, int rating, String review)
         {//II.3.3,  II.3.4
             //should check that this user bought this item by his purches History
             throw new NotImplementedException();
         }
-        public Boolean RateStore(String username, int storeID, int rating, String review)
+        public Boolean RateStore(String username, String storeName, int rating, String review)
         {//II.3.4
             //should check that this user bought in that store by his purches History
             throw new NotImplementedException();
         }
-        public Boolean GetStoreInformation(int storeID)
+        public Boolean GetStoreInformation(String storeName)
         {//II.2.1
          //should return data of store + the items it owns
             throw new NotImplementedException();
@@ -112,7 +112,7 @@ namespace MarketProject.Service
             //filters!!!!!!!!!!!
             throw new NotImplementedException();
         }
-        public Boolean SendMessageToStore(String username, int storeID, String title, String description)
+        public Boolean SendMessageToStore(String username, String storeName, String title, String description)
         {//II.3.5
             throw new NotImplementedException();
         }
@@ -147,34 +147,34 @@ namespace MarketProject.Service
         {//II.4.7
             throw new NotImplementedException();
         }
-        public Boolean CloseStore(String username, int storeID)
+        public Boolean CloseStore(String username, String storeName)
         {//II.4.9
             //state of store is INACTIVE-> which means its data still available
             throw new NotImplementedException();
         }
-        public Boolean ReopenStore(String username, int storeID)
+        public Boolean ReopenStore(String username, String storeName)
         {//II.4.10
             //SHOULD VALIDATE THAT store state is INACTIVE
             throw new NotImplementedException();
         }
-        public Boolean GetStoreRoleInformation(String username, int storeID)
+        public Boolean GetStoreRoleInformation(String username, String storeName)
         {//II.4.11
             throw new NotImplementedException();
         }
-        public Boolean GetStoreMesseage(String username, int storeID)
+        public Boolean GetStoreMesseage(String username, String storeName)
         {//II.4.12
             //should return with id
             throw new NotImplementedException();
         }
-        public Boolean AnswerStoreMesseage(String username, int storeID, int messageID, String reply)
+        public Boolean AnswerStoreMesseage(String username, String storeName, int messageID, String reply)
         {//II.4.12
             throw new NotImplementedException();
         }
-        public Boolean GetStorePurchasesHistory(String username, int storeID)
+        public Boolean GetStorePurchasesHistory(String username, String storeName)
         {//II.4.13
             throw new NotImplementedException();
         }
-        public Boolean CloseStorePermanently(String username, int storeID)
+        public Boolean CloseStorePermanently(String username, String storeName)
         {//II.6.1
             //send message to all roles in that store
             throw new NotImplementedException();

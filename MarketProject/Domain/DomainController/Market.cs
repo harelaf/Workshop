@@ -19,7 +19,7 @@ namespace MarketProject.Domain
         /// <param name="storeName"></param>    --storeName should be a store in system
         /// <param name="amount"></param>       --storeName should have at least amount of itemID
         /// <exception cref="Exception"></exception>
-        public void AddItemToCart(String username, int itemID, String storeName, int amount)
+        public void AddItemToCart(string username, int itemID, string storeName, int amount)
         {//II.2.3
             if (!_userManagement.isUserAVisitor(username))
                 throw new Exception("the given user is no longer a visitor in system");
@@ -28,7 +28,7 @@ namespace MarketProject.Domain
             Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
             _userManagement.addItemToUserCart(username, _storeManagement.GetStore(storeName), item, amount);
         }
-        public Item RemoveItemFromCart(String username, int itemID, String storeName)
+        public Item RemoveItemFromCart(string username, int itemID, string storeName)
         {//II.2.4
             if (!_userManagement.isUserAVisitor(username))
                 throw new Exception("the given user is no longer a visitor in system");
