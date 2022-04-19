@@ -6,8 +6,8 @@ namespace MarketProject.Domain
 {
     class History
     {
-        private IDictionary<String, ICollection<(DateTime, ShoppingBasket)>> _storePurchaseHistory; //storeName:String
-        private IDictionary<String, ICollection<(DateTime, ShoppingCart)>> _registeredPurchaseHistory; //username:String
+        private IDictionary<String, List<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
+        private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //username:String
 
         // Harel: TODO: FINISH THIS FUNCTION.
         public bool CheckIfUserPurchasedInStore(String username, String storeName)
@@ -25,6 +25,24 @@ namespace MarketProject.Domain
             if (!_storePurchaseHistory.ContainsKey(storeName))
                 throw new Exception($"There is purchase history for {storeName} yet.");
             return _storePurchaseHistory[storeName];
+        }
+
+        public void AddStoresPurchases(ShoppingCart shoppingCart)
+        {
+            foreach (ShoppingBasket shoppingBasket in shoppingCart.ShoppingBaskets)
+            {
+                String storeName = shoppingBasket.Store.GetName();
+                if (!_storePurchaseHistory.ContainsKey(storeName))
+                    _storePurchaseHistory.Add(storeName, new List<Tuple<DateTime, ShoppingBasket>>());
+                _storePurchaseHistory[storeName].Add(new Tuple<DateTime, ShoppingBasket>(DateTime.Now, shoppingBasket));              
+            }
+        }
+        public void AddRegisterPurchases(ShoppingCart shoppingCart, String username)
+        {
+            if (!registerPurchaseHistory.ContainsKey(username))
+                _registeredPurchaseHistory.Add(username, new List<Tuple<DateTime, ShoppingCart>>());
+            _registeredPurchaseHistory[username].Add(new Tuple<DateTime, ShoppingBasket>(DateTime.Now, shoppingCart))
+
         }
     }
 }

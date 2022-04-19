@@ -30,13 +30,13 @@ namespace MarketProject.Domain
         //returns the amount that was removed
         public int RemoveItem(Item item)
         {
-            int amount = -1;
             if (isItemInBasket(item))
             {
-                amount = _items[item];
+                int amount = _items[item];
                 _items.Remove(item);
+                return amount;
             }
-            return amount;   
+            throw new Exception("basket does'nt contain the item that was requested to be removed");   
         }
         public bool isItemInBasket(Item item)
         {
@@ -51,6 +51,14 @@ namespace MarketProject.Domain
                 return true;
             }
             return false;
+        }
+        public boool IsBasketEmpty()
+        {
+            return _items.Count == 0;
+        }
+        public ICollection<Item> GetItems()
+        {
+            return _items.Keys;
         }
     }
 }

@@ -6,6 +6,9 @@ namespace MarketProject.Domain
 {
     class RealPaymentSystem : IPayment
     {
-
+        public bool pay(double price)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
