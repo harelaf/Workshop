@@ -27,6 +27,7 @@ namespace MarketProject.Domain
                 throw new Exception("item doesn't exist in basket");
             return _items[item];
         }
+        //returns the amount that was removed
         public int RemoveItem(Item item)
         {
             int amount = -1;
