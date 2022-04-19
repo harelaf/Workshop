@@ -133,6 +133,11 @@ namespace MarketProject.Domain
             _stock.ChangeItemQuantity(itemID, newQuantity);
         }
 
+        public void AddMessage(MessageToStore message)
+        {
+            _messagesToStore.Enqueue(message);
+        }
+
         public void CloseStore()
         {
             _state = StoreState.Inactive;

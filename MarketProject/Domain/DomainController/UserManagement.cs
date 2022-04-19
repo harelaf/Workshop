@@ -46,6 +46,11 @@ namespace MarketProject.Domain
             return (password != "");
         }
 
+        public bool IsRegistered(String username)
+        {
+            return _registeredUsers.ContainsKey(username);
+        }
+
         public Registered GetRegisteredUser(String username)
         {
             Registered registered;

@@ -190,22 +190,35 @@ namespace MarketProject.Domain
 
         {
             //should check that this user bought this item by his purches History
-            if(rating < 1 || rating > 5)
+            /*if(rating < 1 || rating > 5)
             {
                 throw new ArgumentOutOfRangeException("Rate should be beteen 1 to 5");
-            }
+            }*/
             Item item = _storeManagement.GetItem(storeName, itemID);
             if (!_history.CheckIfUserPurchasedItemInStore(username, storeName, item))
             {
                 throw new Exception("This user has never bought item with id: " + itemID +" at " + storeName);
             }
-            _storeManagement.RateItem(username, item, storeName, rating, review);
+            _storeManagement.RateItem(username, item, rating, review);
         }
 
-        public Boolean GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
+        public void GetItemInformation(String username, String itemName, String itemCategory, String keyWord)
         {
+            if (!_userManagement.IsRegistered(username))
+            {
+                throw new Exception("User " + username + " not found in system");
+            }
+            
+            //TODO ron -> complete
+        }
 
-            throw new NotImplementedException();
+        public void SendMessageToStore(String username, String storeName, String title, String message)
+        {
+            if (!_userManagement.IsRegistered(username))
+            {
+                throw new Exception("User " + username + " not found in system");
+            }
+            _storeManagement.SendMessageToStore(username, storeName, title, message);
         }
     }
 }

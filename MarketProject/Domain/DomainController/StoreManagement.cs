@@ -63,7 +63,7 @@ namespace MarketProject.Domain
             item.SetName(newDescription);
         }
 
-        public void RateItem(String username, Item item, String storeName, int rating, String review)
+        public void RateItem(String username, Item item, int rating, String review)
 
         {
             item.RateItem(username, rating, review);
@@ -87,6 +87,17 @@ namespace MarketProject.Domain
                 }
             }
             return filteredItems;
+        }
+
+        public void SendMessageToStore(String username, String storeName, String title, String message)
+        {
+            if (!_stores.ContainsKey(storeName))
+            {
+                throw new Exception("Store " + storeName + " not found");
+            }
+            Store store = _stores[storeName];
+            MessageToStore messageToStore = new MessageToStore(storeName, username, title, message);
+            store.AddMessage(messageToStore);
         }
 
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)

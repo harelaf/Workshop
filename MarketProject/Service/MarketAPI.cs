@@ -128,7 +128,7 @@ namespace MarketProject.Service
         {//II.3.5
             throw new NotImplementedException();
         }
-        public Boolean FileComplaint(String authToken, int cartID,  String description)
+        public Boolean FileComplaint(String authToken, int cartID,  String message)
         {//II.3.6
             //to system admin!! should define some queue of messages for admin
             throw new NotImplementedException();
