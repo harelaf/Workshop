@@ -46,16 +46,19 @@ namespace MarketProject.Domain
             return (password != "");
         }
 
+        public bool IsRegistered(String username)
+        {
+            return _registeredUsers.ContainsKey(username);
+        }
+
         public Registered GetRegisteredUser(String username)
         {
             Registered registered;
-            _registeredUsers.TryGetValue(username,out registered);
+            _registeredUsers.TryGetValue(username, out registered);
             return registered;
         }
 
-
-
-        public bool isUserAVisitor(String username)
+        public bool IsUserAVisitor(String username)
         {
             if (GetVisitorUser(username) == null)
                 return false;
@@ -65,7 +68,7 @@ namespace MarketProject.Domain
         public User GetVisitorUser(String username)
         {
             User user = GetRegisteredUser(username);
-            if (user == null)// user is'nt registered
+            if (user == null)// user isn't registered
             {
                 foreach (Guest guest in _visitors_guests)
                 {
@@ -75,15 +78,43 @@ namespace MarketProject.Domain
             }
             return user;
         }
-        public void addItemToUserCart(String username, Store store, Item item, int amount)
+
+        public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
+        {
+            MessageToUser messageToUser = new MessageToUser(usernameReciever, storeName);
+            Registered reciever = GetRegisteredUser(usernameReciever);
+            reciever.SendMessage(messageToUser);
+        }
+
+        public void AddItemToUserCart(String username, Store store, Item item, int amount)
         {
             User user = GetVisitorUser(username);
-            user.addItemToCart(store, item, amount);
+            user.AddItemToCart(store, item, amount);
         }
+
         public int RemoveItemFromCart(String username, Item item, Store store)
         {
             User user = GetVisitorUser(username);
             return user.RemoveItemFromCart(item, store);
+        }
+
+        public void UpdateItemInUserCart(String username, Store store, Item item, int newQuantity)
+        {
+            if (newQuantity <= 0)
+                throw new ArgumentOutOfRangeException("cant update quantity of item to non-positive amount");
+            User user = GetVisitorUser(username);
+            user.UpdateItemInCart(store, item, newQuantity);
+        }
+
+        internal int GetUpdatingQuanitityDiffrence(string username, Item item, Store store, int newQuantity)
+        {
+            User user = GetVisitorUser(username);
+            int old_quantity = user.GetQuantityOfItemInCart(store, item);
+            return newQuantity - old_quantity;
+        }
+        public void PurchaceMyCart(String userToken)
+        {
+
         }
     }
 }

@@ -19,6 +19,10 @@ namespace MarketProject.Domain
             _password = password;
         }
 
+        public void SendMessage(MessageToUser message)
+        {
+            _messagesToUser.Add(message);
+        }
 
     }
 }
