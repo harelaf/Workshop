@@ -154,5 +154,56 @@ namespace MarketProject.Domain.Tests
                 Assert.Fail();
             }
         }
+
+        [TestMethod()]
+        public void RemoveItemFromStore_StoreDoesntExist_ThrowsException()
+        {
+            StoreManagement _storeManagement = new StoreManagement();
+            String storeName = "Krusty Krab";
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+
+            try
+            {
+                _storeManagement.RemoveItemFromStore(storeName, itemId);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [TestMethod()]
+        public void RemoveItemFromStore_StoreExists_NoException()
+        {
+            StoreManagement _storeManagement = new StoreManagement();
+            String storeName = "Krusty Krab";
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+            try
+            {
+                _storeManagement.OpenNewStore(null, storeName, null, null);
+                _storeManagement.AddItemToStoreStock(storeName, itemId, name, price, description, quantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _storeManagement.RemoveItemFromStore(storeName, itemId);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
     }
 }
