@@ -201,5 +201,11 @@ namespace MarketProject.Domain
             }
             _storeManagement.RateItem(username, item, storeName, rating, review);
         }
+
+        public Boolean GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
+        {
+
+            throw new NotImplementedException();
+        }
     }
 }

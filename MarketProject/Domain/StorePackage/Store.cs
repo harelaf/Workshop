@@ -87,6 +87,11 @@ namespace MarketProject.Domain
             return _stock.GetItemNames();
         }
 
+        public List<Item> getItemsByName(String itemName)
+        {
+            return _stock.GetItemsByName(itemName);
+        }
+
         public String GetInformation()
         {
             String info = $"{_storeName}\n";

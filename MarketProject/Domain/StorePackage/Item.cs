@@ -12,14 +12,16 @@ namespace MarketProject.Domain
         private String _name;
         private double _price;
         private String _description;
+        private String _category;
 
 
         public int ItemID => _itemID;
         public String Name => _name;
         public double Price => _price;
         public String Description => _description;
+        public String Category => _category;
 
-        public Item(int id, String name, double price, String description)
+        public Item(int id, String name, double price, String description, String category)
         {
             if (name == null)
             {
@@ -31,6 +33,7 @@ namespace MarketProject.Domain
             _name = Name;
             _price = price;
             _description = description;
+            _category = category;
         }
 
         public void RateItem(String username, int rating, String review)

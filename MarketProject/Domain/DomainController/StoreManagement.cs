@@ -69,6 +69,23 @@ namespace MarketProject.Domain
             item.RateItem(username, rating, review);
         }
 
+        public List<Item> GetItemInformation(String itemName, String itemCategory, String keyWord)
+        {
+            List<Item> filteredItems = new List<Item>();
+            foreach(String storeName in _stores.Keys)
+            {
+                List<Item> items = _stores[storeName].getItemsByName(itemName);
+                foreach(Item item in items)
+                {
+                    if(itemCategory == null || item.Category == itemCategory)
+                    {
+                        filteredItems.Add(item);
+                    }
+                }
+            }
+            return filteredItems;
+        }
+
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {
             if (amount_to_add <= 0)
