@@ -87,6 +87,11 @@ namespace MarketProject.Domain
             return _stock.GetItemNames();
         }
 
+        public List<Item> getItemsByName(String itemName)
+        {
+            return _stock.GetItemsByName(itemName);
+        }
+
         public String GetInformation()
         {
             String info = $"{_storeName}\n";
@@ -142,6 +147,11 @@ namespace MarketProject.Domain
             if (_stock.GetItem(itemId) == null)
                 throw new Exception($"An item with ID {itemId} doesnt exist in the stock.");
             _stock.RemoveItem(itemId);
+        }
+
+        public void AddMessage(MessageToStore message)
+        {
+            _messagesToStore.Enqueue(message);
         }
 
         public void CloseStore()

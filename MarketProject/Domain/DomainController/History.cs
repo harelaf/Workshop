@@ -15,14 +15,41 @@ namespace MarketProject.Domain
             _registeredPurchaseHistory = new Dictionary<String, List<Tuple<DateTime, ShoppingCart>>>();
         }
 
-        // Harel: TODO: FINISH THIS FUNCTION.
         public bool CheckIfUserPurchasedInStore(String username, String storeName)
         {
             if (!_registeredPurchaseHistory.ContainsKey(username))
                 return false;
 
             List<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[username];
+            foreach (Tuple<DateTime, ShoppingCart> purchase in purchases)
+            {
+                ShoppingBasket basket = purchase.Item2.GetShoppingBasket(storeName);
+                if(basket != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
+
+        public bool CheckIfUserPurchasedItemInStore(String username, String storeName, Item item)
+        {
+            if (!_registeredPurchaseHistory.ContainsKey(username))
+                return false;
+
+            List<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[username];
+            foreach (Tuple<DateTime, ShoppingCart> purchase in purchases)
+            {
+                ShoppingBasket basket = purchase.Item2.GetShoppingBasket(storeName);
+                if (basket != null)
+                {
+                    if (basket.isItemInBasket(item))
+                    {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 

@@ -128,7 +128,7 @@ namespace MarketProject.Service
         {//II.3.5
             throw new NotImplementedException();
         }
-        public Boolean FileComplaint(String authToken, int cartID,  String description)
+        public Boolean FileComplaint(String authToken, int cartID,  String message)
         {//II.3.6
             //to system admin!! should define some queue of messages for admin
             throw new NotImplementedException();
@@ -184,11 +184,11 @@ namespace MarketProject.Service
         {//II.4.12
             throw new NotImplementedException();
         }
-        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchasesHistory(String username, String storeName)
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
             throw new NotImplementedException();
         }
-        public void CloseStorePermanently(String username, String storeName)
+        public void CloseStorePermanently(String authToken, String storeName)
         {//II.6.1
             //send message to all roles in that store
             throw new NotImplementedException();

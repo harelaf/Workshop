@@ -79,5 +79,18 @@ namespace MarketProject.Domain
 
             return names;
         }
+
+        public List<Item> GetItemsByName(String itemName)
+        {
+            List<Item> items = new List<Item>();
+            foreach(Item item in _itemAndAmount.Keys)
+            {
+                if (item.Name.Contains(itemName))
+                {
+                    items.Add(item);
+                }
+            }
+            return items;
+        }
     }
 }

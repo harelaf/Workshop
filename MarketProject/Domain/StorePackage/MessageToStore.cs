@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class MessageToStore
+    public class MessageToStore
     {
         private String _storeName;
         private String _senderUsername;

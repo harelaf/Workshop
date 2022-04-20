@@ -42,5 +42,10 @@ namespace MarketProject.Domain
             _ratings[username] = new Tuple<int, String>(rating, review);
             return true;
         }
+
+        public bool HasRating(String username)
+        {
+            return _ratings.ContainsKey(username);
+        }
     }
 }

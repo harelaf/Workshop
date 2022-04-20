@@ -129,7 +129,7 @@ namespace MarketProject.Domain
             _storeManagement.RemoveItemFromStore(storeName, itemID);
         }
 
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String username, String storeName)
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String username, String storeName)
         {
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
@@ -190,6 +190,80 @@ namespace MarketProject.Domain
             _storeManagement.CloseStorePermanently(storeName);
             // Remove all owners/managers...
             // Send alerts to all roles of [storeName]
+        }
+
+
+        public void EditItemPrice(String username, String storeName, int itemID, double newPrice)
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, ???))
+             *     throw new Exception($"This user is not the founder of {storeName}.");
+             */
+            _storeManagement.EditItemPrice(storeName, itemID, newPrice);    
+        }
+        public void EditItemName(String username, String storeName, int itemID, int new_price, String newName)
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, ???))
+             *     throw new Exception($"This user is not the founder of {storeName}.");
+             */
+            _storeManagement.EditItemName(storeName, itemID, new_price, newName);       
+        }
+        public void EditItemDescription(String username, String storeName, int itemID, String newDescription)
+        {
+            /*
+             * if (!_userManagement.CheckUserPermission(username, ???))
+             *     throw new Exception($"This user is not the founder of {storeName}.");
+             */
+            _storeManagement.EditItemDescription(storeName, itemID, newDescription);
+        }
+
+        public void RateItem(String username, int itemID, String storeName, int rating, String review)
+
+        {
+            //should check that this user bought this item by his purches History
+            /*if(rating < 1 || rating > 5)
+            {
+                throw new ArgumentOutOfRangeException("Rate should be beteen 1 to 5");
+            }*/
+            Item item = _storeManagement.GetItem(storeName, itemID);
+            if (!_history.CheckIfUserPurchasedItemInStore(username, storeName, item))
+            {
+                throw new Exception("This user has never bought item with id: " + itemID +" at " + storeName);
+            }
+            _storeManagement.RateItem(username, item, rating, review);
+        }
+
+        public void GetItemInformation(String username, String itemName, String itemCategory, String keyWord)
+        {
+            if (!_userManagement.IsRegistered(username))
+            {
+                throw new Exception("User " + username + " not found in system");
+            }
+            
+            //TODO ron -> complete
+        }
+
+        public void SendMessageToStore(String username, String storeName, String title, String message)
+        {
+            if (!_userManagement.IsRegistered(username))
+            {
+                throw new Exception("User " + username + " not found in system");
+            }
+            _storeManagement.SendMessageToStore(username, storeName, title, message);
+        }
+
+        public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
+        {
+            if (!_storeManagement.CheckStoreNameExists(storeName))
+            {            
+                throw new Exception("Store " + storeName + " not found in system");
+            }
+            if (!_userManagement.IsRegistered(usernameReciever))
+            {
+                throw new Exception("User " + usernameReciever + " not found in system");
+            }
+            _userManagement.SendMessageToRegisterd(storeName, usernameReciever, title, message);
         }
     }
 }

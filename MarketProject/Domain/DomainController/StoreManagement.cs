@@ -43,6 +43,62 @@ namespace MarketProject.Domain
                 throw new Exception("there is no item: "+itemID+" in the given store");
             return item;    
         }
+        public void EditItemPrice(String storeName, int itemID, double newPrice)
+        {
+            Item item = GetItem(storeName, itemID);
+            item.SetPrice(newPrice);
+        }
+        public void EditItemName(String storeName, int itemID, int new_price, String newName)
+        { 
+            if(newName == null)
+            {
+                throw new ArgumentNullException("Store name mustn't be empty!");
+            }
+            Item item = GetItem(storeName, itemID); 
+            item.SetName(newName);
+        }
+        public void EditItemDescription(String storeName, int itemID, String newDescription)
+        {
+            Item item = GetItem(storeName, itemID);
+            item.SetName(newDescription);
+        }
+
+        public void RateItem(String username, Item item, int rating, String review)
+
+        {
+            item.RateItem(username, rating, review);
+        }
+
+        public List<Item> GetItemInformation(String itemName, String itemCategory, String keyWord)
+        {
+            List<Item> filteredItems = new List<Item>();
+            foreach(String storeName in _stores.Keys)
+            {
+                List<Item> items = _stores[storeName].getItemsByName(itemName);
+                foreach(Item item in items)
+                {
+                    if(itemCategory == null || item.Category == itemCategory)
+                    {
+                        if(keyWord == null || item.Description == null || item.Category.Contains(keyWord))
+                        {
+                            filteredItems.Add(item);
+                        }
+                                            }
+                }
+            }
+            return filteredItems;
+        }
+
+        public void SendMessageToStore(String username, String storeName, String title, String message)
+        {
+            if (!_stores.ContainsKey(storeName))
+            {
+                throw new Exception("Store " + storeName + " not found");
+            }
+            Store store = _stores[storeName];
+            MessageToStore messageToStore = new MessageToStore(storeName, username, title, message);
+            store.AddMessage(messageToStore);
+        }
 
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {

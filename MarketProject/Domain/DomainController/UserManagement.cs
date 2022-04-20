@@ -46,6 +46,11 @@ namespace MarketProject.Domain
             return (password != "");
         }
 
+        public bool IsRegistered(String username)
+        {
+            return _registeredUsers.ContainsKey(username);
+        }
+
         public Registered GetRegisteredUser(String username)
         {
             Registered registered;
@@ -72,6 +77,13 @@ namespace MarketProject.Domain
                 }
             }
             return user;
+        }
+
+        public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
+        {
+            MessageToUser messageToUser = new MessageToUser(usernameReciever, storeName);
+            Registered reciever = GetRegisteredUser(usernameReciever);
+            reciever.SendMessage(messageToUser);
         }
 
         public void AddItemToUserCart(String username, Store store, Item item, int amount)
