@@ -79,15 +79,15 @@ namespace MarketProject.Service
         {//II.4.8
             throw new NotImplementedException();
         }
-        public Boolean AddItemToStoreStock(String username, String storeName, int itemID, int quantity)
+        public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, int quantity)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean RemoveItemFromStore(String authToken, String storeName, int itemID)
+        public void RemoveItemFromStore(String authToken, String storeName, int itemID)
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
+        public void UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
         {//II.4.1
             throw new NotImplementedException();
         }
@@ -159,12 +159,12 @@ namespace MarketProject.Service
         {//II.4.7
             throw new NotImplementedException();
         }
-        public Boolean CloseStore(String authToken, String storeName)
+        public void CloseStore(String authToken, String storeName)
         {//II.4.9
             //state of store is INACTIVE-> which means its data still available
             throw new NotImplementedException();
         }
-        public Boolean ReopenStore(String authToken, String storeName)
+        public void ReopenStore(String authToken, String storeName)
         {//II.4.10
             //SHOULD VALIDATE THAT store state is INACTIVE
             throw new NotImplementedException();
@@ -184,13 +184,11 @@ namespace MarketProject.Service
         {//II.4.12
             throw new NotImplementedException();
         }
-
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
             throw new NotImplementedException();
         }
-
-        public Boolean CloseStorePermanently(String authToken, String storeName)
+        public void CloseStorePermanently(String authToken, String storeName)
         {//II.6.1
             //send message to all roles in that store
             throw new NotImplementedException();

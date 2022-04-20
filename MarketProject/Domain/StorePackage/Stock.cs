@@ -37,15 +37,8 @@ namespace MarketProject.Domain
 
         public void ChangeItemQuantity(int itemId, int quantity)
         {
-            ICollection<Item> items = _itemAndAmount.Keys;
-            foreach (Item item in items)
-            {
-                if (item.ItemID == itemId)
-                {
-                    _itemAndAmount[item] = quantity;
-                    break;
-                }
-            }
+            Item item = GetItem(itemId);
+            _itemAndAmount[item] = quantity;
         }
 
         public int GetItemAmount(Item item)
@@ -56,6 +49,12 @@ namespace MarketProject.Domain
         public void AddItem(Item item, int amount)
         {
             _itemAndAmount.Add(item, amount);
+        }
+
+        public void RemoveItem(int itemId)
+        {
+            Item item = GetItem(itemId);
+            _itemAndAmount.Remove(item);
         }
 
         public bool UnreserveItem(Item item, int amount)
@@ -75,7 +74,7 @@ namespace MarketProject.Domain
 
             foreach (Item item in keyList)
             {
-                //names.Add(item.GetName());
+                names.Add(item.Name);
             }
 
             return names;

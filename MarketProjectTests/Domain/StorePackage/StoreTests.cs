@@ -20,6 +20,7 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _store.RateStore(username, rating, review);
+                Assert.AreEqual(_store.GetRating(), rating);
             }
             catch (Exception)
             {
@@ -63,14 +64,24 @@ namespace MarketProject.Domain.Tests
             String name = "Krabby Patty";
             String description = "Delicious";
             int quantity = 5;
+            double price = 5.0;
             int newQuantity = 10;
-
-            //_store.addItem(...)
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+            }
+            catch(Exception)
+            {
+                Assert.Fail();
+            }
 
             try
             {
                 _store.UpdateStockQuantityOfItem(itemId, newQuantity);
-            } catch(Exception)
+                Item i = _store.GetItem(itemId);
+                Assert.AreEqual(_store.Stock.GetItemAmount(i), newQuantity);
+            }
+            catch (Exception)
             {
                 Assert.Fail();
             }
@@ -90,6 +101,105 @@ namespace MarketProject.Domain.Tests
             }
             catch (Exception)
             {
+            }
+        }
+
+        [TestMethod()]
+        public void AddItemToStoreStock_ItemIdIsUnique_NoException()
+        {
+            Store _store = new Store("Krusty Krab", null, null, null);
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                Assert.IsNotNull(_store.GetItem(itemId));
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod()]
+        public void AddItemToStoreStock_ItemIdIsNotUnique_ThrowsException()
+        {
+            Store _store = new Store("Krusty Krab", null, null, null);
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [TestMethod()]
+        public void RemoveItemFromStore_ItemDoesntExist_ThrowsException()
+        {
+            Store _store = new Store("Krusty Krab", null, null, null);
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+
+            try
+            {
+                _store.RemoveItemFromStore(itemId);
+                Assert.Fail();
+            } 
+            catch(Exception)
+            {
+            }
+        }
+
+        [TestMethod()]
+        public void RemoveItemFromStore_ItemExists_NoException()
+        {
+            Store _store = new Store("Krusty Krab", null, null, null);
+            int itemId = 1;
+            String name = "Krabby Patty";
+            String description = "yummy";
+            double price = 5.0;
+            int quantity = 10;
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _store.RemoveItemFromStore(itemId);
+                Item i = _store.GetItem(itemId);
+                Assert.IsNull(i);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
             }
         }
     }

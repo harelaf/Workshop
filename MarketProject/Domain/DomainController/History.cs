@@ -9,6 +9,12 @@ namespace MarketProject.Domain
         private IDictionary<String, List<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
         private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //username:String
 
+        public History()
+        {
+            _storePurchaseHistory = new Dictionary<String, List<Tuple<DateTime, ShoppingBasket>>>();
+            _registeredPurchaseHistory = new Dictionary<String, List<Tuple<DateTime, ShoppingCart>>>();
+        }
+
         public bool CheckIfUserPurchasedInStore(String username, String storeName)
         {
             if (!_registeredPurchaseHistory.ContainsKey(username))
@@ -25,6 +31,7 @@ namespace MarketProject.Domain
             }
             return false;
         }
+
 
         public bool CheckIfUserPurchasedItemInStore(String username, String storeName, Item item)
         {
