@@ -49,9 +49,19 @@ namespace MarketProject.Service
         {//II.2.4
             throw new NotImplementedException();
         }
-        public String ViewMyCart(String authToken) /*Add data object of cart*/
+        public Response<ShoppingCartDTO> ViewMyCart(String authToken) /*Add data object of cart*/
         {//II.2.4
-            throw new NotImplementedException();
+            Response<ShoppingCartDTO> response;
+            try
+            {
+                ShoppingCart shoppingCart= _market.ViewMyCart(authToken);
+                response = new Response<ShoppingCartDTO>(new ShoppingCartDTO(shoppingCart));
+            }
+            catch (Exception e)
+            {
+                response = new Response<ShoppingCartDTO>(null, e);
+            }
+            return response;
         }
         public Boolean PurchaseMyCart(String authToken, String address)
         {//II.2.5

@@ -273,5 +273,12 @@ namespace MarketProject.Domain
             if (_userManagement.IsUserLoggedin(userToken))
                 _history.AddRegisterPurchases(shoppingCartToDocument, _userManagement.GetRegisteredUsernameByToken(userToken)); 
         }
+
+        public ShoppingCart ViewMyCart(String authToken) 
+        {//II.2.4
+            if (!_userManagement.IsUserAVisitor(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            return _userManagement.GetUserShoppingCart(authToken);
+        }
     }
 }
