@@ -277,10 +277,19 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public void CloseStorePermanently(String authToken, String storeName)
+        public Response CloseStorePermanently(String authToken, String storeName)
         {//II.6.1
-            //send message to all roles in that store
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.CloseStorePermanently(authToken, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean GetRegisterdComplaints(String authToken)
         {//II.6.3
