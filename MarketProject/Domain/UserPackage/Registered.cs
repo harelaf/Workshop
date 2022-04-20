@@ -52,5 +52,10 @@ namespace MarketProject.Domain
                     return true;
             return false;
         }
+
+        internal void RemoveManagerRole(string storeName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

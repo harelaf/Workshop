@@ -211,5 +211,16 @@ namespace MarketProject.Domain
         {
             _state = StoreState.Closed;
         }
+
+        internal bool RemoveStoreOwner(string ownerUsername)
+        {
+            StoreOwner owner = GetOwner(ownerUsername);
+            _owners.Remove()
+        }
+
+        internal bool RemoveStoreManager(string managerUsername)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

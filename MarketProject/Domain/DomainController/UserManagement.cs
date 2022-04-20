@@ -127,5 +127,10 @@ namespace MarketProject.Domain
         {
             GetRegisteredUser(Username).AddRole(role);
         }
+
+        internal void RemoveOwnerRole(string ownerUsername)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -208,5 +208,10 @@ namespace MarketProject.Domain
                 throw new AccessViolationException("no store by that name.");
             return store.AddStoreOwner(newOwner);
         }
+
+        internal bool RemoveStoreOwner(string ownerUsername, string storeName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
