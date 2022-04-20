@@ -22,6 +22,13 @@ namespace MarketProject.Domain
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
         }
 
+        public UserManagement(IDictionary<String, Registered> registeredUsers, IDictionary<String, Registered> loggedinUsersTokens)
+        {
+            _registeredUsers = registeredUsers;
+            _loggedinUsersTokens = loggedinUsersTokens;
+            _visitorsGuestsTokens = new Dictionary<String, Guest>();
+        }
+
         // Currently returns whether successful or not (bound to change)
         public bool Register(String username, String password)
         {

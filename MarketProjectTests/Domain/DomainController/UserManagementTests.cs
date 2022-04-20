@@ -61,7 +61,7 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void Login_Valid_ReturnsToken()
         {
-            
+
             String username = "Test";
             String password = "123";
             Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
@@ -108,6 +108,55 @@ namespace MarketProject.Domain.Tests
 
 
             Assert.IsNull(token);
+        }
+
+        // ==================== LOGOUT ====================
+
+        [TestMethod()]
+        public void Logout_ValidToken_NotLoggedIn()
+        {
+            String username = "Test";
+            String password = "123";
+            String authToken = "abcd";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            userManagement.Logout(authToken);
+
+
+            Assert.IsFalse(userManagement.IsUserLoggedin(authToken));
+        }
+
+        [TestMethod()]
+        public void Logout_InvalidToken_StaysLoggedIn()
+        {
+            String username = "Test";
+            String password = "123";
+            String authToken = "abcd";
+            String triedToken = "a";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            Assert.ThrowsException<Exception>(()=>userManagement.Logout(triedToken));
+
+
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
         }
     }
 }
