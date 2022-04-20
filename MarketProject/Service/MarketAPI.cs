@@ -44,9 +44,25 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean Logout(String authToken)
+
+        /// <summary>
+        /// <para> For Req II.3.1. </para>
+        /// <para> Log out user identified by authToken.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user to log out.</param>
+        public Response Logout(String authToken)
         {//II.3.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.Logout(authToken);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean Register(String authToken, String username, String password)
         {//II.1.3

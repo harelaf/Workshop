@@ -110,6 +110,23 @@ namespace MarketProject.Domain
             return token;
         }
 
+        /// <summary>
+        /// <para> For Req II.3.1. </para>
+        /// <para> Log out user identified by authToken.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user to log out.</param>
+        public void Logout(String authToken)
+        {
+            if (IsUserLoggedin(authToken)) 
+            {
+                _loggedinUsersTokens.Remove(authToken);
+            }
+            else
+            {
+                throw new Exception("User not logged in.");
+            }
+        }
+
         public Registered GetRegisteredUser(String username)
         {
             Registered registered;

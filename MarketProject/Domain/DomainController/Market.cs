@@ -334,5 +334,15 @@ namespace MarketProject.Domain
             // TODO: Transfer cart?
             return _userManagement.Login(username, password);
         }
+
+        /// <summary>
+        /// <para> For Req II.3.1. </para>
+        /// <para> Log out user identified by authToken.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user to log out.</param>
+        public void Logout(String authToken)
+        {
+            _userManagement.Logout(authToken);
+        }
     }
 }
