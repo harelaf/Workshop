@@ -155,5 +155,15 @@ namespace MarketProject.Domain
         {
             GetRegisteredUser(Username).AddRole(role);
         }
+
+        public void AddRole(string Username, SystemRole role)
+        {
+            GetRegisteredUser(Username).AddRole(role);
+        }
+
+        public bool RemoveRole(string ownerUsername, string storeName)
+        {
+            return GetRegisteredUser(ownerUsername).RemoveRole(storeName);
+        }
     }
 }

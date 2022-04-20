@@ -16,6 +16,7 @@ namespace MarketProject.Domain
             _messagesToUser = new List<MessageToUser>();
             _username = username;
             _password = password;
+            _roles = new List<SystemRole>();
         }
         public void SendMessage(MessageToUser message)
         {
@@ -34,7 +35,7 @@ namespace MarketProject.Domain
 
         internal void AddRole(SystemRole role)
         {
-            if (!hasRoleInStore(role.StoreName))
+            if (hasRoleInStore(role.StoreName))
                 throw new UnauthorizedAccessException("already has this role.");
             _roles.Add(role);
         }
@@ -45,11 +46,18 @@ namespace MarketProject.Domain
         /// </summary>
         /// <param name="storeName"></param>
         /// <returns>true if has a role in this store (or if storename is null and user isn't a SystemAdmin), false otherwise.</returns>
-        internal bool hasRoleInStore(String storeName)
+        public bool hasRoleInStore(String storeName)
         {
             foreach (SystemRole role in _roles)
                 if (role.StoreName == storeName)
                     return true;
+            return false;
+        }
+        public bool RemoveRole(string storeName)
+        {
+            foreach(SystemRole role in _roles)
+                if(role.StoreName == storeName)
+                    return _roles.Remove(role);
             return false;
         }
     }

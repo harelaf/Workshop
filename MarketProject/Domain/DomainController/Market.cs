@@ -292,6 +292,7 @@ namespace MarketProject.Domain
             return false;
         }
 
+<<<<<<< HEAD
         public void PurchaseMyCart(String userToken, String adrerss)
         {//II.2.5
             if(!_userManagement.IsUserAVisitor(userToken))
@@ -308,6 +309,31 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserAVisitor(authToken))
                 throw new Exception("the given user is no longer a visitor in system");
             return _userManagement.GetUserShoppingCart(authToken);
+=======
+        public Boolean RemoveStoreOwner(String appointerUsername, String ownerUsername, String storeName)
+        {//II.4.5
+            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
+            {
+                if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
+                {
+                    _userManagement.RemoveRole(ownerUsername, storeName);
+                    return true;
+                }
+            }
+            return false;
+        }
+        public Boolean RemoveStoreManager(String appointerUsername, String managerUsername, String storeName)
+        {//II.4.8
+            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.REMOVE_MANAGER))
+            {
+                if (_storeManagement.RemoveStoreManager(managerUsername, storeName))
+                {
+                    _userManagement.RemoveRole(managerUsername, storeName);
+                    return true;
+                }
+            }
+            return false;
+>>>>>>> addAndRemoveRoles
         }
     }
 }

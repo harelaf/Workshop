@@ -216,5 +216,15 @@ namespace MarketProject.Domain
             foreach (Item item in basket.GetItems())
                 _stock.UnreserveItem(item, basket.GetAmountOfItem(item));
         }
+
+        public bool RemoveStoreOwner(string ownerUsername)
+        {
+            return _owners.Remove(GetOwner(ownerUsername));
+        }
+
+        public bool RemoveStoreManager(string managerUsername)
+        {
+            return _managers.Remove(GetManager(managerUsername));
+        }
     }
 }
