@@ -8,15 +8,24 @@ namespace MarketProjectTests
     [TestClass]
     public class UnitTestStore
     {
+
+        Store store;
+        int itemID;
+        Item item;
+        [TestInitialize]
+        public void setup()
+        {
+            store = new Store("STORE1", new StoreFounder("founder", "STORE1"), new PurchasePolicy(), new DiscountPolicy());
+            itemID = 1; 
+            item = new Item(itemID, "name1", 1.0, "description1", "category1");
+        }
+
         [TestMethod]
         public void TestReserveItem1()
         {
             //item exists in stock and there is more than amount in stock
             // Arrange
-            Store store = new Store("STORE1");
-            int itemID = 1;
             int inStock = 30;
-            Item item = new Item(itemID);
             store.Stock.AddItem(item, inStock);
             int amountToReserve = 10;
             //action
@@ -30,10 +39,7 @@ namespace MarketProjectTests
         {
             //item exists in stock but there is not enought in stock
             // Arrange
-            Store store = new Store("STORE1");
-            int itemID = 1;
             int inStock = 30;
-            Item item = new Item(itemID);
             store.Stock.AddItem(item, inStock);
             int amountToReserve = inStock + 10;
             //action+ assert
@@ -45,9 +51,6 @@ namespace MarketProjectTests
         {
             //item does'nt exists in stock.
             // Arrange
-            Store store = new Store("STORE1");
-            int itemID = 1;
-            Item item = new Item(itemID);
             int amountToReserve = 10;
             //action+ assert
             Assert.ThrowsException<Exception>(() => store.ReserveItem(itemID, amountToReserve));
@@ -57,10 +60,7 @@ namespace MarketProjectTests
         {
             //trying reserve amount<=0
             // Arrange
-            Store store = new Store("STORE1");
-            int itemID = 1;
             int inStock = 30;
-            Item item = new Item(itemID);
             store.Stock.AddItem(item, inStock);
             int amountToReserve = 0;
             //action+ assert
@@ -71,10 +71,7 @@ namespace MarketProjectTests
         {
             //item exists in stock and the given amount>0
             // Arrange
-            Store store = new Store("STORE1");
-            int itemID = 1;
             int inStock = 0;
-            Item item = new Item(itemID);
             store.Stock.AddItem(item, inStock);
             int amountToUneserve = 10;
             //action
@@ -88,9 +85,6 @@ namespace MarketProjectTests
         {
             //item does'nt exists in stock.
             // Arrange
-            Store store = new Store("STORE1");
-            int itemID = 1;
-            Item item = new Item(itemID);
             int amountToUnreserve = 10;
             //action+ assert
             Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
@@ -100,10 +94,7 @@ namespace MarketProjectTests
         {
             //trying unureserve amount_to_add<=0
             // Arrange
-            Store store = new Store("STORE1");
-            int itemID = 1;
             int inStock = 30;
-            Item item = new Item(itemID);
             store.Stock.AddItem(item, inStock);
             int amountToUnreserve = 0;
             //action+ assert

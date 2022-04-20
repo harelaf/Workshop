@@ -64,11 +64,52 @@ namespace MarketProject.Domain
             return _stock.GetItem(itemID);
         }
 
-        public void UnReserveItem(Item item, int amountToAdd)
+        internal bool AddStoreOwner(StoreOwner newOwner)
         {
-            if (amountToAdd <= 0)
+            if(!hasRoleInStore(newOwner.UserName))
+            {
+                _owners.Add(newOwner);
+                return true;
+            }
+            return false;
+        }
+
+        internal bool AddStoreManager(StoreManager newManager)
+        {
+            if (!hasRoleInStore(newManager.UserName))
+            {
+                _managers.Add(newManager);
+                return true;
+            }
+            return false;
+        }
+
+        private bool hasRoleInStore(string username)
+        {
+            return GetOwner(username) != null && GetOwner(username) != null && _founder.Equals(username);
+        }
+
+        private StoreManager GetManager(string ownerUserName)
+        {
+            foreach(StoreManager manager in _managers)
+                if(manager.UserName.Equals(ownerUserName))
+                    return manager;
+            return null;
+        }
+
+        private StoreOwner GetOwner(string managerUsername)
+        {
+            foreach (StoreOwner owner in _owners)
+                if (owner.UserName.Equals(managerUsername))
+                    return owner;
+            return null;
+        }
+        
+        public void UnReserveItem(Item item, int amount_to_add)
+        {
+            if (amount_to_add <= 0)
                 throw new Exception("cannt unreserve item with amount<1");
-            if (!_stock.UnreserveItem(item, amountToAdd))
+            if (!_stock.UnreserveItem(item, amount_to_add))
                 throw new Exception("can't unreserve item from that doesn't exists is store stock");
         }
 
