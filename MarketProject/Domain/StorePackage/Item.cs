@@ -10,13 +10,12 @@ namespace MarketProject.Domain
         private ICollection<IDiscount> _discounts;
         private int _itemID;
         private String _name;
-        private double _price;
+        public virtual double _price { get; set; }
         private String _description;
 
 
         public int ItemID => _itemID;
         public String Name => _name;
-        public double Price => _price;
         public String Description => _description;
 
         public Item(int id, String name, double price, String description)
@@ -25,7 +24,7 @@ namespace MarketProject.Domain
             {
                 throw new ArgumentNullException("name");
             }
-            _ratings = new List<Rating>();
+            _rating = new Rating();
             _discounts = new List<IDiscount>();
             _itemID = id;
             _name = Name;
@@ -49,5 +48,6 @@ namespace MarketProject.Domain
             _description = description;
         }
 
+        
     }
 }

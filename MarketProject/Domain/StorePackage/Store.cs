@@ -145,7 +145,7 @@ namespace MarketProject.Domain
         public void RestockBasket(ShoppingBasket basket)
         {
             foreach (Item item in basket.GetItems())
-                _stock.UnreserveItem(item, basket[item]);
+                _stock.UnreserveItem(item, basket.GetAmountOfItem(item));
         }
     }
 }

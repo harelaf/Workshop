@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class RealPaymentSystem : IPayment
+    public class RealPaymentSystem : IPayment
     {
         public bool pay(double price)
         {

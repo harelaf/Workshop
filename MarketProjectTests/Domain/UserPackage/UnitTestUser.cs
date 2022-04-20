@@ -1,10 +1,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MarketProject.Domain;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace MarketTesting
+
+namespace MarketProject.Domain.Tests
 {
-    [TestClass]
+    [TestClass()]
     public class UnitTestUser
     {
         [TestMethod]
@@ -12,9 +15,9 @@ namespace MarketTesting
         {
             //there is no basket with that store in cart:
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item item = new Item(1);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item item = new Item(1, "itwm1", 20, "banana");
             int amount = 8;
             //action
             guest.AddItemToCart(store, item, amount);
@@ -29,10 +32,10 @@ namespace MarketTesting
         {
             //there is allready basket with that store in cart:
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item item1 = new Item(1);
-            Item item2 = new Item(2);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item item1 = new Item(1, "itwm1", 20, "banana");
+            Item item2 = new Item(2, "itwm1", 20, "banana");
             int amount1 = 8;
             int amount2 = 10;
             //action
@@ -50,9 +53,9 @@ namespace MarketTesting
         {
             //there is allready basket with that store in cart:
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item item = new Item(1);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item item = new Item(1, "itwm1", 20, "banana");
             int amount1 = 8;
             int amount2 = 10;
             int expected_amount = amount1 + amount2;
@@ -69,9 +72,9 @@ namespace MarketTesting
         {
             //there is basket with that store and item in cart:
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item item = new Item(1);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item item = new Item(1, "itwm1", 20, "banana");
             int amount = 8;
             guest.AddItemToCart(store, item, amount);
             //action
@@ -87,9 +90,9 @@ namespace MarketTesting
         {
             //there is no basket with that store in cart:
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item item = new Item(1);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item item = new Item(1, "itwm1", 20, "banana");
             //action&Assert
             Assert.ThrowsException<Exception>(() =>
                    guest.RemoveItemFromCart(item, store));
@@ -100,10 +103,10 @@ namespace MarketTesting
         {
             //there is a basket with that store in cart, but there is no such item in it:
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item item1 = new Item(1);
-            Item item2 = new Item(2);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item item1 = new Item(1, "itwm1", 20, "banana");
+            Item item2 = new Item(2, "itwm1", 20, "banana");
             int amount1 = 8;
             guest.AddItemToCart(store, item1, amount1);
             //Action& Assert
@@ -115,9 +118,9 @@ namespace MarketTesting
         {
             // there is basket of that store in cart and the basket contains that item.
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item item = new Item(1);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item item = new Item(1, "itwm1", 20, "banana");
             int amount = 8;
             guest.AddItemToCart(store, item, amount);
             int amount_toUpdate = 4;
@@ -131,9 +134,9 @@ namespace MarketTesting
         {
             // there is basket of that store in cart and the basket contains that item. amount to update<0
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item item = new Item(1);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item item = new Item(1, "itwm1", 20, "banana");
             int amount = 8;
             guest.AddItemToCart(store, item, amount);
             int amount_toUpdate_1 = 0;
@@ -148,12 +151,12 @@ namespace MarketTesting
         {
             // there is basket of that store in cart but the basket doesn't contain that item.
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store = new Store("STORE1");
-            Item itemInBasket = new Item(1);
+            Guest guest = new Guest();
+            Store store = new Store("Krusty Krab", null, null, null);
+            Item itemInBasket = new Item(1, "itwm1", 20, "banana");
             int amountInBasket = 8;
             guest.AddItemToCart(store, itemInBasket, amountInBasket);
-            Item itemToUpdate = new Item(2);
+            Item itemToUpdate = new Item(2, "itwm1", 20, "banana");
             int amountToUpdate = 20;
             //Action &Aaaert
             Assert.ThrowsException<Exception>(()=> guest.UpdateItemInCart(store, itemToUpdate, amountToUpdate));
@@ -164,13 +167,13 @@ namespace MarketTesting
         {
             // there is no basket of that store in cart
             // Arrange
-            Guest guest = new Guest("sys_id_user_1");
-            Store store1 = new Store("STORE1");
-            Item item1 = new Item(1);
+            Guest guest = new Guest();
+            Store store1 = new Store("Krusty Krab", null, null, null);
+            Item item1 = new Item(1, "itwm1", 20, "banana");
             int amount1 = 8;
             guest.AddItemToCart(store1, item1, amount1);
-            Store store2 = new Store("STORE2");
-            Item itemToUpdate = new Item(2);
+            Store store2 = new Store("Krusty Krab2", null, null, null);
+            Item itemToUpdate = new Item(2, "itwm1", 20, "banana");
             int amountToUpdate = 20;
             //Action &Aaaert
             Assert.ThrowsException<Exception>(() => guest.UpdateItemInCart(store2, itemToUpdate, amountToUpdate));

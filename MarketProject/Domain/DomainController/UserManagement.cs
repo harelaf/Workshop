@@ -9,14 +9,14 @@ namespace MarketProject.Domain
     { // Dictionary mapping username to User
         private IDictionary<String,Registered> _registeredUsers;
         // Dictionary mapping tokens to loggedin users.
-        private IDictionary<String, Registered> _logedinUsersTokens;
+        private IDictionary<String, Registered> _loggedinUsersTokens;
         // Dictionary mapping tokens to guests.
         private IDictionary<String, Guest> _visitorsGuestsTokens;
 
         public UserManagement()
         {
             _registeredUsers = new Dictionary<String,Registered>();
-            _logedinUsersTokens = new Dictionary<String, Registered>();
+            _loggedinUsersTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
         }
 
@@ -66,12 +66,12 @@ namespace MarketProject.Domain
         {
             if(!IsUserLoggedin(token))
                 throw new ArgumentException("there is no registered user with that token");
-            return _logedinUsersTokens[token].Username;
+            return _loggedinUsersTokens[token].Username;
         }
 
         public bool IsUserLoggedin(String userToken)
         {
-            return _logedinUsersTokens.ContainsKey(userToken);
+            return _loggedinUsersTokens.ContainsKey(userToken);
         }
         public bool IsUserAVisitor(String userToken)
         {
@@ -82,8 +82,8 @@ namespace MarketProject.Domain
 
         public User GetVisitorUser(String userToken)
         {
-            if(_logedinUsersTokens.ContainsKey(userToken))
-                return _logedinUsersTokens[userToken];
+            if(_loggedinUsersTokens.ContainsKey(userToken))
+                return _loggedinUsersTokens[userToken];
             if (_visitorsGuestsTokens.ContainsKey(userToken))
                 return _visitorsGuestsTokens[userToken];
             throw new Exception("there is no user with that token in system.");

@@ -95,7 +95,7 @@ namespace MarketProject.Domain
             _storeManagement.RateStore(username, storeName, rating, review);
         }
 
-        public ICollection<(DateTime, ShoppingBasket)> GetStorePurchaseHistory(String username, String storeName)
+        public ICollection<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String username, String storeName)
         {
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class RealShippingSystem : IShipping
+    public class RealShippingSystem : IShipping
     {
         public bool ShippingAproval(String adr)
         {

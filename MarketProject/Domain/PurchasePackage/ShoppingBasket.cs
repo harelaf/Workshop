@@ -6,8 +6,8 @@ namespace MarketProject.Domain
 {
     public class ShoppingBasket
     {
-        private Store _store;
-        private IDictionary<Item, int> _items;
+        public virtual Store _store { get; set; }
+        public virtual IDictionary<Item, int> _items { get; set; }
         public Store Store => _store;
          
         public ShoppingBasket(Store store)
@@ -21,7 +21,7 @@ namespace MarketProject.Domain
                 _items[item] = _items[item] + amount;
             else _items.Add(item, amount);
         }
-        public int GetAmountOfItem(Item item)
+        public virtual int GetAmountOfItem(Item item)
         {
             if (!isItemInBasket(item))
                 throw new Exception("item doesn't exist in basket");
@@ -52,11 +52,11 @@ namespace MarketProject.Domain
             }
             return false;
         }
-        public boool IsBasketEmpty()
+        public bool IsBasketEmpty()
         {
             return _items.Count == 0;
         }
-        public ICollection<Item> GetItems()
+        public virtual ICollection<Item> GetItems()
         {
             return _items.Keys;
         }

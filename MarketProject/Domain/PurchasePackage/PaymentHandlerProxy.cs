@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class PaymentHandlerProxy : IPayment
+    public class PaymentHandlerProxy : IPayment
     {
         private RealPaymentSystem _realPaymentSystem;
         public PaymentHandlerProxy(RealPaymentSystem realPaymentSystem)
@@ -12,9 +12,9 @@ namespace MarketProject.Domain
             _realPaymentSystem = realPaymentSystem;
         }
         // includes mock of pay
-        public bool Pay(double price)
+        public virtual bool Pay(double price)
         {
-            if(RealPaymentSystem == null)
+            if(_realPaymentSystem == null)
                 return true;
             return _realPaymentSystem.pay(price);
         }

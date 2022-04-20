@@ -8,11 +8,8 @@ namespace MarketProject.Domain
     {
         private ShoppingCart _shoppingCart;
         public ShoppingCart ShoppingCart => _shoppingCart;
-        private String _token;
-        public String Token => _token;
-        protected User(String token)
+        protected User()
         {
-            _token = token;
             _shoppingCart = new ShoppingCart();
         }
 

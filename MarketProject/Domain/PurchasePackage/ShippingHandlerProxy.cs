@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class ShippingHandlerProxy : IShipping
+    public class ShippingHandlerProxy : IShipping
     {
         private RealShippingSystem _realShippingSystem;
 
@@ -13,7 +13,7 @@ namespace MarketProject.Domain
             _realShippingSystem = realShippingSystem;
         }
         // includes mock of shipp
-        public bool ShippingApproval(String adress)
+        public virtual bool ShippingApproval(String adress)
         {
             if(_realShippingSystem == null)
                 return true;

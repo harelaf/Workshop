@@ -6,8 +6,7 @@ namespace MarketProject.Domain
 {
     public class ShoppingCart
     {
-        private ICollection<ShoppingBasket> _shoppingBaskets;
-        internal ICollection<ShoppingBasket> ShoppingBaskets => _shoppingBaskets; 
+        public virtual ICollection<ShoppingBasket> _shoppingBaskets { get; set; }
 
         public ShoppingCart()
         {
@@ -38,7 +37,7 @@ namespace MarketProject.Domain
             throw new Exception("there is no such basket in cart to remove.");
         }
 
-        public void RelaseItemsOfCart()
+        public virtual void RelaseItemsOfCart()
         {
             foreach (ShoppingBasket basket in _shoppingBaskets)
                 basket.Store.RestockBasket(basket);
