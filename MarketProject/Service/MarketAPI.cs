@@ -88,9 +88,19 @@ namespace MarketProject.Service
         {//II.4.1
             throw new NotImplementedException();
         }
-        public void UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
+        public Response UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.UpdateStockQuantityOfItem(authToken, storeName, itemID, newQuantity);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean EditItemPrice(String username, int storeID, int itemID, float new_price)
         {//II.4.1
