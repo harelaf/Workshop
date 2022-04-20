@@ -1,4 +1,5 @@
 ﻿using MarketProject.Domain;
+using MarketProject.Service.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -199,9 +200,28 @@ namespace MarketProject.Service
         {//II.4.12
             throw new NotImplementedException();
         }
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
+        public Response<List<Tuple<DateTime, ShoppingBasketDTO>>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
-            throw new NotImplementedException();
+            Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response;
+            try
+            {
+                List<Tuple<DateTime, ShoppingBasket>> result = _market.GetStorePurchasesHistory(authToken, storeName);
+                List<Tuple<DateTime, ShoppingBasketDTO>> dtos = new List<Tuple<DateTime, ShoppingBasketDTO>>();
+
+                foreach(Tuple<DateTime, ShoppingBasket> tuple in result)
+                {
+                    ShoppingBasketDTO dto = new ShoppingBasketDTO(tuple.Item2);
+                    Tuple<DateTime, ShoppingBasketDTO> toAdd = new Tuple<DateTime, ShoppingBasketDTO>(tuple.Item1, dto);
+                    dtos.Add(toAdd);
+                }
+
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(dtos);
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(e);
+            }
+            return response;
         }
         public void CloseStorePermanently(String authToken, String storeName)
         {//II.6.1

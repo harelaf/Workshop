@@ -9,7 +9,8 @@ namespace MarketProject.Domain
         private Store _store;
         private IDictionary<Item, int> _items;
         public Store Store => _store;
-         
+        public IDictionary<Item, int> Items => _items;
+
         public ShoppingBasket(Store store)
         {
             _store = store;

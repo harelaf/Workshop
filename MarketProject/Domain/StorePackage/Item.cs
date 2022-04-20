@@ -14,7 +14,8 @@ namespace MarketProject.Domain
         private String _description;
         private String _category;
 
-
+        public Rating Rating => _rating;
+        public ICollection<IDiscount> Discounts => _discounts;
         public int ItemID => _itemID;
         public String Name => _name;
         public double Price => _price;
