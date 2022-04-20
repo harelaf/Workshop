@@ -4,13 +4,50 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    abstract class SystemRole
+    public abstract class SystemRole
     {
-        private Registered _appointer;
-        private Store _store;
-        public bool hasAccess(Operation op)
+        protected ISet<Operation> _operations;
+        private string _storeName = null;
+        public string StoreName
         {
-            throw new NotImplementedException();
+            get { return _storeName; }
+            protected set {
+                if (value == null || value.Equals(""))
+                    throw new ArgumentNullException("a role must get a unique store name.");
+                _storeName = value; 
+            }
+        }
+        private string _username;
+        public string UserName
+        {
+            get { return _username; }
+            private set
+            {
+                if (value == null || value.Equals(""))
+                    throw new ArgumentNullException("a role must get a unique user name.");
+                _username = value;
+            }
+        }
+
+        public ISet<Operation> operations => _operations;
+
+        public SystemRole(ISet<Operation> operations, string userName)
+        {
+            _operations = operations;
+            UserName = userName;
+        }
+
+        public abstract bool grantPermission(Operation op, string store, string grantor);
+
+        public abstract bool denyPermission(Operation op, string store, string denier);
+
+        //internal bool hasAccess(Operation op)
+        //{
+        //    return _operations.Contains(op);
+        //}
+        public bool hasAccess(string storeName, Operation op)
+        {
+            return storeName.Equals(_storeName) && _operations.Contains(op);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    internal interface IPurchase
+    public interface IPurchase
     {
     }
 }

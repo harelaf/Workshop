@@ -4,7 +4,10 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class PurchasePolicy
+    public class PurchasePolicy
     {
+        public PurchasePolicy()
+        {
+        }
     }
 }

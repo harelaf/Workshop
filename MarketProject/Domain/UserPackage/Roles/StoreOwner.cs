@@ -4,7 +4,39 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class StoreOwner : SystemRole
+    public class StoreOwner : SystemRole
     {
+        private string _appointer;
+        public StoreOwner(string userName, string storeName, string appointer) : base(getOps(), userName)
+        {
+            StoreName = storeName;
+            _appointer = appointer;
+        }
+
+        public override bool grantPermission(Operation op, string storeName, string grantor)
+        {
+            return false;
+        }
+
+        public override bool denyPermission(Operation op, string storeName, string denier)
+        {
+            return false;
+        }
+
+        private static ISet<Operation> getOps()
+        {
+            ISet<Operation> roles = new HashSet<Operation>();
+            roles.Add(Operation.MANAGE_INVENTORY);
+            roles.Add(Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY);
+            roles.Add(Operation.APPOINT_OWNER);
+            roles.Add(Operation.REMOVE_OWNER);
+            roles.Add(Operation.APPOINT_MANAGER);
+            roles.Add(Operation.REMOVE_MANAGER);
+            roles.Add(Operation.CHANGE_MANAGER_PREMISSIONS);
+            roles.Add(Operation.STORE_WORKERS_INFO);
+            roles.Add(Operation.RECEIVE_AND_REPLY_STORE_MESSAGE);
+            roles.Add(Operation.STORE_HISTORY_INFO);
+            return roles;
+        }
     }
 }

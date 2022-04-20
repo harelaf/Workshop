@@ -6,18 +6,18 @@ namespace MarketProject.Domain
 {
     public class ShoppingCart
     {
-        private ICollection<ShoppingBasket> _shoppingBaskets;
+        public virtual ICollection<ShoppingBasket> _shoppingBaskets { get; set; }
 
         public ShoppingCart()
         {
             _shoppingBaskets = new List<ShoppingBasket>();
         }
 
-        public ShoppingBasket GetShoppingBasket(Store store)
+        public ShoppingBasket GetShoppingBasket(String storeName)
         {
             foreach (ShoppingBasket basket in _shoppingBaskets)
             {
-                if (basket.Store.StoreName == store.StoreName)
+                if (basket.Store.StoreName == storeName)
                     return basket;
             }
             return null;
@@ -26,6 +26,21 @@ namespace MarketProject.Domain
         {
             _shoppingBaskets.Add(shoppingBasket);
         }
+        public bool isCartEmpty()
+        {
+            return _shoppingBaskets.Count == 0;
+        }
+        public void RemoveBasketFromCart(ShoppingBasket basket)
+        {
+            if (!isCartEmpty() && _shoppingBaskets.Contains(basket))
+                _shoppingBaskets.Remove(basket);
+            throw new Exception("there is no such basket in cart to remove.");
+        }
 
+        public virtual void RelaseItemsOfCart()
+        {
+            foreach (ShoppingBasket basket in _shoppingBaskets)
+                basket.Store.RestockBasket(basket);
+        }
     }
 }
