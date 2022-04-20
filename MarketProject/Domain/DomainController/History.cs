@@ -4,10 +4,10 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    class History
+    public class History
     {
-        private IDictionary<String, List<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
-        private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //username:String
+        private IDictionary<String, ICollection<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
+        private IDictionary<String, ICollection<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //username:String
 
         public History()
         {
@@ -58,6 +58,24 @@ namespace MarketProject.Domain
             if (!_storePurchaseHistory.ContainsKey(storeName))
                 throw new Exception($"There is purchase history for {storeName} yet.");
             return _storePurchaseHistory[storeName];
+        }
+
+        public void AddStoresPurchases(ShoppingCart shoppingCart)
+        {
+            foreach (ShoppingBasket shoppingBasket in shoppingCart._shoppingBaskets)
+            {
+                String storeName = shoppingBasket.Store.GetName();
+                if (!_storePurchaseHistory.ContainsKey(storeName))
+                    _storePurchaseHistory.Add(storeName, new List<Tuple<DateTime, ShoppingBasket>>());
+                _storePurchaseHistory[storeName].Add(new Tuple<DateTime, ShoppingBasket>(DateTime.Now, shoppingBasket));              
+            }
+        }
+        public void AddRegisterPurchases(ShoppingCart shoppingCart, String username)
+        {
+            if (!_registeredPurchaseHistory.ContainsKey(username))
+                _registeredPurchaseHistory.Add(username, new List<Tuple<DateTime, ShoppingCart>>());
+            _registeredPurchaseHistory[username].Add(new Tuple<DateTime, ShoppingCart>(DateTime.Now, shoppingCart));
+
         }
     }
 }

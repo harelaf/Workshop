@@ -13,6 +13,7 @@ namespace MarketProject.Service
         public MarketAPI()
         {
             _market = new Market();
+
         }
 
         public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
@@ -52,7 +53,7 @@ namespace MarketProject.Service
         {//II.2.4
             throw new NotImplementedException();
         }
-        public Boolean PurchaseMyCart(String authToken)
+        public Boolean PurchaseMyCart(String authToken, String address)
         {//II.2.5
             throw new NotImplementedException();
         }
