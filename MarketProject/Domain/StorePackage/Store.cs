@@ -64,11 +64,52 @@ namespace MarketProject.Domain
             return _stock.GetItem(itemID);
         }
 
-        public void UnReserveItem(Item item, int amountToAdd)
+        internal bool AddStoreOwner(StoreOwner newOwner)
         {
-            if (amountToAdd <= 0)
+            if(!hasRoleInStore(newOwner.UserName))
+            {
+                _owners.Add(newOwner);
+                return true;
+            }
+            return false;
+        }
+
+        internal bool AddStoreManager(StoreManager newManager)
+        {
+            if (!hasRoleInStore(newManager.UserName))
+            {
+                _managers.Add(newManager);
+                return true;
+            }
+            return false;
+        }
+
+        private bool hasRoleInStore(string username)
+        {
+            return GetOwner(username) != null && GetOwner(username) != null && _founder.Equals(username);
+        }
+
+        private StoreManager GetManager(string ownerUserName)
+        {
+            foreach(StoreManager manager in _managers)
+                if(manager.UserName.Equals(ownerUserName))
+                    return manager;
+            return null;
+        }
+
+        private StoreOwner GetOwner(string managerUsername)
+        {
+            foreach (StoreOwner owner in _owners)
+                if (owner.UserName.Equals(managerUsername))
+                    return owner;
+            return null;
+        }
+        
+        public void UnReserveItem(Item item, int amount_to_add)
+        {
+            if (amount_to_add <= 0)
                 throw new Exception("cannt unreserve item with amount<1");
-            if (!_stock.UnreserveItem(item, amountToAdd))
+            if (!_stock.UnreserveItem(item, amount_to_add))
                 throw new Exception("can't unreserve item from that doesn't exists is store stock");
         }
 
@@ -95,6 +136,7 @@ namespace MarketProject.Domain
         public String GetInformation()
         {
             String info = $"{_storeName}\n";
+            // founder.name
             info += $"- Founded by {"founder.name"}\n";
             String ownerNames = "";
             foreach (StoreOwner owner in _owners)
@@ -126,11 +168,31 @@ namespace MarketProject.Domain
                 throw new Exception($"User {username} already rated this store.");
         }
 
-        public void UpdateStockQuantityOfItem(int itemID, int newQuantity)
+        public void UpdateStockQuantityOfItem(int itemId, int newQuantity)
         {
-            if (_stock.GetItem(itemID) == null)
-                throw new Exception($"An item with ID {itemID} doesnt exist in the stock.");
-            _stock.ChangeItemQuantity(itemID, newQuantity);
+            if (_stock.GetItem(itemId) == null)
+                throw new Exception($"An item with ID {itemId} doesnt exist in the stock.");
+            _stock.ChangeItemQuantity(itemId, newQuantity);
+        }
+
+        public void AddItemToStoreStock(int itemId, String name, double price, String description, String category, int quantity)
+        {
+            if (_stock.GetItem(itemId) != null)
+                throw new Exception($"An item with ID {itemId} already exists in the stock.");
+            Item newItem = new Item(itemId, name, price, description, category);
+            _stock.AddItem(newItem, quantity);
+        }
+
+        public void RemoveItemFromStore(int itemId)
+        {
+            if (_stock.GetItem(itemId) == null)
+                throw new Exception($"An item with ID {itemId} doesnt exist in the stock.");
+            _stock.RemoveItem(itemId);
+        }
+
+        public void AddMessage(MessageToStore message)
+        {
+            _messagesToStore.Enqueue(message);
         }
 
         public void CloseStore()

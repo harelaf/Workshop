@@ -46,6 +46,11 @@ namespace MarketProject.Domain
             return (password != "");
         }
 
+        public bool IsRegistered(String username)
+        {
+            return _registeredUsers.ContainsKey(username);
+        }
+
         public Registered GetRegisteredUser(String username)
         {
             Registered registered;
@@ -55,9 +60,7 @@ namespace MarketProject.Domain
 
         public bool IsUserAVisitor(String username)
         {
-            if (GetVisitorUser(username) == null)
-                return false;
-            return true;
+            return GetVisitorUser(username) != null;
         }
 
         public User GetVisitorUser(String username)
@@ -74,10 +77,25 @@ namespace MarketProject.Domain
             return user;
         }
 
+        public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
+        {
+            MessageToUser messageToUser = new MessageToUser(usernameReciever, storeName);
+            Registered reciever = GetRegisteredUser(usernameReciever);
+            reciever.SendMessage(messageToUser);
+        }
+
         public void AddItemToUserCart(String username, Store store, Item item, int amount)
         {
             User user = GetVisitorUser(username);
             user.AddItemToCart(store, item, amount);
+        }
+
+        internal bool checkAccess(string appointerUsername, string storeName, Operation op)
+        {
+            //Registered user = GetRegisteredUser(appointerUsername);
+            //if (user != null)
+            //    return user.hasAccess(storeName, op);
+            return false;
         }
 
         public int RemoveItemFromCart(String username, Item item, Store store)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MarketProject.Domain
 {
@@ -18,7 +17,9 @@ namespace MarketProject.Domain
             _username = username;
             _password = password;
         }
-
-
+        public void SendMessage(MessageToUser message)
+        {
+            _messagesToUser.Add(message);
+        }
     }
 }

@@ -45,7 +45,7 @@ namespace MarketProject.Domain
         }
         public int GetQuantityOfItemInCart(Store store, Item item)
         {
-            ShoppingBasket shoppingBasket = _shoppingCart.GetShoppingBasket(store);
+            ShoppingBasket shoppingBasket = _shoppingCart.GetShoppingBasket(store.StoreName);
             if (shoppingBasket == null)
                 throw new Exception("your cart doesnt contain any basket with the given store");
             return shoppingBasket.GetAmountOfItem(item);

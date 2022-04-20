@@ -63,7 +63,7 @@ namespace MarketProject.Domain
             item.SetName(newDescription);
         }
 
-        public void RateItem(String username, Item item, String storeName, int rating, String review)
+        public void RateItem(String username, Item item, int rating, String review)
 
         {
             item.RateItem(username, rating, review);
@@ -89,6 +89,17 @@ namespace MarketProject.Domain
             return filteredItems;
         }
 
+        public void SendMessageToStore(String username, String storeName, String title, String message)
+        {
+            if (!_stores.ContainsKey(storeName))
+            {
+                throw new Exception("Store " + storeName + " not found");
+            }
+            Store store = _stores[storeName];
+            MessageToStore messageToStore = new MessageToStore(storeName, username, title, message);
+            store.AddMessage(messageToStore);
+        }
+
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {
             if (amount_to_add <= 0)
@@ -99,8 +110,6 @@ namespace MarketProject.Domain
 
         public void OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
-            if (CheckStoreNameExists(storeName))
-                throw new Exception($"A store with the name {storeName} already exists in the system.");
             Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
             _stores[storeName] = newStore;
         }
@@ -140,6 +149,22 @@ namespace MarketProject.Domain
                 return false;
             Store store = _stores[storeName];
             return store.isActive();
+        }
+
+        public void AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, String category, int quantity)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.AddItemToStoreStock(itemID, name, price, description, category, quantity);
+        }
+
+        public void RemoveItemFromStore(String storeName, int itemID)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.RemoveItemFromStore(itemID);
         }
 
         public void CloseStore(String storeName)
