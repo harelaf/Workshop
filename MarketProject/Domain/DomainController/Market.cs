@@ -292,24 +292,24 @@ namespace MarketProject.Domain
             return false;
         }
 
-<<<<<<< HEAD
-        public void PurchaseMyCart(String userToken, String adrerss)
+        public void PurchaseMyCart(String userToken, String address, String city, String country, String zip, String purchaserName)
         {//II.2.5
             if(!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
-            ShoppingCart shoppingCartToDocument = _userManagement.PurchaceMyCart(userToken, adrerss);
+            ShoppingCart shoppingCartToDocument = _userManagement.PurchaceMyCart(userToken, address, city, country, zip, purchaserName);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
             if (_userManagement.IsUserLoggedin(userToken))
                 _history.AddRegisterPurchases(shoppingCartToDocument, _userManagement.GetRegisteredUsernameByToken(userToken)); 
         }
 
-        public ShoppingCart ViewMyCart(String authToken) 
+        public ShoppingCart ViewMyCart(String authToken)
         {//II.2.4
             if (!_userManagement.IsUserAVisitor(authToken))
                 throw new Exception("the given user is no longer a visitor in system");
             return _userManagement.GetUserShoppingCart(authToken);
-=======
+        }
+
         public Boolean RemoveStoreOwner(String appointerUsername, String ownerUsername, String storeName)
         {//II.4.5
             if (_userManagement.checkAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
@@ -333,7 +333,18 @@ namespace MarketProject.Domain
                 }
             }
             return false;
->>>>>>> addAndRemoveRoles
+        }
+        public ICollection<Tuple<DateTime, ShoppingCart>> GetMyPurchases(String authToken)
+        {//II.3.7
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            return _history.GetRegistreredPurchaseHistory(_userManagement.GetRegisteredUsernameByToken(authToken));
+        }
+        public Registered GetUserInformation(String authToken)
+        {
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
     }
 }

@@ -11,8 +11,8 @@ namespace MarketProject.Domain
 
         public History()
         {
-            _storePurchaseHistory = new Dictionary<String, List<Tuple<DateTime, ShoppingBasket>>>();
-            _registeredPurchaseHistory = new Dictionary<String, List<Tuple<DateTime, ShoppingCart>>>();
+            _storePurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingBasket>>>();
+            _registeredPurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingCart>>>();
         }
 
         public bool CheckIfUserPurchasedInStore(String username, String storeName)
@@ -20,7 +20,7 @@ namespace MarketProject.Domain
             if (!_registeredPurchaseHistory.ContainsKey(username))
                 return false;
 
-            List<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[username];
+            ICollection<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[username];
             foreach (Tuple<DateTime, ShoppingCart> purchase in purchases)
             {
                 ShoppingBasket basket = purchase.Item2.GetShoppingBasket(storeName);
@@ -38,7 +38,7 @@ namespace MarketProject.Domain
             if (!_registeredPurchaseHistory.ContainsKey(username))
                 return false;
 
-            List<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[username];
+            ICollection<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[username];
             foreach (Tuple<DateTime, ShoppingCart> purchase in purchases)
             {
                 ShoppingBasket basket = purchase.Item2.GetShoppingBasket(storeName);
@@ -76,6 +76,12 @@ namespace MarketProject.Domain
                 _registeredPurchaseHistory.Add(username, new List<Tuple<DateTime, ShoppingCart>>());
             _registeredPurchaseHistory[username].Add(new Tuple<DateTime, ShoppingCart>(DateTime.Now, shoppingCart));
 
+        }
+        public ICollection<Tuple<DateTime, ShoppingCart>> GetRegistreredPurchaseHistory(String username)
+        {
+            if (!_registeredPurchaseHistory.ContainsKey(username))
+                throw new Exception($"Purchase History of User: {username} is Empty. User has'nt purchased yet.");
+            return _registeredPurchaseHistory[username];
         }
     }
 }

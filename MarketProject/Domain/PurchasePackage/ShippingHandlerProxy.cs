@@ -13,11 +13,11 @@ namespace MarketProject.Domain
             _realShippingSystem = realShippingSystem;
         }
         // includes mock of shipp
-        public virtual bool ShippingApproval(String adress)
+        public virtual bool ShippingApproval(String address, String city, String country, String zip, String purchaserName)
         {
             if(_realShippingSystem == null)
                 return true;
-            return _realShippingSystem.ShippingAproval(adress);
+            return _realShippingSystem.ShippingAproval(address, city, country, zip, purchaserName);
         }
     }
 }
