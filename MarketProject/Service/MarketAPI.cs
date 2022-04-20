@@ -37,17 +37,47 @@ namespace MarketProject.Service
             //remmeber to fire him for all its roles
             throw new NotImplementedException();
         }
-        public Boolean AddItemToCart(String authToken, int itemID, String storeName, int amount)
+        public Response AddItemToCart(String authToken, int itemID, String storeName, int amount)
         {//II.2.3
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AddItemToCart(authToken, itemID, storeName, amount);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean RemoveItemFromCart(String authToken, int itemID, String storeName)
+        public Response RemoveItemFromCart(String authToken, int itemID, String storeName)
         {//II.2.4
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveItemFromCart(authToken, itemID, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean UpdateQuantityOfItemInCart(String authToken, int itemID, String storeName, int newQuantity)
+        public Response UpdateQuantityOfItemInCart(String authToken, int itemID, String storeName, int newQuantity)
         {//II.2.4
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.UpdateQuantityOfItemInCart(authToken, itemID, storeName, newQuantity);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response<ShoppingCartDTO> ViewMyCart(String authToken) /*Add data object of cart*/
         {//II.2.4
@@ -63,9 +93,19 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean PurchaseMyCart(String authToken, String address)
+        public Response PurchaseMyCart(String authToken, String address, String city, String country, String zip, String purchaserName)
         {//II.2.5
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName); 
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response OpenNewStore(String authToken, String storeName)
         {//II.3.2
@@ -198,10 +238,25 @@ namespace MarketProject.Service
             //to system admin!! should define some queue of messages for admin
             throw new NotImplementedException();
         }
-        public Boolean GetMyPurchases(String authToken)
+        public Response<ICollection<PurchasedCartDTO>> GetMyPurchasesHistory(String authToken)
         {//II.3.7
-            //we may add func that get the purchase by date
-            throw new NotImplementedException();
+            Response<ICollection<PurchasedCartDTO>> response;
+            try
+            {
+                ICollection<Tuple<DateTime ,ShoppingCart>> purchasedCarts = _market.GetMyPurchases(authToken);
+                ICollection<PurchasedCartDTO> purchasedCartsDTO = new List<PurchasedCartDTO>();
+                foreach (Tuple<DateTime ,ShoppingCart> purchase in purchasedCarts)
+                {
+                    purchasedCartsDTO.Add(new PurchasedCartDTO(purchase.Item1, purchase.Item2));
+                }
+
+                response = new Response<ICollection<PurchasedCartDTO>>(purchasedCartsDTO);
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<PurchasedCartDTO>>(null, e);
+            }
+            return response;
         }
         public Boolean GetUserInformation(String authToken)
         {//II.3.8
