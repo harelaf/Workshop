@@ -56,13 +56,19 @@ namespace MarketProject.Service
         {//II.2.5
             throw new NotImplementedException();
         }
-
-        // TODO: WHEN WE KNOW MORE ABOUT DISCOUNT/PURCHASE POLICIES, ADD PARAMETERS HERE:
-        // TODO: HOW DO I GET A STOREFOUNDER?
-        public bool OpenNewStore(String authToken, String storeName)
-
+        public Response OpenNewStore(String authToken, String storeName)
         {//II.3.2
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.OpenNewStore(authToken, storeName, new PurchasePolicy(), new DiscountPolicy());
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean AddStoreManager(String authToken, String ownerUsername, String storeName)
         {//II.4.6
