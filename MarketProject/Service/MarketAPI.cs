@@ -122,10 +122,19 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public String GetStoreInformation(String username, String storeName)
+        public Response<String> GetStoreInformation(String authToken, String storeName)
         {//II.2.1
-         //should return data of store + the items it owns
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                String result = _market.GetStoreInformation(authToken, storeName);
+                response = new Response<String>(result);
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(e);
+            }
+            return response;
         }
         public Boolean GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {//II.2.2
