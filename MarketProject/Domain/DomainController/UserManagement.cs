@@ -142,5 +142,13 @@ namespace MarketProject.Domain
                 throw new Exception("can't purchase an emptyCart");
              return user.PurchaseMyCart(adress);
         }
+
+        internal ShoppingCart GetUserShoppingCart(string userToken)
+        {
+            User user = GetVisitorUser(userToken);
+            if (user.ShoppingCart.isCartEmpty())
+                throw new Exception("Your shopping cart is empty!");
+            return user.ShoppingCart;
+        }
     }
 }
