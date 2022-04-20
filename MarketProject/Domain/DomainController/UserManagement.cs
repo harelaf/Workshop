@@ -123,14 +123,14 @@ namespace MarketProject.Domain
 
         }
 
-        internal void AddRole(string Username, SystemRole role)
+        public void AddRole(string Username, SystemRole role)
         {
             GetRegisteredUser(Username).AddRole(role);
         }
 
-        internal void RemoveOwnerRole(string ownerUsername)
+        public bool RemoveRole(string ownerUsername, string storeName)
         {
-            throw new NotImplementedException();
+            return GetRegisteredUser(ownerUsername).RemoveRole(storeName);
         }
     }
 }

@@ -193,7 +193,7 @@ namespace MarketProject.Domain
             store.CloseStorePermanently();
         }
 
-        internal bool AddStoreManager(StoreManager newManager, string storeName)
+        public bool AddStoreManager(StoreManager newManager, string storeName)
         {
             Store store = GetStore(storeName);
             if (store == null)
@@ -201,7 +201,7 @@ namespace MarketProject.Domain
             return store.AddStoreManager(newManager);
         }
 
-        internal bool AddStoreOwner(StoreOwner newOwner, string storeName)
+        public bool AddStoreOwner(StoreOwner newOwner, string storeName)
         {
             Store store = GetStore(storeName);
             if (store == null)
@@ -209,9 +209,20 @@ namespace MarketProject.Domain
             return store.AddStoreOwner(newOwner);
         }
 
-        internal bool RemoveStoreOwner(string ownerUsername, string storeName)
+        public bool RemoveStoreOwner(string ownerUsername, string storeName)
         {
-            throw new NotImplementedException();
+            Store store = GetStore(storeName);
+            if (store == null)
+                return false;
+            return store.RemoveStoreOwner(ownerUsername);
+        }
+
+        public bool RemoveStoreManager(string managerUsername, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                return false;
+            return store.RemoveStoreManager(managerUsername);
         }
     }
 }
