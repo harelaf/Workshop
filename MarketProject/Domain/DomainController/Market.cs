@@ -292,7 +292,7 @@ namespace MarketProject.Domain
             return false;
         }
 
-        public void PurchaseMyCart(String userToken, String adrerss)
+        public void PurchaseMyCart(String userToken, String address, String city, String country, String zip, String purchaserName)
         {//II.2.5
             if(!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
