@@ -108,9 +108,19 @@ namespace MarketProject.Service
             //should check that this user bought this item by his purches History
             throw new NotImplementedException();
         }
-        public bool RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
+        public Response RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RateStore(authToken, storeName, rating, review);
+                response = new Response();
+            } 
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public String GetStoreInformation(String username, String storeName)
         {//II.2.1
