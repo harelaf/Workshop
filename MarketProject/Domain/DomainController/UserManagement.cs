@@ -17,13 +17,6 @@ namespace MarketProject.Domain
 
         public UserManagement(IDictionary<String, Registered> registeredUsers)
         {
-            _registeredUsers = new Dictionary<String,Registered>();
-            _loggedinUsersTokens = new Dictionary<String, Registered>();
-            _visitorsGuestsTokens = new Dictionary<String, Guest>();
-        }
-
-        public UserManagement(IDictionary<String, Registered> registeredUsers)
-        {
             _registeredUsers = registeredUsers;
             _loggedinUsersTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
@@ -67,11 +60,11 @@ namespace MarketProject.Domain
             String authToken = null;
             Registered registered = GetRegisteredUser(username);
             if (registered != null &&  // User with the username exists
-                !_authTokens.Values.Contains(username) && // Not logged in currently
+                !_loggedinUsersTokens.Values.Contains(registered) && // Not logged in currently
                 registered.Login(password)) // Login details correct
             {
                 authToken = UserManagement.GenerateToken();
-                if (!_authTokens.TryAdd(authToken, username))
+                if (!_loggedinUsersTokens.TryAdd(authToken, registered))
                 { // Something went wrong, couldn't add.
                     authToken = null;
                 }
@@ -146,7 +139,7 @@ namespace MarketProject.Domain
 
         public void AddItemToUserCart(String userToken, Store store, Item item, int amount)
         {
-            User user = GetVisitorUser(username);
+            User user = GetVisitorUser(userToken);
             user.AddItemToCart(store, item, amount);
         }
 
@@ -160,7 +153,7 @@ namespace MarketProject.Domain
 
         public int RemoveItemFromCart(String userToken, Item item, Store store)
         {
-            User user = GetVisitorUser(username);
+            User user = GetVisitorUser(userToken);
             return user.RemoveItemFromCart(item, store);
         }
 
