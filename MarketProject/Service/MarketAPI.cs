@@ -213,10 +213,19 @@ namespace MarketProject.Service
         {//II.4.7
             throw new NotImplementedException();
         }
-        public void CloseStore(String authToken, String storeName)
+        public Response CloseStore(String authToken, String storeName)
         {//II.4.9
-            //state of store is INACTIVE-> which means its data still available
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.CloseStore(authToken, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public void ReopenStore(String authToken, String storeName)
         {//II.4.10
