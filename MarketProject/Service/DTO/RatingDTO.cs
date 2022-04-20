@@ -1,18 +1,19 @@
-﻿using System;
+﻿using MarketProject.Domain;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain
+namespace MarketProject.Service.DTO
 {
-    public class Rating
+    class RatingDTO
     {
-        private Dictionary<String, Tuple<int, String>> _ratings; //<username:String, <rating:int, review:String>>
+        private Dictionary<String, Tuple<int, String>> _ratings;
 
         public Dictionary<String, Tuple<int, String>> Ratings => _ratings;
 
-        public Rating()
+        public RatingDTO(Rating rating)
         {
-            _ratings = new Dictionary<String, Tuple<int, String>>();
+            _ratings = rating.Ratings;
         }
 
         public float GetRating()
@@ -35,19 +36,6 @@ namespace MarketProject.Domain
                 return $"User: {username}\nGave a rating of: {review.Item1}\nWith a review:\n{review.Item2}\n";
             else
                 return $"User: {username}\nGave a rating of: {review.Item1}\nWithout a review\n";
-        }
-
-        public bool AddRating(String username, int rating, String review)
-        {
-            if (_ratings.ContainsKey(username))
-                return false;
-            _ratings[username] = new Tuple<int, String>(rating, review);
-            return true;
-        }
-
-        public bool HasRating(String username)
-        {
-            return _ratings.ContainsKey(username);
         }
     }
 }
