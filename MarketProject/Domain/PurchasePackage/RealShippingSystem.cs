@@ -6,7 +6,7 @@ namespace MarketProject.Domain
 {
     public class RealShippingSystem : IShipping
     {
-        public bool ShippingAproval(String adr)
+        public bool ShippingAproval(String address, String city, String country, String zip, String purchaserName)
         {
             throw new NotImplementedException();
         }

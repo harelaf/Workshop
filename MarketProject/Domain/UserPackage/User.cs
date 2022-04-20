@@ -50,10 +50,10 @@ namespace MarketProject.Domain
                 throw new Exception("your cart doesnt contain any basket with the given store");
             return shoppingBasket.GetAmountOfItem(item);
         }
-        public ShoppingCart PurchaseMyCart(String adress)
+        public ShoppingCart PurchaseMyCart(String address, String city, String country, String zip, String purchaserName)
         {
             ShoppingCart cart = _shoppingCart;
-            PurchaseProcess.GetInstance().Purchase(adress, cart);
+            PurchaseProcess.GetInstance().Purchase(address, city, country, zip, purchaserName, cart);
             _shoppingCart = new ShoppingCart();
             return cart;
         }

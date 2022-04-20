@@ -31,11 +31,11 @@ namespace MarketProject.Domain
             _instance._shippingHandlerProxy = shippingHandlerProxy;
             _instance._paymentHandlerProxy = paymentHandlerProxy;
         }
-        public void Purchase(string adr, ShoppingCart cartToPurchase)
+        public void Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase)
         {
             string errorMessage="";
             //first: should check that shippingSystem willig to provide cart:
-            if(_shippingHandlerProxy.ShippingApproval(adr))// ------AFIK: send cart?????------
+            if(_shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName))
             {
                 //second: the actual payment:
                 double price = CalculatePrice(cartToPurchase);

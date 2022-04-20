@@ -296,7 +296,7 @@ namespace MarketProject.Domain
         {//II.2.5
             if(!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
-            ShoppingCart shoppingCartToDocument = _userManagement.PurchaceMyCart(userToken, adrerss);
+            ShoppingCart shoppingCartToDocument = _userManagement.PurchaceMyCart(userToken, address, city, country, zip, purchaserName);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
             if (_userManagement.IsUserLoggedin(userToken))
@@ -308,6 +308,12 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserAVisitor(authToken))
                 throw new Exception("the given user is no longer a visitor in system");
             return _userManagement.GetUserShoppingCart(authToken);
+        }
+        public ICollection<Tuple<DateTime, ShoppingCart>> GetMyPurchases(String authToken)
+        {//II.3.7
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            return _history.GetRegistreredPurchaseHistory(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
     }
 }

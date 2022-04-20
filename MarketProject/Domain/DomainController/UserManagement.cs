@@ -101,7 +101,7 @@ namespace MarketProject.Domain
             reciever.SendMessage(messageToUser);
         }
 
-        public void AddItemToUserCart(String username, Store store, Item item, int amount)
+        public void AddItemToUserCart(String userToken, Store store, Item item, int amount)
         {
             User user = GetVisitorUser(username);
             user.AddItemToCart(store, item, amount);
@@ -115,7 +115,7 @@ namespace MarketProject.Domain
             return false;
         }
 
-        public int RemoveItemFromCart(String username, Item item, Store store)
+        public int RemoveItemFromCart(String userToken, Item item, Store store)
         {
             User user = GetVisitorUser(username);
             return user.RemoveItemFromCart(item, store);
@@ -135,12 +135,12 @@ namespace MarketProject.Domain
             int old_quantity = user.GetQuantityOfItemInCart(store, item);
             return newQuantity - old_quantity;
         }
-        public ShoppingCart PurchaceMyCart(String userToken, String adress)
+        public ShoppingCart PurchaceMyCart(String userToken, String address, String city, String country, String zip, String purchaserName)
         {
              User user = GetVisitorUser(userToken);
              if (user.ShoppingCart.isCartEmpty())
                 throw new Exception("can't purchase an emptyCart");
-             return user.PurchaseMyCart(adress);
+             return user.PurchaseMyCart(address, city, country, zip, purchaserName);
         }
 
         internal ShoppingCart GetUserShoppingCart(string userToken)
