@@ -227,10 +227,19 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public void ReopenStore(String authToken, String storeName)
+        public Response ReopenStore(String authToken, String storeName)
         {//II.4.10
-            //SHOULD VALIDATE THAT store state is INACTIVE
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.ReopenStore(authToken, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean GetStoreRoleInformation(String authToken, String storeName)
         {//II.4.11
