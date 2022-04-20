@@ -80,9 +80,19 @@ namespace MarketProject.Service
         {//II.4.8
             throw new NotImplementedException();
         }
-        public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, int quantity)
+        public Response AddItemToStoreStock(String authToken, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AddItemToStoreStock(authToken, storeName, itemID, name, price, description, category, quantity);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response RemoveItemFromStore(String authToken, String storeName, int itemID)
         {//II.4.1

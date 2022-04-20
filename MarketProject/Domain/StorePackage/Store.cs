@@ -175,11 +175,11 @@ namespace MarketProject.Domain
             _stock.ChangeItemQuantity(itemId, newQuantity);
         }
 
-        public void AddItemToStoreStock(int itemId, String name, double price, String description, int quantity)
+        public void AddItemToStoreStock(int itemId, String name, double price, String description, String category, int quantity)
         {
             if (_stock.GetItem(itemId) != null)
                 throw new Exception($"An item with ID {itemId} already exists in the stock.");
-            Item newItem = new Item(itemId, name, price, description);
+            Item newItem = new Item(itemId, name, price, description, category);
             _stock.AddItem(newItem, quantity);
         }
 
