@@ -95,7 +95,7 @@ namespace MarketProject.Service
         {//II.4.1
             throw new NotImplementedException();
         }
-        public Boolean EditItemName(String username, int storeID, int itemID, int new_price, String newName)
+        public Boolean EditItemName(String username, String storeName, int itemID, int new_price, String newName)
         {//II.4.1
             throw new NotImplementedException();
         }
@@ -104,12 +104,10 @@ namespace MarketProject.Service
             throw new NotImplementedException();
         }
         public Boolean RateItem(String authToken, int itemID, String storeName, int rating, String review)
-
         {//II.3.3,  II.3.4
             //should check that this user bought this item by his purches History
             throw new NotImplementedException();
         }
-
         public bool RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
             throw new NotImplementedException();
@@ -174,12 +172,10 @@ namespace MarketProject.Service
             throw new NotImplementedException();
         }
         public Boolean GetStoreMesseage(String authToken, String storeName)
-
         {//II.4.12
             //should return with id
             throw new NotImplementedException();
         }
-
         public Boolean AnswerStoreMesseage(String authToken, String storeName, int messageID, String reply)
         {//II.4.12
             throw new NotImplementedException();
