@@ -84,9 +84,19 @@ namespace MarketProject.Service
         {//II.4.1
             throw new NotImplementedException();
         }
-        public void RemoveItemFromStore(String authToken, String storeName, int itemID)
+        public Response RemoveItemFromStore(String authToken, String storeName, int itemID)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveItemFromStore(authToken, storeName, itemID);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
         {//II.4.1
