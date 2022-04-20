@@ -9,17 +9,36 @@ namespace MarketProject.Domain.Tests
     [TestClass()]
     public class StoreManagementTests
     {
+        StoreManagement _storeManagement;
+        String storeName;
+        String username;
+        String description;
+        String category;
+        double price;
+        int itemId;
+        int quantity;
+
+        [TestInitialize]
+        public void setup()
+        {
+            _storeManagement = new StoreManagement();
+            storeName = "Krusty Krab";
+            username = "Sandy Cheeks";
+            itemId = 1;
+            quantity = 10;
+            description = "Delicious";
+            category = "sea food";
+            price = 5.0;
+        }
+
         [TestMethod()]
         public void RateStore_StoreExists_NoException()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String username = "Sandy Cheeks";
-            String storeName = "Krusty Krab";
             int rating = 10;
             String review = "I LOVE KRABS";
             try
             {
-                _storeManagement.OpenNewStore(null, storeName, null, null);
+                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
             }
             catch (Exception)
             {
@@ -39,9 +58,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RateStore_StoreDoesntExist_ThrowsException()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String username = "Sandy Cheeks";
-            String storeName = "Krusty Krab";
             int rating = 10;
             String review = "I LOVE KRABS";
 
@@ -58,19 +74,11 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void UpdateStockQuantityOfItem_StoreExistsItemExists_NoException()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String username = "Sandy Cheeks";
-            String storeName = "Krusty Krab";
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "Delicious";
-            double price = 5.0;
-            int quantity = 5;
-            int newQuantity = 10;
+            int newQuantity = 15;
             try
             {
-                _storeManagement.OpenNewStore(null, storeName, null, null);
-                _storeManagement.AddItemToStoreStock(storeName, itemId, name, price, description, quantity);
+                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
+                _storeManagement.AddItemToStoreStock(storeName, itemId, username, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -90,14 +98,10 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void UpdateStockQuantityOfItem_StoreDoesntExist_ThrowsException()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String storeName = "Krusty Krab";
-            int itemId = 1;
-            int newQuantity = 10;
 
             try
             {
-                _storeManagement.UpdateStockQuantityOfItem(storeName, itemId, newQuantity);
+                _storeManagement.UpdateStockQuantityOfItem(storeName, itemId, quantity);
                 Assert.Fail();
             }
             catch (Exception)
@@ -108,17 +112,9 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void AddItemToStoreStock_StoreDoesntExist_ThrowsException()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String storeName = "Krusty Krab";
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
-
             try
             {
-                _storeManagement.AddItemToStoreStock(storeName, itemId, name, price, description, quantity);
+                _storeManagement.AddItemToStoreStock(storeName, itemId, username, price, description, category, quantity);
                 Assert.Fail();
             }
             catch (Exception)
@@ -129,16 +125,9 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void AddItemToStoreStock_StoreExists_NoException()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String storeName = "Krusty Krab";
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
             try
             {
-                _storeManagement.OpenNewStore(null, storeName, null, null);
+                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
             }
             catch (Exception)
             {
@@ -147,7 +136,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _storeManagement.AddItemToStoreStock(storeName, itemId, name, price, description, quantity);
+                _storeManagement.AddItemToStoreStock(storeName, itemId, username, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -158,14 +147,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RemoveItemFromStore_StoreDoesntExist_ThrowsException()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String storeName = "Krusty Krab";
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
-
             try
             {
                 _storeManagement.RemoveItemFromStore(storeName, itemId);
@@ -179,17 +160,10 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RemoveItemFromStore_StoreExists_NoException()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String storeName = "Krusty Krab";
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
             try
             {
-                _storeManagement.OpenNewStore(null, storeName, null, null);
-                _storeManagement.AddItemToStoreStock(storeName, itemId, name, price, description, quantity);
+                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
+                _storeManagement.AddItemToStoreStock(storeName, itemId, username, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -209,15 +183,12 @@ namespace MarketProject.Domain.Tests
 
         public void SendMessageToStore_StoreExist_Success()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String username = "Sandy Cheeks";
-            String storeName = "Krusty Krab";
             String title = "reservation";
             String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
 
             try
             {
-                _storeManagement.OpenNewStore(null, storeName, null, null);
+                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
             }
             catch (Exception)
             {
@@ -238,9 +209,6 @@ namespace MarketProject.Domain.Tests
 
         public void SendMessageToStore_StoreDoesntExist_Success()
         {
-            StoreManagement _storeManagement = new StoreManagement();
-            String username = "Sandy Cheeks";
-            String storeName = "Krusty Krab";
             String title = "reservation";
             String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
 

@@ -21,7 +21,7 @@ namespace MarketProject.Domain
         public string UserName
         {
             get { return _username; }
-            protected set
+            private set
             {
                 if (value == null || value.Equals(""))
                     throw new ArgumentNullException("a role must get a unique user name.");
@@ -34,6 +34,7 @@ namespace MarketProject.Domain
         public SystemRole(ISet<Operation> operations, string userName)
         {
             _operations = operations;
+            UserName = userName;
         }
 
         public abstract bool grantPermission(Operation op, string store, string grantor);

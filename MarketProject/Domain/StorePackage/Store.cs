@@ -44,6 +44,8 @@ namespace MarketProject.Domain
             _rating = new Rating();
             _managers = new List<StoreManager>();
             _owners = new List<StoreOwner>();
+            if (founder == null)
+                throw new ArgumentNullException("store founder must not be null");
             _founder = founder;
             _state = StoreState.Active;
         }
@@ -64,17 +66,7 @@ namespace MarketProject.Domain
             return _stock.GetItem(itemID);
         }
 
-        internal bool AddStoreOwner(StoreOwner newOwner)
-        {
-            if(!hasRoleInStore(newOwner.UserName))
-            {
-                _owners.Add(newOwner);
-                return true;
-            }
-            return false;
-        }
-
-        internal bool AddStoreManager(StoreManager newManager)
+        public bool AddStoreManager(StoreManager newManager)
         {
             if (!hasRoleInStore(newManager.UserName))
             {
@@ -84,15 +76,25 @@ namespace MarketProject.Domain
             return false;
         }
 
+        public bool AddStoreOwner(StoreOwner newOwner)
+        {
+            if (!hasRoleInStore(newOwner.UserName))
+            {
+                _owners.Add(newOwner);
+                return true;
+            }
+            return false;
+        }
+
         private bool hasRoleInStore(string username)
         {
-            return GetOwner(username) != null && GetOwner(username) != null && _founder.Equals(username);
+            return GetOwner(username) != null || GetManager(username) != null || _founder.UserName.Equals(username);
         }
 
         private StoreManager GetManager(string ownerUserName)
         {
             foreach(StoreManager manager in _managers)
-                if(manager.UserName.Equals(ownerUserName))
+                if(manager.UserName == ownerUserName)
                     return manager;
             return null;
         }
@@ -100,7 +102,7 @@ namespace MarketProject.Domain
         private StoreOwner GetOwner(string managerUsername)
         {
             foreach (StoreOwner owner in _owners)
-                if (owner.UserName.Equals(managerUsername))
+                if (owner.UserName == managerUsername)
                     return owner;
             return null;
         }
@@ -175,11 +177,11 @@ namespace MarketProject.Domain
             _stock.ChangeItemQuantity(itemId, newQuantity);
         }
 
-        public void AddItemToStoreStock(int itemId, String name, double price, String description, int quantity)
+        public void AddItemToStoreStock(int itemId, String name, double price, String description, String category, int quantity)
         {
             if (_stock.GetItem(itemId) != null)
                 throw new Exception($"An item with ID {itemId} already exists in the stock.");
-            Item newItem = new Item(itemId, name, price, description);
+            Item newItem = new Item(itemId, name, price, description, category);
             _stock.AddItem(newItem, quantity);
         }
 

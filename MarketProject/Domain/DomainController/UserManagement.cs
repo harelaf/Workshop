@@ -122,5 +122,10 @@ namespace MarketProject.Domain
         {
 
         }
+
+        internal void AddRole(string Username, SystemRole role)
+        {
+            GetRegisteredUser(Username).AddRole(role);
+        }
     }
 }
