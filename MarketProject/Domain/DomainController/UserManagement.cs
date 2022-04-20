@@ -5,17 +5,26 @@ using System.Text;
 namespace MarketProject.Domain
 {
     public class UserManagement
-    {
-        // Dictionary mapping identifier to User
+
+    { // Dictionary mapping username to User
         private IDictionary<String,Registered> _registeredUsers;
-        private ICollection<Registered> _logedinUsers;
-        private ICollection<Guest> _visitors_guests;
+        // Dictionary mapping tokens to loggedin users.
+        private IDictionary<String, Registered> _loggedinUsersTokens;
+        // Dictionary mapping tokens to guests.
+        private IDictionary<String, Guest> _visitorsGuestsTokens;
 
         public UserManagement()
         {
-            _registeredUsers = new Dictionary<String, Registered>();
-            _logedinUsers = new List<Registered>();
-            _visitors_guests = new List<Guest>();
+            _registeredUsers = new Dictionary<String,Registered>();
+            _loggedinUsersTokens = new Dictionary<String, Registered>();
+            _visitorsGuestsTokens = new Dictionary<String, Guest>();
+        }
+
+        public UserManagement(IDictionary<String, Registered> registeredUsers)
+        {
+            _registeredUsers = registeredUsers;
+            _loggedinUsersTokens = new Dictionary<String, Registered>();
+            _visitorsGuestsTokens = new Dictionary<String, Guest>();
         }
 
         // Currently returns whether successful or not (bound to change)
@@ -58,23 +67,31 @@ namespace MarketProject.Domain
             return registered;
         }
 
-        public bool IsUserAVisitor(String username)
+        public String GetRegisteredUsernameByToken(String token)
         {
-            return GetVisitorUser(username) != null;
+            if(!IsUserLoggedin(token))
+                throw new ArgumentException("there is no registered user with that token");
+            return _loggedinUsersTokens[token].Username;
         }
 
-        public User GetVisitorUser(String username)
+        public bool IsUserLoggedin(String userToken)
         {
-            User user = GetRegisteredUser(username);
-            if (user == null)// user isn't registered
-            {
-                foreach (Guest guest in _visitors_guests)
-                {
-                    if (guest.System_username == username)
-                        user= guest;
-                }
-            }
-            return user;
+            return _loggedinUsersTokens.ContainsKey(userToken);
+        }
+        public bool IsUserAVisitor(String userToken)
+        {
+            if (_visitorsGuestsTokens.ContainsKey(userToken) || IsUserLoggedin(userToken))
+                return true;
+            return false;
+        }
+
+        public User GetVisitorUser(String userToken)
+        {
+            if(_loggedinUsersTokens.ContainsKey(userToken))
+                return _loggedinUsersTokens[userToken];
+            if (_visitorsGuestsTokens.ContainsKey(userToken))
+                return _visitorsGuestsTokens[userToken];
+            throw new Exception("there is no user with that token in system.");
         }
 
         public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
@@ -104,23 +121,34 @@ namespace MarketProject.Domain
             return user.RemoveItemFromCart(item, store);
         }
 
-        public void UpdateItemInUserCart(String username, Store store, Item item, int newQuantity)
+        public void UpdateItemInUserCart(String userToken, Store store, Item item, int newQuantity)
         {
             if (newQuantity <= 0)
                 throw new ArgumentOutOfRangeException("cant update quantity of item to non-positive amount");
-            User user = GetVisitorUser(username);
+            User user = GetVisitorUser(userToken);
             user.UpdateItemInCart(store, item, newQuantity);
         }
 
-        internal int GetUpdatingQuanitityDiffrence(string username, Item item, Store store, int newQuantity)
+        internal int GetUpdatingQuanitityDiffrence(string userToken, Item item, Store store, int newQuantity)
         {
-            User user = GetVisitorUser(username);
+            User user = GetVisitorUser(userToken);
             int old_quantity = user.GetQuantityOfItemInCart(store, item);
             return newQuantity - old_quantity;
         }
-        public void PurchaceMyCart(String userToken)
+        public ShoppingCart PurchaceMyCart(String userToken, String adress)
         {
+             User user = GetVisitorUser(userToken);
+             if (user.ShoppingCart.isCartEmpty())
+                throw new Exception("can't purchase an emptyCart");
+             return user.PurchaseMyCart(adress);
+        }
 
+        internal ShoppingCart GetUserShoppingCart(string userToken)
+        {
+            User user = GetVisitorUser(userToken);
+            if (user.ShoppingCart.isCartEmpty())
+                throw new Exception("Your shopping cart is empty!");
+            return user.ShoppingCart;
         }
 
         internal void AddRole(string Username, SystemRole role)

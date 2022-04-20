@@ -17,53 +17,51 @@ namespace MarketProject.Domain
             _history = new History();
         }
 
-        /// <summary> 
         /// add\update basket eof store with item and amount.
         /// update store stock: itemAmount- amount
-        /// </summary>
-        /// <param name="username"></param>     --username should be a visitor in system.
-        /// <param name="itemID"></param>       --item itemID should be an item of storeName
-        /// <param name="storeName"></param>    --storeName should be a store in system
-        /// <param name="amount"></param>       --storeName should have at least amount of itemID
-        /// <exception cref="Exception"></exception>
-        public void AddItemToCart(string username, int itemID, string storeName, int amount)
+
+        //--userToken should be a visitor in system.
+        //--item itemID should be an item of storeName
+        //--storeName should be a store in system
+        //--storeName should have at least amount of itemID
+        public void AddItemToCart(String userToken, int itemID, String storeName, int amount)
         {//II.2.3
-            if (!_userManagement.IsUserAVisitor(username))
+            if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
             if (!_storeManagement.IsStoreExist(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
             if (!_storeManagement.isStoreActive(storeName))
                 throw new Exception($"Store {storeName} is currently inactive.");
             Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
-            _userManagement.AddItemToUserCart(username, _storeManagement.GetStore(storeName), item, amount);
+            _userManagement.AddItemToUserCart(userToken, _storeManagement.GetStore(storeName), item, amount);
         }
 
-        public Item RemoveItemFromCart(string username, int itemID, string storeName)
+        public Item RemoveItemFromCart(String userToken, int itemID, String storeName)
         {//II.2.4
-            if (!_userManagement.IsUserAVisitor(username))
+            if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
             if (!_storeManagement.IsStoreExist(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
             Item item = _storeManagement.GetItem(storeName, itemID);
-            int amount_removed = _userManagement.RemoveItemFromCart(username, item, _storeManagement.GetStore(storeName));
+            int amount_removed= _userManagement.RemoveItemFromCart(userToken, item, _storeManagement.GetStore(storeName));
             // now update store stock
             _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
             return item;
         }
 
-        public void UpdateQuantityOfItemInCart(String username, int itemID, String storeName, int newQuantity)
+        public void UpdateQuantityOfItemInCart(String userToken, int itemID, String storeName, int newQuantity)
         {//II.2.4
-            if (!_userManagement.IsUserAVisitor(username))
+            if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
             if (!_storeManagement.IsStoreExist(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
             Item item = _storeManagement.GetItem(storeName, itemID);
-            int amount_differnce = _userManagement.GetUpdatingQuanitityDiffrence(username, item, _storeManagement.GetStore(storeName), newQuantity);
+            int amount_differnce = _userManagement.GetUpdatingQuanitityDiffrence(userToken, item, _storeManagement.GetStore(storeName), newQuantity);
             if (amount_differnce > 0)// add item to cart and remove it from store stock
                 _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
             else//remove item from cart and add to store stock
                 _storeManagement.UnreserveItemInStore(storeName, item, amount_differnce);
-            _userManagement.UpdateItemInUserCart(username, _storeManagement.GetStore(storeName), item, newQuantity);
+            _userManagement.UpdateItemInUserCart(userToken, _storeManagement.GetStore(storeName), item, newQuantity);
         }
 
         public void OpenNewStore(String username, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
@@ -292,6 +290,24 @@ namespace MarketProject.Domain
                 }
             }
             return false;
+        }
+
+        public void PurchaseMyCart(String userToken, String adrerss)
+        {//II.2.5
+            if(!_userManagement.IsUserAVisitor(userToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            ShoppingCart shoppingCartToDocument = _userManagement.PurchaceMyCart(userToken, adrerss);
+            //send to history
+            _history.AddStoresPurchases(shoppingCartToDocument);
+            if (_userManagement.IsUserLoggedin(userToken))
+                _history.AddRegisterPurchases(shoppingCartToDocument, _userManagement.GetRegisteredUsernameByToken(userToken)); 
+        }
+
+        public ShoppingCart ViewMyCart(String authToken) 
+        {//II.2.4
+            if (!_userManagement.IsUserAVisitor(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            return _userManagement.GetUserShoppingCart(authToken);
         }
     }
 }

@@ -211,5 +211,10 @@ namespace MarketProject.Domain
         {
             _state = StoreState.Closed;
         }
+        public void RestockBasket(ShoppingBasket basket)
+        {
+            foreach (Item item in basket.GetItems())
+                _stock.UnreserveItem(item, basket.GetAmountOfItem(item));
+        }
     }
 }

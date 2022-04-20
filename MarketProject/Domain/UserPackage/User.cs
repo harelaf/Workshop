@@ -29,13 +29,13 @@ namespace MarketProject.Domain
             if (basket == null)
                 throw new Exception("your cart doesnt contain any basket with the given store");
             int amount = basket.RemoveItem(item);
-            if (amount < 0)
-                throw new Exception("basket does'nt contain the item that was requested to be removed");
+            if (basket.IsBasketEmpty())
+                _shoppingCart.RemoveBasketFromCart(basket);
             return amount;
         }
         public void UpdateItemInCart(Store store, Item item, int newQuantity)
         {
-            if (newQuantity <= 0)
+            if (newQuantity <= 0)// newQuantity==0 -> remove.
                 throw new Exception("can't update item quantity to a non-positive amount");
             ShoppingBasket basket = _shoppingCart.GetShoppingBasket(store.StoreName);
             if (basket == null)
@@ -49,6 +49,13 @@ namespace MarketProject.Domain
             if (shoppingBasket == null)
                 throw new Exception("your cart doesnt contain any basket with the given store");
             return shoppingBasket.GetAmountOfItem(item);
+        }
+        public ShoppingCart PurchaseMyCart(String adress)
+        {
+            ShoppingCart cart = _shoppingCart;
+            PurchaseProcess.GetInstance().Purchase(adress, cart);
+            _shoppingCart = new ShoppingCart();
+            return cart;
         }
 
 

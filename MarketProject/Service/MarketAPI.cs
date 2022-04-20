@@ -1,4 +1,5 @@
 ﻿using MarketProject.Domain;
+using MarketProject.Service.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +13,7 @@ namespace MarketProject.Service
         public MarketAPI()
         {
             _market = new Market();
+
         }
 
         public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
@@ -47,21 +49,37 @@ namespace MarketProject.Service
         {//II.2.4
             throw new NotImplementedException();
         }
-        public String ViewMyCart(String authToken) /*Add data object of cart*/
+        public Response<ShoppingCartDTO> ViewMyCart(String authToken) /*Add data object of cart*/
         {//II.2.4
-            throw new NotImplementedException();
+            Response<ShoppingCartDTO> response;
+            try
+            {
+                ShoppingCart shoppingCart= _market.ViewMyCart(authToken);
+                response = new Response<ShoppingCartDTO>(new ShoppingCartDTO(shoppingCart));
+            }
+            catch (Exception e)
+            {
+                response = new Response<ShoppingCartDTO>(null, e);
+            }
+            return response;
         }
-        public Boolean PurchaseMyCart(String authToken)
+        public Boolean PurchaseMyCart(String authToken, String address)
         {//II.2.5
             throw new NotImplementedException();
         }
-
-        // TODO: WHEN WE KNOW MORE ABOUT DISCOUNT/PURCHASE POLICIES, ADD PARAMETERS HERE:
-        // TODO: HOW DO I GET A STOREFOUNDER?
-        public bool OpenNewStore(String authToken, String storeName)
-
+        public Response OpenNewStore(String authToken, String storeName)
         {//II.3.2
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.OpenNewStore(authToken, storeName, new PurchasePolicy(), new DiscountPolicy());
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean AddStoreManager(String authToken, String ownerUsername, String storeName)
         {//II.4.6
@@ -79,17 +97,47 @@ namespace MarketProject.Service
         {//II.4.8
             throw new NotImplementedException();
         }
-        public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, int quantity)
+        public Response AddItemToStoreStock(String authToken, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AddItemToStoreStock(authToken, storeName, itemID, name, price, description, category, quantity);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public void RemoveItemFromStore(String authToken, String storeName, int itemID)
+        public Response RemoveItemFromStore(String authToken, String storeName, int itemID)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveItemFromStore(authToken, storeName, itemID);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public void UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
+        public Response UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.UpdateStockQuantityOfItem(authToken, storeName, itemID, newQuantity);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean EditItemPrice(String username, int storeID, int itemID, float new_price)
         {//II.4.1
@@ -108,14 +156,33 @@ namespace MarketProject.Service
             //should check that this user bought this item by his purches History
             throw new NotImplementedException();
         }
-        public bool RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
+        public Response RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RateStore(authToken, storeName, rating, review);
+                response = new Response();
+            } 
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public String GetStoreInformation(String username, String storeName)
+        public Response<String> GetStoreInformation(String authToken, String storeName)
         {//II.2.1
-         //should return data of store + the items it owns
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                String result = _market.GetStoreInformation(authToken, storeName);
+                response = new Response<String>(result);
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(e);
+            }
+            return response;
         }
         public Boolean GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {//II.2.2
@@ -157,15 +224,33 @@ namespace MarketProject.Service
         {//II.4.7
             throw new NotImplementedException();
         }
-        public void CloseStore(String authToken, String storeName)
+        public Response CloseStore(String authToken, String storeName)
         {//II.4.9
-            //state of store is INACTIVE-> which means its data still available
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.CloseStore(authToken, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public void ReopenStore(String authToken, String storeName)
+        public Response ReopenStore(String authToken, String storeName)
         {//II.4.10
-            //SHOULD VALIDATE THAT store state is INACTIVE
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.ReopenStore(authToken, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean GetStoreRoleInformation(String authToken, String storeName)
         {//II.4.11
@@ -180,14 +265,42 @@ namespace MarketProject.Service
         {//II.4.12
             throw new NotImplementedException();
         }
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
+        public Response<List<Tuple<DateTime, ShoppingBasketDTO>>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
-            throw new NotImplementedException();
+            Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response;
+            try
+            {
+                List<Tuple<DateTime, ShoppingBasket>> result = _market.GetStorePurchasesHistory(authToken, storeName);
+                List<Tuple<DateTime, ShoppingBasketDTO>> dtos = new List<Tuple<DateTime, ShoppingBasketDTO>>();
+
+                foreach(Tuple<DateTime, ShoppingBasket> tuple in result)
+                {
+                    ShoppingBasketDTO dto = new ShoppingBasketDTO(tuple.Item2);
+                    Tuple<DateTime, ShoppingBasketDTO> toAdd = new Tuple<DateTime, ShoppingBasketDTO>(tuple.Item1, dto);
+                    dtos.Add(toAdd);
+                }
+
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(dtos);
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(e);
+            }
+            return response;
         }
-        public void CloseStorePermanently(String authToken, String storeName)
+        public Response CloseStorePermanently(String authToken, String storeName)
         {//II.6.1
-            //send message to all roles in that store
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.CloseStorePermanently(authToken, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean GetRegisterdComplaints(String authToken)
         {//II.6.3
