@@ -110,8 +110,6 @@ namespace MarketProject.Domain
 
         public void OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
-            if (CheckStoreNameExists(storeName))
-                throw new Exception($"A store with the name {storeName} already exists in the system.");
             Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
             _stores[storeName] = newStore;
         }
@@ -151,6 +149,22 @@ namespace MarketProject.Domain
                 return false;
             Store store = _stores[storeName];
             return store.isActive();
+        }
+
+        public void AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, int quantity)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.AddItemToStoreStock(itemID, name, price, description, quantity);
+        }
+
+        public void RemoveItemFromStore(String storeName, int itemID)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            store.RemoveItemFromStore(itemID);
         }
 
         public void CloseStore(String storeName)
