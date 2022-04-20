@@ -192,5 +192,21 @@ namespace MarketProject.Domain
             Store store = _stores[storeName];
             store.CloseStorePermanently();
         }
+
+        internal bool AddStoreManager(StoreManager newManager, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                throw new AccessViolationException("no store by that name.");
+            return store.AddStoreManager(newManager);
+        }
+
+        internal bool AddStoreOwner(StoreOwner newOwner, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                throw new AccessViolationException("no store by that name.");
+            return store.AddStoreOwner(newOwner);
+        }
     }
 }

@@ -103,7 +103,7 @@ namespace MarketProject.Domain
 
         public void AddItemToUserCart(String username, Store store, Item item, int amount)
         {
-            User user = GetVisitorUser(userToken);
+            User user = GetVisitorUser(username);
             user.AddItemToCart(store, item, amount);
         }
 
@@ -117,7 +117,7 @@ namespace MarketProject.Domain
 
         public int RemoveItemFromCart(String username, Item item, Store store)
         {
-            User user = GetVisitorUser(userToken);
+            User user = GetVisitorUser(username);
             return user.RemoveItemFromCart(item, store);
         }
 
@@ -149,6 +149,11 @@ namespace MarketProject.Domain
             if (user.ShoppingCart.isCartEmpty())
                 throw new Exception("Your shopping cart is empty!");
             return user.ShoppingCart;
+        }
+
+        internal void AddRole(string Username, SystemRole role)
+        {
+            GetRegisteredUser(Username).AddRole(role);
         }
     }
 }

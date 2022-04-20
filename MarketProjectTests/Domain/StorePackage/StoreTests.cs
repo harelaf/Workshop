@@ -9,10 +9,33 @@ namespace MarketProject.Domain.Tests
     [TestClass()]
     public class StoreTests
     {
+
+        Store _store;
+        string storeFounder;
+        int itemId;
+        String name;
+        String description;
+        String category;
+        double price;
+        int quantity;
+
+        [TestInitialize()]
+        public void setup()
+        {
+            storeFounder = "founder";
+            _store = new Store("Krusty Krab", new StoreFounder(storeFounder, "Krusty Krab"), null, null);
+            itemId = 1;
+            name = "Krabby Patty";
+            description = "yummy";
+            category = "computing";
+            price = 5.0;
+            quantity = 10;
+        }
+
+
         [TestMethod()]
         public void RateStore_UserHasntRatedStore_NoException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
             String username = "Squidward Tentacles";
             int rating = 1;
             String review = "NOOOOOOOOOOOO";
@@ -20,9 +43,9 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _store.RateStore(username, rating, review);
-                Assert.AreEqual(_store.GetRating(), rating);
+                Assert.AreEqual(_store.GetRating(), "" + rating);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Assert.Fail();
             }
@@ -31,7 +54,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RateStore_UserHasRatedStore_ThrowsException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
             String username = "Squidward Tentacles";
             int rating = 1;
             String review = "NOOOOOOOOOOOO";
@@ -58,19 +80,13 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void UpdateStockQuantityOfItem_ItemExists_NoException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            String username = "Squidward Tentacles";
-            int itemId = 1;
-            String name = "Krabby Patty";
             String description = "Delicious";
-            int quantity = 5;
-            double price = 5.0;
-            int newQuantity = 10;
+            int newQuantity = 15;
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Assert.Fail();
             }
@@ -90,9 +106,7 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void UpdateStockQuantityOfItem_ItemDoesntExist_ThrowsException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            int newQuantity = 10;
+            int newQuantity = 15;
 
             try
             {
@@ -107,16 +121,9 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void AddItemToStoreStock_ItemIdIsUnique_NoException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
-
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
                 Assert.IsNotNull(_store.GetItem(itemId));
             }
             catch (Exception)
@@ -128,15 +135,9 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void AddItemToStoreStock_ItemIdIsNotUnique_ThrowsException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -145,7 +146,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
                 Assert.Fail();
             }
             catch (Exception)
@@ -156,19 +157,12 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RemoveItemFromStore_ItemDoesntExist_ThrowsException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
-
             try
             {
                 _store.RemoveItemFromStore(itemId);
                 Assert.Fail();
-            } 
-            catch(Exception)
+            }
+            catch (Exception)
             {
             }
         }
@@ -176,15 +170,9 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RemoveItemFromStore_ItemExists_NoException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -203,6 +191,60 @@ namespace MarketProject.Domain.Tests
             }
         }
 
+        [TestMethod()]
+        public void AddStoreManager_AddManagerTwice_returnsFalse()
+        {
+            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            bool act = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            Assert.IsFalse(act);
+        }
+
+        [TestMethod]
+        public void AddStoreManager_AddManagerWhileIsOwner_returnsFalse()
+        {
+            bool arrange = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            bool act = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            Assert.IsFalse(act);
+        }
+
+        [TestMethod]
+        public void AddStoreManager_AddManager_returnsTrue()
+        {
+            bool act = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+            Assert.IsTrue(act);
+        }
+
+        [TestMethod]
+        public void AddStoreOwner_AddOwnerTwice_returnsFalse()
+        {
+            bool arrange = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            Assert.IsFalse(act);
+        }
+
+        [TestMethod]
+        public void AddStoreOwner_AddOwnerWhileIsManager_returnsFalse()
+        {
+            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            Assert.IsFalse(act);
+        }
+
+        [TestMethod]
+        public void AddStoreOwner_AddOwner_returnsTrue()
+        {
+            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+            Assert.IsTrue(act);
+        }
+
         [TestMethod]
         public void TestReserveItem_moreThanAmountInStock()
         {
@@ -211,7 +253,7 @@ namespace MarketProject.Domain.Tests
             Store store = new Store("Store1", null, null, null);
             int itemID = 1;
             int inStock = 30;
-            Item item = new Item(itemID, "itwm1", 20, "banana");
+            Item item = new Item(itemID, "item1", 20, "banana", category);
             store.Stock.AddItem(item, inStock);
             int amountToReserve = 10;
             //action
@@ -228,7 +270,7 @@ namespace MarketProject.Domain.Tests
             Store store = new Store("Store1", null, null, null);
             int itemID = 1;
             int inStock = 30;
-            Item item = new Item(itemID, "itwm1", 20, "banana");
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
             store.Stock.AddItem(item, inStock);
             int amountToReserve = inStock + 10;
             //action+ assert
@@ -242,7 +284,7 @@ namespace MarketProject.Domain.Tests
             // Arrange
             Store store = new Store("Store1", null, null, null);
             int itemID = 1;
-            Item item = new Item(itemID, "itwm1", 20, "banana");
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
             int amountToReserve = 10;
             //action+ assert
             Assert.ThrowsException<Exception>(() => store.ReserveItem(itemID, amountToReserve));
@@ -255,7 +297,7 @@ namespace MarketProject.Domain.Tests
             Store store = new Store("Store1", null, null, null);
             int itemID = 1;
             int inStock = 30;
-            Item item = new Item(itemID, "itwm1", 20, "banana");
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
             store.Stock.AddItem(item, inStock);
             int amountToReserve = 0;
             //action+ assert
@@ -269,7 +311,7 @@ namespace MarketProject.Domain.Tests
             Store store = new Store("Store1", null, null, null);
             int itemID = 1;
             int inStock = 0;
-            Item item = new Item(itemID, "itwm1", 20, "banana");
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
             store.Stock.AddItem(item, inStock);
             int amountToUneserve = 10;
             //action
@@ -285,7 +327,7 @@ namespace MarketProject.Domain.Tests
             // Arrange
             Store store = new Store("Store1", null, null, null);
             int itemID = 1;
-            Item item = new Item(itemID, "itwm1", 20, "banana");
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
             int amountToUnreserve = 10;
             //action+ assert
             Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
@@ -298,7 +340,7 @@ namespace MarketProject.Domain.Tests
             Store store = new Store("Store1", null, null, null);
             int itemID = 1;
             int inStock = 30;
-            Item item = new Item(itemID, "itwm1", 20, "banana");
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
             store.Stock.AddItem(item, inStock);
             int amountToUnreserve = 0;
             //action+ assert

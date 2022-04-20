@@ -6,8 +6,8 @@ namespace MarketProject.Domain
 {
     public class History
     {
-        private IDictionary<String, ICollection<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
-        private IDictionary<String, ICollection<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //username:String
+        private IDictionary<String, List<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
+        private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //username:String
 
         public History()
         {

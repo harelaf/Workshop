@@ -263,6 +263,35 @@ namespace MarketProject.Domain
             }
             _userManagement.SendMessageToRegisterd(storeName, usernameReciever, title, message);
         }
+
+        public bool AddStoreManager(string appointerUsername, string managerUsername, string storeName)
+        {//II.4.6
+            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
+            {
+                StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
+                if (_storeManagement.AddStoreManager(newManager, storeName))
+                {
+                    _userManagement.AddRole(managerUsername, newManager);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool AddStoreOwner(string appointerUsername, string ownerUsername, string storeName)
+        {//II.4.4
+            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
+            {
+                StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
+                if (_storeManagement.AddStoreOwner(newOwner, storeName))
+                {
+                    _userManagement.AddRole(ownerUsername, newOwner);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public void PurchaseMyCart(String userToken, String adrerss)
         {//II.2.5
             if(!_userManagement.IsUserAVisitor(userToken))

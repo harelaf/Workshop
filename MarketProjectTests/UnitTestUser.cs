@@ -13,7 +13,7 @@ namespace MarketProjectTests
         [TestInitialize]
         public void setup()
         {
-            guest = new Guest("sys_id_user_1");
+            guest = new Guest();
             store = new Store("STORE1", new StoreFounder("founder", "STORE1"), new PurchasePolicy(), new DiscountPolicy());
             item1 = new Item(1, "name1", 1.0, "description1", "category1");
         }
