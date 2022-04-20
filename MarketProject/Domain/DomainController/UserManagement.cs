@@ -55,6 +55,13 @@ namespace MarketProject.Domain
             return _registeredUsers.ContainsKey(username);
         }
 
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> If credentials are authenticated, log in user.</para>
+        /// </summary>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> The authentication token the user should use with the system.</returns>
         public String Login(String username, String password)
         {
             String authToken = null;
@@ -72,7 +79,14 @@ namespace MarketProject.Domain
             return authToken;
         }
 
-        // Currently just a random string, from https://www.educative.io/edpresso/how-to-generate-a-random-string-in-c-sharp
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> Generates a long random string.</para>
+        /// <para> Currently just a random string, as shown in the How To <see href="https://www.educative.io/edpresso/how-to-generate-a-random-string-in-c-sharp">HERE</see> </para>
+        /// </summary>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> The authentication token the user should use with the system.</returns>
         private static String GenerateToken()
         {
             String token = "";

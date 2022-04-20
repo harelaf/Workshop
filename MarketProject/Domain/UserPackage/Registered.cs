@@ -52,6 +52,14 @@ namespace MarketProject.Domain
                     return true;
             return false;
         }
+
+
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> Checks if the given password authorises login for this user.</para>
+        /// </summary>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> True if the password authorises login, false otherwise.</returns>
         public bool Login(String password)
         {
             return (_password == password);

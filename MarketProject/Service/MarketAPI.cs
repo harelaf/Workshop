@@ -20,9 +20,29 @@ namespace MarketProject.Service
         {//I.1
             throw new NotImplementedException();
         }
-        public Boolean Login(String authToken, String username, String password)
+
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> If credentials are authenticated, log in user.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the guest attempting to log in (to transfer cart).</param>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> Response with the authentication token the user should use with the system.</returns>
+        public Response<String> Login(String authToken, String username, String password)
         {//II.1.4
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                // TODO: Transfer cart? Using authToken
+                String loginToken = _market.Login(username, password);
+                response = new Response<String>(loginToken);
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(e);
+            }
+            return response;
         }
         public Boolean Logout(String authToken)
         {//II.3.1

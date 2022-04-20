@@ -321,5 +321,18 @@ namespace MarketProject.Domain
                 throw new Exception("the given user is no longer a visitor in system");
             return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
+
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> If credentials are authenticated, log in user.</para>
+        /// </summary>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> The authentication token the user should use with the system.</returns>
+        public String Login(String username, String password)
+        {
+            // TODO: Transfer cart?
+            return _userManagement.Login(username, password);
+        }
     }
 }
