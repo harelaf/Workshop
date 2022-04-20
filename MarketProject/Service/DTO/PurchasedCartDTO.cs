@@ -15,5 +15,11 @@ namespace MarketProject.Service.DTO
             _date = date;
             _shoppingCart = new ShoppingCartDTO(shoppingCart);
         }
+        public String ToString()
+        {
+            String result = $"Purchase of: {_date.ToString("MM / dd / yyyy hh: mm tt")}\n";
+            result+= "Purchase Cart:\n"+ _shoppingCart.ToString();
+            return result;
+        }
     }
 }

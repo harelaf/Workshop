@@ -258,9 +258,19 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean GetUserInformation(String authToken)
+        public Response<RegisteredDTO> GetUserInformation(String authToken)
         {//II.3.8
-            throw new NotImplementedException();
+            Response<RegisteredDTO> response;
+            try
+            {
+                Registered registered= _market.GetUserInformation(authToken);
+                response = new Response<RegisteredDTO>(new RegisteredDTO(registered));
+            }
+            catch (Exception e)
+            {
+                response = new Response<RegisteredDTO>(null, e);
+            }
+            return response;
         }
         public Boolean EditUsername(String authToken, String newUsername )
         {//II.3.8

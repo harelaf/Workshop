@@ -315,5 +315,11 @@ namespace MarketProject.Domain
                 throw new Exception("the given user is no longer a visitor in system");
             return _history.GetRegistreredPurchaseHistory(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
+        public Registered GetUserInformation(String authToken)
+        {
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
+        }
     }
 }
