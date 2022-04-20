@@ -151,12 +151,12 @@ namespace MarketProject.Domain
             return store.isActive();
         }
 
-        public void AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, int quantity)
+        public void AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {
             if (!CheckStoreNameExists(storeName))
                 throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            store.AddItemToStoreStock(itemID, name, price, description, quantity);
+            store.AddItemToStoreStock(itemID, name, price, description, category, quantity);
         }
 
         public void RemoveItemFromStore(String storeName, int itemID)
@@ -191,6 +191,22 @@ namespace MarketProject.Domain
                 throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
             store.CloseStorePermanently();
+        }
+
+        internal bool AddStoreManager(StoreManager newManager, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                throw new AccessViolationException("no store by that name.");
+            return store.AddStoreManager(newManager);
+        }
+
+        internal bool AddStoreOwner(StoreOwner newOwner, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                throw new AccessViolationException("no store by that name.");
+            return store.AddStoreOwner(newOwner);
         }
     }
 }

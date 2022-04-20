@@ -101,7 +101,7 @@ namespace MarketProject.Domain
             _storeManagement.RateStore(username, storeName, rating, review);
         }
 
-        public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, int quantity)
+        public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
@@ -115,7 +115,7 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank item nam.");
             if (quantity < 0)
                 throw new Exception("Invalid Input: Quantity has to be at least 0.");
-            _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, quantity);
+            _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, category, quantity);
         }
 
         public void RemoveItemFromStore(String username, String storeName, int itemID)
@@ -264,6 +264,34 @@ namespace MarketProject.Domain
                 throw new Exception("User " + usernameReciever + " not found in system");
             }
             _userManagement.SendMessageToRegisterd(storeName, usernameReciever, title, message);
+        }
+
+        public bool AddStoreManager(string appointerUsername, string managerUsername, string storeName)
+        {//II.4.6
+            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
+            {
+                StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
+                if (_storeManagement.AddStoreManager(newManager, storeName))
+                {
+                    _userManagement.AddRole(managerUsername, newManager);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool AddStoreOwner(string appointerUsername, string ownerUsername, string storeName)
+        {//II.4.4
+            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
+            {
+                StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
+                if (_storeManagement.AddStoreOwner(newOwner, storeName))
+                {
+                    _userManagement.AddRole(ownerUsername, newOwner);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
