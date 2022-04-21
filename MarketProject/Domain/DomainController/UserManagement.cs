@@ -229,5 +229,47 @@ namespace MarketProject.Domain
         {
             GetRegisteredUser(Username).AddRole(role);
         }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Logs out if needed and removes a user from our system.</para>
+        /// </summary>
+        /// <param name="username"> The username of the user to log out.</param>
+        internal void RemoveRegisteredUser(string username)
+        {
+            if (!IsRegistered(username))
+            {
+                throw new Exception("No such registered user.");
+            }
+
+            LogoutByUsername(username);
+            _registeredUsers.Remove(username);
+        }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Logs out a user via username. Allows an admin to logout other users.</para>
+        /// </summary>
+        /// <param name="username"> The username of the user to log out.</param>
+        private void LogoutByUsername(String username)
+        {
+            String authToken = getLoggedInToken(username);
+            if (authToken != null)
+            {
+                Logout(authToken);
+            }
+        }
+
+        private String getLoggedInToken(String username)
+        {
+            foreach (KeyValuePair<String, Registered> pair in _loggedinUsersTokens)
+            {
+                if (_loggedinUsersTokens[pair.Key].Username == username)
+                {
+                    return pair.Key;
+                }
+            }
+            return null;
+        }
     }
 }

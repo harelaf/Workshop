@@ -68,10 +68,26 @@ namespace MarketProject.Service
         {//II.1.3
             throw new NotImplementedException();
         }
-        public Boolean RemoveRegisteredUser(String authToken, String usr_toremove )
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Remove a Registered user from our system and remove their roles from all relevant stores.</para>
+        /// </summary>
+        /// <param name="authToken"> The token authenticating the user making the request.</param>
+        /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
+        public Response RemoveRegisteredUser(String authToken, String usr_toremove )
         {//II.6.2
-            //remmeber to fire him for all its roles
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveRegisteredUser(authToken, usr_toremove);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response AddItemToCart(String authToken, int itemID, String storeName, int amount)
         {//II.2.3

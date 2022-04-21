@@ -10,6 +10,24 @@ namespace MarketProject.Domain
         public String Username=> _username;
         private String _password;
         private ICollection<SystemRole> _roles;
+        public ICollection<SystemRole> Roles { get { return _roles; } }
+
+        /// <summary>
+        /// All the stores in which the user has some role in.
+        /// </summary>
+        public ICollection<String> StoresWithRoles 
+        { 
+            get 
+            {
+                ICollection<String> stores = new HashSet<String>();
+                foreach (SystemRole role in _roles)
+                {
+                    String storeName = role.StoreName;
+                    stores.Add(storeName);
+                }
+                return stores; 
+            } 
+        }
 
         public Registered(string username, string password)
         {

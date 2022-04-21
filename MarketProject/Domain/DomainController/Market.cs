@@ -344,5 +344,21 @@ namespace MarketProject.Domain
         {
             _userManagement.Logout(authToken);
         }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Remove a Registered user from our system and remove their roles from all relevant stores.</para>
+        /// </summary>
+        /// <param name="authToken"> The token authenticating the user making the request.</param>
+        /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
+        public void RemoveRegisteredUser(String authToken, String usr_toremove)
+        {
+            if (_userManagement.checkAccess(authToken, "CHANGE_ME", Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
+            {
+                Registered registeredToRemove = _userManagement.GetRegisteredUser(usr_toremove);
+                _userManagement.RemoveRegisteredUser(usr_toremove);
+                _storeManagement.RemoveAllRoles(registeredToRemove);
+            }
+        }
     }
 }
