@@ -65,10 +65,11 @@ namespace MarketProject.Domain.Tests
             String description = "Delicious";
             int quantity = 5;
             double price = 5.0;
+            String category = "";
             int newQuantity = 10;
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
             }
             catch(Exception)
             {
@@ -111,12 +112,13 @@ namespace MarketProject.Domain.Tests
             int itemId = 1;
             String name = "Krabby Patty";
             String description = "yummy";
+            String category = "";
             double price = 5.0;
             int quantity = 10;
 
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
                 Assert.IsNotNull(_store.GetItem(itemId));
             }
             catch (Exception)
@@ -132,11 +134,12 @@ namespace MarketProject.Domain.Tests
             int itemId = 1;
             String name = "Krabby Patty";
             String description = "yummy";
+            String category = "";
             double price = 5.0;
             int quantity = 10;
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -145,7 +148,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
                 Assert.Fail();
             }
             catch (Exception)
@@ -180,11 +183,12 @@ namespace MarketProject.Domain.Tests
             int itemId = 1;
             String name = "Krabby Patty";
             String description = "yummy";
+            String category = "";
             double price = 5.0;
             int quantity = 10;
             try
             {
-                _store.AddItemToStoreStock(itemId, name, price, description, quantity);
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
             }
             catch (Exception)
             {
