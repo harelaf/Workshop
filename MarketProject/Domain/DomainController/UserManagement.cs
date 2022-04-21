@@ -38,6 +38,7 @@ namespace MarketProject.Domain
             CurrentAdmin = registered.GetAdminRole;
         }
 
+        // TODO: Theres GOT to be a better way to do these constructors.
         public UserManagement(IDictionary<String, Registered> registeredUsers)
         {
             _registeredUsers = registeredUsers;
@@ -50,6 +51,20 @@ namespace MarketProject.Domain
             _registeredUsers = registeredUsers;
             _loggedinUsersTokens = loggedinUsersTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
+        }
+
+        public UserManagement(IDictionary<String, Registered> registeredUsers, IDictionary<String, Guest> visitorsGuestsTokens)
+        {
+            _registeredUsers = registeredUsers;
+            _loggedinUsersTokens = new Dictionary<String, Registered>(); 
+            _visitorsGuestsTokens = visitorsGuestsTokens;
+        }
+
+        public UserManagement(IDictionary<String, Registered> registeredUsers, IDictionary<String, Registered> loggedinUsersTokens, IDictionary<String, Guest> visitorsGuestsTokens)
+        {
+            _registeredUsers = registeredUsers;
+            _loggedinUsersTokens = loggedinUsersTokens;
+            _visitorsGuestsTokens = visitorsGuestsTokens;
         }
 
         // Currently returns whether successful or not (bound to change)
@@ -157,7 +172,7 @@ namespace MarketProject.Domain
                 String guestToken = GenerateToken();
                 if (guestToken == null)
                     throw new Exception("logout faild: couldent tranfer to guest mode. please try again");
-                _visitorsGuestsTokens.Add(guestToken, new Guest());
+                _visitorsGuestsTokens.Add(guestToken, new Guest(guestToken));
                 return guestToken;
 
             }
@@ -321,7 +336,7 @@ namespace MarketProject.Domain
         public String enter()
         {
             String token = GenerateToken();
-            _visitorsGuestsTokens.Add(token, new Guest());
+            _visitorsGuestsTokens.Add(token, new Guest(token));
             return token;
         }
 
