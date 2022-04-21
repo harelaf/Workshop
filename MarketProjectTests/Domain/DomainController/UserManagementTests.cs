@@ -10,11 +10,17 @@ namespace MarketProject.Domain.Tests
     public class UserManagementTests
     // Following best practices found in: https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices
     {
+        UserManagement userManagement;
+
+        [TestInitialize]
+        public void setup()
+        {
+            userManagement = new UserManagement();
+        }
         // ==================== REGISTER ====================
         [TestMethod()]
         public void Register_Valid_RegistersNewUser()
         {
-            UserManagement userManagement = new UserManagement();
             String username = "Test";
             String password = "123";
 
@@ -29,7 +35,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void Register_InvalidUsername_DoesNotRegister()
         {
-            UserManagement userManagement = new UserManagement();
             String username = ""; // Username obviously cannot be empty string
             String password = "123";
 
@@ -45,7 +50,7 @@ namespace MarketProject.Domain.Tests
         public void Register_InvalidPassword_DoesNotRegister()
         {
             UserManagement userManagement = new UserManagement();
-            String username = "Test";
+            String username = "Test"; 
             String password = ""; // Password obviously cannot be empty string
 
             bool response = userManagement.Register(username, password);

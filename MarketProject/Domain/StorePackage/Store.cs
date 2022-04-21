@@ -256,5 +256,15 @@ namespace MarketProject.Domain
             if (owner != null)
                 _owners.Remove(owner);
         }
+
+        public bool RemoveStoreOwner(string ownerUsername)
+        {
+            return _owners.Remove(GetOwner(ownerUsername));
+        }
+
+        public bool RemoveStoreManager(string managerUsername)
+        {
+            return _managers.Remove(GetManager(managerUsername));
+        }
     }
 }

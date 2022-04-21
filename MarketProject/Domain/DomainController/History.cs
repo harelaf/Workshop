@@ -11,8 +11,8 @@ namespace MarketProject.Domain
 
         public History()
         {
-            _storePurchaseHistory = new Dictionary<String, ICollection<Tuple<DateTime,ShoppingBasket>>>();
-            _registeredPurchaseHistory = new Dictionary<String, ICollection<Tuple<DateTime,ShoppingCart>>>();
+            _storePurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingBasket>>>();
+            _registeredPurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingCart>>>();
         }
 
         public bool CheckIfUserPurchasedInStore(String username, String storeName)
@@ -53,7 +53,7 @@ namespace MarketProject.Domain
             return false;
         }
 
-        public ICollection<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String storeName)
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String storeName)
         {
             if (!_storePurchaseHistory.ContainsKey(storeName))
                 throw new Exception($"There is purchase history for {storeName} yet.");
