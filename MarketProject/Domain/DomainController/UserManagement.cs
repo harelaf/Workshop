@@ -220,9 +220,9 @@ namespace MarketProject.Domain
 
         internal bool checkAccess(string appointerUsername, string storeName, Operation op)
         {
-            //Registered user = GetRegisteredUser(appointerUsername);
-            //if (user != null)
-            //    return user.hasAccess(storeName, op);
+            Registered user = GetRegisteredUser(appointerUsername);
+            if (user != null)
+                return user.hasAccess(storeName, op);
             return false;
         }
 
@@ -264,7 +264,16 @@ namespace MarketProject.Domain
 
         public void AddRole(string Username, SystemRole role)
         {
-            GetRegisteredUser(Username).AddRole(role);
+            Registered user = GetRegisteredUser(Username);
+            if (user != null)
+                user.AddRole(role);
+        }
+
+        public bool RemoveRole(string Username, string storeName)
+        {
+            Registered user = GetRegisteredUser(Username);
+            if (user != null)
+                user.RemoveRole(storeName);
         }
 
         /// <summary>
@@ -332,5 +341,6 @@ namespace MarketProject.Domain
                 throw new Exception("Exit faild: there is no user with that tokem in system");
             }
         }
+
     }
 }

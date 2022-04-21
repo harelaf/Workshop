@@ -266,5 +266,29 @@ namespace MarketProject.Domain
         {
             return _managers.Remove(GetManager(managerUsername));
         }
+
+        internal List<StoreManager> GetManagers()
+        {
+            return _managers;
+        }
+
+        internal List<StoreOwner> GetOwners()
+        {
+            return _owners;
+        }
+
+        internal StoreFounder GetFounder()
+        {
+            return _founder;
+        }
+
+        //public List<SystemRole> getRoles()
+        //{
+        //    List<SystemRole> roles = new List<SystemRole>();
+        //    roles.AddRange(_managers);
+        //    roles.AddRange(_owners);
+        //    roles.Add(_founder);
+        //    return roles;
+        //}
     }
 }
