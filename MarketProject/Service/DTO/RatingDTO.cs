@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    class RatingDTO
+    public class RatingDTO
     {
         private Dictionary<String, Tuple<int, String>> _ratings;
 

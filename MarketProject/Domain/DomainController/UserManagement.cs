@@ -109,7 +109,7 @@ namespace MarketProject.Domain
         /// <returns> The authentication token the user should use with the system.</returns>
         public String Login(String curToken, String username, String password)
         {
-            if (!IsUserAGuest(username))
+            if (!IsUserAGuest(curToken))
                 throw new Exception("you have to enter system as a guest in order to loggin.");
             _visitorsGuestsTokens.Remove(curToken);
             Registered registered = GetRegisteredUser(username);
@@ -272,8 +272,6 @@ namespace MarketProject.Domain
         internal ShoppingCart GetUserShoppingCart(string userToken)
         {
             User user = GetVisitorUser(userToken);
-            if (user.ShoppingCart.isCartEmpty())
-                throw new Exception("Your shopping cart is empty!");
             return user.ShoppingCart;
         }
 
@@ -284,7 +282,7 @@ namespace MarketProject.Domain
                 user.AddRole(role);
         }
 
-        public bool RemoveRole(string Username, string storeName)
+        public void RemoveRole(string Username, string storeName)
         {
             Registered user = GetRegisteredUser(Username);
             if (user != null)
