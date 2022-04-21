@@ -5,9 +5,10 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    class ShoppingCartDTO
+    public class ShoppingCartDTO
     {
-        private ICollection<ShoppingBasketDTO> _DTObaskets { get; set; }
+        private ICollection<ShoppingBasketDTO> _DTObaskets; 
+        public ICollection<ShoppingBasketDTO> Baskets => _DTObaskets;
         public ShoppingCartDTO(ShoppingCart shoppingCart)
         {
             _DTObaskets = new List<ShoppingBasketDTO>();

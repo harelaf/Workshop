@@ -9,6 +9,8 @@ namespace MarketProject.Domain
         private StoreManagement _storeManagement;
         private UserManagement _userManagement;
         private History _history;
+        private Object _stockLock = new Object();
+        private Object _storeLock = new Object();
 
         public Market()
         {
@@ -24,6 +26,7 @@ namespace MarketProject.Domain
         public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
             _userManagement.AdminStart(adminUsername, adminPassword);
+
             // Do starting system stuff with IPs
 
         }
@@ -39,24 +42,34 @@ namespace MarketProject.Domain
         {//II.2.3
             if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
-            if (!_storeManagement.IsStoreExist(storeName))
+            if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
-            if (!_storeManagement.isStoreActive(storeName))
-                throw new Exception($"Store {storeName} is currently inactive.");
-            Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
-            _userManagement.AddItemToUserCart(userToken, _storeManagement.GetStore(storeName), item, amount);
+            lock (_storeLock)
+            {
+                if (!_storeManagement.isStoreActive(storeName))
+                    throw new Exception($"Store {storeName} is currently inactive.");
+                lock (_stockLock)
+                {
+                    Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
+                    _userManagement.AddItemToUserCart(userToken, _storeManagement.GetStore(storeName), item, amount);
+                }
+            }
+            
         }
 
         public Item RemoveItemFromCart(String userToken, int itemID, String storeName)
         {//II.2.4
             if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
-            if (!_storeManagement.IsStoreExist(storeName))
+            if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
             Item item = _storeManagement.GetItem(storeName, itemID);
-            int amount_removed= _userManagement.RemoveItemFromCart(userToken, item, _storeManagement.GetStore(storeName));
+            int amount_removed = _userManagement.RemoveItemFromCart(userToken, item, _storeManagement.GetStore(storeName));
             // now update store stock
-            _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
+            lock (_stockLock)
+            {
+                _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
+            }
             return item;
         }
 
@@ -64,22 +77,31 @@ namespace MarketProject.Domain
         {//II.2.4
             if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
-            if (!_storeManagement.IsStoreExist(storeName))
+            if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
             Item item = _storeManagement.GetItem(storeName, itemID);
             int amount_differnce = _userManagement.GetUpdatingQuanitityDiffrence(userToken, item, _storeManagement.GetStore(storeName), newQuantity);
-            if (amount_differnce > 0)// add item to cart and remove it from store stock
-                _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
-            else//remove item from cart and add to store stock
-                _storeManagement.UnreserveItemInStore(storeName, item, amount_differnce);
-            _userManagement.UpdateItemInUserCart(userToken, _storeManagement.GetStore(storeName), item, newQuantity);
+            lock (_storeLock)
+            {
+                if (!_storeManagement.isStoreActive(storeName))
+                    throw new Exception($"Store {storeName} is currently inactive.");
+                lock (_stockLock)
+                {
+                    if (amount_differnce > 0)// add item to cart and remove it from store stock
+                        _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
+                    else//remove item from cart and add to store stock
+                        _storeManagement.UnreserveItemInStore(storeName, item, amount_differnce);
+                    _userManagement.UpdateItemInUserCart(userToken, _storeManagement.GetStore(storeName), item, newQuantity);
+                }
+            }
         }
 
-        public void OpenNewStore(String username, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+
+        public void OpenNewStore(String token, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            if (_userManagement.IsUserAVisitor(username))
+            if (!_userManagement.IsUserLoggedin(token))
                 throw new Exception($"Only registered users are allowed to rate stores.");
             if (_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"A store with the name {storeName} already exists in the system.");
@@ -90,18 +112,17 @@ namespace MarketProject.Domain
 
         public String GetStoreInformation(String authToken, String storeName)
         {
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("Only registered and logged in users are allowed to perform this operation!");
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            if (!_userManagement.IsUserAVisitor(authToken))
-                throw new Exception("the given user is no longer a visitor in system");
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is no longer logged in to the system");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
-            bool isAdmin = _userManagement.CurrentAdmin.UserName.Equals(username);
-            bool hasAccess = _userManagement.checkAccess(username, storeName, Operation.STORE_INFORMATION);
-            if (_storeManagement.isStoreActive(storeName) || isAdmin || hasAccess)
+            string userName = _userManagement.GetRegisteredUsernameByToken(authToken);
+            lock (_storeLock)
+            {
+                if (_storeManagement.isStoreActive(storeName) || _userManagement.checkAccess(userName, storeName, Operation.STORE_INFORMATION))
+                    return _storeManagement.GetStoreInformation(storeName);
                 throw new Exception($"Store {storeName} is currently inactive.");
-            return _storeManagement.GetStoreInformation(storeName);
+            }
         }
 
         public void RateStore(String authToken, String storeName, int rating, String review)
@@ -136,8 +157,12 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank item nam.");
             if (quantity < 0)
                 throw new Exception("Invalid Input: Quantity has to be at least 0.");
-            _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, category, quantity);
+            lock (_stockLock)
+            {
+                _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, category, quantity);
+            }
         }
+
 
         public void RemoveItemFromStore(String username, String storeName, int itemID)
         {
@@ -147,23 +172,24 @@ namespace MarketProject.Domain
              */
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            _storeManagement.RemoveItemFromStore(storeName, itemID);
+            lock (_stockLock)
+            {
+                _storeManagement.RemoveItemFromStore(storeName, itemID);
+            }
         }
 
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
         {
-            if (!_userManagement.IsUserAVisitor(authToken))
-                throw new Exception("the given user is no longer a visitor in system");
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is no longer logged in to the system");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
-            bool hasAccess = _userManagement.checkAccess(username, storeName, Operation.STORE_HISTORY_INFO);
-            if (!hasAccess)
-                throw new Exception($"This user is not an admin or owner in {storeName}.");
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"Store {storeName} does not exist.");
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("The given user is no longer logged in to the system");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            bool hasAccess = _userManagement.checkAccess(username, storeName, Operation.STORE_HISTORY_INFO);
+            if (!hasAccess)
+                throw new Exception($"This user is not an admin or owner in {storeName}.");
             return _history.GetStorePurchaseHistory(storeName);
         }
 
@@ -177,7 +203,10 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank store name.");
             if (newQuantity < 0)
                 throw new Exception("Invalid Input: Quantity has to be at least 0.");
-            _storeManagement.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
+            lock (_stockLock)
+            {
+                _storeManagement.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
+            }
         }
 
         public void CloseStore(string username, String storeName)
@@ -224,7 +253,7 @@ namespace MarketProject.Domain
              * if (!_userManagement.CheckUserPermission(username, ???))
              *     throw new Exception($"This user is not the founder of {storeName}.");
              */
-            _storeManagement.EditItemPrice(storeName, itemID, newPrice);    
+            _storeManagement.EditItemPrice(storeName, itemID, newPrice);
         }
         public void EditItemName(String username, String storeName, int itemID, int new_price, String newName)
         {
@@ -232,7 +261,7 @@ namespace MarketProject.Domain
              * if (!_userManagement.CheckUserPermission(username, ???))
              *     throw new Exception($"This user is not the founder of {storeName}.");
              */
-            _storeManagement.EditItemName(storeName, itemID, new_price, newName);       
+            _storeManagement.EditItemName(storeName, itemID, new_price, newName);
         }
         public void EditItemDescription(String username, String storeName, int itemID, String newDescription)
         {
@@ -254,7 +283,7 @@ namespace MarketProject.Domain
             Item item = _storeManagement.GetItem(storeName, itemID);
             if (!_history.CheckIfUserPurchasedItemInStore(username, storeName, item))
             {
-                throw new Exception("This user has never bought item with id: " + itemID +" at " + storeName);
+                throw new Exception("This user has never bought item with id: " + itemID + " at " + storeName);
             }
             _storeManagement.RateItem(username, item, rating, review);
         }
@@ -265,7 +294,7 @@ namespace MarketProject.Domain
             {
                 throw new Exception("User " + username + " not found in system");
             }
-            
+
             //TODO ron -> complete
         }
 
@@ -281,7 +310,7 @@ namespace MarketProject.Domain
         public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
         {
             if (!_storeManagement.CheckStoreNameExists(storeName))
-            {            
+            {
                 throw new Exception("Store " + storeName + " not found in system");
             }
             if (!_userManagement.IsRegistered(usernameReciever))
@@ -327,13 +356,13 @@ namespace MarketProject.Domain
 
         public void PurchaseMyCart(String userToken, String address, String city, String country, String zip, String purchaserName)
         {//II.2.5
-            if(!_userManagement.IsUserAVisitor(userToken))
+            if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
             ShoppingCart shoppingCartToDocument = _userManagement.PurchaceMyCart(userToken, address, city, country, zip, purchaserName);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
             if (_userManagement.IsUserLoggedin(userToken))
-                _history.AddRegisterPurchases(shoppingCartToDocument, _userManagement.GetRegisteredUsernameByToken(userToken)); 
+                _history.AddRegisterPurchases(shoppingCartToDocument, _userManagement.GetRegisteredUsernameByToken(userToken));
         }
 
         public ShoppingCart ViewMyCart(String authToken)
@@ -412,6 +441,11 @@ namespace MarketProject.Domain
             return _storeManagement.getStoreFounder(storeName);
         }
 
+        public void ExitSystem()
+        {
+
+        }
+
         /// <summary>
         /// <para> For Req II.1.4. </para>
         /// <para> If credentials are authenticated, log in user.</para>
@@ -422,7 +456,7 @@ namespace MarketProject.Domain
         public String Login(String authToken, String username, String password)
         {
             // TODO: Transfer cart?
-            return _userManagement.Login(authToken ,username, password);
+            return _userManagement.Login(authToken, username, password);
         }
 
         /// <summary>
@@ -459,6 +493,11 @@ namespace MarketProject.Domain
         public void ExitSystem(String authToken) // Removing cart and token assigned to guest
         { //II.1.2
             _userManagement.ExitSystem(authToken);
+        }
+
+        public void Register(String authToken, String username, String password)
+        {//II.1.3
+            _userManagement.Register(username, password);
         }
     }
 }

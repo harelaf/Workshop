@@ -44,8 +44,6 @@ namespace MarketProject.Domain
             _rating = new Rating();
             _managers = new List<StoreManager>();
             _owners = new List<StoreOwner>();
-            if (founder == null)
-                throw new ArgumentNullException("store founder must not be null");
             _founder = founder;
             _state = StoreState.Active;
         }
