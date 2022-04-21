@@ -16,9 +16,19 @@ namespace MarketProject.Service
 
         }
 
-        public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
+        public Response RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RestartSystem(adminUsername, adminPassword, ipShippingService, ipPaymentService);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
 
         /// <summary>

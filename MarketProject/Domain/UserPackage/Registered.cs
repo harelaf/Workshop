@@ -11,6 +11,34 @@ namespace MarketProject.Domain
         private String _password;
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
+        public bool IsAdmin 
+        { 
+            get 
+            { 
+                foreach (SystemRole role in _roles)
+                {
+                    if (role.GetType() == typeof(SystemAdmin))
+                    {
+                        return true;
+                    }
+                }
+                return false; 
+            } 
+        }
+        public SystemAdmin GetAdminRole
+        {
+            get
+            {
+                foreach (SystemRole role in _roles)
+                {
+                    if (role.GetType() == typeof(SystemAdmin))
+                    {
+                        return (SystemAdmin)role;
+                    }
+                }
+                return null;
+            }
+        }
 
         /// <summary>
         /// All the stores in which the user has some role in.

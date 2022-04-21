@@ -12,6 +12,19 @@ namespace MarketProject.Domain
         private IDictionary<String, Registered> _loggedinUsersTokens;
         // Dictionary mapping tokens to guests.
         private IDictionary<String, Guest> _visitorsGuestsTokens;
+        private SystemAdmin _currentAdmin;
+        public SystemAdmin CurrentAdmin
+        {
+            get
+            {
+                return _currentAdmin;
+            }
+            set
+            {
+                _currentAdmin = value;
+            }
+        }
+
 
         public UserManagement() : this(new Dictionary<String, Registered>()) { }
 

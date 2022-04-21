@@ -17,6 +17,14 @@ namespace MarketProject.Domain
             _history = new History();
         }
 
+        public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
+        {//I.1
+            Registered registered = _userManagement.GetRegisteredUser(adminUsername);
+            _userManagement.CurrentAdmin = registered.GetAdminRole;
+            // Do starting system stuff with IPs
+
+        }
+
         /// add\update basket eof store with item and amount.
         /// update store stock: itemAmount- amount
 
