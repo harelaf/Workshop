@@ -275,11 +275,8 @@ namespace MarketProject.Domain
             _userManagement.SendMessageToRegisterd(storeName, usernameReciever, title, message);
         }
 
-        public bool AddStoreManager(string authToken, string managerUsername, string storeName)
+        public bool AddStoreManager(string appointerUsername, string managerUsername, string storeName)
         {//II.4.6
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
             if (_userManagement.checkAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
@@ -292,11 +289,8 @@ namespace MarketProject.Domain
             return false;
         }
 
-        public bool AddStoreOwner(string authToken, string ownerUsername, string storeName)
+        public bool AddStoreOwner(string appointerUsername, string ownerUsername, string storeName)
         {//II.4.4
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
             if (_userManagement.checkAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
             {
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
@@ -327,11 +321,8 @@ namespace MarketProject.Domain
             return _userManagement.GetUserShoppingCart(authToken);
         }
 
-        public Boolean RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
+        public Boolean RemoveStoreOwner(String appointerUsername, String ownerUsername, String storeName)
         {//II.4.5
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
             if (_userManagement.checkAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
@@ -342,11 +333,9 @@ namespace MarketProject.Domain
             }
             return false;
         }
-        public Boolean RemoveStoreManager(String authToken, String managerUsername, String storeName)
+        public Boolean RemoveStoreManager(String appointerUsername, String managerUsername, String storeName)
         {//II.4.8
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            if (_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.REMOVE_MANAGER))
+            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.REMOVE_MANAGER))
             {
                 if (_storeManagement.RemoveStoreManager(managerUsername, storeName))
                 {
@@ -367,33 +356,6 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is no longer a visitor in system");
             return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
-        }
-
-        public List<StoreManager> getStoreManagers(string storeName, String authToken)
-        {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception($"this user does not have permission to permorm this operation");
-            return _storeManagement.getStoreManagers(storeName);
-        }
-
-        public List<StoreOwner> getStoreOwners(string storeName, String authToken)
-        {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception($"this user does not have permission to permorm this operation");
-            return _storeManagement.getStoreOwners(storeName);
-        }
-
-        public StoreFounder getStoreFounder(string storeName, String authToken)
-        {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception("this user does not have permission to permorm this operation");
-            return _storeManagement.getStoreFounder(storeName);
         }
 
         public void ExitSystem()
