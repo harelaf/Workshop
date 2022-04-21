@@ -121,7 +121,7 @@ namespace MarketProject.Domain
             {
                 if (_storeManagement.isStoreActive(storeName) || _userManagement.checkAccess(userName, storeName, Operation.STORE_INFORMATION))
                     return _storeManagement.GetStoreInformation(storeName);
-                throw new Exception($"Store {storeName} is currently inactive.");
+                throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
             }
         }
 
@@ -147,7 +147,7 @@ namespace MarketProject.Domain
             lock (_storeLock)
             {
                 if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.MANAGE_INVENTORY))
-                    throw new Exception($"Store {storeName} is currently inactive.");
+                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
             }
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
@@ -164,12 +164,16 @@ namespace MarketProject.Domain
         }
 
 
-        public void RemoveItemFromStore(String username, String storeName, int itemID)
+        public void RemoveItemFromStore(String authToken, String storeName, int itemID)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
-             *     throw new Exception($"This user is not an owner in {storeName}.");
-             */
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("The given user is no longer logged in to the system.");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            lock (_storeLock)
+            {
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.MANAGE_INVENTORY))
+                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+            }
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             lock (_stockLock)
