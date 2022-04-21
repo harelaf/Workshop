@@ -10,6 +10,52 @@ namespace MarketProject.Domain
         public String Username=> _username;
         private String _password;
         private ICollection<SystemRole> _roles;
+        public ICollection<SystemRole> Roles { get { return _roles; } }
+        public bool IsAdmin 
+        { 
+            get 
+            { 
+                foreach (SystemRole role in _roles)
+                {
+                    if (role.GetType() == typeof(SystemAdmin))
+                    {
+                        return true;
+                    }
+                }
+                return false; 
+            } 
+        }
+        public SystemAdmin GetAdminRole
+        {
+            get
+            {
+                foreach (SystemRole role in _roles)
+                {
+                    if (role.GetType() == typeof(SystemAdmin))
+                    {
+                        return (SystemAdmin)role;
+                    }
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// All the stores in which the user has some role in.
+        /// </summary>
+        public ICollection<String> StoresWithRoles 
+        { 
+            get 
+            {
+                ICollection<String> stores = new HashSet<String>();
+                foreach (SystemRole role in _roles)
+                {
+                    String storeName = role.StoreName;
+                    stores.Add(storeName);
+                }
+                return stores; 
+            } 
+        }
 
         public Registered(string username, string password)
         {
@@ -33,7 +79,7 @@ namespace MarketProject.Domain
             return false;
         }
 
-        internal void AddRole(SystemRole role)
+        public void AddRole(SystemRole role)
         {
             if (hasRoleInStore(role.StoreName))
                 throw new UnauthorizedAccessException("already has this role.");
@@ -52,6 +98,18 @@ namespace MarketProject.Domain
                 if (role.StoreName == storeName)
                     return true;
             return false;
+        }
+
+
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> Checks if the given password authorises login for this user.</para>
+        /// </summary>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> True if the password authorises login, false otherwise.</returns>
+        public bool Login(String password)
+        {
+            return (_password == password);
         }
         public bool RemoveRole(string storeName)
         {

@@ -248,5 +248,20 @@ namespace MarketProject.Domain
                 throw new Exception("no store by that name.");
             return store.GetFounder();
         }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Remove a Registered user's roles from all relevant stores.</para>
+        /// </summary>
+        /// <param name="registered"> The user to revoke the roles of.</param>
+        internal void RemoveAllRoles(Registered registered)
+        {
+            ICollection<String> storeNames = registered.StoresWithRoles;
+            foreach (String storeName in storeNames)
+            {
+                Store store = GetStore(storeName);
+                store.RemoveRoles(registered.Username);
+            }
+        }
     }
 }

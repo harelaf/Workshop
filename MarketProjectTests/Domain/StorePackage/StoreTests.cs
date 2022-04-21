@@ -406,6 +406,14 @@ namespace MarketProject.Domain.Tests
         {
             bool actual = _store.RemoveStoreOwner("123");
             Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
+        }
+
+        [TestMethod()]
+        public void RemoveRoles_ValidUsername_RolesRemoved()
+        {
+            // TODO: Add dependancy injection so unit test can be done.
+            throw new NotImplementedException();
         }
     }
 }

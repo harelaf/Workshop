@@ -17,6 +17,17 @@ namespace MarketProject.Domain
             _history = new History();
         }
 
+        /// <summary>
+        /// <para> For Req I.1. </para>
+        /// <para> Starts system with the given credentials setting the user as the current admin.</para>
+        /// </summary>
+        public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
+        {//I.1
+            _userManagement.AdminStart(adminUsername, adminPassword);
+            // Do starting system stuff with IPs
+
+        }
+
         /// add\update basket eof store with item and amount.
         /// update store stock: itemAmount- amount
 
@@ -383,6 +394,60 @@ namespace MarketProject.Domain
             if (!_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
                 throw new Exception("this user does not have permission to permorm this operation");
             return _storeManagement.getStoreFounder(storeName);
+        }
+
+        public void ExitSystem()
+        {
+            
+        }
+
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> If credentials are authenticated, log in user.</para>
+        /// </summary>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> The authentication token the user should use with the system.</returns>
+        public String Login(String authToken, String username, String password)
+        {
+            // TODO: Transfer cart?
+            return _userManagement.Login(authToken ,username, password);
+        }
+
+        /// <summary>
+        /// <para> For Req II.3.1. </para>
+        /// <para> Log out user identified by authToken.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user to log out.</param>
+        public String Logout(String authToken)
+        {
+            return _userManagement.Logout(authToken);
+        }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Remove a Registered user from our system and remove their roles from all relevant stores.</para>
+        /// </summary>
+        /// <param name="authToken"> The token authenticating the user making the request.</param>
+        /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
+        public void RemoveRegisteredUser(String authToken, String usr_toremove)
+        {
+            if (_userManagement.checkAccess(authToken, "CHANGE_ME", Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
+            {
+                Registered registeredToRemove = _userManagement.GetRegisteredUser(usr_toremove);
+                _userManagement.RemoveRegisteredUser(usr_toremove);
+                _storeManagement.RemoveAllRoles(registeredToRemove);
+            }
+        }
+
+        public String EnterSystem() // Generating token and returning it
+        { //II.1.1
+            return _userManagement.enter();
+        }
+
+        public void ExitSystem(String authToken) // Removing cart and token assigned to guest
+        { //II.1.2
+            _userManagement.ExitSystem(authToken);
         }
     }
 }

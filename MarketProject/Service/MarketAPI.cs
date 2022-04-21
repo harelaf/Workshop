@@ -16,26 +16,93 @@ namespace MarketProject.Service
 
         }
 
-        public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
+        /// <summary>
+        /// <para> For Req I.1. </para>
+        /// <para> Starts system with the given credentials setting the user as the current admin.</para>
+        /// </summary>
+        public Response RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RestartSystem(adminUsername, adminPassword, ipShippingService, ipPaymentService);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean Login(String authToken, String username, String password)
+
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> If credentials are authenticated, log in user.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the guest attempting to log in (to transfer cart).</param>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> Response with the authentication token the user should use with the system.</returns>
+        public Response<String> Login(String authToken, String username, String password)
         {//II.1.4
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                // TODO: Transfer cart? Using authToken
+                String loginToken = _market.Login(authToken, username, password);
+                response = new Response<String>(loginToken);
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(null, e);
+            }
+            return response;
         }
-        public Boolean Logout(String authToken)
+
+        /// <summary>
+        /// <para> For Req II.3.1. </para>
+        /// <para> Log out user identified by authToken.</para>
+        /// <return> new token as a guest</return>
+        /// </summary>
+        /// <param name="authToken"> The token of the user to log out.</param>
+        public Response<String> Logout(String authToken)
         {//II.3.1
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                String guestToken  = _market.Logout(authToken);
+                response = new Response<String>(guestToken);
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(null, e);
+            }
+            return response;
         }
         public Boolean Register(String authToken, String username, String password)
         {//II.1.3
             throw new NotImplementedException();
         }
-        public Boolean RemoveRegisteredUser(String authToken, String usr_toremove )
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Remove a Registered user from our system and remove their roles from all relevant stores.</para>
+        /// </summary>
+        /// <param name="authToken"> The token authenticating the user making the request.</param>
+        /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
+        public Response RemoveRegisteredUser(String authToken, String usr_toremove )
         {//II.6.2
-            //remmeber to fire him for all its roles
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveRegisteredUser(authToken, usr_toremove);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response AddItemToCart(String authToken, int itemID, String storeName, int amount)
         {//II.2.3
@@ -220,7 +287,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<String>(e);
+                response = new Response<String>(null, e);
             }
             return response;
         }
@@ -349,7 +416,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(e);
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(null, e);
             }
             return response;
         }
@@ -381,14 +448,34 @@ namespace MarketProject.Service
             throw new NotImplementedException();
         }
 
-        public String EnterSystem() // Generating token and returning it
+        public Response<String> EnterSystem() // Generating token and returning it
         { //II.1.1
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                String token = _market.EnterSystem();   
+                response = new Response<String>(token);
+            }
+            catch (Exception e) 
+            { 
+                response = new Response<String>(null, e); 
+            }
+            return response;
         }
 
-        public void ExitSystem(String authToken) // Removing cart and token assigned to guest
+        public Response ExitSystem(String authToken) // Removing cart and token assigned to guest
         { //II.1.2
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.ExitSystem(authToken);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
     }
 }
