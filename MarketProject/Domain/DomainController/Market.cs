@@ -24,6 +24,7 @@ namespace MarketProject.Domain
         public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
             _userManagement.AdminStart(adminUsername, adminPassword);
+
             // Do starting system stuff with IPs
 
         }
