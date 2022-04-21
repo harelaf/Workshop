@@ -9,6 +9,8 @@ namespace MarketProject.Domain
         private StoreManagement _storeManagement;
         private UserManagement _userManagement;
         private History _history;
+        private Object _stockLock = new Object();
+        private Object _storeLock = new Object();
 
         public Market()
         {
@@ -42,10 +44,17 @@ namespace MarketProject.Domain
                 throw new Exception("the given user is no longer a visitor in system");
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
-            if (!_storeManagement.isStoreActive(storeName))
-                throw new Exception($"Store {storeName} is currently inactive.");
-            Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
-            _userManagement.AddItemToUserCart(userToken, _storeManagement.GetStore(storeName), item, amount);
+            lock (_storeLock)
+            {
+                if (!_storeManagement.isStoreActive(storeName))
+                    throw new Exception($"Store {storeName} is currently inactive.");
+                lock (_stockLock)
+                {
+                    Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
+                    _userManagement.AddItemToUserCart(userToken, _storeManagement.GetStore(storeName), item, amount);
+                }
+            }
+            
         }
 
         public Item RemoveItemFromCart(String userToken, int itemID, String storeName)
@@ -57,7 +66,10 @@ namespace MarketProject.Domain
             Item item = _storeManagement.GetItem(storeName, itemID);
             int amount_removed = _userManagement.RemoveItemFromCart(userToken, item, _storeManagement.GetStore(storeName));
             // now update store stock
-            _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
+            lock (_stockLock)
+            {
+                _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
+            }
             return item;
         }
 
@@ -69,12 +81,21 @@ namespace MarketProject.Domain
                 throw new Exception("there is no store in system with the givn storeid");
             Item item = _storeManagement.GetItem(storeName, itemID);
             int amount_differnce = _userManagement.GetUpdatingQuanitityDiffrence(userToken, item, _storeManagement.GetStore(storeName), newQuantity);
-            if (amount_differnce > 0)// add item to cart and remove it from store stock
-                _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
-            else//remove item from cart and add to store stock
-                _storeManagement.UnreserveItemInStore(storeName, item, amount_differnce);
-            _userManagement.UpdateItemInUserCart(userToken, _storeManagement.GetStore(storeName), item, newQuantity);
+            lock (_storeLock)
+            {
+                if (!_storeManagement.isStoreActive(storeName))
+                    throw new Exception($"Store {storeName} is currently inactive.");
+                lock (_stockLock)
+                {
+                    if (amount_differnce > 0)// add item to cart and remove it from store stock
+                        _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
+                    else//remove item from cart and add to store stock
+                        _storeManagement.UnreserveItemInStore(storeName, item, amount_differnce);
+                    _userManagement.UpdateItemInUserCart(userToken, _storeManagement.GetStore(storeName), item, newQuantity);
+                }
+            }
         }
+
 
         public void OpenNewStore(String token, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
@@ -89,13 +110,19 @@ namespace MarketProject.Domain
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
         }
 
-        public String GetStoreInformation(String username, String storeName)
+        public String GetStoreInformation(String userToken, String storeName)
         {
+            if (!_userManagement.IsUserLoggedin(userToken))
+                throw new Exception("Only registered and logged in users are allowed to perform this operation!");
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            if (!_storeManagement.isStoreActive(storeName)) //|| _userManagement.CheckUserPermission(username, SYSTEM_ADMIN || STORE_OWNER))
+            string userName = _userManagement.GetRegisteredUsernameByToken(userToken);
+            lock (_storeLock)
+            {
+                if (_storeManagement.isStoreActive(storeName) || _userManagement.checkAccess(userName, storeName, Operation.STORE_INFORMATION))
+                    return _storeManagement.GetStoreInformation(storeName);
                 throw new Exception($"Store {storeName} is currently inactive.");
-            return _storeManagement.GetStoreInformation(storeName);
+            }
         }
 
         public void RateStore(String username, String storeName, int rating, String review)
@@ -125,8 +152,12 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank item nam.");
             if (quantity < 0)
                 throw new Exception("Invalid Input: Quantity has to be at least 0.");
-            _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, category, quantity);
+            lock (_stockLock)
+            {
+                _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, category, quantity);
+            }
         }
+
 
         public void RemoveItemFromStore(String username, String storeName, int itemID)
         {
@@ -136,11 +167,15 @@ namespace MarketProject.Domain
              */
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            _storeManagement.RemoveItemFromStore(storeName, itemID);
+            lock (_stockLock)
+            {
+                _storeManagement.RemoveItemFromStore(storeName, itemID);
+            }
         }
 
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String username, String storeName)
         {
+            //check user loggin!!!!!!!!!!!
             /*
              * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
              *     throw new Exception($"This user is not an owner in {storeName}.");
@@ -162,7 +197,10 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank store name.");
             if (newQuantity < 0)
                 throw new Exception("Invalid Input: Quantity has to be at least 0.");
-            _storeManagement.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
+            lock (_stockLock)
+            {
+                _storeManagement.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
+            }
         }
 
         public void CloseStore(string username, String storeName)

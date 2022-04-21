@@ -30,6 +30,7 @@ namespace MarketProject.Domain
         STORE_WORKERS_INFO, 
         RECEIVE_AND_REPLY_STORE_MESSAGE, 
         STORE_HISTORY_INFO,                 //for System Admin as well
+        STORE_INFORMATION,                  //for System Admin as well
 
         //SYSTEM ADMIN
         PERMENENT_CLOSE_STORE,
