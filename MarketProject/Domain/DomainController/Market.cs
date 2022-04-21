@@ -196,12 +196,16 @@ namespace MarketProject.Domain
             return _history.GetStorePurchaseHistory(storeName);
         }
 
-        public void UpdateStockQuantityOfItem(String username, String storeName, int itemID, int newQuantity)
+        public void UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
-             *     throw new Exception($"This user is not an owner in {storeName}.");
-             */
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("The given user is no longer logged in to the system.");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            lock (_storeLock)
+            {
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.MANAGE_INVENTORY))
+                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+            }
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             if (newQuantity < 0)
