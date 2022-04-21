@@ -133,6 +133,21 @@ namespace MarketProject.Domain
             return _stock.GetItemsByName(itemName);
         }
 
+        public List<String> GetStoreRolesByName()
+        {
+            List<String> names = new List<String>();
+            names.Add(_founder.UserName);
+            foreach (StoreManager manager in _managers)
+            {
+                names.Add(manager.UserName);
+            }
+            foreach (StoreOwner owner in _owners)
+            {
+                names.Add(owner.UserName);
+            }
+            return names;
+        }
+
         public String GetInformation()
         {
             String info = $"{_storeName}\n";

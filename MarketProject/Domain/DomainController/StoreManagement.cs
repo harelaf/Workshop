@@ -122,6 +122,14 @@ namespace MarketProject.Domain
             return store.GetInformation();
         }
 
+        public List<String> GetStoreRolesByName(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            return store.GetStoreRolesByName();
+        }
+
         public void RateStore(String username, String storeName, int rating, String review)
         {
             if (!CheckStoreNameExists(storeName))

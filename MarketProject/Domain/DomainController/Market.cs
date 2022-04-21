@@ -217,16 +217,29 @@ namespace MarketProject.Domain
             }
         }
 
-        public void CloseStore(string username, String storeName)
+        public void CloseStore(string authToken, String storeName)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER))
-             *     throw new Exception($"This user is not the founder of {storeName}.");
-             */
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("The given user is no longer logged in to the system.");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            lock (_storeLock)
+            {
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.CLOSE_STORE))
+                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+            }
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             _storeManagement.CloseStore(storeName);
-            // Send Alerts to all roles of [storeName]
+            List<String> names = _storeManagement.GetStoreRolesByName(storeName);
+            String title = $"Store: {storeName} is temporarily closing down: [{DateTime.Now.ToString()}].";
+            String message = $"I am sad to inform you that {storeName} is temporarily closing down. " +
+                $"Your roles in the store will remain until we decide permanently close down." +
+                $"Yours Truly," +
+                $"Joe Mama.";
+            foreach (String name in names)
+            {
+                SendMessageToRegisterd(storeName, name, title, message);
+            }
         }
 
         public void ReopenStore(string username, String storeName)
