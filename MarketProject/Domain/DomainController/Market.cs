@@ -88,11 +88,16 @@ namespace MarketProject.Domain
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
         }
 
-        public String GetStoreInformation(String username, String storeName)
+        public String GetStoreInformation(String authToken, String storeName)
         {
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            if (!_storeManagement.isStoreActive(storeName)) //|| _userManagement.CheckUserPermission(username, SYSTEM_ADMIN || STORE_OWNER))
+            if (!_userManagement.IsUserAVisitor(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            bool isAdmin = _userManagement.CurrentAdmin.UserName.Equals(username);
+            bool isStoreOwner = _userManagement.checkAccess(username, storeName, Operation.STORE_HISTORY_INFO);
+            if (_storeManagement.isStoreActive(storeName) || isAdmin || isStoreOwner)
                 throw new Exception($"Store {storeName} is currently inactive.");
             return _storeManagement.GetStoreInformation(storeName);
         }
@@ -394,11 +399,6 @@ namespace MarketProject.Domain
             if (!_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
                 throw new Exception("this user does not have permission to permorm this operation");
             return _storeManagement.getStoreFounder(storeName);
-        }
-
-        public void ExitSystem()
-        {
-            
         }
 
         /// <summary>

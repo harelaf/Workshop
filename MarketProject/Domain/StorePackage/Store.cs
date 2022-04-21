@@ -138,18 +138,17 @@ namespace MarketProject.Domain
         public String GetInformation()
         {
             String info = $"{_storeName}\n";
-            // founder.name
-            info += $"- Founded by {"founder.name"}\n";
+            info += $"- Founded by {_founder.UserName}\n";
             String ownerNames = "";
             foreach (StoreOwner owner in _owners)
             {
-                //ownerNames += owner.name + ", ";
+                ownerNames += owner.UserName + ", ";
             }
             info += $"- Owners: {ownerNames}\n";
             String managerNames = "";
             foreach (StoreManager manager in _managers)
             {
-                //managerNames += manager.name + ", ";
+                managerNames += manager.UserName + ", ";
             }
             info += $"- Managers: {managerNames}\n";
             info += $"- Has a rating of {GetRating()}\n";
