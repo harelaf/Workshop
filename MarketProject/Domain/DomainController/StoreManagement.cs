@@ -196,33 +196,57 @@ namespace MarketProject.Domain
 
         public bool AddStoreManager(StoreManager newManager, string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = _stores[storeName];
             if (store == null)
-                throw new AccessViolationException("no store by that name.");
+                throw new Exception("no store by that name.");
             return store.AddStoreManager(newManager);
         }
 
         public bool AddStoreOwner(StoreOwner newOwner, string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = _stores[storeName];
             if (store == null)
-                throw new AccessViolationException("no store by that name.");
+                throw new Exception("no store by that name.");
             return store.AddStoreOwner(newOwner);
         }
         public bool RemoveStoreOwner(string ownerUsername, string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = _stores[storeName];
             if (store == null)
-                return false;
+                throw new Exception("no store by that name.");
             return store.RemoveStoreOwner(ownerUsername);
         }
 
         public bool RemoveStoreManager(string managerUsername, string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = _stores[storeName];
             if (store == null)
-                return false;
+                throw new Exception("no store by that name.");
             return store.RemoveStoreManager(managerUsername);
+        }
+
+        internal List<StoreManager> getStoreManagers(string storeName)
+        {
+            Store store = _stores[storeName];
+            if (store == null)
+                throw new Exception("no store by that name.");
+            return store.GetManagers();
+        }
+
+        internal List<StoreOwner> getStoreOwners(string storeName)
+        {
+            Store store = _stores[storeName];
+            if (store == null)
+                throw new Exception("no store by that name.");
+            return store.GetOwners();
+        }
+
+        internal StoreFounder getStoreFounder(string storeName)
+        {
+            Store store = _stores[storeName];
+            if (store == null)
+                throw new Exception("no store by that name.");
+            return store.GetFounder();
         }
 
         /// <summary>
