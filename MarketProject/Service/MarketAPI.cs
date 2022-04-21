@@ -16,6 +16,10 @@ namespace MarketProject.Service
 
         }
 
+        /// <summary>
+        /// <para> For Req I.1. </para>
+        /// <para> Starts system with the given credentials setting the user as the current admin.</para>
+        /// </summary>
         public Response RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
             Response response;

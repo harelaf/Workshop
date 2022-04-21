@@ -213,5 +213,44 @@ namespace MarketProject.Domain.Tests
             Assert.IsFalse(userManagement.IsRegistered(username));
             Assert.IsFalse(userManagement.IsUserLoggedin(authToken));
         }
+
+        // ==================== RESTART_SYSTEM ====================
+
+
+        [TestMethod()]
+        public void AdminStart_Valid_SetsAdmin()
+        {
+            String username = "Test";
+            String password = "123";
+            Registered registered = new Registered(username, password);
+            SystemAdmin systemAdmin = new SystemAdmin(username);
+            registered.AddRole(systemAdmin);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers);
+
+            Assert.IsNull(userManagement.CurrentAdmin);
+
+            userManagement.AdminStart(username, password);
+
+            Assert.AreEqual(systemAdmin, userManagement.CurrentAdmin);
+        }
+
+        [TestMethod()]
+        public void AdminStart_NotAdmin_DoesntSetAdmin()
+        {
+            String username = "Test";
+            String password = "123";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers);
+
+            Assert.IsNull(userManagement.CurrentAdmin);
+
+            userManagement.AdminStart(username, password);
+
+            Assert.IsNull(userManagement.CurrentAdmin);
+        }
     }
 }

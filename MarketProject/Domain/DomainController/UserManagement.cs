@@ -28,6 +28,16 @@ namespace MarketProject.Domain
 
         public UserManagement() : this(new Dictionary<String, Registered>()) { }
 
+        /// <summary>
+        /// <para> For Req I.1. </para>
+        /// <para> Starts system with the given credentials setting the user as the current admin (if he has permission).</para>
+        /// </summary>
+        public void AdminStart(string adminUsername, string adminPassword)
+        {
+            Registered registered = GetRegisteredUser(adminUsername);
+            CurrentAdmin = registered.GetAdminRole;
+        }
+
         public UserManagement(IDictionary<String, Registered> registeredUsers)
         {
             _registeredUsers = registeredUsers;

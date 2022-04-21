@@ -17,10 +17,13 @@ namespace MarketProject.Domain
             _history = new History();
         }
 
+        /// <summary>
+        /// <para> For Req I.1. </para>
+        /// <para> Starts system with the given credentials setting the user as the current admin.</para>
+        /// </summary>
         public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
-            Registered registered = _userManagement.GetRegisteredUser(adminUsername);
-            _userManagement.CurrentAdmin = registered.GetAdminRole;
+            _userManagement.AdminStart(adminUsername, adminPassword);
             // Do starting system stuff with IPs
 
         }

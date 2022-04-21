@@ -78,7 +78,7 @@ namespace MarketProject.Domain
             return false;
         }
 
-        internal void AddRole(SystemRole role)
+        public void AddRole(SystemRole role)
         {
             if (!hasRoleInStore(role.StoreName))
                 throw new UnauthorizedAccessException("already has this role.");
