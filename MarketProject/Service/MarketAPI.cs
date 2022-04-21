@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MarketProject.Service
 {
-    internal class MarketAPI
+    public class MarketAPI
     {
         private Market _market;
 
@@ -79,9 +79,19 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean Register(String authToken, String username, String password)
+        public Response Register(String authToken, String username, String password)
         {//II.1.3
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.Register(authToken, username, password);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
 
         /// <summary>

@@ -409,7 +409,7 @@ namespace MarketProject.Domain.Tests
         {
             bool actual = _store.RemoveStoreOwner("123");
             Assert.IsFalse(actual);
-            Assert.ThrowsException<Exception>(() => _store.UnReserveItem(item, amountToUnreserve));
+           // Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
         }
 
         [TestMethod()]

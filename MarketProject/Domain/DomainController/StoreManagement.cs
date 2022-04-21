@@ -20,11 +20,6 @@ namespace MarketProject.Domain
             return null;
         }
 
-        public bool IsStoreExist(String storeName)
-        {
-           return GetStore(storeName) != null;
-        }
-
         public Item ReserveItemFromStore(String storeName, int itemID, int amount)
         {
             if (amount <= 0)

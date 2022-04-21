@@ -5,10 +5,11 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    class ShoppingBasketDTO
+    public class ShoppingBasketDTO
     {
         private String _storeName;
         private IDictionary<ItemDTO, int> _items;
+
 
         public String StoreName => _storeName;
         public IDictionary<ItemDTO, int> Items => _items;

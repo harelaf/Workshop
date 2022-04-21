@@ -27,6 +27,7 @@ namespace MarketProject.Domain
             roles.Add(Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE);
             roles.Add(Operation.SYSTEM_STATISTICS);
             roles.Add(Operation.STORE_HISTORY_INFO);
+            roles.Add(Operation.STORE_INFORMATION);
             return roles;
         }
     }
