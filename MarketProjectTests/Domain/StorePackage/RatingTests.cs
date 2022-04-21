@@ -51,7 +51,7 @@ namespace MarketProject.Domain.Tests
 
             float result = _rating.GetRating();
 
-            Assert.Equals(result, 5.0);
+            Assert.AreEqual(result, 5.0);
         }
     }
 }

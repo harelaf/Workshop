@@ -29,7 +29,7 @@ namespace MarketProject.Service.DTO
             _discounts = item.Discounts;
             _itemID = item.ItemID;
             _name = item.Name;
-            _price = item.Price;
+            _price = item._price;
             _description = item.Description;
             _category = item.Category;
         }

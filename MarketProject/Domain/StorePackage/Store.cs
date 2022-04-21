@@ -44,6 +44,8 @@ namespace MarketProject.Domain
             _rating = new Rating();
             _managers = new List<StoreManager>();
             _owners = new List<StoreOwner>();
+            if (founder == null)
+                throw new ArgumentNullException("store founder must not be null");
             _founder = founder;
             _state = StoreState.Active;
         }
@@ -64,17 +66,7 @@ namespace MarketProject.Domain
             return _stock.GetItem(itemID);
         }
 
-        internal bool AddStoreOwner(StoreOwner newOwner)
-        {
-            if(!hasRoleInStore(newOwner.UserName))
-            {
-                _owners.Add(newOwner);
-                return true;
-            }
-            return false;
-        }
-
-        internal bool AddStoreManager(StoreManager newManager)
+        public bool AddStoreManager(StoreManager newManager)
         {
             if (!hasRoleInStore(newManager.UserName))
             {
@@ -84,15 +76,25 @@ namespace MarketProject.Domain
             return false;
         }
 
+        public bool AddStoreOwner(StoreOwner newOwner)
+        {
+            if (!hasRoleInStore(newOwner.UserName))
+            {
+                _owners.Add(newOwner);
+                return true;
+            }
+            return false;
+        }
+
         private bool hasRoleInStore(string username)
         {
-            return GetOwner(username) != null && GetOwner(username) != null && _founder.Equals(username);
+            return GetOwner(username) != null || GetManager(username) != null || _founder.UserName.Equals(username);
         }
 
         private StoreManager GetManager(string ownerUserName)
         {
             foreach(StoreManager manager in _managers)
-                if(manager.UserName.Equals(ownerUserName))
+                if(manager.UserName == ownerUserName)
                     return manager;
             return null;
         }
@@ -100,7 +102,7 @@ namespace MarketProject.Domain
         private StoreOwner GetOwner(string managerUsername)
         {
             foreach (StoreOwner owner in _owners)
-                if (owner.UserName.Equals(managerUsername))
+                if (owner.UserName == managerUsername)
                     return owner;
             return null;
         }
@@ -209,5 +211,84 @@ namespace MarketProject.Domain
         {
             _state = StoreState.Closed;
         }
+        public void RestockBasket(ShoppingBasket basket)
+        {
+            foreach (Item item in basket.GetItems())
+                _stock.UnreserveItem(item, basket.GetAmountOfItem(item));
+        }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Remove all of a user's roles from this store.</para>
+        /// </summary>
+        /// <param name="username"> The user to revoke the roles of.</param>
+        public void RemoveRoles(String username)
+        {
+            RemoveManager(username);
+            RemoveOwner(username);
+            if (_founder.UserName == username)
+            {
+                // TODO: Decide what to do if founder is removed.
+                return;
+            }
+        }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Removes user as a manager if he is a manager.</para>
+        /// </summary>
+        /// <param name="username"> The user to revoke the role of.</param>
+        private void RemoveManager(String username)
+        {
+            StoreManager manager = GetManager(username);
+            if (manager != null)
+                _managers.Remove(manager);
+        }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Removes user as an owner if he is an owner.</para>
+        /// </summary>
+        /// <param name="username"> The user to revoke the role of.</param>
+        private void RemoveOwner(String username)
+        {
+            StoreOwner owner = GetOwner(username);
+            if (owner != null)
+                _owners.Remove(owner);
+        }
+
+        public bool RemoveStoreOwner(string ownerUsername)
+        {
+            return _owners.Remove(GetOwner(ownerUsername));
+        }
+
+        public bool RemoveStoreManager(string managerUsername)
+        {
+            return _managers.Remove(GetManager(managerUsername));
+        }
+
+        internal List<StoreManager> GetManagers()
+        {
+            return _managers;
+        }
+
+        internal List<StoreOwner> GetOwners()
+        {
+            return _owners;
+        }
+
+        internal StoreFounder GetFounder()
+        {
+            return _founder;
+        }
+
+        //public List<SystemRole> getRoles()
+        //{
+        //    List<SystemRole> roles = new List<SystemRole>();
+        //    roles.AddRange(_managers);
+        //    roles.AddRange(_owners);
+        //    roles.Add(_founder);
+        //    return roles;
+        //}
     }
 }

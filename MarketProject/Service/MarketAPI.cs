@@ -13,48 +13,166 @@ namespace MarketProject.Service
         public MarketAPI()
         {
             _market = new Market();
+
         }
 
-        public Boolean RestartSystem(String sysManegerUsername, String ipShippingService, String ipPaymentService)
+        /// <summary>
+        /// <para> For Req I.1. </para>
+        /// <para> Starts system with the given credentials setting the user as the current admin.</para>
+        /// </summary>
+        public Response RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RestartSystem(adminUsername, adminPassword, ipShippingService, ipPaymentService);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean Login(String authToken, String username, String password)
+
+        /// <summary>
+        /// <para> For Req II.1.4. </para>
+        /// <para> If credentials are authenticated, log in user.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the guest attempting to log in (to transfer cart).</param>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
+        /// <returns> Response with the authentication token the user should use with the system.</returns>
+        public Response<String> Login(String authToken, String username, String password)
         {//II.1.4
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                // TODO: Transfer cart? Using authToken
+                String loginToken = _market.Login(authToken, username, password);
+                response = new Response<String>(loginToken);
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(null, e);
+            }
+            return response;
         }
-        public Boolean Logout(String authToken)
+
+        /// <summary>
+        /// <para> For Req II.3.1. </para>
+        /// <para> Log out user identified by authToken.</para>
+        /// <return> new token as a guest</return>
+        /// </summary>
+        /// <param name="authToken"> The token of the user to log out.</param>
+        public Response<String> Logout(String authToken)
         {//II.3.1
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                String guestToken  = _market.Logout(authToken);
+                response = new Response<String>(guestToken);
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(null, e);
+            }
+            return response;
         }
         public Boolean Register(String authToken, String username, String password)
         {//II.1.3
             throw new NotImplementedException();
         }
-        public Boolean RemoveRegisteredUser(String authToken, String usr_toremove )
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Remove a Registered user from our system and remove their roles from all relevant stores.</para>
+        /// </summary>
+        /// <param name="authToken"> The token authenticating the user making the request.</param>
+        /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
+        public Response RemoveRegisteredUser(String authToken, String usr_toremove )
         {//II.6.2
-            //remmeber to fire him for all its roles
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveRegisteredUser(authToken, usr_toremove);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean AddItemToCart(String authToken, int itemID, String storeName, int amount)
+        public Response AddItemToCart(String authToken, int itemID, String storeName, int amount)
         {//II.2.3
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AddItemToCart(authToken, itemID, storeName, amount);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean RemoveItemFromCart(String authToken, int itemID, String storeName)
+        public Response RemoveItemFromCart(String authToken, int itemID, String storeName)
         {//II.2.4
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveItemFromCart(authToken, itemID, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean UpdateQuantityOfItemInCart(String authToken, int itemID, String storeName, int newQuantity)
+        public Response UpdateQuantityOfItemInCart(String authToken, int itemID, String storeName, int newQuantity)
         {//II.2.4
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.UpdateQuantityOfItemInCart(authToken, itemID, storeName, newQuantity);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public String ViewMyCart(String authToken) /*Add data object of cart*/
+        public Response<ShoppingCartDTO> ViewMyCart(String authToken) /*Add data object of cart*/
         {//II.2.4
-            throw new NotImplementedException();
+            Response<ShoppingCartDTO> response;
+            try
+            {
+                ShoppingCart shoppingCart= _market.ViewMyCart(authToken);
+                response = new Response<ShoppingCartDTO>(new ShoppingCartDTO(shoppingCart));
+            }
+            catch (Exception e)
+            {
+                response = new Response<ShoppingCartDTO>(null, e);
+            }
+            return response;
         }
-        public Boolean PurchaseMyCart(String authToken)
+        public Response PurchaseMyCart(String authToken, String address, String city, String country, String zip, String purchaserName)
         {//II.2.5
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName); 
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response OpenNewStore(String authToken, String storeName)
         {//II.3.2
@@ -169,7 +287,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<String>(e);
+                response = new Response<String>(null, e);
             }
             return response;
         }
@@ -187,14 +305,39 @@ namespace MarketProject.Service
             //to system admin!! should define some queue of messages for admin
             throw new NotImplementedException();
         }
-        public Boolean GetMyPurchases(String authToken)
+        public Response<ICollection<PurchasedCartDTO>> GetMyPurchasesHistory(String authToken)
         {//II.3.7
-            //we may add func that get the purchase by date
-            throw new NotImplementedException();
+            Response<ICollection<PurchasedCartDTO>> response;
+            try
+            {
+                ICollection<Tuple<DateTime ,ShoppingCart>> purchasedCarts = _market.GetMyPurchases(authToken);
+                ICollection<PurchasedCartDTO> purchasedCartsDTO = new List<PurchasedCartDTO>();
+                foreach (Tuple<DateTime ,ShoppingCart> purchase in purchasedCarts)
+                {
+                    purchasedCartsDTO.Add(new PurchasedCartDTO(purchase.Item1, purchase.Item2));
+                }
+
+                response = new Response<ICollection<PurchasedCartDTO>>(purchasedCartsDTO);
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<PurchasedCartDTO>>(null, e);
+            }
+            return response;
         }
-        public Boolean GetUserInformation(String authToken)
+        public Response<RegisteredDTO> GetUserInformation(String authToken)
         {//II.3.8
-            throw new NotImplementedException();
+            Response<RegisteredDTO> response;
+            try
+            {
+                Registered registered= _market.GetUserInformation(authToken);
+                response = new Response<RegisteredDTO>(new RegisteredDTO(registered));
+            }
+            catch (Exception e)
+            {
+                response = new Response<RegisteredDTO>(null, e);
+            }
+            return response;
         }
         public Boolean EditUsername(String authToken, String newUsername )
         {//II.3.8
@@ -273,7 +416,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(e);
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(null, e);
             }
             return response;
         }
@@ -305,14 +448,34 @@ namespace MarketProject.Service
             throw new NotImplementedException();
         }
 
-        public String EnterSystem() // Generating token and returning it
+        public Response<String> EnterSystem() // Generating token and returning it
         { //II.1.1
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                String token = _market.EnterSystem();   
+                response = new Response<String>(token);
+            }
+            catch (Exception e) 
+            { 
+                response = new Response<String>(null, e); 
+            }
+            return response;
         }
 
-        public void ExitSystem(String authToken) // Removing cart and token assigned to guest
+        public Response ExitSystem(String authToken) // Removing cart and token assigned to guest
         { //II.1.2
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.ExitSystem(authToken);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
     }
 }

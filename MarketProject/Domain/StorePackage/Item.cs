@@ -10,7 +10,7 @@ namespace MarketProject.Domain
         private ICollection<IDiscount> _discounts;
         private int _itemID;
         private String _name;
-        private double _price;
+        public virtual double _price { get; set; }
         private String _description;
         private String _category;
 
@@ -18,7 +18,6 @@ namespace MarketProject.Domain
         public ICollection<IDiscount> Discounts => _discounts;
         public int ItemID => _itemID;
         public String Name => _name;
-        public double Price => _price;
         public String Description => _description;
         public String Category => _category;
 
@@ -61,5 +60,6 @@ namespace MarketProject.Domain
             _description = description;
         }
 
+        
     }
 }

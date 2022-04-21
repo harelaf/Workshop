@@ -6,12 +6,18 @@ namespace MarketProject.Domain
 {
     public class Guest : User
     {
-        private string system_username;
-        public string System_username=> system_username;
-
-        public Guest(string system_username)
+        private String _token;
+        public String Token
         {
-            this.system_username = system_username;
+            get
+            {
+                return _token;
+            }
+        }
+
+        public Guest(string token)
+        {
+            _token = token;
         }
     }
 }
