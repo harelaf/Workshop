@@ -358,6 +358,11 @@ namespace MarketProject.Domain
             return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
 
+        public void ExitSystem()
+        {
+            
+        }
+
         /// <summary>
         /// <para> For Req II.1.4. </para>
         /// <para> If credentials are authenticated, log in user.</para>
@@ -365,10 +370,10 @@ namespace MarketProject.Domain
         /// <param name="username"> The username of the user to log in.</param>
         /// <param name="password"> The password to check.</param>
         /// <returns> The authentication token the user should use with the system.</returns>
-        public String Login(String username, String password)
+        public String Login(String authToken, String username, String password)
         {
             // TODO: Transfer cart?
-            return _userManagement.Login(username, password);
+            return _userManagement.Login(authToken ,username, password);
         }
 
         /// <summary>
@@ -376,9 +381,9 @@ namespace MarketProject.Domain
         /// <para> Log out user identified by authToken.</para>
         /// </summary>
         /// <param name="authToken"> The token of the user to log out.</param>
-        public void Logout(String authToken)
+        public String Logout(String authToken)
         {
-            _userManagement.Logout(authToken);
+            return _userManagement.Logout(authToken);
         }
 
         /// <summary>
@@ -395,6 +400,16 @@ namespace MarketProject.Domain
                 _userManagement.RemoveRegisteredUser(usr_toremove);
                 _storeManagement.RemoveAllRoles(registeredToRemove);
             }
+        }
+
+        public String EnterSystem() // Generating token and returning it
+        { //II.1.1
+            return _userManagement.enter();
+        }
+
+        public void ExitSystem(String authToken) // Removing cart and token assigned to guest
+        { //II.1.2
+            _userManagement.ExitSystem(authToken);
         }
     }
 }

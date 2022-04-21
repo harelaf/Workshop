@@ -49,12 +49,12 @@ namespace MarketProject.Service
             try
             {
                 // TODO: Transfer cart? Using authToken
-                String loginToken = _market.Login(username, password);
+                String loginToken = _market.Login(authToken, username, password);
                 response = new Response<String>(loginToken);
             }
             catch (Exception e)
             {
-                response = new Response<String>(e);
+                response = new Response<String>(null, e);
             }
             return response;
         }
@@ -62,19 +62,20 @@ namespace MarketProject.Service
         /// <summary>
         /// <para> For Req II.3.1. </para>
         /// <para> Log out user identified by authToken.</para>
+        /// <return> new token as a guest</return>
         /// </summary>
         /// <param name="authToken"> The token of the user to log out.</param>
-        public Response Logout(String authToken)
+        public Response<String> Logout(String authToken)
         {//II.3.1
-            Response response;
+            Response<String> response;
             try
             {
-                _market.Logout(authToken);
-                response = new Response();
+                String guestToken  = _market.Logout(authToken);
+                response = new Response<String>(guestToken);
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response<String>(null, e);
             }
             return response;
         }
@@ -286,7 +287,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<String>(e);
+                response = new Response<String>(null, e);
             }
             return response;
         }
@@ -415,7 +416,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(e);
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(null, e);
             }
             return response;
         }
@@ -447,14 +448,34 @@ namespace MarketProject.Service
             throw new NotImplementedException();
         }
 
-        public String EnterSystem() // Generating token and returning it
+        public Response<String> EnterSystem() // Generating token and returning it
         { //II.1.1
-            throw new NotImplementedException();
+            Response<String> response;
+            try
+            {
+                String token = _market.EnterSystem();   
+                response = new Response<String>(token);
+            }
+            catch (Exception e) 
+            { 
+                response = new Response<String>(null, e); 
+            }
+            return response;
         }
 
-        public void ExitSystem(String authToken) // Removing cart and token assigned to guest
+        public Response ExitSystem(String authToken) // Removing cart and token assigned to guest
         { //II.1.2
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.ExitSystem(authToken);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
     }
 }

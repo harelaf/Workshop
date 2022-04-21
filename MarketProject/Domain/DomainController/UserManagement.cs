@@ -92,19 +92,22 @@ namespace MarketProject.Domain
         /// <param name="username"> The username of the user to log in.</param>
         /// <param name="password"> The password to check.</param>
         /// <returns> The authentication token the user should use with the system.</returns>
-        public String Login(String username, String password)
+        public String Login(String curToken, String username, String password)
         {
-            String authToken = null;
+            if (!IsUserAGuest(username))
+                throw new Exception("you have to enter system as a guest in order to loggin.");
+            _visitorsGuestsTokens.Remove(curToken);
             Registered registered = GetRegisteredUser(username);
-            if (registered != null &&  // User with the username exists
-                !_loggedinUsersTokens.Values.Contains(registered) && // Not logged in currently
-                registered.Login(password)) // Login details correct
-            {
-                authToken = UserManagement.GenerateToken();
-                if (!_loggedinUsersTokens.TryAdd(authToken, registered))
-                { // Something went wrong, couldn't add.
-                    authToken = null;
-                }
+            if (registered != null && _loggedinUsersTokens.Values.Contains(registered))
+                throw new Exception($"user: {username} is allredy loggedin to system.");
+            if (registered == null ||  // User with the username doesn't exists
+                    !registered.Login(password))// Login details incorrect
+                throw new Exception("username or password are incorrect!");
+            
+            String authToken = UserManagement.GenerateToken();
+            if (!_loggedinUsersTokens.TryAdd(authToken, registered))
+            { // Something went wrong, couldn't add.
+                throw new Exception("loggin faild. please try again");
             }
             return authToken;
         }
@@ -143,17 +146,24 @@ namespace MarketProject.Domain
         /// <summary>
         /// <para> For Req II.3.1. </para>
         /// <para> Log out user identified by authToken.</para>
+        /// <returns>: string token of guest</returns>
         /// </summary>
         /// <param name="authToken"> The token of the user to log out.</param>
-        public void Logout(String authToken)
+        public String Logout(String authToken)
         {
             if (IsUserLoggedin(authToken)) 
             {
                 _loggedinUsersTokens.Remove(authToken);
+                String guestToken = GenerateToken();
+                if (guestToken == null)
+                    throw new Exception("logout faild: couldent tranfer to guest mode. please try again");
+                _visitorsGuestsTokens.Add(guestToken, new Guest());
+                return guestToken;
+
             }
             else
             {
-                throw new Exception("User not logged in.");
+                throw new Exception("logout faild: User not logged in.");
             }
         }
 
@@ -177,9 +187,13 @@ namespace MarketProject.Domain
         }
         public bool IsUserAVisitor(String userToken)
         {
-            if (_visitorsGuestsTokens.ContainsKey(userToken) || IsUserLoggedin(userToken))
+            if (IsUserAGuest(userToken) || IsUserLoggedin(userToken))
                 return true;
             return false;
+        }
+        public bool IsUserAGuest(String userToken)
+        {
+            return _visitorsGuestsTokens.ContainsKey(userToken);
         }
 
         public User GetVisitorUser(String userToken)
@@ -198,7 +212,7 @@ namespace MarketProject.Domain
             reciever.SendMessage(messageToUser);
         }
 
-        public void AddItemToUserCart(String username, Store store, Item item, int amount)
+        public void AddItemToUserCart(String userToken, Store store, Item item, int amount)
         {
             User user = GetVisitorUser(userToken);
             user.AddItemToCart(store, item, amount);
@@ -212,7 +226,7 @@ namespace MarketProject.Domain
             return false;
         }
 
-        public int RemoveItemFromCart(String username, Item item, Store store)
+        public int RemoveItemFromCart(String userToken, Item item, Store store)
         {
             User user = GetVisitorUser(userToken);
             return user.RemoveItemFromCart(item, store);
@@ -293,6 +307,30 @@ namespace MarketProject.Domain
                 }
             }
             return null;
+        }
+
+        public String enter()
+        {
+            String token = GenerateToken();
+            _visitorsGuestsTokens.Add(token, new Guest());
+            return token;
+        }
+
+        public void ExitSystem(string authToken)
+        {
+            if (IsUserLoggedin(authToken))
+            {
+                //_loggedinUsersTokens[authToken].saveCart(); ---> save cart in exit
+                _loggedinUsersTokens.Remove(authToken);
+            }
+            else if (IsUserAGuest(authToken))
+            {
+                _visitorsGuestsTokens.Remove(authToken);
+            }
+            else
+            {
+                throw new Exception("Exit faild: there is no user with that tokem in system");
+            }
         }
     }
 }
