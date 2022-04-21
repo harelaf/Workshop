@@ -66,15 +66,18 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void Login_Valid_ReturnsToken()
         {
-
+            String guestToken = "abcd";
             String username = "Test";
             String password = "123";
             Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
             registeredUsers.Add(username, new Registered(username, password));
-            UserManagement userManagement = new UserManagement(registeredUsers);
+            Guest guest = new Guest(guestToken);
+            Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
+            visitorsGuestsTokens.Add(guestToken, guest);
+            UserManagement userManagement = new UserManagement(registeredUsers, visitorsGuestsTokens);
 
 
-            String token = userManagement.Login(username, password);
+            String token = userManagement.Login(guestToken, username, password);
 
 
             Assert.IsNotNull(token);
@@ -83,16 +86,19 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void Login_InvalidUsername_ReturnsNull()
         {
-
+            String guestToken = "abcd";
             String username = "Test";
             String password = "123";
             String triedUsername = "";
             Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
             registeredUsers.Add(username, new Registered(username, password));
-            UserManagement userManagement = new UserManagement(registeredUsers);
+            Guest guest = new Guest(guestToken);
+            Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
+            visitorsGuestsTokens.Add(guestToken, guest);
+            UserManagement userManagement = new UserManagement(registeredUsers, visitorsGuestsTokens);
 
 
-            String token = userManagement.Login(triedUsername, password);
+            String token = userManagement.Login(guestToken, triedUsername, password);
 
 
             Assert.IsNull(token);
@@ -101,15 +107,19 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void Login_InvalidPassword_ReturnsNull()
         {
+            String guestToken = "abcd";
             String username = "Test";
             String password = "123";
             String triedPassword = "";
             Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
             registeredUsers.Add(username, new Registered(username, password));
-            UserManagement userManagement = new UserManagement(registeredUsers);
+            Guest guest = new Guest(guestToken);
+            Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
+            visitorsGuestsTokens.Add(guestToken, guest);
+            UserManagement userManagement = new UserManagement(registeredUsers, visitorsGuestsTokens);
 
 
-            String token = userManagement.Login(username, triedPassword);
+            String token = userManagement.Login(guestToken, username, triedPassword);
 
 
             Assert.IsNull(token);
