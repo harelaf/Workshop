@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    internal class PurchasedCartDTO
+    public class PurchasedCartDTO
     {
         private DateTime _date;
         private ShoppingCartDTO _shoppingCart;

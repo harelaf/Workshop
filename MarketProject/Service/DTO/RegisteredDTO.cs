@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    internal class RegisteredDTO
+    public class RegisteredDTO
     {
         private String _userName;
         private ShoppingCartDTO _shoppingCart;

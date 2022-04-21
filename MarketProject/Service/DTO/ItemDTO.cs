@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    class ItemDTO
+    public class ItemDTO
     {
         private RatingDTO _rating;
         private ICollection<IDiscount> _discounts;
