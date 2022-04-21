@@ -97,16 +97,17 @@ namespace MarketProject.Domain
         }
 
 
-        public void OpenNewStore(String token, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+        public void OpenNewStore(String authToken, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            if (!_userManagement.IsUserLoggedin(token))
+            if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception($"Only registered users are allowed to rate stores.");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             if (_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"A store with the name {storeName} already exists in the system.");
-            StoreFounder founder = null; // GET A FOUNDER SOMEHOW
-            // Check if he is null or what...
+            StoreFounder founder = new StoreFounder(username, storeName);
+            _userManagement.AddRole(username, founder);
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
         }
 
