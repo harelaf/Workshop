@@ -191,8 +191,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("The given user is no longer logged in to the system");
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
-            bool hasAccess = _userManagement.checkAccess(username, storeName, Operation.STORE_HISTORY_INFO);
-            if (!hasAccess)
+            if (_userManagement.checkAccess(username, storeName, Operation.STORE_HISTORY_INFO))
                 throw new Exception($"This user is not an admin or owner in {storeName}.");
             return _history.GetStorePurchaseHistory(storeName);
         }
