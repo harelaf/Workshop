@@ -18,7 +18,7 @@ namespace MarketProject.Domain.Tests
         [TestInitialize]
         public void setup()
         {
-            guest = new Guest();
+            guest = new Guest("lll");
             store = new Store("STORE1", new StoreFounder("founder", "STORE1"), new PurchasePolicy(), new DiscountPolicy());
             item1 = new Item(1, "name1", 1.0, "description1", "category1");
 
