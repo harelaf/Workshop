@@ -222,6 +222,9 @@ namespace MarketProject.Domain
         public void CloseStorePermanently()
         {
             _state = StoreState.Closed;
+            _founder = null;
+            _managers = new List<StoreManager>();
+            _owners = new List<StoreOwner>();
         }
         public void RestockBasket(ShoppingBasket basket)
         {

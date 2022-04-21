@@ -267,19 +267,31 @@ namespace MarketProject.Domain
             }
         }
 
-        public void CloseStorePermanently(String username, String storeName)
+        public void CloseStorePermanently(String authToken, String storeName)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, SYSTEM_ADMIN))
-             *     throw new Exception($"This user is not a system admin.");
-             */
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("The given user is no longer logged in to the system.");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            lock (_storeLock)
+            {
+                if (!_userManagement.checkAccess(username, storeName, Operation.PERMENENT_CLOSE_STORE))
+                    throw new Exception($"User is not an admin.");
+            }
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
+            List<String> names = _storeManagement.GetStoreRolesByName(storeName);
+            String title = $"Store: {storeName} is permanently closing down: [{DateTime.Now.ToString()}].";
+            String message = $"I am sad to inform you that {storeName} is closing down. " +
+                $"All of your roles have been revoked." +
+                $"Yours Truly," +
+                $"{username}.";
+            foreach (String name in names)
+            {
+                _userManagement.RemoveRole(name, storeName);
+                SendMessageToRegisterd(storeName, name, title, message);
+            }
             _storeManagement.CloseStorePermanently(storeName);
-            // Remove all owners/managers...
-            // Send alerts to all roles of [storeName]
         }
-
 
         public void EditItemPrice(String username, String storeName, int itemID, double newPrice)
         {
@@ -289,6 +301,7 @@ namespace MarketProject.Domain
              */
             _storeManagement.EditItemPrice(storeName, itemID, newPrice);
         }
+
         public void EditItemName(String username, String storeName, int itemID, int new_price, String newName)
         {
             /*
@@ -297,6 +310,7 @@ namespace MarketProject.Domain
              */
             _storeManagement.EditItemName(storeName, itemID, new_price, newName);
         }
+
         public void EditItemDescription(String username, String storeName, int itemID, String newDescription)
         {
             /*
@@ -421,6 +435,7 @@ namespace MarketProject.Domain
             }
             return false;
         }
+
         public Boolean RemoveStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.8
             if (!_userManagement.IsUserLoggedin(authToken))
@@ -435,12 +450,14 @@ namespace MarketProject.Domain
             }
             return false;
         }
+
         public ICollection<Tuple<DateTime, ShoppingCart>> GetMyPurchases(String authToken)
         {//II.3.7
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is no longer a visitor in system");
             return _history.GetRegistreredPurchaseHistory(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
+
         public Registered GetUserInformation(String authToken)
         {
             if (!_userManagement.IsUserLoggedin(authToken))
