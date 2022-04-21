@@ -127,12 +127,8 @@ namespace MarketProject.Domain
 
         public void RateStore(String authToken, String storeName, int rating, String review)
         {
-            if (_userManagement.IsUserAGuest(authToken))
-                throw new Exception($"Only registered users are allowed to rate stores.");
-            if (!_userManagement.IsUserAVisitor(authToken))
-                throw new Exception("the given user is no longer a visitor in system");
             if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is no longer logged in to the system");
+                throw new Exception("The given user is no longer logged in to the system.");
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             if (!_history.CheckIfUserPurchasedInStore(username, storeName))
                 throw new Exception($"User {username} has never purchased in {storeName}.");
@@ -143,18 +139,22 @@ namespace MarketProject.Domain
             _storeManagement.RateStore(username, storeName, rating, review);
         }
 
-        public void AddItemToStoreStock(String username, String storeName, int itemID, String name, double price, String description, String category, int quantity)
+        public void AddItemToStoreStock(String authToken, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
-             *     throw new Exception($"This user is not an owner in {storeName}.");
-             */
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("The given user is no longer logged in to the system.");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            lock (_storeLock)
+            {
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.MANAGE_INVENTORY))
+                    throw new Exception($"Store {storeName} is currently inactive.");
+            }
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             if (price < 0)
                 throw new Exception("Invalid Input: Price has to be at least 0.");
             if (name.Equals(""))
-                throw new Exception("Invalid Input: Blank item nam.");
+                throw new Exception("Invalid Input: Blank item name.");
             if (quantity < 0)
                 throw new Exception("Invalid Input: Quantity has to be at least 0.");
             lock (_stockLock)
