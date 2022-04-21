@@ -79,6 +79,14 @@ namespace MarketProject.Service
             }
             return response;
         }
+
+        /// <summary>
+        /// <para> For Req II.1.3. </para>
+        /// <para> If credentials are valid, register new user.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the guest currently registering.</param>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
         public Response Register(String authToken, String username, String password)
         {//II.1.3
             Response response;

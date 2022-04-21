@@ -24,11 +24,10 @@ namespace MarketProject.Domain.Tests
             String username = "Test";
             String password = "123";
 
-            bool response = userManagement.Register(username, password);
+            userManagement.Register(username, password);
             Registered registered = userManagement.GetRegisteredUser(username);
 
 
-            Assert.IsTrue(response);
             Assert.IsNotNull(registered);
         }
 
@@ -38,11 +37,10 @@ namespace MarketProject.Domain.Tests
             String username = ""; // Username obviously cannot be empty string
             String password = "123";
 
-            bool response = userManagement.Register(username, password);
+            userManagement.Register(username, password);
             Registered registered = userManagement.GetRegisteredUser(username);
 
 
-            Assert.IsFalse(response);
             Assert.IsNull(registered);
         }
 
@@ -53,11 +51,10 @@ namespace MarketProject.Domain.Tests
             String username = "Test"; 
             String password = ""; // Password obviously cannot be empty string
 
-            bool response = userManagement.Register(username, password);
+            userManagement.Register(username, password);
             Registered registered = userManagement.GetRegisteredUser(username);
 
 
-            Assert.IsFalse(response);
             Assert.IsNull(registered);
         }
 
