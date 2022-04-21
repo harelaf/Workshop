@@ -408,6 +408,18 @@ namespace MarketProject.Domain
             return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
 
+        /// <summary>
+        /// <para> For Req II.3.8. </para>
+        /// <para> Updates a user's password if given the correct previous password.</para>
+        /// </summary>
+        /// <param name="authToken"> The authenticating token of the user changing the password.</param>
+        /// <param name="oldPassword"> The user's current password. </param>
+        /// <param name="newPassword"> The new updated password. </param>
+        public void EditUserPassword(String authToken, String oldPassword, String newPassword)
+        {
+            _userManagement.EditUserPassword(authToken, oldPassword, newPassword);
+        }
+
         public List<StoreManager> getStoreManagers(string storeName, String authToken)
         {
             if (!_userManagement.IsUserLoggedin(authToken))

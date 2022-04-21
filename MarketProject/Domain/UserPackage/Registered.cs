@@ -9,6 +9,7 @@ namespace MarketProject.Domain
         private String _username;
         public String Username=> _username;
         private String _password;
+        public 
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
         public bool IsAdmin 
@@ -117,6 +118,14 @@ namespace MarketProject.Domain
                 if(role.StoreName == storeName)
                     return _roles.Remove(role);
             return false;
+        }
+
+        internal void UpdatePassword(string oldPassword, string newPassword)
+        {
+            if (Login(oldPassword))
+            {
+                _password = newPassword;
+            }
         }
     }
 }

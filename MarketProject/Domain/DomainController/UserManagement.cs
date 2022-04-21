@@ -86,6 +86,18 @@ namespace MarketProject.Domain
         }
 
         /// <summary>
+        /// Returns the Registered associated with a token.
+        /// </summary>
+        /// <param name="token"> The token of the Registered to return.</param>
+        /// <returns> The Registered associated with a token.</returns>
+        public Registered GetRegisteredByToken(String token)
+        {
+            if (!IsUserLoggedin(token))
+                throw new ArgumentException("No registered user with the given token.");
+            return _loggedinUsersTokens[token];
+        }
+
+        /// <summary>
         /// <para>Returns the user associated with a token.</para>
         /// <para>If it is an auth token (for Registered) returns the registered.</para>
         /// <para>If it is a temp username (for guest) returns the guest.</para>
@@ -124,7 +136,7 @@ namespace MarketProject.Domain
             return _visitorsGuestsTokens.ContainsKey(userToken);
         }
 
-        private String getLoggedInToken(String username)
+        private String GetLoggedInToken(String username)
         {
             foreach (KeyValuePair<String, Registered> pair in _loggedinUsersTokens)
             {
@@ -338,11 +350,30 @@ namespace MarketProject.Domain
         /// <param name="username"> The username of the user to log out.</param>
         private void LogoutByUsername(String username)
         {
-            String authToken = getLoggedInToken(username);
+            String authToken = GetLoggedInToken(username);
             if (authToken != null)
             {
                 Logout(authToken);
             }
+        }
+
+
+
+        // ===================================== Req II.3.8 - EDIT USER DETAILS =====================================
+
+        /// <summary>
+        /// <para> For Req II.3.8. </para>
+        /// <para> Updates a user's password if given the correct previous password.</para>
+        /// </summary>
+        /// <param name="authToken"> The authenticating token of the user changing the password.</param>
+        /// <param name="oldPassword"> The user's current password. </param>
+        /// <param name="newPassword"> The new updated password. </param>
+        public void EditUserPassword(String authToken, String oldPassword, String newPassword)
+        {
+            Registered registered = GetRegisteredByToken(authToken);
+            if (!CheckValidPassword(newPassword))
+                throw new Exception($"Password is invalid.");
+            registered.UpdatePassword(oldPassword, newPassword);
         }
 
 

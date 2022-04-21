@@ -361,9 +361,27 @@ namespace MarketProject.Service
         {//II.3.8
             throw new NotImplementedException();
         }
-        public Boolean EditUserPassword(String authToken, String newPassword)
+
+        /// <summary>
+        /// <para> For Req II.3.8. </para>
+        /// <para> Updates a user's password if given the correct previous password.</para>
+        /// </summary>
+        /// <param name="authToken"> The authenticating token of the user changing the password.</param>
+        /// <param name="oldPassword"> The user's current password. </param>
+        /// <param name="newPassword"> The new updated password. </param>
+        public Response EditUserPassword(String authToken, String oldPassword, String newPassword)
         {//II.3.8
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditUserPassword(authToken, oldPassword, newPassword);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean RemoveManagerPermission(String authToken, String managerUsername)//permission param is Enum
         {//II.4.7
