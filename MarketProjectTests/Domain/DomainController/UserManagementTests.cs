@@ -17,7 +17,11 @@ namespace MarketProject.Domain.Tests
         {
             userManagement = new UserManagement();
         }
-        // ==================== REGISTER ====================
+
+
+
+        // ============================= REGISTER =============================
+
         [TestMethod()]
         public void Register_Valid_RegistersNewUser()
         {
@@ -29,36 +33,31 @@ namespace MarketProject.Domain.Tests
 
 
             Assert.IsNotNull(registered);
+            Assert.AreEqual(registered, userManagement.GetRegisteredUser(username));
         }
 
         [TestMethod()]
-        public void Register_InvalidUsername_DoesNotRegister()
+        public void Register_InvalidUsername_ThrowsException()
         {
             String username = ""; // Username obviously cannot be empty string
             String password = "123";
 
-            userManagement.Register(username, password);
-            Registered registered = userManagement.GetRegisteredUser(username);
-
-
-            Assert.IsNull(registered);
+            Assert.ThrowsException<Exception>(() => userManagement.Register(username, password));
         }
 
         [TestMethod()]
-        public void Register_InvalidPassword_DoesNotRegister()
+        public void Register_InvalidPassword_ThrowsException()
         {
             UserManagement userManagement = new UserManagement();
-            String username = "Test"; 
+            String username = "Test";
             String password = ""; // Password obviously cannot be empty string
 
-            userManagement.Register(username, password);
-            Registered registered = userManagement.GetRegisteredUser(username);
-
-
-            Assert.IsNull(registered);
+            Assert.ThrowsException<Exception>(() => userManagement.Register(username, password));
         }
 
-        // ==================== LOGIN ====================
+
+
+        // ============================= LOGIN =============================
 
         [TestMethod()]
         public void Login_Valid_ReturnsToken()
@@ -81,7 +80,7 @@ namespace MarketProject.Domain.Tests
         }
 
         [TestMethod()]
-        public void Login_InvalidUsername_ReturnsNull()
+        public void Login_InvalidUsername_ThrowsException()
         {
             String guestToken = "abcd";
             String username = "Test";
@@ -95,14 +94,11 @@ namespace MarketProject.Domain.Tests
             UserManagement userManagement = new UserManagement(registeredUsers, visitorsGuestsTokens);
 
 
-            String token = userManagement.Login(guestToken, triedUsername, password);
-
-
-            Assert.IsNull(token);
+            Assert.ThrowsException<Exception>(() => userManagement.Login(guestToken, triedUsername, password));
         }
 
         [TestMethod()]
-        public void Login_InvalidPassword_ReturnsNull()
+        public void Login_InvalidPassword_ThrowsException()
         {
             String guestToken = "abcd";
             String username = "Test";
@@ -116,13 +112,12 @@ namespace MarketProject.Domain.Tests
             UserManagement userManagement = new UserManagement(registeredUsers, visitorsGuestsTokens);
 
 
-            String token = userManagement.Login(guestToken, username, triedPassword);
-
-
-            Assert.IsNull(token);
+            Assert.ThrowsException<Exception>(()=>userManagement.Login(guestToken, username, triedPassword));
         }
 
-        // ==================== LOGOUT ====================
+
+
+        // ============================= LOGOUT =============================
 
         [TestMethod()]
         public void Logout_ValidToken_NotLoggedIn()
@@ -172,7 +167,8 @@ namespace MarketProject.Domain.Tests
         }
 
 
-        // ==================== REMOVE_REGISTERED_USER ====================
+
+        // ============================= REMOVE_REGISTERED_USER =============================
 
         [TestMethod()]
         public void RemoveRegisteredUser_ValidUsername_Removed()
@@ -226,8 +222,9 @@ namespace MarketProject.Domain.Tests
             Assert.IsFalse(userManagement.IsUserLoggedin(authToken));
         }
 
-        // ==================== RESTART_SYSTEM ====================
 
+
+        // ============================= RESTART_SYSTEM =============================
 
         [TestMethod()]
         public void AdminStart_Valid_SetsAdmin()
@@ -263,6 +260,86 @@ namespace MarketProject.Domain.Tests
             userManagement.AdminStart(username, password);
 
             Assert.IsNull(userManagement.CurrentAdmin);
+        }
+
+
+
+        // ============================= EDIT_USER_DETAILS =============================
+
+        [TestMethod()]
+        public void EditUserPassword_Valid_Updates()
+        {
+            String username = "Test";
+            String password = "123";
+            String newPassword = "1";
+            String authToken = "abcd";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+            Assert.IsTrue(userManagement.IsRegistered(username));
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            userManagement.EditUserPassword(authToken, password, newPassword);
+            bool newPasswordWorks = registered.Login(newPassword);
+
+
+            Assert.IsTrue(newPasswordWorks);
+        }
+
+        [TestMethod()]
+        public void EditUserPassword_OldPassInvalid_DoesNotUpdate()
+        {
+            String username = "Test";
+            String password = "123";
+            String triedPassword = "12";
+            String newPassword = "1";
+            String authToken = "abcd";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+            Assert.IsTrue(userManagement.IsRegistered(username));
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            Assert.ThrowsException<Exception>(() => userManagement.EditUserPassword(authToken, triedPassword, newPassword));
+            bool newPasswordWorks = registered.Login(newPassword);
+
+
+            Assert.IsFalse(newPasswordWorks);
+        }
+
+        [TestMethod()]
+        public void EditUserPassword_NewPassInvalid_DoesNotUpdate()
+        {
+            String username = "Test";
+            String password = "123";
+            String newPassword = "";
+            String authToken = "abcd";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+            Assert.IsTrue(userManagement.IsRegistered(username));
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            Assert.ThrowsException<Exception>(() => userManagement.EditUserPassword(authToken, password, newPassword));
+            bool newPasswordWorks = registered.Login(newPassword);
+
+
+            Assert.IsFalse(newPasswordWorks);
         }
     }
 }
