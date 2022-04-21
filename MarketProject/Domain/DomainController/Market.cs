@@ -94,18 +94,25 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank store name.");
             if (!_userManagement.IsUserAVisitor(authToken))
                 throw new Exception("the given user is no longer a visitor in system");
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is no longer logged in to the system");
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             bool isAdmin = _userManagement.CurrentAdmin.UserName.Equals(username);
-            bool isStoreOwner = _userManagement.checkAccess(username, storeName, Operation.STORE_HISTORY_INFO);
-            if (_storeManagement.isStoreActive(storeName) || isAdmin || isStoreOwner)
+            bool hasAccess = _userManagement.checkAccess(username, storeName, Operation.STORE_INFORMATION);
+            if (_storeManagement.isStoreActive(storeName) || isAdmin || hasAccess)
                 throw new Exception($"Store {storeName} is currently inactive.");
             return _storeManagement.GetStoreInformation(storeName);
         }
 
-        public void RateStore(String username, String storeName, int rating, String review)
+        public void RateStore(String authToken, String storeName, int rating, String review)
         {
-            if (_userManagement.IsUserAVisitor(username))
+            if (_userManagement.IsUserAGuest(authToken))
                 throw new Exception($"Only registered users are allowed to rate stores.");
+            if (!_userManagement.IsUserAVisitor(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is no longer logged in to the system");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             if (!_history.CheckIfUserPurchasedInStore(username, storeName))
                 throw new Exception($"User {username} has never purchased in {storeName}.");
             if (storeName.Equals(""))
@@ -143,12 +150,16 @@ namespace MarketProject.Domain
             _storeManagement.RemoveItemFromStore(storeName, itemID);
         }
 
-        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String username, String storeName)
+        public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER || STORE_OWNER))
-             *     throw new Exception($"This user is not an owner in {storeName}.");
-             */
+            if (!_userManagement.IsUserAVisitor(authToken))
+                throw new Exception("the given user is no longer a visitor in system");
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is no longer logged in to the system");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            bool hasAccess = _userManagement.checkAccess(username, storeName, Operation.STORE_HISTORY_INFO);
+            if (!hasAccess)
+                throw new Exception($"This user is not an admin or owner in {storeName}.");
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
             if (!_storeManagement.CheckStoreNameExists(storeName))
