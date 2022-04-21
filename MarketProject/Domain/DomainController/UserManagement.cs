@@ -235,7 +235,7 @@ namespace MarketProject.Domain
         /// <para> Logs out if needed and removes a user from our system.</para>
         /// </summary>
         /// <param name="username"> The username of the user to log out.</param>
-        internal void RemoveRegisteredUser(string username)
+        public void RemoveRegisteredUser(string username)
         {
             if (!IsRegistered(username))
             {

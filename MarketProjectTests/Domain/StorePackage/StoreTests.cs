@@ -344,7 +344,14 @@ namespace MarketProject.Domain.Tests
             store.Stock.AddItem(item, inStock);
             int amountToUnreserve = 0;
             //action+ assert
-            Assert.ThrowsException<Exception>(() => store.UnReserveItem(item,amountToUnreserve ));
+            Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
+        }
+
+        [TestMethod()]
+        public void RemoveRoles_ValidUsername_RolesRemoved()
+        {
+            // TODO: Add dependancy injection so unit test can be done.
+            throw new NotImplementedException();
         }
     }
 }

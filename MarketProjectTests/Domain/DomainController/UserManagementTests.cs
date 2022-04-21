@@ -153,10 +153,65 @@ namespace MarketProject.Domain.Tests
             Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
 
 
-            Assert.ThrowsException<Exception>(()=>userManagement.Logout(triedToken));
+            Assert.ThrowsException<Exception>(() => userManagement.Logout(triedToken));
 
 
             Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+        }
+
+
+        // ==================== REMOVE_REGISTERED_USER ====================
+
+        [TestMethod()]
+        public void RemoveRegisteredUser_ValidUsername_Removed()
+        {
+            String username = "Test";
+            String password = "123";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers);
+
+            Assert.IsTrue(userManagement.IsRegistered(username));
+
+            userManagement.RemoveRegisteredUser(username);
+
+
+            Assert.IsFalse(userManagement.IsRegistered(username));
+        }
+
+        [TestMethod()]
+        public void RemoveRegisteredUser_InvalidUsername_ThrowsException()
+        {
+            String username = "Test";
+            UserManagement userManagement = new UserManagement();
+
+
+            Assert.ThrowsException<Exception>(() => userManagement.RemoveRegisteredUser(username));
+        }
+
+        [TestMethod()]
+        public void RemoveRegisteredUser_WasLoggedIn_RemovedAndLoggedOut()
+        {
+            String username = "Test";
+            String password = "123";
+            String authToken = "abcd";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+            Assert.IsTrue(userManagement.IsRegistered(username));
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            userManagement.RemoveRegisteredUser(username);
+
+
+            Assert.IsFalse(userManagement.IsRegistered(username));
+            Assert.IsFalse(userManagement.IsUserLoggedin(authToken));
         }
     }
 }

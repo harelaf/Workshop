@@ -238,7 +238,7 @@ namespace MarketProject.Domain
         /// <para> Removes user as a manager if he is a manager.</para>
         /// </summary>
         /// <param name="username"> The user to revoke the role of.</param>
-        public void RemoveManager(String username)
+        private void RemoveManager(String username)
         {
             StoreManager manager = GetManager(username);
             if (manager != null)
@@ -250,7 +250,7 @@ namespace MarketProject.Domain
         /// <para> Removes user as an owner if he is an owner.</para>
         /// </summary>
         /// <param name="username"> The user to revoke the role of.</param>
-        public void RemoveOwner(String username)
+        private void RemoveOwner(String username)
         {
             StoreOwner owner = GetOwner(username);
             if (owner != null)
