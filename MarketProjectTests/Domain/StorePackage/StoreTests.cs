@@ -9,10 +9,35 @@ namespace MarketProject.Domain.Tests
     [TestClass()]
     public class StoreTests
     {
+
+        Store _store;
+        string storeName;
+        string storeFounder;
+        int itemId;
+        String name;
+        String description;
+        String category;
+        double price;
+        int quantity;
+
+        [TestInitialize()]
+        public void setup()
+        {
+            storeFounder = "Mr. Krabs";
+            storeName = "Krusty Krab";
+            _store = new Store(storeName, new StoreFounder(storeFounder, "Krusty Krab"), new PurchasePolicy(), new DiscountPolicy());
+            itemId = 1;
+            name = "Krabby Patty";
+            description = "yummy";
+            category = "computing";
+            price = 5.0;
+            quantity = 10;
+        }
+
+
         [TestMethod()]
         public void RateStore_UserHasntRatedStore_NoException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
             String username = "Squidward Tentacles";
             int rating = 1;
             String review = "NOOOOOOOOOOOO";
@@ -20,9 +45,9 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _store.RateStore(username, rating, review);
-                Assert.AreEqual(_store.GetRating(), rating);
+                Assert.AreEqual(_store.GetRating(), "" + rating);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Assert.Fail();
             }
@@ -31,7 +56,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RateStore_UserHasRatedStore_ThrowsException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
             String username = "Squidward Tentacles";
             int rating = 1;
             String review = "NOOOOOOOOOOOO";
@@ -58,10 +82,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void UpdateStockQuantityOfItem_ItemExists_NoException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            String username = "Squidward Tentacles";
-            int itemId = 1;
-            String name = "Krabby Patty";
             String description = "Delicious";
             int quantity = 5;
             double price = 5.0;
@@ -71,7 +91,7 @@ namespace MarketProject.Domain.Tests
             {
                 _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Assert.Fail();
             }
@@ -91,9 +111,7 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void UpdateStockQuantityOfItem_ItemDoesntExist_ThrowsException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            int newQuantity = 10;
+            int newQuantity = 15;
 
             try
             {
@@ -108,14 +126,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void AddItemToStoreStock_ItemIdIsUnique_NoException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            String category = "";
-            double price = 5.0;
-            int quantity = 10;
-
             try
             {
                 _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
@@ -130,13 +140,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void AddItemToStoreStock_ItemIdIsNotUnique_ThrowsException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            String category = "";
-            double price = 5.0;
-            int quantity = 10;
             try
             {
                 _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
@@ -159,19 +162,12 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RemoveItemFromStore_ItemDoesntExist_ThrowsException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            double price = 5.0;
-            int quantity = 10;
-
             try
             {
                 _store.RemoveItemFromStore(itemId);
                 Assert.Fail();
-            } 
-            catch(Exception)
+            }
+            catch (Exception)
             {
             }
         }
@@ -179,13 +175,6 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RemoveItemFromStore_ItemExists_NoException()
         {
-            Store _store = new Store("Krusty Krab", null, null, null);
-            int itemId = 1;
-            String name = "Krabby Patty";
-            String description = "yummy";
-            String category = "";
-            double price = 5.0;
-            int quantity = 10;
             try
             {
                 _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
@@ -205,6 +194,229 @@ namespace MarketProject.Domain.Tests
             {
                 Assert.Fail();
             }
+        }
+
+        [TestMethod()]
+        public void AddStoreManager_AddManagerTwice_returnsFalse()
+        {
+            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            bool act = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            Assert.IsFalse(act);
+        }
+
+        [TestMethod]
+        public void AddStoreManager_AddManagerWhileIsOwner_returnsFalse()
+        {
+            bool arrange = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            bool act = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            Assert.IsFalse(act);
+        }
+
+        [TestMethod]
+        public void AddStoreManager_AddManager_returnsTrue()
+        {
+            bool act = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+            Assert.IsTrue(act);
+        }
+
+        [TestMethod]
+        public void AddStoreOwner_AddOwnerTwice_returnsFalse()
+        {
+            bool arrange = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            Assert.IsFalse(act);
+        }
+
+        [TestMethod]
+        public void AddStoreOwner_AddOwnerWhileIsManager_returnsFalse()
+        {
+            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            Assert.IsFalse(act);
+        }
+
+        [TestMethod]
+        public void AddStoreOwner_AddOwner_returnsTrue()
+        {
+            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+            Assert.IsTrue(act);
+        }
+
+        [TestMethod]
+        public void TestReserveItem_moreThanAmountInStock()
+        {
+            //item exists in stock and there is more than amount in stock
+            // Arrange
+            Store store = new Store("Store1", null, null, null);
+            int itemID = 1;
+            int inStock = 30;
+            Item item = new Item(itemID, "item1", 20, "banana", category);
+            store.Stock.AddItem(item, inStock);
+            int amountToReserve = 10;
+            //action
+            store.ReserveItem(itemID, amountToReserve);
+            int expectedAmountInStock = inStock - amountToReserve;
+            // Assert
+            Assert.AreEqual(store.Stock.GetItemAmount(item), expectedAmountInStock);
+        }
+        [TestMethod]
+        public void TestReserveItem_notEnoughtInStock()
+        {
+            //item exists in stock but there is not enought in stock
+            // Arrange
+            Store store = new Store("Store1", null, null, null);
+            int itemID = 1;
+            int inStock = 30;
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
+            store.Stock.AddItem(item, inStock);
+            int amountToReserve = inStock + 10;
+            //action+ assert
+            Assert.ThrowsException<Exception>(() => store.ReserveItem(itemID, amountToReserve));
+            Assert.AreEqual(store.Stock.GetItemAmount(item), inStock);
+        }
+        [TestMethod]
+        public void TestReserveItem_NoSuchItemInStock()
+        {
+            //item does'nt exists in stock.
+            // Arrange
+            Store store = new Store("Store1", null, null, null);
+            int itemID = 1;
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
+            int amountToReserve = 10;
+            //action+ assert
+            Assert.ThrowsException<Exception>(() => store.ReserveItem(itemID, amountToReserve));
+        }
+        [TestMethod]
+        public void TestReserveItem_nonPosigtiveAmountToReserve()
+        {
+            //trying reserve amount<=0
+            // Arrange
+            Store store = new Store("Store1", null, null, null);
+            int itemID = 1;
+            int inStock = 30;
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
+            store.Stock.AddItem(item, inStock);
+            int amountToReserve = 0;
+            //action+ assert
+            Assert.ThrowsException<Exception>(() => store.ReserveItem(itemID, amountToReserve));
+        }
+        [TestMethod]
+        public void TestUnreserveItem_positiveAmount()
+        {
+            //item exists in stock and the given amount>0
+            // Arrange
+            Store store = new Store("Store1", null, null, null);
+            int itemID = 1;
+            int inStock = 0;
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
+            store.Stock.AddItem(item, inStock);
+            int amountToUneserve = 10;
+            //action
+            store.UnReserveItem(item, amountToUneserve);
+            int expectedAmountInStock = inStock + amountToUneserve;
+            // Assert
+            Assert.AreEqual(store.Stock.GetItemAmount(item), expectedAmountInStock);
+        }
+        [TestMethod]
+        public void TestUnreserveItem_NoSuchItemInStock()
+        {
+            //item does'nt exists in stock.
+            // Arrange
+            Store store = new Store("Store1", null, null, null);
+            int itemID = 1;
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
+            int amountToUnreserve = 10;
+            //action+ assert
+            Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
+        }
+        [TestMethod]
+        public void TestUnreserveItem_nonPositiveAmount()
+        {
+            //trying unureserve amount_to_add<=0
+            // Arrange
+            Store store = new Store("Store1", null, null, null);
+            int itemID = 1;
+            int inStock = 30;
+            Item item = new Item(itemID, "itwm1", 20, "banana", "category");
+            store.Stock.AddItem(item, inStock);
+            int amountToUnreserve = 0;
+            //action+ assert
+            Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
+        }
+
+        [TestMethod()]
+        public void AddStoreOwner_removeAsManagerAddAsOwner_returnsTrue()
+        {
+            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+            arrange = arrange & _store.RemoveStoreManager(name);
+
+            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+
+            Assert.IsTrue(arrange & act);
+        }
+
+        [TestMethod()]
+        public void RemoveStoreManager_addAndRemove_returnstrue()
+        {
+            string storeManager = "tommy shelby";
+            bool add = _store.AddStoreManager(new StoreManager(storeManager, storeName, storeFounder));
+
+            bool actual = _store.RemoveStoreManager(storeManager);
+            Assert.IsTrue(add);
+            Assert.IsTrue(actual);
+        }
+        [TestMethod()]
+        public void RemoveStoreManager_removeFounder_returnsfalse()
+        {
+            bool actual = _store.RemoveStoreManager(storeFounder);
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod()]
+        public void RemoveStoreManager_NonWorker_returnsfalse()
+        {
+            bool actual = _store.RemoveStoreManager("123");
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod()]
+        public void RemoveStoreOwner_addAndRemove_returnstrue()
+        {
+            string storeOwner = "amos";
+            bool add = _store.AddStoreOwner(new StoreOwner(storeOwner, storeName, storeFounder));
+
+            bool actual = _store.RemoveStoreOwner(storeOwner);
+            Assert.IsTrue(add);
+            Assert.IsTrue(actual);
+        }
+        [TestMethod()]
+        public void RemoveStoreOwner_removeFounder_returnsfalse()
+        {
+            bool actual = _store.RemoveStoreOwner(storeFounder);
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod()]
+        public void RemoveStoreOwner_NonWorker_returnsfalse()
+        {
+            bool actual = _store.RemoveStoreOwner("123");
+            Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => _store.UnReserveItem(item, amountToUnreserve));
+        }
+
+        [TestMethod()]
+        public void RemoveRoles_ValidUsername_RolesRemoved()
+        {
+            // TODO: Add dependancy injection so unit test can be done.
+            throw new NotImplementedException();
         }
     }
 }

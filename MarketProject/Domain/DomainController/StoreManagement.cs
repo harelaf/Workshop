@@ -192,5 +192,52 @@ namespace MarketProject.Domain
             Store store = _stores[storeName];
             store.CloseStorePermanently();
         }
+
+
+        public bool AddStoreManager(StoreManager newManager, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                throw new AccessViolationException("no store by that name.");
+            return store.AddStoreManager(newManager);
+        }
+
+        public bool AddStoreOwner(StoreOwner newOwner, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                throw new AccessViolationException("no store by that name.");
+            return store.AddStoreOwner(newOwner);
+        }
+        public bool RemoveStoreOwner(string ownerUsername, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                return false;
+            return store.RemoveStoreOwner(ownerUsername);
+        }
+
+        public bool RemoveStoreManager(string managerUsername, string storeName)
+        {
+            Store store = GetStore(storeName);
+            if (store == null)
+                return false;
+            return store.RemoveStoreManager(managerUsername);
+        }
+
+        /// <summary>
+        /// <para> For Req II.6.2. </para>
+        /// <para> Remove a Registered user's roles from all relevant stores.</para>
+        /// </summary>
+        /// <param name="registered"> The user to revoke the roles of.</param>
+        internal void RemoveAllRoles(Registered registered)
+        {
+            ICollection<String> storeNames = registered.StoresWithRoles;
+            foreach (String storeName in storeNames)
+            {
+                Store store = GetStore(storeName);
+                store.RemoveRoles(registered.Username);
+            }
+        }
     }
 }

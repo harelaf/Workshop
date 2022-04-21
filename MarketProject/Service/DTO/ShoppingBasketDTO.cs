@@ -24,5 +24,17 @@ namespace MarketProject.Service.DTO
                 _items[dto] = entry.Value;
             }
         }
+        public string ToString()
+        {
+            //_name;
+            string toString = $"Shopping Basket of store: {_storeName}:\n";
+            toString += string.Format($"|{0,-30}|{1,-4}|{2,-15}|{3,-30}\n", "Item ID", "Item Category", "Item Price", "Amount");
+            foreach (KeyValuePair<ItemDTO, int> entry in _items)
+            {
+                toString += string.Format($"|{0,-30}|{1,-4}|{2,-15}|{3,-30}\n",
+                    entry.Key.ItemID, entry.Key.Category, entry.Key.Price, entry.Value);
+            }
+            return toString;
+        }
     }
 }
