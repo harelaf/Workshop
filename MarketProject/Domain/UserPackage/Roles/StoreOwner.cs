@@ -7,6 +7,7 @@ namespace MarketProject.Domain
     public class StoreOwner : SystemRole
     {
         private string _appointer;
+        public string Appointer => _appointer;
         public StoreOwner(string userName, string storeName, string appointer) : base(getOps(), userName)
         {
             StoreName = storeName;

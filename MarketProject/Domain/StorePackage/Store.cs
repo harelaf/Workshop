@@ -16,9 +16,13 @@ namespace MarketProject.Domain
         private Stock _stock;
         public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
+        public PurchasePolicy PurchasePolicy => _purchasePolicy;
         private DiscountPolicy _discountPolicy;
+        public DiscountPolicy DiscountPolicy => _discountPolicy;
         private Queue<MessageToStore> _messagesToStore;
+        public Queue<MessageToStore> MessagesToStore => _messagesToStore;
         private Rating _rating;
+        public Rating Rating => _rating;
         private List<StoreManager> _managers;
         private List<StoreOwner> _owners;
         private StoreFounder _founder;
@@ -133,21 +137,36 @@ namespace MarketProject.Domain
             return _stock.GetItemsByName(itemName);
         }
 
+        public List<String> GetStoreRolesByName()
+        {
+            List<String> names = new List<String>();
+            names.Add(_founder.UserName);
+            foreach (StoreManager manager in _managers)
+            {
+                names.Add(manager.UserName);
+            }
+            foreach (StoreOwner owner in _owners)
+            {
+                names.Add(owner.UserName);
+            }
+            return names;
+        }
+
+        // Deprecated function. No longer used by GetStoreInformation.
         public String GetInformation()
         {
             String info = $"{_storeName}\n";
-            // founder.name
-            info += $"- Founded by {"founder.name"}\n";
+            info += $"- Founded by {_founder.UserName}\n";
             String ownerNames = "";
             foreach (StoreOwner owner in _owners)
             {
-                //ownerNames += owner.name + ", ";
+                ownerNames += owner.UserName + ", ";
             }
             info += $"- Owners: {ownerNames}\n";
             String managerNames = "";
             foreach (StoreManager manager in _managers)
             {
-                //managerNames += manager.name + ", ";
+                managerNames += manager.UserName + ", ";
             }
             info += $"- Managers: {managerNames}\n";
             info += $"- Has a rating of {GetRating()}\n";
@@ -208,6 +227,9 @@ namespace MarketProject.Domain
         public void CloseStorePermanently()
         {
             _state = StoreState.Closed;
+            _founder = null;
+            _managers = new List<StoreManager>();
+            _owners = new List<StoreOwner>();
         }
         public void RestockBasket(ShoppingBasket basket)
         {

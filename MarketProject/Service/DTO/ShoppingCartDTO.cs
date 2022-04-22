@@ -28,5 +28,27 @@ namespace MarketProject.Service.DTO
             }
             return toString;
         }
+        public int getAmountOfItemInCart(string storeName, int itemID)
+        {
+            int totalAmountInCart = 0;
+            foreach (ShoppingBasketDTO shoppingBasketDTO in _DTObaskets)
+            {
+                if (shoppingBasketDTO.StoreName == storeName)
+                {
+                    foreach (ItemDTO item in shoppingBasketDTO.Items.Keys)
+                    {
+                        if (item.ItemID == itemID)
+                        {
+                            totalAmountInCart += shoppingBasketDTO.Items[item];
+                            break;
+                        }
+
+                    }
+                    break;
+                }
+
+            }
+            return totalAmountInCart;
+        }
     }
 }

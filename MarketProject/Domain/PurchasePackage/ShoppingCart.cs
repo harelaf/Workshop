@@ -34,7 +34,8 @@ namespace MarketProject.Domain
         {
             if (!isCartEmpty() && _shoppingBaskets.Contains(basket))
                 _shoppingBaskets.Remove(basket);
-            throw new Exception("there is no such basket in cart to remove.");
+            else
+                throw new Exception("there is no such basket in cart to remove.");
         }
 
         public virtual void RelaseItemsOfCart()
