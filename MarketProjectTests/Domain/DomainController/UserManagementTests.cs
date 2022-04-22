@@ -17,51 +17,47 @@ namespace MarketProject.Domain.Tests
         {
             userManagement = new UserManagement();
         }
-        // ==================== REGISTER ====================
+
+
+
+        // ============================= REGISTER =============================
+
         [TestMethod()]
         public void Register_Valid_RegistersNewUser()
         {
             String username = "Test";
             String password = "123";
 
-            bool response = userManagement.Register(username, password);
+            userManagement.Register(username, password);
             Registered registered = userManagement.GetRegisteredUser(username);
 
 
-            Assert.IsTrue(response);
             Assert.IsNotNull(registered);
+            Assert.AreEqual(registered, userManagement.GetRegisteredUser(username));
         }
 
         [TestMethod()]
-        public void Register_InvalidUsername_DoesNotRegister()
+        public void Register_InvalidUsername_ThrowsException()
         {
             String username = ""; // Username obviously cannot be empty string
             String password = "123";
 
-            bool response = userManagement.Register(username, password);
-            Registered registered = userManagement.GetRegisteredUser(username);
-
-
-            Assert.IsFalse(response);
-            Assert.IsNull(registered);
+            Assert.ThrowsException<Exception>(() => userManagement.Register(username, password));
         }
 
         [TestMethod()]
-        public void Register_InvalidPassword_DoesNotRegister()
+        public void Register_InvalidPassword_ThrowsException()
         {
             UserManagement userManagement = new UserManagement();
-            String username = "Test"; 
+            String username = "Test";
             String password = ""; // Password obviously cannot be empty string
 
-            bool response = userManagement.Register(username, password);
-            Registered registered = userManagement.GetRegisteredUser(username);
-
-
-            Assert.IsFalse(response);
-            Assert.IsNull(registered);
+            Assert.ThrowsException<Exception>(() => userManagement.Register(username, password));
         }
 
-        // ==================== LOGIN ====================
+
+
+        // ============================= LOGIN =============================
 
         [TestMethod()]
         public void Login_Valid_ReturnsToken()
@@ -84,7 +80,7 @@ namespace MarketProject.Domain.Tests
         }
 
         [TestMethod()]
-        public void Login_InvalidUsername_ReturnsNull()
+        public void Login_InvalidUsername_ThrowsException()
         {
             String guestToken = "abcd";
             String username = "Test";
@@ -98,14 +94,11 @@ namespace MarketProject.Domain.Tests
             UserManagement userManagement = new UserManagement(registeredUsers, visitorsGuestsTokens);
 
 
-            String token = userManagement.Login(guestToken, triedUsername, password);
-
-
-            Assert.IsNull(token);
+            Assert.ThrowsException<Exception>(() => userManagement.Login(guestToken, triedUsername, password));
         }
 
         [TestMethod()]
-        public void Login_InvalidPassword_ReturnsNull()
+        public void Login_InvalidPassword_ThrowsException()
         {
             String guestToken = "abcd";
             String username = "Test";
@@ -119,13 +112,12 @@ namespace MarketProject.Domain.Tests
             UserManagement userManagement = new UserManagement(registeredUsers, visitorsGuestsTokens);
 
 
-            String token = userManagement.Login(guestToken, username, triedPassword);
-
-
-            Assert.IsNull(token);
+            Assert.ThrowsException<Exception>(() => userManagement.Login(guestToken, username, triedPassword));
         }
 
-        // ==================== LOGOUT ====================
+
+
+        // ============================= LOGOUT =============================
 
         [TestMethod()]
         public void Logout_ValidToken_NotLoggedIn()
@@ -175,7 +167,8 @@ namespace MarketProject.Domain.Tests
         }
 
 
-        // ==================== REMOVE_REGISTERED_USER ====================
+
+        // ============================= REMOVE_REGISTERED_USER =============================
 
         [TestMethod()]
         public void RemoveRegisteredUser_ValidUsername_Removed()
@@ -229,8 +222,9 @@ namespace MarketProject.Domain.Tests
             Assert.IsFalse(userManagement.IsUserLoggedin(authToken));
         }
 
-        // ==================== RESTART_SYSTEM ====================
 
+
+        // ============================= RESTART_SYSTEM =============================
 
         [TestMethod()]
         public void AdminStart_Valid_SetsAdmin()
@@ -266,6 +260,203 @@ namespace MarketProject.Domain.Tests
             userManagement.AdminStart(username, password);
 
             Assert.IsNull(userManagement.CurrentAdmin);
+        }
+
+
+
+        // ============================= EDIT_USER_DETAILS =============================
+
+        [TestMethod()]
+        public void EditUserPassword_Valid_Updates()
+        {
+            String username = "Test";
+            String password = "123";
+            String newPassword = "1";
+            String authToken = "abcd";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+            Assert.IsTrue(userManagement.IsRegistered(username));
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            userManagement.EditUserPassword(authToken, password, newPassword);
+            bool newPasswordWorks = registered.Login(newPassword);
+
+
+            Assert.IsTrue(newPasswordWorks);
+        }
+
+        [TestMethod()]
+        public void EditUserPassword_OldPassInvalid_DoesNotUpdate()
+        {
+            String username = "Test";
+            String password = "123";
+            String triedPassword = "12";
+            String newPassword = "1";
+            String authToken = "abcd";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+            Assert.IsTrue(userManagement.IsRegistered(username));
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            Assert.ThrowsException<Exception>(() => userManagement.EditUserPassword(authToken, triedPassword, newPassword));
+            bool newPasswordWorks = registered.Login(newPassword);
+
+
+            Assert.IsFalse(newPasswordWorks);
+        }
+
+        [TestMethod()]
+        public void EditUserPassword_NewPassInvalid_DoesNotUpdate()
+        {
+            String username = "Test";
+            String password = "123";
+            String newPassword = "";
+            String authToken = "abcd";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+            Assert.IsTrue(userManagement.IsRegistered(username));
+            Assert.IsTrue(userManagement.IsUserLoggedin(authToken));
+
+
+            Assert.ThrowsException<Exception>(() => userManagement.EditUserPassword(authToken, password, newPassword));
+            bool newPasswordWorks = registered.Login(newPassword);
+
+
+            Assert.IsFalse(newPasswordWorks);
+        }
+
+
+
+        // ============================= FILE_COMPLAINT =============================
+
+        [TestMethod()]
+        public void FileComplaint_Valid_Files()
+        {
+            // Complainer
+            String username = "Test";
+            String password = "123";
+            String authToken = "abcd";
+            int cartId = 1;
+            String message = "Test message";
+            Registered registered = new Registered(username, password);
+
+            // Admin
+            String adminUsername = "Admin";
+            String adminPassword = "123";
+            Registered admin = new Registered(adminUsername, adminPassword);
+            SystemAdmin adminRole = new SystemAdmin(adminUsername);
+            admin.AddRole(adminRole);
+
+            // UserManagement
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            registeredUsers.Add(adminUsername, admin);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+            userManagement.CurrentAdmin = adminRole;
+
+            userManagement.FileComplaint(authToken, cartId, message);
+
+            Assert.IsTrue(true);
+        }
+
+
+
+        // ============================= REPLY_TO_COMPLAINT =============================
+
+        [TestMethod()]
+        public void ReplyToComplaint_Valid_Replied()
+        {
+            // Complainer
+            String username = "Test";
+            String password = "123";
+            int cartId = 1;
+            String message = "Test message";
+            Registered registered = new Registered(username, password);
+
+            // Admin
+            String adminUsername = "Admin";
+            String adminPassword = "123";
+            String authToken = "abcd";
+            String response = "Test response";
+            Registered admin = new Registered(adminUsername, adminPassword);
+            SystemAdmin adminRole = new SystemAdmin(adminUsername);
+            admin.AddRole(adminRole);
+
+            //Complaint
+            int complaintId = 1;
+            Complaint complaint = new Complaint(complaintId, registered, cartId, message);
+            registered.FileComplaint(complaint);
+            adminRole.ReceiveComplaint(complaint);
+
+            // UserManagement
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            registeredUsers.Add(adminUsername, admin);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, admin);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+
+            userManagement.ReplyToComplaint(authToken, complaintId, response);
+
+
+            Assert.AreEqual(ComplaintStatus.Closed, complaint.Status);
+        }
+
+        [TestMethod()]
+        public void ReplyToComplaint_NotAdmin_ThrowsException()
+        {
+            // Complainer
+            String username = "Test";
+            String password = "123";
+            int cartId = 1;
+            String message = "Test message";
+            Registered registered = new Registered(username, password);
+
+            // Admin
+            String adminUsername = "Admin";
+            String adminPassword = "123";
+            String authToken = "abcd";
+            String response = "Test response";
+            Registered admin = new Registered(adminUsername, adminPassword);
+            //SystemAdmin adminRole = new SystemAdmin(adminUsername); Removed admin priviliges
+            //admin.AddRole(adminRole);
+
+            //Complaint
+            int complaintId = 1;
+            Complaint complaint = new Complaint(complaintId, registered, cartId, message);
+            registered.FileComplaint(complaint);
+            //adminRole.ReceiveComplaint(complaint); Removed admin priviliges
+
+            // UserManagement
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            registeredUsers.Add(adminUsername, admin);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, admin);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+
+            Assert.ThrowsException<Exception>(() => userManagement.ReplyToComplaint(authToken, complaintId, response));
         }
     }
 }

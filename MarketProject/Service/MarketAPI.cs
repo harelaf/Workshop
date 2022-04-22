@@ -79,6 +79,14 @@ namespace MarketProject.Service
             }
             return response;
         }
+
+        /// <summary>
+        /// <para> For Req II.1.3. </para>
+        /// <para> If credentials are valid, register new user.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the guest currently registering.</param>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
         public Response Register(String authToken, String username, String password)
         {//II.1.3
             Response response;
@@ -310,11 +318,29 @@ namespace MarketProject.Service
         {//II.3.5
             throw new NotImplementedException();
         }
-        public Boolean FileComplaint(String authToken, int cartID,  String message)
+
+        /// <summary>
+        /// <para> For Req II.3.6. </para>
+        /// <para> Files a complaint to the current system admin.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user filing the complaint. </param>
+        /// <param name="cartID"> The cart ID relevant to the complaint. </param>
+        /// <param name="message"> The message detailing the complaint. </param>
+        public Response FileComplaint(String authToken, int cartID,  String message)
         {//II.3.6
-            //to system admin!! should define some queue of messages for admin
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.FileComplaint(authToken, cartID, message);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
+
         public Response<ICollection<PurchasedCartDTO>> GetMyPurchasesHistory(String authToken)
         {//II.3.7
             Response<ICollection<PurchasedCartDTO>> response;
@@ -353,9 +379,27 @@ namespace MarketProject.Service
         {//II.3.8
             throw new NotImplementedException();
         }
-        public Boolean EditUserPassword(String authToken, String newPassword)
+
+        /// <summary>
+        /// <para> For Req II.3.8. </para>
+        /// <para> Updates a user's password if given the correct previous password.</para>
+        /// </summary>
+        /// <param name="authToken"> The authenticating token of the user changing the password.</param>
+        /// <param name="oldPassword"> The user's current password. </param>
+        /// <param name="newPassword"> The new updated password. </param>
+        public Response EditUserPassword(String authToken, String oldPassword, String newPassword)
         {//II.3.8
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditUserPassword(authToken, oldPassword, newPassword);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean RemoveManagerPermission(String authToken, String managerUsername)//permission param is Enum
         {//II.4.7
@@ -449,10 +493,29 @@ namespace MarketProject.Service
             //return each complaint id in addition to its information
             throw new NotImplementedException();
         }
-        public Boolean ReplyToComplaint(String authToken, int complaintID)
+
+        /// <summary>
+        /// <para> For Req II.6.3. </para>
+        /// <para> System admin replies to a complaint he received.</para>
+        /// </summary>
+        /// <param name="authToken"> The authorisation token of the system admin.</param>
+        /// <param name="complaintID"> The ID of the complaint. </param>
+        /// <param name="reply"> The response to the complaint. </param>
+        public Response ReplyToComplaint(String authToken, int complaintID, String reply)
         {//II.6.3
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.ReplyToComplaint(authToken, complaintID, reply);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
+
         public Boolean SendMessageToRegisterd(String authToken, String usernameReciever, String message)
         {//II.6.3
             throw new NotImplementedException();

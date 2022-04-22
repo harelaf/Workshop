@@ -80,7 +80,7 @@ namespace MarketProject.Domain
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
             Item item = _storeManagement.GetItem(storeName, itemID);
-            int amount_differnce = _userManagement.GetUpdatingQuanitityDiffrence(userToken, item, _storeManagement.GetStore(storeName), newQuantity);
+            int amount_differnce = _userManagement.GetUpdatingQuantityDifference(userToken, item, _storeManagement.GetStore(storeName), newQuantity);
             lock (_storeLock)
             {
                 if (!_storeManagement.isStoreActive(storeName))
@@ -119,7 +119,7 @@ namespace MarketProject.Domain
             string userName = _userManagement.GetRegisteredUsernameByToken(userToken);
             lock (_storeLock)
             {
-                if (_storeManagement.isStoreActive(storeName) || _userManagement.checkAccess(userName, storeName, Operation.STORE_INFORMATION))
+                if (_storeManagement.isStoreActive(storeName) || _userManagement.CheckAccess(userName, storeName, Operation.STORE_INFORMATION))
                     return _storeManagement.GetStoreInformation(storeName);
                 throw new Exception($"Store {storeName} is currently inactive.");
             }
@@ -311,7 +311,7 @@ namespace MarketProject.Domain
             {
                 throw new Exception("User " + usernameReciever + " not found in system");
             }
-            _userManagement.SendMessageToRegisterd(storeName, usernameReciever, title, message);
+            _userManagement.SendMessageToRegistered(storeName, usernameReciever, title, message);
         }
 
         public bool AddStoreManager(string authToken, string managerUsername, string storeName)
@@ -319,7 +319,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
+            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreManager(newManager, storeName))
@@ -336,7 +336,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
+            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
             {
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreOwner(newOwner, storeName))
@@ -352,7 +352,7 @@ namespace MarketProject.Domain
         {//II.2.5
             if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
-            ShoppingCart shoppingCartToDocument = _userManagement.PurchaceMyCart(userToken, address, city, country, zip, purchaserName);
+            ShoppingCart shoppingCartToDocument = _userManagement.PurchaseMyCart(userToken, address, city, country, zip, purchaserName);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
             if (_userManagement.IsUserLoggedin(userToken))
@@ -371,7 +371,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.checkAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
+            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
                 {
@@ -385,7 +385,7 @@ namespace MarketProject.Domain
         {//II.4.8
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
-            if (_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.REMOVE_MANAGER))
+            if (_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.REMOVE_MANAGER))
             {
                 if (_storeManagement.RemoveStoreManager(managerUsername, storeName))
                 {
@@ -408,11 +408,23 @@ namespace MarketProject.Domain
             return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
 
+        /// <summary>
+        /// <para> For Req II.3.8. </para>
+        /// <para> Updates a user's password if given the correct previous password.</para>
+        /// </summary>
+        /// <param name="authToken"> The authenticating token of the user changing the password.</param>
+        /// <param name="oldPassword"> The user's current password. </param>
+        /// <param name="newPassword"> The new updated password. </param>
+        public void EditUserPassword(String authToken, String oldPassword, String newPassword)
+        {
+            _userManagement.EditUserPassword(authToken, oldPassword, newPassword);
+        }
+
         public List<StoreManager> getStoreManagers(string storeName, String authToken)
         {
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
+            if (!_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
                 throw new Exception($"this user does not have permission to permorm this operation");
             return _storeManagement.getStoreManagers(storeName);
         }
@@ -421,7 +433,7 @@ namespace MarketProject.Domain
         {
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
+            if (!_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
                 throw new Exception($"this user does not have permission to permorm this operation");
             return _storeManagement.getStoreOwners(storeName);
         }
@@ -430,7 +442,7 @@ namespace MarketProject.Domain
         {
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
+            if (!_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
                 throw new Exception("this user does not have permission to permorm this operation");
             return _storeManagement.getStoreFounder(storeName);
         }
@@ -471,7 +483,7 @@ namespace MarketProject.Domain
         /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
         public void RemoveRegisteredUser(String authToken, String usr_toremove)
         {
-            if (_userManagement.checkAccess(authToken, "CHANGE_ME", Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
+            if (_userManagement.CheckAccess(authToken, "CHANGE_ME", Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
             {
                 Registered registeredToRemove = _userManagement.GetRegisteredUser(usr_toremove);
                 _userManagement.RemoveRegisteredUser(usr_toremove);
@@ -481,7 +493,7 @@ namespace MarketProject.Domain
 
         public String EnterSystem() // Generating token and returning it
         { //II.1.1
-            return _userManagement.enter();
+            return _userManagement.EnterSystem();
         }
 
         public void ExitSystem(String authToken) // Removing cart and token assigned to guest
@@ -489,9 +501,41 @@ namespace MarketProject.Domain
             _userManagement.ExitSystem(authToken);
         }
 
+        /// <summary>
+        /// <para> For Req II.1.3. </para>
+        /// <para> If credentials are valid, register new user.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the guest currently registering.</param>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
         public void Register(String authToken, String username, String password)
         {//II.1.3
+            // TODO: Transfer cart? (Same dillema as login)
             _userManagement.Register(username, password);
+        }
+
+        /// <summary>
+        /// <para> For Req II.3.6. </para>
+        /// <para> Files a complaint to the current system admin.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user filing the complaint. </param>
+        /// <param name="cartID"> The cart ID relevant to the complaint. </param>
+        /// <param name="message"> The message detailing the complaint. </param>
+        public void FileComplaint(String authToken, int cartID, String message)
+        {
+            _userManagement.FileComplaint(authToken, cartID, message);  
+        }
+
+        /// <summary>
+        /// <para> For Req II.6.3. </para>
+        /// <para> System admin replies to a complaint he received.</para>
+        /// </summary>
+        /// <param name="authToken"> The authorisation token of the system admin.</param>
+        /// <param name="complaintID"> The ID of the complaint. </param>
+        /// <param name="reply"> The response to the complaint. </param>
+        public void ReplyToComplaint(String authToken, int complaintID, String reply)
+        {
+            _userManagement.ReplyToComplaint(authToken, complaintID, reply);
         }
     }
 }
