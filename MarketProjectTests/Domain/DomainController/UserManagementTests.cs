@@ -112,7 +112,7 @@ namespace MarketProject.Domain.Tests
             UserManagement userManagement = new UserManagement(registeredUsers, visitorsGuestsTokens);
 
 
-            Assert.ThrowsException<Exception>(()=>userManagement.Login(guestToken, username, triedPassword));
+            Assert.ThrowsException<Exception>(() => userManagement.Login(guestToken, username, triedPassword));
         }
 
 
@@ -340,6 +340,30 @@ namespace MarketProject.Domain.Tests
 
 
             Assert.IsFalse(newPasswordWorks);
+        }
+
+
+
+        // ============================= FILE_COMPLAINT =============================
+
+        [TestMethod()]
+        public void FileComplaint_Valid_Files()
+        {
+            String username = "Test";
+            String password = "123";
+            String authToken = "abcd";
+            int cartId = 1;
+            String message = "Test message";
+            Registered registered = new Registered(username, password);
+            Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
+            registeredUsers.Add(username, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add(authToken, registered);
+            UserManagement userManagement = new UserManagement(registeredUsers, loggedInTokens);
+
+            userManagement.FileComplaint(authToken,cartId,message);
+
+            Assert.IsTrue(true);
         }
     }
 }
