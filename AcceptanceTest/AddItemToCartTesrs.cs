@@ -2,6 +2,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using MarketProject.Service;
 using MarketProject.Service.DTO;
+using System.Collections.Generic;
+
 namespace AcceptanceTest
 {
     [TestClass]
@@ -68,10 +70,21 @@ namespace AcceptanceTest
             ShoppingCartDTO user1Cart = r_1.Value;
             ShoppingCartDTO user2Cart = r_2.Value;
 
-            totalAmountInCarts = getAmountOfItemInCart(user1Cart, storeName_inSystem, 1) +
-                getAmountOfItemInCart(user2Cart, storeName_inSystem, 1);
+            totalAmountInCarts = user1Cart.getAmountOfItemInCart(storeName_inSystem, 1) +
+                user2Cart.getAmountOfItemInCart(storeName_inSystem, 1);
 
             Assert.AreEqual(iterations, totalAmountInCarts);
+            StoreDTO store = marketAPI.GetStoreInformation(registered_userToken, storeName_inSystem).Value;
+            Assert.IsNotNull(store);
+            IDictionary<ItemDTO, int> stock = store.Stock.Items;
+            foreach (ItemDTO item in stock.Keys)
+            {
+                if (item.ItemID == itemID_inStock_1)
+                {
+                    Assert.AreEqual(stock[item], 0);
+                    break;
+                }
+            }
 
         }
 
@@ -125,30 +138,9 @@ namespace AcceptanceTest
             ShoppingCartDTO cart_guest = marketAPI.ViewMyCart(guest_userToken).Value;
             if (cart_guest.Baskets.Count < 0 || cart_registered.Baskets.Count < 0)
                 Assert.Fail(" item should have been added to cart ");
-            Assert.AreEqual(itemAmount_inSttock_1, getAmountOfItemInCart(cart_registered, storeName_inSystem, itemID_inStock_1));
-            Assert.AreEqual(itemAmount_inSttock_2, getAmountOfItemInCart(cart_guest, storeName_inSystem, itemID_inStock_2));
+            Assert.AreEqual(itemAmount_inSttock_1, cart_registered.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_1));
+            Assert.AreEqual(itemAmount_inSttock_2, cart_guest.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_2));
         }
-        private int getAmountOfItemInCart(ShoppingCartDTO shoppingCartDTO, string storeName, int itemID)
-        {
-            int totalAmountInCart = 0;
-            foreach (ShoppingBasketDTO shoppingBasketDTO in shoppingCartDTO.Baskets)
-            {
-                if (shoppingBasketDTO.StoreName == storeName)
-                {
-                    foreach (ItemDTO item in shoppingBasketDTO.Items.Keys)
-                    {
-                        if (item.ItemID == itemID)
-                        {
-                            totalAmountInCart += shoppingBasketDTO.Items[item];
-                            break;
-                        }
-
-                    }
-                    break;
-                }
-
-            }
-            return totalAmountInCart;
-        }
+        
     }
 }

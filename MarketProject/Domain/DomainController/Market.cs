@@ -87,10 +87,12 @@ namespace MarketProject.Domain
                     throw new Exception($"Store {storeName} is currently inactive.");
                 lock (_stockLock)
                 {
+                    if (amount_differnce == 0)
+                        throw new Exception("Update Quantity Of Item In Cart faild: current quantity and new quantity are the same!");
                     if (amount_differnce > 0)// add item to cart and remove it from store stock
                         _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
                     else//remove item from cart and add to store stock
-                        _storeManagement.UnreserveItemInStore(storeName, item, amount_differnce);
+                        _storeManagement.UnreserveItemInStore(storeName, item, -1* amount_differnce);
                     _userManagement.UpdateItemInUserCart(userToken, _storeManagement.GetStore(storeName), item, newQuantity);
                 }
             }
@@ -147,7 +149,7 @@ namespace MarketProject.Domain
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             lock (_storeLock)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.MANAGE_INVENTORY))
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.MANAGE_INVENTORY))
                     throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
             }
             if (storeName.Equals(""))
@@ -172,7 +174,7 @@ namespace MarketProject.Domain
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             lock (_storeLock)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.MANAGE_INVENTORY))
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.MANAGE_INVENTORY))
                     throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
             }
             if (storeName.Equals(""))
@@ -192,7 +194,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("The given user is no longer logged in to the system");
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.checkAccess(username, storeName, Operation.STORE_HISTORY_INFO))
+            if (_userManagement.CheckAccess(username, storeName, Operation.STORE_HISTORY_INFO))
                 throw new Exception($"This user is not an admin or owner in {storeName}.");
             return _history.GetStorePurchaseHistory(storeName);
         }
@@ -204,7 +206,7 @@ namespace MarketProject.Domain
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             lock (_storeLock)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.MANAGE_INVENTORY))
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.MANAGE_INVENTORY))
                     throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
             }
             if (storeName.Equals(""))
@@ -224,7 +226,7 @@ namespace MarketProject.Domain
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             lock (_storeLock)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.CLOSE_STORE))
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.CLOSE_STORE))
                     throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
             }
             if (storeName.Equals(""))
@@ -249,7 +251,7 @@ namespace MarketProject.Domain
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             lock (_storeLock)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.checkAccess(username, storeName, Operation.REOPEN_STORE))
+                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.REOPEN_STORE))
                     throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
             }
             if (storeName.Equals(""))
@@ -274,7 +276,7 @@ namespace MarketProject.Domain
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
             lock (_storeLock)
             {
-                if (!_userManagement.checkAccess(username, storeName, Operation.PERMENENT_CLOSE_STORE))
+                if (!_userManagement.CheckAccess(username, storeName, Operation.PERMENENT_CLOSE_STORE))
                     throw new Exception($"User is not an admin.");
             }
             if (storeName.Equals(""))
