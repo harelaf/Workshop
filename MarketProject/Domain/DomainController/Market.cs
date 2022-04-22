@@ -110,6 +110,7 @@ namespace MarketProject.Domain
                 throw new Exception($"Only registered users are allowed to rate stores.");
             if (_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"A store with the name {storeName} already exists in the system.");
+            string username = _userManagement.GetRegisteredUsernameByToken(token); 
             StoreFounder founder = new StoreFounder(username, storeName);
             _userManagement.AddRole(username, founder);
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
@@ -131,7 +132,7 @@ namespace MarketProject.Domain
             }
         }
 
-        public void RateStore(String username, String storeName, int rating, String review)
+        public void RateStore(String authToken, String storeName, int rating, String review)
         {
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("The given user is no longer logged in to the system.");
@@ -258,32 +259,34 @@ namespace MarketProject.Domain
             _storeManagement.CloseStore(storeName);
             // Send Alerts to all roles of [storeName]
         }
-
-        public void ReopenStore(string username, String storeName)
+        public void CloseStorePermanently(String authToken, String storeName)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER))
-             *     throw new Exception($"This user is not the founder of {storeName}.");
-             */
-            if (storeName.Equals(""))
-                throw new Exception("Invalid Input: Blank store name.");
-            _storeManagement.ReopenStore(storeName);
-            // Send Alerts to all roles of [storeName]
-        }
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("The given user is no longer logged in to the system.");
+            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            Store store = _storeManagement.GetStore(storeName);
+            lock (store)
+            {
+                if (!_userManagement.CheckAccess(username, storeName, Operation.PERMENENT_CLOSE_STORE))
+                    throw new Exception($"User is not an admin.");
 
-        public void CloseStorePermanently(String username, String storeName)
-        {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, SYSTEM_ADMIN))
-             *     throw new Exception($"This user is not a system admin.");
-             */
-            if (storeName.Equals(""))
-                throw new Exception("Invalid Input: Blank store name.");
-            _storeManagement.CloseStorePermanently(storeName);
-            // Remove all owners/managers...
-            // Send alerts to all roles of [storeName]
+                if (storeName.Equals(""))
+                    throw new Exception("Invalid Input: Blank store name.");
+                List<String> names = _storeManagement.GetStoreRolesByName(storeName);
+                String title = $"Store: {storeName} is permanently closing down: [{DateTime.Now.ToString()}].";
+                String message = $"I am sad to inform you that {storeName} is closing down. " +
+                    $"All of your roles have been revoked." +
+                    $"Yours Truly," +
+                    $"{username}.";
+                foreach (String name in names)
+                {
+                    _userManagement.RemoveRole(name, storeName);
+                    SendMessageToRegisterd(storeName, name, title, message);
+                }
+                _storeManagement.CloseStorePermanently(storeName);
+            }
         }
-
+       
         public void ReopenStore(string authToken, String storeName)
         {
             if (!_userManagement.IsUserLoggedin(authToken))
@@ -305,7 +308,11 @@ namespace MarketProject.Domain
                 $"Your roles in the store stayed the same." +
                 $"Yours Truly," +
                 $"{username}.";
-            foreach (String name in names)
+            foreach (String name in names) 
+            {
+                SendMessageToRegisterd(storeName, name, title, message);
+            }
+        }
 
         public void EditItemPrice(String authToken, String storeName, int itemID, double newPrice)
         {
