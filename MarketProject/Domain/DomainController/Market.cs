@@ -314,6 +314,18 @@ namespace MarketProject.Domain
             _userManagement.SendMessageToRegistered(storeName, usernameReciever, title, message);
         }
 
+        public void AnswerStoreMesseage(String authToken, String storeName, String usernameReciever, String title, String reply)
+        {
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is not a visitor in the system");
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_userManagement.IsRegistered(usernameReciever))
+            {
+                throw new Exception("User " + usernameReciever + " not found in system");
+            }
+            _userManagement.SendMessageToRegistered(storeName, usernameReciever, title, reply);
+        }
+
         public bool AddStoreManager(string authToken, string managerUsername, string storeName)
         {//II.4.6
             if (!_userManagement.IsUserLoggedin(authToken))
