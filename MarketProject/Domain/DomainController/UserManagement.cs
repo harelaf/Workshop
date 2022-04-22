@@ -21,6 +21,7 @@ namespace MarketProject.Domain
         private IDictionary<String, Guest> _visitorsGuestsTokens;
         private SystemAdmin _currentAdmin;
         public SystemAdmin CurrentAdmin { get { return _currentAdmin; } set { _currentAdmin = value; } }
+        private int _nextComplaintID = 1;
 
 
 
@@ -355,6 +356,26 @@ namespace MarketProject.Domain
             {
                 Logout(authToken);
             }
+        }
+
+
+
+        // ===================================== Req II.3.6 - FILE COMPLAINT =====================================
+
+        /// <summary>
+        /// <para> For Req II.3.6. </para>
+        /// <para> Files a complaint to the current system admin.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user filing the complaint. </param>
+        /// <param name="cartID"> The cart ID relevant to the complaint. </param>
+        /// <param name="message"> The message detailing the complaint. </param>
+        public void FileComplaint(String authToken, int cartID, String message)
+        {
+            Registered registered = GetRegisteredByToken(authToken);
+            Complaint complaint = new Complaint(_nextComplaintID, registered, cartID, message);
+            _nextComplaintID++;
+            registered.FileComplaint(complaint);
+            CurrentAdmin.ReceiveComplaint(complaint);
         }
 
 

@@ -11,6 +11,7 @@ namespace MarketProject.Domain
         private String _password;
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
+        private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
         public bool IsAdmin 
         { 
             get 
@@ -129,6 +130,11 @@ namespace MarketProject.Domain
             {
                 throw new Exception("Wrong password.");
             }
+        }
+
+        public void FileComplaint(Complaint complaint)
+        {
+            _filedComplaints.Add(complaint.ID, complaint);
         }
     }
 }

@@ -318,11 +318,29 @@ namespace MarketProject.Service
         {//II.3.5
             throw new NotImplementedException();
         }
-        public Boolean FileComplaint(String authToken, int cartID,  String message)
+
+        /// <summary>
+        /// <para> For Req II.3.6. </para>
+        /// <para> Files a complaint to the current system admin.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user filing the complaint. </param>
+        /// <param name="cartID"> The cart ID relevant to the complaint. </param>
+        /// <param name="message"> The message detailing the complaint. </param>
+        public Response FileComplaint(String authToken, int cartID,  String message)
         {//II.3.6
-            //to system admin!! should define some queue of messages for admin
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.FileComplaint(authToken, cartID, message);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
+
         public Response<ICollection<PurchasedCartDTO>> GetMyPurchasesHistory(String authToken)
         {//II.3.7
             Response<ICollection<PurchasedCartDTO>> response;

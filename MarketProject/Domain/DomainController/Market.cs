@@ -513,5 +513,17 @@ namespace MarketProject.Domain
             // TODO: Transfer cart? (Same dillema as login)
             _userManagement.Register(username, password);
         }
+
+        /// <summary>
+        /// <para> For Req II.3.6. </para>
+        /// <para> Files a complaint to the current system admin.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user filing the complaint. </param>
+        /// <param name="cartID"> The cart ID relevant to the complaint. </param>
+        /// <param name="message"> The message detailing the complaint. </param>
+        public void FileComplaint(String authToken, int cartID, String message)
+        {
+            _userManagement.FileComplaint(authToken, cartID, message);  
+        }
     }
 }
