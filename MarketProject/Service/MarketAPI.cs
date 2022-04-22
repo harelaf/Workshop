@@ -264,22 +264,61 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean EditItemPrice(String username, int storeID, int itemID, float new_price)
+        public Response EditItemPrice(String authToken, String storeName, int itemID, float new_price)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditItemPrice(authToken, storeName, itemID, new_price);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean EditItemName(String username, String storeName, int itemID, int new_price, String newName)
+        public Response EditItemName(String authToken, String storeName, int itemID, int new_price, String newName)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditItemName(authToken, storeName, itemID, newName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean EditItemDescription(String authToken, String storeName, int itemID, String newDescription)
+        public Response EditItemDescription(String authToken, String storeName, int itemID, String newDescription)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditItemDescription(authToken, storeName, itemID, newDescription);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean RateItem(String authToken, int itemID, String storeName, int rating, String review)
+        public Response RateItem(String authToken, int itemID, String storeName, int rating, String review)
         {//II.3.3,  II.3.4
-            //should check that this user bought this item by his purches History
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RateItem(authToken, itemID, storeName, rating, review);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
@@ -310,14 +349,34 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
+        public Response<List<Item>> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {//II.2.2
             //filters!!!!!!!!!!!
-            throw new NotImplementedException();
+            Response<List<Item>> response;
+            try
+            {
+                List<Item> result = _market.GetItemInformation(authToken, itemName, itemCategory, keyWord);
+                response = new Response<List<Item>>(result);
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<Item>> (null, e);
+            }
+            return response;
         }
-        public Boolean SendMessageToStore(String authToken, String storeName, String title, String description)
+        public Response SendMessageToStore(String authToken, String storeName, String title, String description)
         {//II.3.5
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.SendMessageToStore(authToken,storeName, title, description);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
 
         /// <summary>
@@ -448,9 +507,19 @@ namespace MarketProject.Service
             //should return with id
             throw new NotImplementedException();
         }
-        public Boolean AnswerStoreMesseage(String authToken, String storeName, int messageID, String reply)
+        public Response AnswerStoreMesseage(String authToken, String storeName, string recieverUsername, String title, String reply)
         {//II.4.12
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AnswerStoreMesseage(authToken, storeName, recieverUsername, title, reply);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response<List<Tuple<DateTime, ShoppingBasketDTO>>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
@@ -517,9 +586,19 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Boolean SendMessageToRegisterd(String authToken, String usernameReciever, String message)
+        public Response SendMessageToRegisterd(String authToken, String storeName, String usernameReciever, String title, String message)
         {//II.6.3
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.SendMessageToRegisterd(storeName, usernameReciever, title, message);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
 
         public Response<String> EnterSystem() // Generating token and returning it

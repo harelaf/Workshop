@@ -43,7 +43,7 @@ namespace MarketProject.Domain
             Item item = GetItem(storeName, itemID);
             item.SetPrice(newPrice);
         }
-        public void EditItemName(String storeName, int itemID, int new_price, String newName)
+        public void EditItemName(String storeName, int itemID, String newName)
         { 
             if(newName == null)
             {
