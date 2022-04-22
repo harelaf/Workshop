@@ -16,9 +16,13 @@ namespace MarketProject.Domain
         private Stock _stock;
         public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
+        public PurchasePolicy PurchasePolicy => _purchasePolicy;
         private DiscountPolicy _discountPolicy;
+        public DiscountPolicy DiscountPolicy => _discountPolicy;
         private Queue<MessageToStore> _messagesToStore;
+        public Queue<MessageToStore> MessagesToStore => _messagesToStore;
         private Rating _rating;
+        public Rating Rating => _rating;
         private List<StoreManager> _managers;
         private List<StoreOwner> _owners;
         private StoreFounder _founder;
@@ -148,6 +152,7 @@ namespace MarketProject.Domain
             return names;
         }
 
+        // Deprecated function. No longer used by GetStoreInformation.
         public String GetInformation()
         {
             String info = $"{_storeName}\n";

@@ -114,12 +114,12 @@ namespace MarketProject.Domain
             return _stores.ContainsKey(storeName);
         }
 
-        public String GetStoreInformation(String storeName)
+        public Store GetStoreInformation(String storeName)
         {
             if (!CheckStoreNameExists(storeName))
                 throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            return store.GetInformation();
+            return store;
         }
 
         public List<String> GetStoreRolesByName(String storeName)

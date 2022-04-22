@@ -7,6 +7,7 @@ namespace MarketProject.Domain
     public class Stock
     {
         private Dictionary<Item, int> _itemAndAmount;
+        public Dictionary<Item, int> Items => _itemAndAmount;
 
         public Stock()
         {
