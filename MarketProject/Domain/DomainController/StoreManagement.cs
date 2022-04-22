@@ -114,12 +114,20 @@ namespace MarketProject.Domain
             return _stores.ContainsKey(storeName);
         }
 
-        public String GetStoreInformation(String storeName)
+        public Store GetStoreInformation(String storeName)
         {
             if (!CheckStoreNameExists(storeName))
                 throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            return store.GetInformation();
+            return store;
+        }
+
+        public List<String> GetStoreRolesByName(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            return store.GetStoreRolesByName();
         }
 
         public void RateStore(String username, String storeName, int rating, String review)
@@ -186,61 +194,62 @@ namespace MarketProject.Domain
                 throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
             store.CloseStorePermanently();
+            _stores.Remove(storeName);
         }
 
 
         public bool AddStoreManager(StoreManager newManager, string storeName)
         {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
             return store.AddStoreManager(newManager);
         }
 
         public bool AddStoreOwner(StoreOwner newOwner, string storeName)
         {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
             return store.AddStoreOwner(newOwner);
         }
         public bool RemoveStoreOwner(string ownerUsername, string storeName)
         {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
             return store.RemoveStoreOwner(ownerUsername);
         }
 
         public bool RemoveStoreManager(string managerUsername, string storeName)
         {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
             return store.RemoveStoreManager(managerUsername);
         }
 
         internal List<StoreManager> getStoreManagers(string storeName)
         {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
             return store.GetManagers();
         }
 
         internal List<StoreOwner> getStoreOwners(string storeName)
         {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
             return store.GetOwners();
         }
 
         internal StoreFounder getStoreFounder(string storeName)
         {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
             Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
             return store.GetFounder();
         }
 

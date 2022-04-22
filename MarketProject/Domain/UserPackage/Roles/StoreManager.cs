@@ -8,6 +8,7 @@ namespace MarketProject.Domain
     public class StoreManager : SystemRole
     {
         private string _appointer;
+        public string Appointer => _appointer;
 
         public StoreManager(string userName, string storeName, string appointer) : base(getOps(), userName)
         {

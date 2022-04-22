@@ -295,17 +295,18 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response<String> GetStoreInformation(String authToken, String storeName)
+        public Response<StoreDTO> GetStoreInformation(String authToken, String storeName)
         {//II.2.1
-            Response<String> response;
+            Response<StoreDTO> response;
             try
             {
-                String result = _market.GetStoreInformation(authToken, storeName);
-                response = new Response<String>(result);
+                Store result = _market.GetStoreInformation(authToken, storeName);
+                StoreDTO dto = new StoreDTO(result);
+                response = new Response<StoreDTO>(dto);
             }
             catch (Exception e)
             {
-                response = new Response<String>(null, e);
+                response = new Response<StoreDTO>(null, e);
             }
             return response;
         }
