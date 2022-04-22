@@ -493,10 +493,29 @@ namespace MarketProject.Service
             //return each complaint id in addition to its information
             throw new NotImplementedException();
         }
-        public Boolean ReplyToComplaint(String authToken, int complaintID)
+
+        /// <summary>
+        /// <para> For Req II.6.3. </para>
+        /// <para> System admin replies to a complaint he received.</para>
+        /// </summary>
+        /// <param name="authToken"> The authorisation token of the system admin.</param>
+        /// <param name="complaintID"> The ID of the complaint. </param>
+        /// <param name="reply"> The response to the complaint. </param>
+        public Response ReplyToComplaint(String authToken, int complaintID, String reply)
         {//II.6.3
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.ReplyToComplaint(authToken, complaintID, reply);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
+
         public Boolean SendMessageToRegisterd(String authToken, String usernameReciever, String message)
         {//II.6.3
             throw new NotImplementedException();

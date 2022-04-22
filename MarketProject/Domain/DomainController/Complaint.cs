@@ -12,7 +12,7 @@ namespace MarketProject.Domain
         private int _cardID;
         private String _message;
         private String _response;
-        private ComplaintStatus Status { get { return _response == null ? ComplaintStatus.Open : ComplaintStatus.Closed; } }
+        public ComplaintStatus Status { get { return _response == null ? ComplaintStatus.Open : ComplaintStatus.Closed; } }
         public Complaint(int id, Registered complainer, int cardID, string message)
         {
             _id = id;

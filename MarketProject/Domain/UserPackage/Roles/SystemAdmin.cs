@@ -37,5 +37,13 @@ namespace MarketProject.Domain
         {
             _receivedComplaints.Add(complaint.ID, complaint);
         }
+
+        public void ReplyToComplaint(int complaintID, String reply)
+        {
+            Complaint complaint;
+            if (!_receivedComplaints.TryGetValue(complaintID, out complaint))
+                throw new Exception($"No complaint with the ID {complaintID}.");
+            complaint.Reply(reply);
+        }
     }
 }

@@ -525,5 +525,17 @@ namespace MarketProject.Domain
         {
             _userManagement.FileComplaint(authToken, cartID, message);  
         }
+
+        /// <summary>
+        /// <para> For Req II.6.3. </para>
+        /// <para> System admin replies to a complaint he received.</para>
+        /// </summary>
+        /// <param name="authToken"> The authorisation token of the system admin.</param>
+        /// <param name="complaintID"> The ID of the complaint. </param>
+        /// <param name="reply"> The response to the complaint. </param>
+        public void ReplyToComplaint(String authToken, int complaintID, String reply)
+        {
+            _userManagement.ReplyToComplaint(authToken, complaintID, reply);
+        }
     }
 }

@@ -419,6 +419,26 @@ namespace MarketProject.Domain
 
 
 
+        // ===================================== Req II.6.3 - REPLY TO COMPLAINT =====================================
+
+        /// <summary>
+        /// <para> For Req II.6.3. </para>
+        /// <para> System admin replies to a complaint he received.</para>
+        /// </summary>
+        /// <param name="authToken"> The authorisation token of the system admin.</param>
+        /// <param name="complaintID"> The ID of the complaint. </param>
+        /// <param name="reply"> The response to the complaint. </param>
+        public void ReplyToComplaint(String authToken, int complaintID, String reply)
+        {
+            Registered admin = GetRegisteredByToken(authToken);
+            SystemAdmin adminRole = admin.GetAdminRole;
+            if (adminRole == null)
+                throw new Exception("User is not an admin.");
+            adminRole.ReplyToComplaint(complaintID, reply);
+        }
+
+
+
         // ===================================== CART OPERATIONS =====================================
 
         public void AddItemToUserCart(String userToken, Store store, Item item, int amount)
