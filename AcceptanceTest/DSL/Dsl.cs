@@ -12,6 +12,6 @@ namespace AcceptanceTest.DSL
     /// </summary>
     public abstract class Dsl
     {
-        protected MarketDsl? _market;
+        protected MarketDsl _market;
     }
 }

@@ -22,5 +22,19 @@ namespace AcceptanceTest.DSL
         {
             _driver=driver;
         }
+
+
+
+        public void EnterSystem() { _driver.EnterSystem(); }
+        public void ExitSystem() { _driver.ExitSystem(); }
+        public void Register(string username, string password) { _driver.Register(username, password); }
+
+        public void Login(string username, string password) { _driver.Login(username, password); }
+        internal void Logout() { _driver.Logout(); }
+
+        internal void AssertErrorMessageRecieved() { _driver.AssertErrorMessageRecieved(); }
+
+        public void AssertNoError() { _driver.AssertNoError(); }
+
     }
 }

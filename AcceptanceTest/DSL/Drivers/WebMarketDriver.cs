@@ -12,5 +12,39 @@ namespace AcceptanceTest.DSL.Drivers
     /// </summary>
     public class WebMarketDriver : IMarketDriver
     {
+        public void AssertErrorMessageRecieved()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AssertNoError()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void EnterSystem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ExitSystem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Login(string username, string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Logout()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Register(string username, string password)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

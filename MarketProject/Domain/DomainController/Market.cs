@@ -110,7 +110,7 @@ namespace MarketProject.Domain
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
         }
 
-        public String GetStoreInformation(String userToken, String storeName)
+        public Store GetStoreInformation(String userToken, String storeName)
         {
             if (!_userManagement.IsUserLoggedin(userToken))
                 throw new Exception("Only registered and logged in users are allowed to perform this operation!");

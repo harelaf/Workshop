@@ -16,5 +16,14 @@ namespace AcceptanceTest.DSL.Drivers
     /// </summary>
     public interface IMarketDriver
     {
+        void EnterSystem();
+        void ExitSystem();
+        void Register(string username, string password);
+
+        void Login(string username, string password);
+        void Logout();
+        void AssertNoError();
+        void AssertErrorMessageRecieved();
+
     }
 }
