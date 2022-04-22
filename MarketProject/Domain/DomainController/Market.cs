@@ -241,64 +241,85 @@ namespace MarketProject.Domain
         }
 
 
-        public void EditItemPrice(String username, String storeName, int itemID, double newPrice)
+        public void EditItemPrice(String authToken, String storeName, int itemID, double newPrice)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, ???))
-             *     throw new Exception($"This user is not the founder of {storeName}.");
-             */
+            if (!_userManagement.IsUserLoggedin(authToken)) {
+                throw new Exception("the given user is not a visitor in the system");
+            }
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_userManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+            {
+                throw new Exception("the given user is not a stock owner of the given store");
+            }
             _storeManagement.EditItemPrice(storeName, itemID, newPrice);
         }
-        public void EditItemName(String username, String storeName, int itemID, int new_price, String newName)
+        public void EditItemName(String authToken, String storeName, int itemID, String newName)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, ???))
-             *     throw new Exception($"This user is not the founder of {storeName}.");
-             */
-            _storeManagement.EditItemName(storeName, itemID, new_price, newName);
+            if (!_userManagement.IsUserLoggedin(authToken))
+            {
+                throw new Exception("the given user is not a visitor in the system");
+            }
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_userManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+            {
+                throw new Exception("the given user is not a stock owner of the given store");
+            }
+            _storeManagement.EditItemName(storeName, itemID, newName);
         }
-        public void EditItemDescription(String username, String storeName, int itemID, String newDescription)
+        public void EditItemDescription(String authToken, String storeName, int itemID, String newDescription)
         {
-            /*
-             * if (!_userManagement.CheckUserPermission(username, ???))
-             *     throw new Exception($"This user is not the founder of {storeName}.");
-             */
+            if (!_userManagement.IsUserLoggedin(authToken))
+            {
+                throw new Exception("the given user is not a visitor in the system");
+            }
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_userManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+            {
+                throw new Exception("the given user is not a stock owner of the given store");
+            }
             _storeManagement.EditItemDescription(storeName, itemID, newDescription);
         }
 
-        public void RateItem(String username, int itemID, String storeName, int rating, String review)
-
+        public void RateItem(String authToken, int itemID, String storeName, int rating, String review)
         {
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is not a visitor in the system");
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
             //should check that this user bought this item by his purches History
             /*if(rating < 1 || rating > 5)
             {
                 throw new ArgumentOutOfRangeException("Rate should be beteen 1 to 5");
             }*/
             Item item = _storeManagement.GetItem(storeName, itemID);
-            if (!_history.CheckIfUserPurchasedItemInStore(username, storeName, item))
+            if (!_history.CheckIfUserPurchasedItemInStore(appointerUsername, storeName, item))
             {
                 throw new Exception("This user has never bought item with id: " + itemID + " at " + storeName);
             }
-            _storeManagement.RateItem(username, item, rating, review);
+            _storeManagement.RateItem(appointerUsername, item, rating, review);
         }
 
-        public void GetItemInformation(String username, String itemName, String itemCategory, String keyWord)
+        public List<Item> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {
-            if (!_userManagement.IsRegistered(username))
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is not a visitor in the system");
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_userManagement.IsRegistered(appointerUsername))
             {
-                throw new Exception("User " + username + " not found in system");
+                throw new Exception("User " + appointerUsername + " not found in system");
             }
-
-            //TODO ron -> complete
+            return _storeManagement.GetItemInformation(itemName, itemCategory, keyWord);
         }
 
-        public void SendMessageToStore(String username, String storeName, String title, String message)
+        public void SendMessageToStore(String authToken, String storeName, String title, String message)
         {
-            if (!_userManagement.IsRegistered(username))
+            if (!_userManagement.IsUserLoggedin(authToken))
+                throw new Exception("the given user is not a visitor in the system");
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_userManagement.IsRegistered(appointerUsername))
             {
-                throw new Exception("User " + username + " not found in system");
+                throw new Exception("User " + appointerUsername + " not found in system");
             }
-            _storeManagement.SendMessageToStore(username, storeName, title, message);
+            _storeManagement.SendMessageToStore(appointerUsername, storeName, title, message);
         }
 
         public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
@@ -319,6 +340,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            
             if (!_userManagement.IsRegistered(usernameReciever))
             {
                 throw new Exception("User " + usernameReciever + " not found in system");

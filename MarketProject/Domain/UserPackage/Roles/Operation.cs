@@ -36,6 +36,8 @@ namespace MarketProject.Domain
         PERMENENT_CLOSE_STORE,
         CANCEL_SUBSCRIPTION,
         RECEIVE_AND_REPLY_ADMIN_MESSAGE,
-        SYSTEM_STATISTICS
+        SYSTEM_STATISTICS,
+
+        STOCK_EDITOR
     }
 }
