@@ -41,7 +41,10 @@ namespace MarketProject.Domain
         public void EditItemPrice(String storeName, int itemID, double newPrice)
         {
             Item item = GetItem(storeName, itemID);
-            item.SetPrice(newPrice);
+            lock (item)
+            {
+                item.SetPrice(newPrice);
+            }  
         }
         public void EditItemName(String storeName, int itemID, int new_price, String newName)
         { 

@@ -11,14 +11,12 @@ namespace AcceptanceTest
     {
         MarketAPI marketAPI = new MarketAPI();
         string storeName_inSystem = "afik's Shop";
-        string storeName_outSystem = "bla";
         string guest_userToken;
         string registered_userToken;
         int itemID_inStock_1;
         int itemAmount_inSttock_1;
         int itemID_inStock_2;
         int itemAmount_inSttock_2;
-        int itemID_outStock = 1111111;
         int itemId_inRegCart;
         int itemId_inGuestCart;
         int itemAmount_inRegCart = 10;
