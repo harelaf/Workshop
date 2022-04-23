@@ -183,7 +183,7 @@ namespace MarketProject.Domain.Tests
             }
         }
 
-
+        [TestMethod()]
         public void SendMessageToStore_StoreExist_Success()
         {
             String title = "reservation";
@@ -207,9 +207,9 @@ namespace MarketProject.Domain.Tests
                 Assert.Fail();
             }
 
-            Assert.Fail();
         }
 
+        [TestMethod()]
         public void SendMessageToStore_StoreDoesntExist_Success()
         {
             String title = "reservation";
@@ -225,7 +225,6 @@ namespace MarketProject.Domain.Tests
                 Assert.IsTrue(true);
             }
 
-            Assert.Fail();
         }
 
         [TestMethod()]

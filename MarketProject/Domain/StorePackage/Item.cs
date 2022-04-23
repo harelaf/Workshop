@@ -52,7 +52,7 @@ namespace MarketProject.Domain
 
         public void SetPrice(double price)
         {
-            this._price = price;
+            _price = price;
         }
 
         public void SetDescription(String description)
