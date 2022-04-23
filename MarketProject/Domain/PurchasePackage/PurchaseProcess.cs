@@ -58,8 +58,12 @@ namespace MarketProject.Domain
             {
                 foreach(Item item in shoppingBasket.GetItems())
                 {
-                    int itemQuantity = shoppingBasket.GetAmountOfItem(item);
-                    price += itemQuantity* item._price;
+                    lock (item)
+                    {
+                        int itemQuantity = shoppingBasket.GetAmountOfItem(item);
+                        price += itemQuantity* item._price;
+                    }
+                    
                 }
             }
             return price;

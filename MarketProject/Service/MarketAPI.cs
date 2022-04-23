@@ -79,6 +79,14 @@ namespace MarketProject.Service
             }
             return response;
         }
+
+        /// <summary>
+        /// <para> For Req II.1.3. </para>
+        /// <para> If credentials are valid, register new user.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the guest currently registering.</param>
+        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="password"> The password to check.</param>
         public Response Register(String authToken, String username, String password)
         {//II.1.3
             Response response;
@@ -256,22 +264,61 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean EditItemPrice(String username, int storeID, int itemID, float new_price)
+        public Response EditItemPrice(String authToken, String storeName, int itemID, float new_price)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditItemPrice(authToken, storeName, itemID, new_price);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean EditItemName(String username, String storeName, int itemID, int new_price, String newName)
+        public Response EditItemName(String authToken, String storeName, int itemID, String newName)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditItemName(authToken, storeName, itemID, newName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean EditItemDescription(String authToken, String storeName, int itemID, String newDescription)
+        public Response EditItemDescription(String authToken, String storeName, int itemID, String newDescription)
         {//II.4.1
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditItemDescription(authToken, storeName, itemID, newDescription);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean RateItem(String authToken, int itemID, String storeName, int rating, String review)
+        public Response RateItem(String authToken, int itemID, String storeName, int rating, String review)
         {//II.3.3,  II.3.4
-            //should check that this user bought this item by his purches History
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RateItem(authToken, itemID, storeName, rating, review);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response RateStore(String authToken, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
@@ -287,34 +334,73 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response<String> GetStoreInformation(String authToken, String storeName)
+        public Response<StoreDTO> GetStoreInformation(String authToken, String storeName)
         {//II.2.1
-            Response<String> response;
+            Response<StoreDTO> response;
             try
             {
-                String result = _market.GetStoreInformation(authToken, storeName);
-                response = new Response<String>(result);
+                Store result = _market.GetStoreInformation(authToken, storeName);
+                StoreDTO dto = new StoreDTO(result);
+                response = new Response<StoreDTO>(dto);
             }
             catch (Exception e)
             {
-                response = new Response<String>(null, e);
+                response = new Response<StoreDTO>(null, e);
             }
             return response;
         }
-        public Boolean GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
+        public Response<List<Item>> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {//II.2.2
             //filters!!!!!!!!!!!
-            throw new NotImplementedException();
+            Response<List<Item>> response;
+            try
+            {
+                List<Item> result = _market.GetItemInformation(authToken, itemName, itemCategory, keyWord);
+                response = new Response<List<Item>>(result);
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<Item>> (null, e);
+            }
+            return response;
         }
-        public Boolean SendMessageToStore(String authToken, String storeName, String title, String description)
+        public Response SendMessageToStore(String authToken, String storeName, String title, String description)
         {//II.3.5
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.SendMessageToStore(authToken,storeName, title, description);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean FileComplaint(String authToken, int cartID,  String message)
+
+        /// <summary>
+        /// <para> For Req II.3.6. </para>
+        /// <para> Files a complaint to the current system admin.</para>
+        /// </summary>
+        /// <param name="authToken"> The token of the user filing the complaint. </param>
+        /// <param name="cartID"> The cart ID relevant to the complaint. </param>
+        /// <param name="message"> The message detailing the complaint. </param>
+        public Response FileComplaint(String authToken, int cartID,  String message)
         {//II.3.6
-            //to system admin!! should define some queue of messages for admin
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.FileComplaint(authToken, cartID, message);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
+
         public Response<ICollection<PurchasedCartDTO>> GetMyPurchasesHistory(String authToken)
         {//II.3.7
             Response<ICollection<PurchasedCartDTO>> response;
@@ -353,9 +439,27 @@ namespace MarketProject.Service
         {//II.3.8
             throw new NotImplementedException();
         }
-        public Boolean EditUserPassword(String authToken, String newPassword)
+
+        /// <summary>
+        /// <para> For Req II.3.8. </para>
+        /// <para> Updates a user's password if given the correct previous password.</para>
+        /// </summary>
+        /// <param name="authToken"> The authenticating token of the user changing the password.</param>
+        /// <param name="oldPassword"> The user's current password. </param>
+        /// <param name="newPassword"> The new updated password. </param>
+        public Response EditUserPassword(String authToken, String oldPassword, String newPassword)
         {//II.3.8
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.EditUserPassword(authToken, oldPassword, newPassword);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Boolean RemoveManagerPermission(String authToken, String managerUsername)//permission param is Enum
         {//II.4.7
@@ -403,9 +507,19 @@ namespace MarketProject.Service
             //should return with id
             throw new NotImplementedException();
         }
-        public Boolean AnswerStoreMesseage(String authToken, String storeName, int messageID, String reply)
+        public Response AnswerStoreMesseage(String authToken, String storeName, string recieverUsername, String title, String reply)
         {//II.4.12
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AnswerStoreMesseage(authToken, storeName, recieverUsername, title, reply);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response<List<Tuple<DateTime, ShoppingBasketDTO>>> GetStorePurchasesHistory(String authToken, String storeName)
         {//II.4.13
@@ -449,13 +563,42 @@ namespace MarketProject.Service
             //return each complaint id in addition to its information
             throw new NotImplementedException();
         }
-        public Boolean ReplyToComplaint(String authToken, int complaintID)
+
+        /// <summary>
+        /// <para> For Req II.6.3. </para>
+        /// <para> System admin replies to a complaint he received.</para>
+        /// </summary>
+        /// <param name="authToken"> The authorisation token of the system admin.</param>
+        /// <param name="complaintID"> The ID of the complaint. </param>
+        /// <param name="reply"> The response to the complaint. </param>
+        public Response ReplyToComplaint(String authToken, int complaintID, String reply)
         {//II.6.3
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.ReplyToComplaint(authToken, complaintID, reply);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean SendMessageToRegisterd(String authToken, String usernameReciever, String message)
+
+        public Response SendMessageToRegisterd(String authToken, String storeName, String usernameReciever, String title, String message)
         {//II.6.3
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.SendMessageToRegisterd(storeName, usernameReciever, title, message);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
 
         public Response<String> EnterSystem() // Generating token and returning it
