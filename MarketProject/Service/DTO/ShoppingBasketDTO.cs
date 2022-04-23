@@ -14,6 +14,8 @@ namespace MarketProject.Service.DTO
         public String StoreName => _storeName;
         public IDictionary<ItemDTO, int> Items => _items;
 
+        public String GetStoreName => _storeName;
+
         public ShoppingBasketDTO(ShoppingBasket shoppingBasket)
         {
             _storeName = shoppingBasket.Store.StoreName;
@@ -25,6 +27,7 @@ namespace MarketProject.Service.DTO
                 _items[dto] = entry.Value;
             }
         }
+
         public string ToString()
         {
             //_name;
