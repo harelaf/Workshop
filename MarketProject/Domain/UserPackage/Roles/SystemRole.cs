@@ -37,9 +37,15 @@ namespace MarketProject.Domain
             UserName = userName;
         }
 
-        public abstract bool grantPermission(Operation op, string store, string grantor);
+        public virtual bool grantPermission(Operation op, string store, string grantor)
+        {
+            throw new Exception("only Store Manager can be granted additional permisions.")
+        }
 
-        public abstract bool denyPermission(Operation op, string store, string denier);
+        public virtual bool denyPermission(Operation op, string store, string denier)
+        {
+            throw new Exception("only Store Manager can be denied some permisions.")
+        }
 
         //internal bool hasAccess(Operation op)
         //{

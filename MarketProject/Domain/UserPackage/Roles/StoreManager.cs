@@ -37,7 +37,7 @@ namespace MarketProject.Domain
                     return true;
                 }
             }
-            return false;
+            throw new Exception("this operation cannot be granted to store manager.");
         }
 
         /// <summary>

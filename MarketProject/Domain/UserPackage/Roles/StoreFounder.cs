@@ -12,16 +12,6 @@ namespace MarketProject.Domain
             base.StoreName = storeName;
         }
 
-        public override bool grantPermission(Operation op, String storeName, string grantor)
-        {
-            return false;
-        }
-
-        public override bool denyPermission(Operation op, String storeName, string denier)
-        {
-            return false;
-        }
-
         private static ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();

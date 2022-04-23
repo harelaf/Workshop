@@ -458,5 +458,117 @@ namespace MarketProject.Domain.Tests
 
             Assert.ThrowsException<Exception>(() => userManagement.ReplyToComplaint(authToken, complaintId, response));
         }
+
+        [TestMethod]
+        public void RemoveManagerPermission_regular_successful()
+        {
+            String appointer = "appointer";
+            String managerUsername = "manager";
+            String password = "123";
+            String storeName = "store1";
+            Operation op = Operation.STORE_HISTORY_INFO;
+
+            try
+            {
+                userManagement.Register(managerUsername, password);
+                userManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+                userManagement.RemoveManagerPermission(appointer, managerUsername, storeName, op);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
+        public void RemoveManagerPermission_notByAppointer_throwsException()
+        {
+            String appointer = "appointer";
+            String managerUsername = "manager";
+            String password = "123";
+            String storeName = "store1";
+            Operation op = Operation.STORE_HISTORY_INFO;
+
+            userManagement.Register(managerUsername, password);
+            userManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+            Assert.ThrowsException<Exception>(() => userManagement.RemoveManagerPermission("other name", managerUsername, storeName, op));
+        }
+
+        [TestMethod]
+        public void RemoveManagerPermission_changeOwnerPermission_throwsException()
+        {
+            String appointer = "appointer";
+            String managerUsername = "manager";
+            String password = "123";
+            String storeName = "store1";
+            Operation op = Operation.STORE_HISTORY_INFO;
+
+            userManagement.Register(managerUsername, password);
+            userManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
+            Assert.ThrowsException<Exception>(() => userManagement.RemoveManagerPermission(appointer, managerUsername, storeName, op));
+        }
+
+        [TestMethod]
+        public void AddManagerPermission_regular_successful()
+        {
+            String appointer = "appointer";
+            String managerUsername = "manager";
+            String password = "123";
+            String storeName = "store1";
+            Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
+
+            try
+            {
+                userManagement.Register(managerUsername, password);
+                userManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+                userManagement.AddManagerPermission(appointer, managerUsername, storeName, op);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod]
+        public void AddManagerPermission_notByAppointer_throwsException()
+        {
+            String appointer = "appointer";
+            String managerUsername = "manager";
+            String password = "123";
+            String storeName = "store1";
+            Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
+
+            userManagement.Register(managerUsername, password);
+            userManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+            Assert.ThrowsException<Exception>(() => userManagement.AddManagerPermission("other name", managerUsername, storeName, op));
+        }
+
+        [TestMethod]
+        public void AddManagerPermission_changeOwnerPermission_throwsException()
+        {
+            String appointer = "appointer";
+            String managerUsername = "manager";
+            String password = "123";
+            String storeName = "store1";
+            Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
+
+            userManagement.Register(managerUsername, password);
+            userManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
+            Assert.ThrowsException<Exception>(() => userManagement.AddManagerPermission(appointer, managerUsername, storeName, op));
+        }
+
+        [TestMethod]
+        public void AddManagerPermission_prohibitedOperation_throwsException()
+        {
+            String appointer = "appointer";
+            String managerUsername = "manager";
+            String password = "123";
+            String storeName = "store1";
+            Operation op = Operation.CANCEL_SUBSCRIPTION;
+
+            userManagement.Register(managerUsername, password);
+            userManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+            Assert.ThrowsException<Exception>(() => userManagement.AddManagerPermission(appointer, managerUsername, storeName, op));
+        }
     }
 }

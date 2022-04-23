@@ -14,16 +14,6 @@ namespace MarketProject.Domain
             _appointer = appointer;
         }
 
-        public override bool grantPermission(Operation op, string storeName, string grantor)
-        {
-            return false;
-        }
-
-        public override bool denyPermission(Operation op, string storeName, string denier)
-        {
-            return false;
-        }
-
         private static ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();
