@@ -23,9 +23,9 @@ namespace MarketProject.Domain.Tests
         [TestInitialize()]
         public void setup()
         {
-            storeFounder = "founder";
+            storeFounder = "Mr. Krabs";
             storeName = "Krusty Krab";
-            _store = new Store(storeName, new StoreFounder(storeFounder, "Krusty Krab"), null, null);
+            _store = new Store(storeName, new StoreFounder(storeFounder, "Krusty Krab"), new PurchasePolicy(), new DiscountPolicy());
             itemId = 1;
             name = "Krabby Patty";
             description = "yummy";
@@ -83,7 +83,10 @@ namespace MarketProject.Domain.Tests
         public void UpdateStockQuantityOfItem_ItemExists_NoException()
         {
             String description = "Delicious";
-            int newQuantity = 15;
+            int quantity = 5;
+            double price = 5.0;
+            String category = "";
+            int newQuantity = 10;
             try
             {
                 _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
