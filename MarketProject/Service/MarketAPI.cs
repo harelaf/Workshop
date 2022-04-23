@@ -387,14 +387,34 @@ namespace MarketProject.Service
         {//II.3.8
             throw new NotImplementedException();
         }
-        public Boolean RemoveManagerPermission(String authToken, String managerUsername)//permission param is Enum
+        public Response RemoveManagerPermission(String authToken, String managerUsername, Operation op)//permission param is Enum
         {//II.4.7
 
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveManagerPermission(authToken, managerUsername, op);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean AddManagerPermission(String authToken, String managerUsername)//permission param is Enum
+        public Boolean AddManagerPermission(String authToken, String managerUsername, , Operation op)//permission param is Enum
         {//II.4.7
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AddManagerPermission(authToken, managerUsername, op);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response CloseStore(String authToken, String storeName)
         {//II.4.9

@@ -435,5 +435,17 @@ namespace MarketProject.Domain
         { //II.1.2
             _userManagement.ExitSystem(authToken);
         }
+
+        public void AddManagerPermission(String authToken, String managerUsername, Operation op)
+        {
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            
+        }
+
+        public void RemoveManagerPermission(String authToken, String managerUsername, Operation op)
+        {
+            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            _userManagement.RemoveManagerPermission(appointerUsername, managerUsername, op);
+        }
     }
 }
