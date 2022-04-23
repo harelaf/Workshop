@@ -80,9 +80,9 @@ namespace MarketProject.Domain
                 List<Item> items = _stores[storeName].getItemsByName(itemName);
                 foreach(Item item in items)
                 {
-                    if(itemCategory == null || item.Category == itemCategory)
+                    if(itemCategory == null || itemCategory.Length == 0 || item.Category == itemCategory)
                     {
-                        if(keyWord == null || item.Description == null || item.Category.Contains(keyWord))
+                        if(keyWord == null || item.Description == null || keyWord.Length == 0 || item.Category.Contains(keyWord))
                         {
                             filteredItems.Add(item);
                         }

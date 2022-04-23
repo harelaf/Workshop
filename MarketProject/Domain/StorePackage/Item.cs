@@ -30,7 +30,7 @@ namespace MarketProject.Domain
             _rating = new Rating();
             _discounts = new List<IDiscount>();
             _itemID = id;
-            _name = Name;
+            _name = name;
             _price = price;
             _description = description;
             _category = category;
@@ -52,7 +52,7 @@ namespace MarketProject.Domain
 
         public void SetPrice(double price)
         {
-            this._price = price;
+            _price = price;
         }
 
         public void SetDescription(String description)
