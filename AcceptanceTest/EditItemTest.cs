@@ -78,7 +78,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestEditItemPrice_Happy()
         {
-            Response response_reg = marketAPI.EditItemPrice(registered_userToken, storeName_inSystem, itemID_inStock_1, (float)12.5);
+            Response response_reg = marketAPI.EditItemPrice(registered_userToken, storeName_inSystem, itemID_inStock_1, 12.5);
             if (response_reg.ErrorOccured)
                 Assert.Fail("shouldn't have faild: item is in stock");
             List<ItemDTO> items = marketAPI.GetItemInformation(registered_userToken, "Leben", "Diary", "").Value;
@@ -104,7 +104,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestEditItemPrice_Sad_ItemOutOfStock()
         {
-            Response response_reg = marketAPI.EditItemPrice(registered_userToken, storeName_inSystem, itemID_inStock_2, (float)12.5);
+            Response response_reg = marketAPI.EditItemPrice(registered_userToken, storeName_inSystem, itemID_inStock_2, 12.5);
             if (!response_reg.ErrorOccured)
                 Assert.Fail("should've faild: item isn't in stock");
         }
@@ -112,7 +112,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestEditItemPrice_Sad_UserWithoutPermition()
         {
-            Response response_guest = marketAPI.EditItemPrice(guest_userToken, storeName_inSystem, itemID_inStock_1, (float)12.5);
+            Response response_guest = marketAPI.EditItemPrice(guest_userToken, storeName_inSystem, itemID_inStock_1, 12.5);
             if (!response_guest.ErrorOccured)
                 Assert.Fail("should've faild: User doesn't have a permition to edit item");
         }

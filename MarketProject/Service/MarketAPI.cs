@@ -264,12 +264,12 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response EditItemPrice(String authToken, String storeName, int itemID, float new_price)
+        public Response EditItemPrice(String authToken, String storeName, int itemID, double newPrice)
         {//II.4.1
             Response response;
             try
             {
-                _market.EditItemPrice(authToken, storeName, itemID, new_price);
+                _market.EditItemPrice(authToken, storeName, itemID, newPrice);
                 response = new Response();
             }
             catch (Exception e)
