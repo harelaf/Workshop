@@ -433,7 +433,7 @@ namespace MarketProject.Domain
                     _userManagement.AddRole(managerUsername, newManager);                }
             }
         }
-
+        
         public void AddStoreOwner(string authToken, string ownerUsername, string storeName)
         {//II.4.4
             if (!_userManagement.IsUserLoggedin(authToken))
@@ -594,17 +594,20 @@ namespace MarketProject.Domain
             _userManagement.ExitSystem(authToken);
         }
 
-        public void AddManagerPermission(String authToken, String managerUsername, Operation op)
+        public void AddManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if(_userManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
+                _userManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
             
         }
 
-        public void RemoveManagerPermission(String authToken, String managerUsername, Operation op)
+        public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            _userManagement.RemoveManagerPermission(appointerUsername, managerUsername, op);
-	}
+            if(_userManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
+                _userManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
+	    }
         /// <summary>
         /// <para> For Req II.1.3. </para>
         /// <para> If credentials are valid, register new user.</para>
