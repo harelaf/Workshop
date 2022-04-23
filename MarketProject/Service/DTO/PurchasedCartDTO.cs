@@ -5,10 +5,13 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    internal class PurchasedCartDTO
+    public class PurchasedCartDTO
     {
         private DateTime _date;
         private ShoppingCartDTO _shoppingCart;
+
+        public DateTime Date=> _date;
+        public ShoppingCartDTO ShoppingCart => _shoppingCart;
 
         public PurchasedCartDTO(DateTime date, ShoppingCart shoppingCart)
         {

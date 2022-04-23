@@ -46,9 +46,12 @@ namespace MarketProject.Domain
         public void EditItemPrice(String storeName, int itemID, double newPrice)
         {
             Item item = GetItem(storeName, itemID);
-            item.SetPrice(newPrice);
+            lock (item)
+            {
+                item.SetPrice(newPrice);
+            }  
         }
-        public void EditItemName(String storeName, int itemID, int new_price, String newName)
+        public void EditItemName(String storeName, int itemID, String newName)
         { 
             if(newName == null)
             {
@@ -115,10 +118,18 @@ namespace MarketProject.Domain
             return _stores.ContainsKey(storeName);
         }
 
-        public String GetStoreInformation(String storeName)
+        public Store GetStoreInformation(String storeName)
+        {
+            if (!CheckStoreNameExists(storeName))
+                throw new Exception($"Store {storeName} does not exist.");
+            Store store = _stores[storeName];
+            return store;
+        }
+
+        public List<String> GetStoreRolesByName(String storeName)
         {
             Store store = GetStore(storeName);
-            return store.GetInformation();
+            return store.GetStoreRolesByName();
         }
 
         public void RateStore(String username, String storeName, int rating, String review)
@@ -171,6 +182,7 @@ namespace MarketProject.Domain
         {
             Store store = GetStore(storeName);
             store.CloseStorePermanently();
+            _stores.Remove(storeName);
         }
 
 

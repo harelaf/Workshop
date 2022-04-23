@@ -5,9 +5,10 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    class ShoppingCartDTO
+    public class ShoppingCartDTO
     {
-        private ICollection<ShoppingBasketDTO> _DTObaskets { get; set; }
+        private ICollection<ShoppingBasketDTO> _DTObaskets; 
+        public ICollection<ShoppingBasketDTO> Baskets => _DTObaskets;
         public ShoppingCartDTO(ShoppingCart shoppingCart)
         {
             _DTObaskets = new List<ShoppingBasketDTO>();
@@ -26,6 +27,28 @@ namespace MarketProject.Service.DTO
                 toString+= basket.ToString() + "\n";
             }
             return toString;
+        }
+        public int getAmountOfItemInCart(string storeName, int itemID)
+        {
+            int totalAmountInCart = 0;
+            foreach (ShoppingBasketDTO shoppingBasketDTO in _DTObaskets)
+            {
+                if (shoppingBasketDTO.StoreName == storeName)
+                {
+                    foreach (ItemDTO item in shoppingBasketDTO.Items.Keys)
+                    {
+                        if (item.ItemID == itemID)
+                        {
+                            totalAmountInCart += shoppingBasketDTO.Items[item];
+                            break;
+                        }
+
+                    }
+                    break;
+                }
+
+            }
+            return totalAmountInCart;
         }
     }
 }
