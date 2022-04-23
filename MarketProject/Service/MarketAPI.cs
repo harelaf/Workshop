@@ -278,7 +278,7 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response EditItemName(String authToken, String storeName, int itemID, int new_price, String newName)
+        public Response EditItemName(String authToken, String storeName, int itemID, String newName)
         {//II.4.1
             Response response;
             try
