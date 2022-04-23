@@ -275,7 +275,7 @@ namespace MarketProject.Domain
             _userManagement.SendMessageToRegisterd(storeName, usernameReciever, title, message);
         }
 
-        public bool AddStoreManager(string authToken, string managerUsername, string storeName)
+        public void AddStoreManager(string authToken, string managerUsername, string storeName)
         {//II.4.6
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
@@ -284,15 +284,11 @@ namespace MarketProject.Domain
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreManager(newManager, storeName))
-                {
-                    _userManagement.AddRole(managerUsername, newManager);
-                    return true;
-                }
+                    _userManagement.AddRole(managerUsername, newManager);                }
             }
-            return false;
         }
 
-        public bool AddStoreOwner(string authToken, string ownerUsername, string storeName)
+        public void AddStoreOwner(string authToken, string ownerUsername, string storeName)
         {//II.4.4
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
@@ -301,12 +297,8 @@ namespace MarketProject.Domain
             {
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreOwner(newOwner, storeName))
-                {
                     _userManagement.AddRole(ownerUsername, newOwner);
-                    return true;
-                }
             }
-            return false;
         }
 
         public void PurchaseMyCart(String userToken, String address, String city, String country, String zip, String purchaserName)
@@ -327,7 +319,7 @@ namespace MarketProject.Domain
             return _userManagement.GetUserShoppingCart(authToken);
         }
 
-        public Boolean RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
+        public void RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.5
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
@@ -335,26 +327,20 @@ namespace MarketProject.Domain
             if (_userManagement.checkAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
-                {
                     _userManagement.RemoveRole(ownerUsername, storeName);
-                    return true;
-                }
+                dfghjkl;
+
             }
-            return false;
         }
-        public Boolean RemoveStoreManager(String authToken, String managerUsername, String storeName)
+        public void RemoveStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.8
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
             if (_userManagement.checkAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.REMOVE_MANAGER))
             {
                 if (_storeManagement.RemoveStoreManager(managerUsername, storeName))
-                {
                     _userManagement.RemoveRole(managerUsername, storeName);
-                    return true;
-                }
             }
-            return false;
         }
         public ICollection<Tuple<DateTime, ShoppingCart>> GetMyPurchases(String authToken)
         {//II.3.7

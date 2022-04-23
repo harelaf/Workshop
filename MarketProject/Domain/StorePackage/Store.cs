@@ -73,7 +73,7 @@ namespace MarketProject.Domain
                 _managers.Add(newManager);
                 return true;
             }
-            return false;
+            throw new Exception("already has a role in this store.");
         }
 
         public bool AddStoreOwner(StoreOwner newOwner)
@@ -83,7 +83,7 @@ namespace MarketProject.Domain
                 _owners.Add(newOwner);
                 return true;
             }
-            return false;
+            throw new Exception("already has a role in this store.");
         }
 
         private bool hasRoleInStore(string username)

@@ -17,12 +17,12 @@ namespace MarketProject.Domain
         {
             if (_stores.ContainsKey(storeName))
                 return _stores[storeName];
-            return null;
+            throw new Exception("Store '" + storeName + "' does not exists.");
         }
 
         public bool IsStoreExist(String storeName)
         {
-           return GetStore(storeName) != null;
+           return _stores.ContainsKey(storeName);
         }
 
         public Item ReserveItemFromStore(String storeName, int itemID, int amount)
@@ -91,11 +91,7 @@ namespace MarketProject.Domain
 
         public void SendMessageToStore(String username, String storeName, String title, String message)
         {
-            if (!_stores.ContainsKey(storeName))
-            {
-                throw new Exception("Store " + storeName + " not found");
-            }
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             MessageToStore messageToStore = new MessageToStore(storeName, username, title, message);
             store.AddMessage(messageToStore);
         }
@@ -121,65 +117,51 @@ namespace MarketProject.Domain
 
         public String GetStoreInformation(String storeName)
         {
-            if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             return store.GetInformation();
         }
 
         public void RateStore(String username, String storeName, int rating, String review)
         {
-            if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             store.RateStore(username, rating, review);
         }
 
         public void UpdateStockQuantityOfItem(String storeName, int itemID, int newQuantity)
         {
-            if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             store.UpdateStockQuantityOfItem(itemID, newQuantity);
         }
 
         public bool isStoreActive(String storeName)
         {
-            if (!CheckStoreNameExists(storeName))
+            if (!IsStoreExist(storeName))
                 return false;
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             return store.isActive();
         }
 
         public void AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {
-            if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             store.AddItemToStoreStock(itemID, name, price, description, category, quantity);
         }
 
         public void RemoveItemFromStore(String storeName, int itemID)
         {
-            if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             store.RemoveItemFromStore(itemID);
         }
 
         public void CloseStore(String storeName)
         {
-            if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             store.CloseStore();
         }
 
         public void ReopenStore(String storeName)
         {
-            if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             if (store.State != StoreState.Inactive)
                 throw new Exception($"Store {storeName} is not inactive.");
             store.ReopenStore();
@@ -187,65 +169,49 @@ namespace MarketProject.Domain
 
         public void CloseStorePermanently(String storeName)
         {
-            if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            Store store = _stores[storeName];
+            Store store = GetStore(storeName);
             store.CloseStorePermanently();
         }
 
 
         public bool AddStoreManager(StoreManager newManager, string storeName)
         {
-            Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
+            Store store = GetStore(storeName);
             return store.AddStoreManager(newManager);
         }
 
         public bool AddStoreOwner(StoreOwner newOwner, string storeName)
         {
-            Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
+            Store store = GetStore(storeName);
             return store.AddStoreOwner(newOwner);
         }
         public bool RemoveStoreOwner(string ownerUsername, string storeName)
         {
-            Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
+            Store store = GetStore(storeName);
             return store.RemoveStoreOwner(ownerUsername);
         }
 
         public bool RemoveStoreManager(string managerUsername, string storeName)
         {
-            Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
+            Store store = GetStore(storeName);
             return store.RemoveStoreManager(managerUsername);
         }
 
         internal List<StoreManager> getStoreManagers(string storeName)
         {
-            Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
+            Store store = GetStore(storeName);
             return store.GetManagers();
         }
 
         internal List<StoreOwner> getStoreOwners(string storeName)
         {
-            Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
+            Store store = GetStore(storeName);
             return store.GetOwners();
         }
 
         internal StoreFounder getStoreFounder(string storeName)
         {
-            Store store = _stores[storeName];
-            if (store == null)
-                throw new Exception("no store by that name.");
+            Store store = GetStore(storeName);
             return store.GetFounder();
         }
 

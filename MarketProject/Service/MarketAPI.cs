@@ -188,21 +188,61 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean AddStoreManager(String authToken, String ownerUsername, String storeName)
+        public Response AddStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.6
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AddStoreManager(authToken, managerUsername, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean AddStoreOwner(String authToken, String ownerUsername, String storeName)
+        public Response AddStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.4
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.AddStoreOwner(authToken, ownerUsername, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
+        public Response RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.5
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveStoreOwner(authToken, ownerUsername, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
-        public Boolean RemoveStoreManager(String authToken, String ownerUsername, String storeName)
+        public Response RemoveStoreManager(String authToken, String ownerUsername, String storeName)
         {//II.4.8
-            throw new NotImplementedException();
+            Response response;
+            try
+            {
+                _market.RemoveStoreManager(authToken, ownerUsername, storeName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
         }
         public Response AddItemToStoreStock(String authToken, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {//II.4.1
@@ -388,7 +428,7 @@ namespace MarketProject.Service
         {//II.4.11
             throw new NotImplementedException();
         }
-        public Boolean GetStoreMesseage(String authToken, String storeName)
+        public Boolean GetStoreMessage(String authToken, String storeName)
         {//II.4.12
             //should return with id
             throw new NotImplementedException();
