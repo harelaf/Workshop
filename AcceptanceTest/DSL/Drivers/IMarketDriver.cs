@@ -24,6 +24,7 @@ namespace AcceptanceTest.DSL.Drivers
         void Logout();
         void AssertNoError();
         void AssertErrorMessageRecieved();
-
+        void RemoveRegisteredUser(string username);
+        void ChangePassword(string oldPassword, string newPassword);
     }
 }

@@ -580,11 +580,15 @@ namespace MarketProject.Domain
         /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
         public void RemoveRegisteredUser(String authToken, String usr_toremove)
         {
-            if (_userManagement.CheckAccess(authToken, "CHANGE_ME", Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
+            if (_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), null, Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
             {
                 Registered registeredToRemove = _userManagement.GetRegisteredUser(usr_toremove);
                 _userManagement.RemoveRegisteredUser(usr_toremove);
                 _storeManagement.RemoveAllRoles(registeredToRemove);
+            }
+            else
+            {
+                throw new Exception("User tried to perform an unautherised operation - Cancel Subscription.");
             }
         }
 

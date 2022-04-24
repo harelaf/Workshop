@@ -238,8 +238,6 @@ namespace MarketProject.Domain.Tests
             registeredUsers.Add(username, registered);
             UserManagement userManagement = new UserManagement(registeredUsers);
 
-            Assert.IsNull(userManagement.CurrentAdmin);
-
             userManagement.AdminStart(username, password);
 
             Assert.AreEqual(systemAdmin, userManagement.CurrentAdmin);
@@ -254,8 +252,6 @@ namespace MarketProject.Domain.Tests
             Dictionary<String, Registered> registeredUsers = new Dictionary<string, Registered>();
             registeredUsers.Add(username, registered);
             UserManagement userManagement = new UserManagement(registeredUsers);
-
-            Assert.IsNull(userManagement.CurrentAdmin);
 
             userManagement.AdminStart(username, password);
 
