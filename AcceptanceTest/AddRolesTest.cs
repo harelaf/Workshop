@@ -34,13 +34,6 @@ namespace AcceptanceTest
             marketAPI.Register(store_founder_token, store_founder_name, "123456789");
             store_founder_token = (marketAPI.Login(store_founder_token, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(store_founder_token, storeName);
-            //itemID_inStock_1 = 1; itemAmount_inSttock_1 = 20;
-            //itemID_inStock_2 = 2; itemAmount_inSttock_2 = 50;
-            //marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID_inStock_1,
-            //    "banana", 3.5, "", "fruit", itemAmount_inSttock_1);
-            //marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID_inStock_2,
-            //    "banana2", 3.5, "", "fruit", itemAmount_inSttock_2);
-
         }
 
         [TestMethod]
@@ -77,7 +70,7 @@ namespace AcceptanceTest
             string password = "123456789";
             bool doubleCheck = false;
             string store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token1, ownerUserName1, password); 
+            marketAPI.Register(store_owner_token1, ownerUserName1, password);
             string store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
             marketAPI.Register(store_owner_token2, ownerUserName2, password);
             string store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
@@ -94,10 +87,10 @@ namespace AcceptanceTest
             Response response2 = marketAPI.AddStoreManager(store_owner_token2, ownerUserName1, storeName);
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUserName3, storeName);
             List<StoreManagerDTO> lst = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
-            foreach(StoreManagerDTO s in lst)
+            foreach (StoreManagerDTO s in lst)
                 if (s.Username == managerUserName3)
                     doubleCheck = s.Appointer == ownerUserName2;
-            
+
             Assert.IsTrue(response1.ErrorOccured);
             Assert.IsTrue(response2.ErrorOccured);
             Assert.IsFalse(response3.ErrorOccured);

@@ -522,5 +522,12 @@ namespace MarketProject.Domain
         {
             GetRegisteredUser(managerUsername).AddManagerPermission(appointer, storeName, op);
         }
+
+        internal void AppointSystemAdmin(string adminUserName)
+        {
+            if (!IsRegistered(adminUserName))
+                throw new Exception("this user is not registered.");
+            GetRegisteredUser(adminUserName).AddRole(new SystemAdmin(adminUserName));
+        }
     }
 }

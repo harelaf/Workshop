@@ -498,6 +498,13 @@ namespace MarketProject.Domain
             return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
         }
 
+        internal void AppointSystemAdmin(string authToken, string adminUserName)
+        {
+            String registered = _userManagement.GetRegisteredUsernameByToken(_userManagement.GetRegisteredUsernameByToken(authToken));
+            if (_userManagement.CheckAccess(registered, null, Operation.APPOINT_SYSTEM_ADMIN))
+                _userManagement.AppointSystemAdmin(adminUserName);
+        }
+
         /// <summary>
         /// <para> For Req II.3.8. </para>
         /// <para> Updates a user's password if given the correct previous password.</para>

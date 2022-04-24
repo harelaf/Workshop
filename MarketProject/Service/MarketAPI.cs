@@ -741,5 +741,20 @@ namespace MarketProject.Service
             }
             return response;
         }
+
+        public Response AppointSystemAdmin(String authToken, String adminUserName)
+        { //II.1.2
+            Response response;
+            try
+            {
+                _market.AppointSystemAdmin(authToken, adminUserName);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
+        }
     }
 }
