@@ -30,6 +30,9 @@ namespace AcceptanceTest.DSL
         public void Register(string username, string password) { _driver.Register(username, password); }
 
         public void Login(string username, string password) { _driver.Login(username, password); }
+
+        internal void RemoveRegisteredUser(string username) { _driver.RemoveRegisteredUser(username); }
+
         internal void Logout() { _driver.Logout(); }
 
         internal void AssertErrorMessageRecieved() { _driver.AssertErrorMessageRecieved(); }

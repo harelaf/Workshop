@@ -53,7 +53,7 @@ namespace MarketProject.Domain
         //}
         public bool hasAccess(string storeName, Operation op)
         {
-            if(storeName.Equals(_storeName) && _operations.Contains(op))
+            if(storeName == _storeName && _operations.Contains(op))
                 return true;
             throw new Exception("no permission for this operation.");
         }

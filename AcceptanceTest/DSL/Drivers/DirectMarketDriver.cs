@@ -22,11 +22,6 @@ namespace AcceptanceTest.DSL.Drivers
 
         public DirectMarketDriver()
         {
-            // Register Admin
-            EnterSystem();
-            Register(DefaultValues.AdminUsername, DefaultValues.AdminPassword);
-            ExitSystem();
-
             // Register Buyer
             EnterSystem();
             Register(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
@@ -112,6 +107,16 @@ namespace AcceptanceTest.DSL.Drivers
         public void AssertErrorMessageRecieved()
         {
             Assert.IsNotNull(_errorMessage);
+        }
+
+        public void RemoveRegisteredUser(string username)
+        {
+            Response response = _marketAPI.RemoveRegisteredUser(_loggedInUserToken, username);
+            if (response.ErrorOccured)
+            {
+                _errorMessage = response.ErrorMessage;
+                return;
+            }
         }
     }
 }

@@ -46,5 +46,10 @@ namespace AcceptanceTest.DSL.Drivers
         {
             throw new NotImplementedException();
         }
+
+        public void RemoveRegisteredUser(string username)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
