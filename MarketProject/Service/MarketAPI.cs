@@ -304,12 +304,12 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response EditItemPrice(String authToken, String storeName, int itemID, float new_price)
+        public Response EditItemPrice(String authToken, String storeName, int itemID, double newPrice)
         {//II.4.1
             Response response;
             try
             {
-                _market.EditItemPrice(authToken, storeName, itemID, new_price);
+                _market.EditItemPrice(authToken, storeName, itemID, newPrice);
                 response = new Response();
             }
             catch (Exception e)
@@ -389,18 +389,23 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response<List<Item>> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
+        public Response<List<ItemDTO>> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {//II.2.2
             //filters!!!!!!!!!!!
-            Response<List<Item>> response;
+            Response<List<ItemDTO>> response;
             try
             {
                 List<Item> result = _market.GetItemInformation(authToken, itemName, itemCategory, keyWord);
-                response = new Response<List<Item>>(result);
+                List<ItemDTO> resultDTO = new List<ItemDTO>();
+                foreach(Item item in result)
+                {
+                    resultDTO.Add(new ItemDTO(item));
+                }
+                response = new Response<List<ItemDTO>>(resultDTO);
             }
             catch (Exception e)
             {
-                response = new Response<List<Item>> (null, e);
+                response = new Response<List<ItemDTO>> (null, e);
             }
             return response;
         }
@@ -501,13 +506,13 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response RemoveManagerPermission(String authToken, String managerUsername, Operation op)//permission param is Enum
+        public Response RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)//permission param is Enum
         {//II.4.7
 
             Response response;
             try
             {
-                _market.RemoveManagerPermission(authToken, managerUsername, op);
+                _market.RemoveManagerPermission(authToken, managerUsername, storeName, op);
                 response = new Response();
             }
             catch (Exception e)
@@ -516,12 +521,12 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response AddManagerPermission(String authToken, String managerUsername, Operation op)//permission param is Enum
+        public Response AddManagerPermission(String authToken, String managerUsername, String storeName, Operation op)//permission param is Enum
         {//II.4.7
             Response response;
             try
             {
-                _market.AddManagerPermission(authToken, managerUsername, op);
+                _market.AddManagerPermission(authToken, managerUsername, storeName, op);
                 response = new Response();
             }
             catch (Exception e)

@@ -24,20 +24,21 @@ namespace MarketProject.Domain
         /// <returns>true when the permission has been granted to this user, even if he was already permitted. false otherwise.</returns>
         public override bool grantPermission(Operation op, string storeName, string grantor)
         {
-            if (base.StoreName.Equals(storeName) && _appointer.Equals(grantor)) {
-                List<Operation> optOps = new List<Operation>(){  //optional operations
-                    Operation.MANAGE_INVENTORY,
-                    Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY,
-                    Operation.DEFINE_CONCISTENCY_CONSTRAINT,
-                    Operation.STORE_WORKERS_INFO
-                };
-                if (optOps.Contains(op))
-                {
-                    operations.Add(op); 
-                    return true;
-                }
-            }
-            return false;
+            if (!base.StoreName.Equals(storeName))
+                throw new Exception("the store name is incorrect.");
+            if (!_appointer.Equals(grantor))
+                throw new Exception("store-manager permissions can be changed by appointer only.");
+
+            List<Operation> optOps = new List<Operation>(){  //optional operations
+                Operation.MANAGE_INVENTORY,
+                Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY,
+                Operation.DEFINE_CONCISTENCY_CONSTRAINT,
+                Operation.STORE_WORKERS_INFO
+            };
+            if (!optOps.Contains(op))
+                throw new Exception("the operation you wish to permit is illegal for store manager.");
+            operations.Add(op); 
+            return true;
         }
 
         /// <summary>
@@ -48,14 +49,13 @@ namespace MarketProject.Domain
         /// <returns>true when the permission has been denied from this user, even if he was never permitted. false otherwise.</returns>
         public override bool denyPermission(Operation op, string storeName, string denier)
         {
-            if (base.StoreName.Equals(storeName) && _appointer.Equals(denier))
-            {
-                operations.Remove(op);
-                return true;
-            }
-            return false;
+            if (!base.StoreName.Equals(storeName))
+                throw new Exception("the store name is incorrect.");
+            if (!_appointer.Equals(denier))
+                throw new Exception("store-manager permissions can be changed by appointer only."); 
+            operations.Remove(op);
+            return true;
         }
-
 
         private static ISet<Operation> getOps()
         {

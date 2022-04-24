@@ -77,12 +77,15 @@ namespace MarketProject.Domain.Tests
             //there is basket with that store and item in cart:
             // Arrange
             int amount = 8;
+            Item item2 = new Item(2, "name2", 2.0, "description2", "category2");
             guest.AddItemToCart(store, item1, amount);
+            guest.AddItemToCart(store, item2, amount);
             //action
-            int removred_amount = guest.RemoveItemFromCart(item1, store);
-            bool itemStillInBasket = guest.ShoppingCart.GetShoppingBasket(store.StoreName).isItemInBasket(item1);
+            int removed_amount = guest.RemoveItemFromCart(item1, store);
+            ShoppingBasket sb = guest.ShoppingCart.GetShoppingBasket(store.StoreName);
+            bool itemStillInBasket = sb.isItemInBasket(item1);
             // Assert
-            Assert.AreEqual(amount, removred_amount);
+            Assert.AreEqual(amount, removed_amount);
             Assert.AreEqual(itemStillInBasket, false);
         }
 
@@ -106,6 +109,19 @@ namespace MarketProject.Domain.Tests
             guest.AddItemToCart(store, item1, amount1);
             //Action& Assert
             Assert.ThrowsException<Exception>(()=> guest.RemoveItemFromCart(item2, store));
+        }
+
+        public void TestRemoveItemToCart4()
+        {
+            //there is basket with that store and item in cart:
+            // Arrange
+            int amount = 8;
+            guest.AddItemToCart(store, item1, amount);
+            //action
+            int removed_amount = guest.RemoveItemFromCart(item1, store);
+            ShoppingBasket sb = guest.ShoppingCart.GetShoppingBasket(store.StoreName);
+            // Assert
+            Assert.IsNull(sb);
         }
 
         [TestMethod]

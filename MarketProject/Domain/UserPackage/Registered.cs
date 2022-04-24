@@ -95,10 +95,7 @@ namespace MarketProject.Domain
         /// <returns>true if has a role in this store (or if storename is null and user isn't a SystemAdmin), false otherwise.</returns>
         public bool hasRoleInStore(String storeName)
         {
-            foreach (SystemRole role in _roles)
-                if (role.StoreName == storeName)
-                    return true;
-            return false;
+            return GetRole(storeName) != null;
         }
 
 
@@ -135,6 +132,26 @@ namespace MarketProject.Domain
         public void FileComplaint(Complaint complaint)
         {
             _filedComplaints.Add(complaint.ID, complaint);
+        }
+
+        public void RemoveManagerPermission(String appointer, String storeName, Operation op)
+        {
+            SystemRole role = GetRole(storeName);
+            role.denyPermission(op, storeName, appointer);
+        }
+
+        public void AddManagerPermission(String appointer, String storeName, Operation op)
+        {
+            SystemRole role = GetRole(storeName);
+            role.grantPermission(op, storeName, appointer);
+        }
+
+        private SystemRole GetRole(String storeName)
+        {
+            foreach(SystemRole role in _roles)
+                if(role.StoreName == storeName)
+                    return role;
+            return null;
         }
     }
 }

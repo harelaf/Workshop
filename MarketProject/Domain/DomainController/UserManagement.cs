@@ -512,5 +512,15 @@ namespace MarketProject.Domain
             Registered reciever = GetRegisteredUser(usernameReciever);
             reciever.SendMessage(messageToUser);
         }
+
+        public void RemoveManagerPermission(String appointer, String managerUsername, String storeName, Operation op)
+        {
+            GetRegisteredUser(managerUsername).RemoveManagerPermission(appointer, storeName, op);
+        }
+
+        public void AddManagerPermission(String appointer, String managerUsername, String storeName, Operation op)
+        {
+            GetRegisteredUser(managerUsername).AddManagerPermission(appointer, storeName, op);
+        }
     }
 }

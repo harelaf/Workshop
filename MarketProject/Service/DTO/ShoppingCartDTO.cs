@@ -17,6 +17,19 @@ namespace MarketProject.Service.DTO
                 _DTObaskets.Add(new ShoppingBasketDTO(basket));
             }
         }
+
+        public ShoppingBasketDTO GetBasket(String StoreName)
+        {
+            ShoppingBasketDTO basket = null;
+            foreach(ShoppingBasketDTO b in _DTObaskets)
+            {
+                if(basket.GetStoreName == StoreName)
+                {
+                    basket = b;
+                }
+            }
+            return basket;
+        }
         public string ToString()
         {
             if (_DTObaskets.Count <= 0)
