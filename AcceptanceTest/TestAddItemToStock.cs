@@ -8,6 +8,7 @@ using MarketProject.Service;
 
 namespace AcceptanceTest
 {
+    // Acceptance tests for requirement: II.4.1
     [TestClass]
     public class TestAddItemToStock
     {

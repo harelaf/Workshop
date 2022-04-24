@@ -10,6 +10,7 @@ using MarketProject.Service.DTO;
 
 namespace AcceptanceTest
 {
+    // Acceptance tests for requirement: II.4.1
     [TestClass]
     public class TestUpdateQuantityInStock
     {

@@ -8,6 +8,7 @@ using MarketProject.Service;
 
 namespace AcceptanceTest
 {
+    // Acceptance tests for requirement: II.3.4
     [TestClass]
     public class TestRateStore
     {
