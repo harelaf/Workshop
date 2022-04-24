@@ -404,11 +404,6 @@ namespace MarketProject.Domain.Tests
            // Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
         }
 
-        [TestMethod()]
-        public void RemoveRoles_ValidUsername_RolesRemoved()
-        {
-            // TODO: Add dependancy injection so unit test can be done.
-            throw new NotImplementedException();
-        }
+ 
     }
 }
