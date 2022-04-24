@@ -43,7 +43,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserAVisitor(userToken))
                 throw new Exception("the given user is no longer a visitor in system");
             if (!_storeManagement.CheckStoreNameExists(storeName))
-                throw new Exception("there is no store in system with the givn storeid");
+                throw new Exception("there is no store in system with the given storeid");
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
@@ -55,7 +55,7 @@ namespace MarketProject.Domain
                     _userManagement.AddItemToUserCart(userToken, store, item, amount);
                 }
             }
-            
+
         }
 
         public Item RemoveItemFromCart(String userToken, int itemID, String storeName)
@@ -85,7 +85,7 @@ namespace MarketProject.Domain
             int amount_differnce = _userManagement.GetUpdatingQuantityDifference(userToken, item, _storeManagement.GetStore(storeName), newQuantity);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
-            { 
+            {
                 if (!_storeManagement.isStoreActive(storeName))
                     throw new Exception($"Store {storeName} is currently inactive.");
                 lock (store.Stock)
@@ -95,7 +95,7 @@ namespace MarketProject.Domain
                     if (amount_differnce > 0)// add item to cart and remove it from store stock
                         _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
                     else//remove item from cart and add to store stock
-                        _storeManagement.UnreserveItemInStore(storeName, item, -1* amount_differnce);
+                        _storeManagement.UnreserveItemInStore(storeName, item, -1 * amount_differnce);
                     _userManagement.UpdateItemInUserCart(userToken, store, item, newQuantity);
                 }
             }
@@ -110,7 +110,7 @@ namespace MarketProject.Domain
                 throw new Exception($"Only registered users are allowed to rate stores.");
             if (_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"A store with the name {storeName} already exists in the system.");
-            string username = _userManagement.GetRegisteredUsernameByToken(token); 
+            string username = _userManagement.GetRegisteredUsernameByToken(token);
             StoreFounder founder = new StoreFounder(username, storeName);
             _userManagement.AddRole(username, founder);
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
@@ -177,7 +177,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("The given user is no longer logged in to the system.");
             String username = _userManagement.GetRegisteredUsernameByToken(authToken);
-            Store store =  _storeManagement.GetStore(storeName);
+            Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.MANAGE_INVENTORY))
@@ -286,7 +286,7 @@ namespace MarketProject.Domain
                 _storeManagement.CloseStorePermanently(storeName);
             }
         }
-       
+
         public void ReopenStore(string authToken, String storeName)
         {
             if (!_userManagement.IsUserLoggedin(authToken))
@@ -308,7 +308,7 @@ namespace MarketProject.Domain
                 $"Your roles in the store stayed the same." +
                 $"Yours Truly," +
                 $"{username}.";
-            foreach (String name in names) 
+            foreach (String name in names)
             {
                 SendMessageToRegisterd(storeName, name, title, message);
             }
@@ -413,7 +413,7 @@ namespace MarketProject.Domain
             if (!_userManagement.IsUserLoggedin(authToken))
                 throw new Exception("the given user is not a visitor in the system");
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            
+
             if (!_userManagement.IsRegistered(usernameReciever))
             {
                 throw new Exception("User " + usernameReciever + " not found in system");
@@ -430,10 +430,9 @@ namespace MarketProject.Domain
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreManager(newManager, storeName))
-                    _userManagement.AddRole(managerUsername, newManager);                }
-            }
+                    _userManagement.AddRole(managerUsername, newManager); }
         }
-        
+    
         public void AddStoreOwner(string authToken, string ownerUsername, string storeName)
         {//II.4.4
             if (!_userManagement.IsUserLoggedin(authToken))
@@ -474,8 +473,6 @@ namespace MarketProject.Domain
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
                     _userManagement.RemoveRole(ownerUsername, storeName);
-                dfghjkl;
-
             }
         }
         public void RemoveStoreManager(String authToken, String managerUsername, String storeName)
@@ -597,17 +594,17 @@ namespace MarketProject.Domain
         public void AddManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if(_userManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
+            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _userManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
-            
+
         }
 
         public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if(_userManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
+            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _userManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
-	    }
+        }
         /// <summary>
         /// <para> For Req II.1.3. </para>
         /// <para> If credentials are valid, register new user.</para>
@@ -617,7 +614,7 @@ namespace MarketProject.Domain
         /// <param name="password"> The password to check.</param>
         public void Register(String authToken, String username, String password)
         {//II.1.3
-            // TODO: Transfer cart? (Same dillema as login)
+         // TODO: Transfer cart? (Same dillema as login)
             _userManagement.Register(username, password);
         }
 
@@ -630,7 +627,7 @@ namespace MarketProject.Domain
         /// <param name="message"> The message detailing the complaint. </param>
         public void FileComplaint(String authToken, int cartID, String message)
         {
-            _userManagement.FileComplaint(authToken, cartID, message);  
+            _userManagement.FileComplaint(authToken, cartID, message);
         }
 
         /// <summary>
@@ -646,3 +643,4 @@ namespace MarketProject.Domain
         }
     }
 }
+

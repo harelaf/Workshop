@@ -515,12 +515,12 @@ namespace MarketProject.Domain
 
         public void RemoveManagerPermission(String appointer, String managerUsername, String storeName, Operation op)
         {
-            GetRegisteredUser(managerUsername).RemoveManagerPermission(storeName, op);
+            GetRegisteredUser(managerUsername).RemoveManagerPermission(appointer, storeName, op);
         }
 
         public void AddManagerPermission(String appointer, String managerUsername, String storeName, Operation op)
         {
-            GetRegisteredUser(managerUsername).AddManagerPermission(storeName, op);
+            GetRegisteredUser(managerUsername).AddManagerPermission(appointer, storeName, op);
         }
     }
 }

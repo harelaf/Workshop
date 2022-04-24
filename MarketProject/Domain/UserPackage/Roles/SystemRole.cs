@@ -39,12 +39,12 @@ namespace MarketProject.Domain
 
         public virtual bool grantPermission(Operation op, string store, string grantor)
         {
-            throw new Exception("only Store Manager can be granted additional permisions.")
+            throw new Exception("only Store Manager can be granted additional permisions.");
         }
 
         public virtual bool denyPermission(Operation op, string store, string denier)
         {
-            throw new Exception("only Store Manager can be denied some permisions.")
+            throw new Exception("only Store Manager can be denied some permisions.");
         }
 
         //internal bool hasAccess(Operation op)

@@ -79,7 +79,7 @@ namespace AcceptanceTest
             Response<List<ItemDTO>> items = marketAPI.GetItemInformation(registered_userToken, "aaaaaa", "", "");
             if (!items.ErrorOccured)
             {
-                Assert.Fail();  
+                Assert.Fail(items.ErrorMessage);  
             }
         }
     }

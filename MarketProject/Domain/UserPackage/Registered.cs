@@ -148,10 +148,10 @@ namespace MarketProject.Domain
 
         private SystemRole GetRole(String storeName)
         {
-            foreach(SystemRole role : _roles)
+            foreach(SystemRole role in _roles)
                 if(role.StoreName == storeName)
                     return role;
-            throw new Exception("this user has no role in this store.");
+            return null;
         }
     }
 }
