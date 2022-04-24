@@ -39,5 +39,6 @@ namespace AcceptanceTest.DSL
 
         public void AssertNoError() { _driver.AssertNoError(); }
 
+        internal void ChangePassword(string oldPassword, string newPassword) { _driver.ChangePassword(oldPassword, newPassword); }
     }
 }

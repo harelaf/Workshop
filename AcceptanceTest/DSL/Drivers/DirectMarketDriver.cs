@@ -63,6 +63,7 @@ namespace AcceptanceTest.DSL.Drivers
                     _currentGuestToken = null;
                 }
             }
+            _errorMessage = null;
         }
 
         public void Register(string username, string password)
@@ -97,6 +98,7 @@ namespace AcceptanceTest.DSL.Drivers
             }
             _currentGuestToken = response.Value;
             _loggedInUserToken = null;
+            _errorMessage = null;
         }
 
         public void AssertNoError()
@@ -112,6 +114,16 @@ namespace AcceptanceTest.DSL.Drivers
         public void RemoveRegisteredUser(string username)
         {
             Response response = _marketAPI.RemoveRegisteredUser(_loggedInUserToken, username);
+            if (response.ErrorOccured)
+            {
+                _errorMessage = response.ErrorMessage;
+                return;
+            }
+        }
+
+        public void ChangePassword(string oldPassword, string newPassword)
+        {
+            Response response = _marketAPI.EditUserPassword(_loggedInUserToken, oldPassword, newPassword);
             if (response.ErrorOccured)
             {
                 _errorMessage = response.ErrorMessage;

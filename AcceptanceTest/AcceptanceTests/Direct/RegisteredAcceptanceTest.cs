@@ -80,5 +80,40 @@ namespace AcceptanceTest.AcceptanceTests.Direct
             _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
             //_market.AssertCartNotEmpty();                                                 TODO
         }
+
+        // ================================= Use Case ? - Edit User Details =================================
+        [TestMethod()]
+        public void EditUserDetails_Happy()
+        {
+            // Precondition: User is logged in.
+            _market.EnterSystem();
+            _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
+
+
+            _market.ChangePassword(DefaultValues.BuyerPassword, "newPassword");
+            _market.AssertNoError();
+
+
+            _market.Logout();
+            _market.Login(DefaultValues.BuyerUsername, "newPassword"); // User should be able to login with the new password
+            _market.AssertNoError();
+        }
+
+        [TestMethod()]
+        public void EditUserDetails_Sad_OldPasswordWrong()
+        {
+            // Precondition: User is logged in.
+            _market.EnterSystem();
+            _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
+
+
+            _market.ChangePassword("wrong", "newPassword");
+            _market.AssertErrorMessageRecieved();
+
+
+            _market.Logout();
+            _market.Login(DefaultValues.BuyerUsername, "newPassword"); // User should NOT be able to login with the new password
+            _market.AssertErrorMessageRecieved();
+        }
     }
 }

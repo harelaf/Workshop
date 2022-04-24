@@ -22,6 +22,11 @@ namespace AcceptanceTest.DSL.Drivers
             throw new NotImplementedException();
         }
 
+        public void ChangePassword(string oldPassword, string newPassword)
+        {
+            throw new NotImplementedException();
+        }
+
         public void EnterSystem()
         {
             throw new NotImplementedException();
