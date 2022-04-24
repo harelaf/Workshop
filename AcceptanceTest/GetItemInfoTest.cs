@@ -40,7 +40,7 @@ namespace AcceptanceTest
         }
 
         [TestMethod]
-        public void TestEditItemDescription_Happy()
+        public void GetItemInformation_Happy()
         {
             bool flag1 = false, flag2 = false; ;
             List<ItemDTO> items = marketAPI.GetItemInformation(registered_userToken, "Leben", "Diary", "").Value;
@@ -73,11 +73,11 @@ namespace AcceptanceTest
         }
 
         [TestMethod]
-        public void TestEditItemDescription_Sad_StoreNotExist()
+        public void GetItemInformation_Sad_StoreNotExist()
         {
             bool flag1 = false, flag2 = false; ;
             Response<List<ItemDTO>> items = marketAPI.GetItemInformation(registered_userToken, "aaaaaa", "", "");
-            if (!items.ErrorOccured)
+            if (items.Value != null && items.Value.Count != 0)
             {
                 Assert.Fail();  
             }
