@@ -82,11 +82,11 @@ namespace MarketProject.Domain
                 {
                     if(itemCategory == null || itemCategory.Length == 0 || item.Category == itemCategory)
                     {
-                        if(keyWord == null || item.Description == null || keyWord.Length == 0 || item.Category.Contains(keyWord))
+                        if(keyWord == null || item.Description == null || keyWord.Length == 0 || item.Description.Contains(keyWord))
                         {
                             filteredItems.Add(item);
                         }
-                                            }
+                    }
                 }
             }
             return filteredItems;
