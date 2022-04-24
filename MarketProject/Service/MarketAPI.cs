@@ -563,9 +563,55 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean GetStoreRoleInformation(String authToken, String storeName)
+        public Response<List<StoreOwnerDTO>> GetStoreOwners(String authToken, String storeName)
         {//II.4.11
-            throw new NotImplementedException();
+            Response<List<StoreOwnerDTO>> response;
+            try
+            {
+                List<StoreOwner> ownerList = _market.getStoreOwners(storeName, authToken);
+                List<StoreOwnerDTO> ownerDTOlist = new List<StoreOwnerDTO>();
+                foreach (StoreOwner owner in ownerList)
+                    ownerDTOlist.Add(new StoreOwnerDTO(owner));
+                response = new Response<List<StoreOwnerDTO>>(ownerDTOlist);
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<StoreOwnerDTO>>(null, e);
+            }
+            return response;
+        }
+
+        public Response<List<StoreManagerDTO>> GetStoreManagers(String authToken, String storeName)
+        {//II.4.11
+            Response<List<StoreManagerDTO>> response;
+            try
+            {
+                List<StoreManager> managerList = _market.getStoreManagers(storeName, authToken);
+                List<StoreManagerDTO> managerDTOlist = new List<StoreManagerDTO>();
+                foreach (StoreManager manager in managerList)
+                    managerDTOlist.Add(new StoreManagerDTO(manager));
+                response = new Response<List<StoreManagerDTO>>(managerDTOlist);
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<StoreManagerDTO>>(null, e);
+            }
+            return response;
+        }
+
+        public Response<StoreFounderDTO> GetStoreFounder(String authToken, String storeName)
+        {//II.4.11
+            Response<StoreFounderDTO> response;
+            try
+            {
+                StoreFounder founder = _market.getStoreFounder(storeName, authToken);
+                response = new Response<StoreFounderDTO>(new StoreFounderDTO(founder));
+            }
+            catch (Exception e)
+            {
+                response = new Response<StoreFounderDTO>(null, e);
+            }
+            return response;
         }
         public Boolean GetStoreMessage(String authToken, String storeName)
         {//II.4.12
