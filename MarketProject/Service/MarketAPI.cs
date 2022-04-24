@@ -516,7 +516,7 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean AddManagerPermission(String authToken, String managerUsername, , Operation op)//permission param is Enum
+        public Response AddManagerPermission(String authToken, String managerUsername, Operation op)//permission param is Enum
         {//II.4.7
             Response response;
             try

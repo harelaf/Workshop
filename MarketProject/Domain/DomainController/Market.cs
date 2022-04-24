@@ -430,7 +430,7 @@ namespace MarketProject.Domain
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreManager(newManager, storeName))
-                    _userManagement.AddRole(managerUsername, newManager);                }
+                    _userManagement.AddRole(managerUsername, newManager);                
             }
         }
 
@@ -474,7 +474,6 @@ namespace MarketProject.Domain
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
                     _userManagement.RemoveRole(ownerUsername, storeName);
-                dfghjkl;
 
             }
         }
@@ -603,7 +602,7 @@ namespace MarketProject.Domain
         public void RemoveManagerPermission(String authToken, String managerUsername, Operation op)
         {
             string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            _userManagement.RemoveManagerPermission(appointerUsername, managerUsername, op);
+            //_userManagement.RemoveManagerPermission(appointerUsername, managerUsername, op);
 	}
         /// <summary>
         /// <para> For Req II.1.3. </para>
