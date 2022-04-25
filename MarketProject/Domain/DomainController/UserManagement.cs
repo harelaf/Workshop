@@ -508,7 +508,7 @@ namespace MarketProject.Domain
 
         public void SendMessageToRegistered(String storeName, String usernameReciever, String title, String message)
         {
-            MessageToUser messageToUser = new MessageToUser(usernameReciever, storeName);
+            MessageToUser messageToUser = new MessageToUser(usernameReciever, storeName, title, message);
             Registered reciever = GetRegisteredUser(usernameReciever);
             reciever.SendMessage(messageToUser);
         }
