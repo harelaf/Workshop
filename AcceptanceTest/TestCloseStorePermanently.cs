@@ -62,7 +62,7 @@ namespace AcceptanceTest
             Response<StoreDTO> response1 = marketAPI.GetStoreInformation(registered_token_founder, storeName_inSystem);
             Assert.IsTrue(response1.ErrorOccured);
 
-            Response<RegisteredDTO> response2 = marketAPI.GetUserInformation(registered_token_founder);
+            Response<RegisteredDTO> response2 = marketAPI.GetVisitorInformation(registered_token_founder);
             Assert.IsFalse(response2.ErrorOccured);
             Assert.AreEqual(response2.Value.MessagesCount(), 1);
 
