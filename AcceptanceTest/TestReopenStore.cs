@@ -59,7 +59,7 @@ namespace AcceptanceTest
             StoreDTO dto = response1.Value;
             Assert.AreEqual(dto.State, MarketProject.Domain.StoreState.Active);
 
-            Response<RegisteredDTO> response2 = marketAPI.GetUserInformation(registered_token_founder);
+            Response<RegisteredDTO> response2 = marketAPI.GetVisitorInformation(registered_token_founder);
             Assert.IsFalse(response2.ErrorOccured);
             Assert.AreEqual(response2.Value.MessagesCount(), 2); //1 for CloseStore + 1 for ReopenStore
 

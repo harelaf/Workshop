@@ -14,10 +14,10 @@ namespace MarketProject.Service.DTO
         public String Username => _username;
 
 
-        public MessageToRegisteredDTO(MessageToRegistered messageToUser)
+        public MessageToRegisteredDTO(MessageToRegistered MessageToRegistered)
         {
-            _storeName = messageToUser.StoreName;
-            _username = messageToUser.Username;
+            _storeName = MessageToRegistered.StoreName;
+            _username = MessageToRegistered.Username;
         }
     }
 }
