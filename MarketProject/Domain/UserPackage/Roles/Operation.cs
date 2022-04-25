@@ -37,6 +37,7 @@ namespace MarketProject.Domain
         CANCEL_SUBSCRIPTION,
         RECEIVE_AND_REPLY_ADMIN_MESSAGE,
         SYSTEM_STATISTICS,
+        APPOINT_SYSTEM_ADMIN,
 
         STOCK_EDITOR
     }

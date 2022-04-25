@@ -22,6 +22,9 @@ namespace MarketProject.Domain
         private SystemAdmin _currentAdmin;
         public SystemAdmin CurrentAdmin { get { return _currentAdmin; } set { _currentAdmin = value; } }
         private int _nextComplaintID = 1;
+        private static readonly string DEFAULT_ADMIN_USERNAME = "admin";
+        private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
+
 
 
 
@@ -35,6 +38,11 @@ namespace MarketProject.Domain
             _registeredUsers = registeredUsers;
             _loggedinUsersTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
+
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
+            defaultAdmin.AddRole(defaultAdminRole);
+            _registeredUsers.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
         }
 
         public UserManagement(IDictionary<String, Registered> registeredUsers, IDictionary<String, Registered> loggedinUsersTokens)
@@ -42,6 +50,11 @@ namespace MarketProject.Domain
             _registeredUsers = registeredUsers;
             _loggedinUsersTokens = loggedinUsersTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
+
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
+            defaultAdmin.AddRole(defaultAdminRole);
+            _registeredUsers.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
         }
 
         public UserManagement(IDictionary<String, Registered> registeredUsers, IDictionary<String, Guest> visitorsGuestsTokens)
@@ -49,6 +62,11 @@ namespace MarketProject.Domain
             _registeredUsers = registeredUsers;
             _loggedinUsersTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = visitorsGuestsTokens;
+
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
+            defaultAdmin.AddRole(defaultAdminRole);
+            _registeredUsers.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
         }
 
         public UserManagement(IDictionary<String, Registered> registeredUsers, IDictionary<String, Registered> loggedinUsersTokens, IDictionary<String, Guest> visitorsGuestsTokens)
@@ -56,6 +74,11 @@ namespace MarketProject.Domain
             _registeredUsers = registeredUsers;
             _loggedinUsersTokens = loggedinUsersTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
+
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
+            defaultAdmin.AddRole(defaultAdminRole);
+            _registeredUsers.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
         }
 
 
@@ -521,6 +544,13 @@ namespace MarketProject.Domain
         public void AddManagerPermission(String appointer, String managerUsername, String storeName, Operation op)
         {
             GetRegisteredUser(managerUsername).AddManagerPermission(appointer, storeName, op);
+        }
+
+        internal void AppointSystemAdmin(string adminUserName)
+        {
+            if (!IsRegistered(adminUserName))
+                throw new Exception("this user is not registered.");
+            GetRegisteredUser(adminUserName).AddRole(new SystemAdmin(adminUserName));
         }
     }
 }
