@@ -9,11 +9,11 @@ namespace MarketProject.Service
     public class MarketAPI
     {
         private Market _market;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public MarketAPI()
         {
             _market = new Market();
-
         }
 
         /// <summary>
@@ -25,12 +25,15 @@ namespace MarketProject.Service
             Response response;
             try
             {
+                log.Info($"[{DateTime.Now}] Restart System called with adminUsername={adminUsername}, adminUsername={adminPassword}, ipShippingService={ipShippingService}, ipPaymentService={ipPaymentService}.");
                 _market.RestartSystem(adminUsername, adminPassword, ipShippingService, ipPaymentService);
                 response = new Response();
+                log.Info($"[{DateTime.Now}] SUCCESSFULY executed Restart System.");
             }
             catch (Exception e)
             {
                 response = new Response(e);
+                log.Info($"[{DateTime.Now}] FAILED to execute Restart System. Cause: {e.Message}");
             }
             return response;
         }
@@ -48,13 +51,16 @@ namespace MarketProject.Service
             Response<String> response;
             try
             {
+                log.Info($"[{DateTime.Now}] User with authentication token {authToken} tried to Login with username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(authToken, Username, password);
                 response = new Response<String>(loginToken);
+                log.Info($"[{DateTime.Now}] {authToken} SUCCESSFULY logged in with username={Username}, password={password}.");
             }
             catch (Exception e)
             {
                 response = new Response<String>(null, e);
+                log.Info($"[{DateTime.Now}] {authToken} FAILED to log in with username={Username}, password={password}. Cause: {e.Message}");
             }
             return response;
         }
