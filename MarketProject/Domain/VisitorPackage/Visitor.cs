@@ -4,11 +4,11 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public abstract class User
+    public abstract class Visitor
     {
         private ShoppingCart _shoppingCart;
         public ShoppingCart ShoppingCart => _shoppingCart;
-        protected User()
+        protected Visitor()
         {
             _shoppingCart = new ShoppingCart();
         }

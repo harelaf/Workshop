@@ -18,7 +18,7 @@ namespace MarketProject.Service
 
         /// <summary>
         /// <para> For Req I.1. </para>
-        /// <para> Starts system with the given credentials setting the user as the current admin.</para>
+        /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
         /// </summary>
         public Response RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
@@ -37,19 +37,19 @@ namespace MarketProject.Service
 
         /// <summary>
         /// <para> For Req II.1.4. </para>
-        /// <para> If credentials are authenticated, log in user.</para>
+        /// <para> If credentials are authenticated, log in Visitor.</para>
         /// </summary>
         /// <param name="authToken"> The token of the guest attempting to log in (to transfer cart).</param>
-        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
-        /// <returns> Response with the authentication token the user should use with the system.</returns>
-        public Response<String> Login(String authToken, String username, String password)
+        /// <returns> Response with the authentication token the Visitor should use with the system.</returns>
+        public Response<String> Login(String authToken, String Username, String password)
         {//II.1.4
             Response<String> response;
             try
             {
                 // TODO: Transfer cart? Using authToken
-                String loginToken = _market.Login(authToken, username, password);
+                String loginToken = _market.Login(authToken, Username, password);
                 response = new Response<String>(loginToken);
             }
             catch (Exception e)
@@ -61,10 +61,10 @@ namespace MarketProject.Service
 
         /// <summary>
         /// <para> For Req II.3.1. </para>
-        /// <para> Log out user identified by authToken.</para>
+        /// <para> Log out Visitor identified by authToken.</para>
         /// <return> new token as a guest</return>
         /// </summary>
-        /// <param name="authToken"> The token of the user to log out.</param>
+        /// <param name="authToken"> The token of the Visitor to log out.</param>
         public Response<String> Logout(String authToken)
         {//II.3.1
             Response<String> response;
@@ -82,17 +82,17 @@ namespace MarketProject.Service
 
         /// <summary>
         /// <para> For Req II.1.3. </para>
-        /// <para> If credentials are valid, register new user.</para>
+        /// <para> If credentials are valid, register new Visitor.</para>
         /// </summary>
         /// <param name="authToken"> The token of the guest currently registering.</param>
-        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
-        public Response Register(String authToken, String username, String password)
+        public Response Register(String authToken, String Username, String password)
         {//II.1.3
             Response response;
             try
             {
-                _market.Register(authToken, username, password);
+                _market.Register(authToken, Username, password);
                 response = new Response();
             }
             catch (Exception e)
@@ -104,16 +104,16 @@ namespace MarketProject.Service
 
         /// <summary>
         /// <para> For Req II.6.2. </para>
-        /// <para> Remove a Registered user from our system and remove their roles from all relevant stores.</para>
+        /// <para> Remove a Registered Visitor from our system and remove their roles from all relevant stores.</para>
         /// </summary>
-        /// <param name="authToken"> The token authenticating the user making the request.</param>
-        /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
-        public Response RemoveRegisteredUser(String authToken, String usr_toremove )
+        /// <param name="authToken"> The token authenticating the Visitor making the request.</param>
+        /// <param name="usr_toremove"> The Visitor to remove and revoke the roles of.</param>
+        public Response RemoveRegisteredVisitor(String authToken, String usr_toremove )
         {//II.6.2
             Response response;
             try
             {
-                _market.RemoveRegisteredUser(authToken, usr_toremove);
+                _market.RemoveRegisteredVisitor(authToken, usr_toremove);
                 response = new Response();
             }
             catch (Exception e)
@@ -428,7 +428,7 @@ namespace MarketProject.Service
         /// <para> For Req II.3.6. </para>
         /// <para> Files a complaint to the current system admin.</para>
         /// </summary>
-        /// <param name="authToken"> The token of the user filing the complaint. </param>
+        /// <param name="authToken"> The token of the Visitor filing the complaint. </param>
         /// <param name="cartID"> The cart ID relevant to the complaint. </param>
         /// <param name="message"> The message detailing the complaint. </param>
         public Response FileComplaint(String authToken, int cartID,  String message)
@@ -466,12 +466,12 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response<RegisteredDTO> GetUserInformation(String authToken)
+        public Response<RegisteredDTO> GetVisitorInformation(String authToken)
         {//II.3.8
             Response<RegisteredDTO> response;
             try
             {
-                Registered registered= _market.GetUserInformation(authToken);
+                Registered registered= _market.GetVisitorInformation(authToken);
                 response = new Response<RegisteredDTO>(new RegisteredDTO(registered));
             }
             catch (Exception e)
@@ -487,17 +487,17 @@ namespace MarketProject.Service
 
         /// <summary>
         /// <para> For Req II.3.8. </para>
-        /// <para> Updates a user's password if given the correct previous password.</para>
+        /// <para> Updates a Visitor's password if given the correct previous password.</para>
         /// </summary>
-        /// <param name="authToken"> The authenticating token of the user changing the password.</param>
-        /// <param name="oldPassword"> The user's current password. </param>
+        /// <param name="authToken"> The authenticating token of the Visitor changing the password.</param>
+        /// <param name="oldPassword"> The Visitor's current password. </param>
         /// <param name="newPassword"> The new updated password. </param>
-        public Response EditUserPassword(String authToken, String oldPassword, String newPassword)
+        public Response EditVisitorPassword(String authToken, String oldPassword, String newPassword)
         {//II.3.8
             Response response;
             try
             {
-                _market.EditUserPassword(authToken, oldPassword, newPassword);
+                _market.EditVisitorPassword(authToken, oldPassword, newPassword);
                 response = new Response();
             }
             catch (Exception e)
@@ -697,12 +697,12 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response SendMessageToRegisterd(String authToken, String storeName, String usernameReciever, String title, String message)
+        public Response SendMessageToRegisterd(String authToken, String storeName, String UsernameReciever, String title, String message)
         {//II.6.3
             Response response;
             try
             {
-                _market.SendMessageToRegisterd(storeName, usernameReciever, title, message);
+                _market.SendMessageToRegisterd(storeName, UsernameReciever, title, message);
                 response = new Response();
             }
             catch (Exception e)
@@ -742,12 +742,12 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response AppointSystemAdmin(String authToken, String adminUserName)
+        public Response AppointSystemAdmin(String authToken, String adminUsername)
         { //II.1.2
             Response response;
             try
             {
-                _market.AppointSystemAdmin(authToken, adminUserName);
+                _market.AppointSystemAdmin(authToken, adminUsername);
                 response = new Response();
             }
             catch (Exception e)

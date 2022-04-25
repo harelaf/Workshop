@@ -10,7 +10,7 @@ namespace MarketProject.Domain
         private string _appointer;
         public string Appointer => _appointer;
 
-        public StoreManager(string userName, string storeName, string appointer) : base(getOps(), userName)
+        public StoreManager(string Username, string storeName, string appointer) : base(getOps(), Username)
         {
             StoreName = storeName;
             _appointer = appointer;

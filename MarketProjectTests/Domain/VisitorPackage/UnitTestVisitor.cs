@@ -8,7 +8,7 @@ using System.Text;
 namespace MarketProject.Domain.Tests
 {
     [TestClass()]
-    public class UnitTestUser
+    public class UnitTestVisitor
     {
 
         Guest guest;

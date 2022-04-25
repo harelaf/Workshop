@@ -16,7 +16,7 @@ namespace AcceptanceTest.AcceptanceTests.Direct
         [TestMethod()]
         public void ExitSystem_Happy()
         {
-            // Precondition: User is logged in.
+            // Precondition: Visitor is logged in.
             _market.EnterSystem();
             _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
 
@@ -30,7 +30,7 @@ namespace AcceptanceTest.AcceptanceTests.Direct
         [TestMethod()]
         public void ExitSystem_Happy_CartSaved()
         {
-            // Precondition: User is logged in and cart is not empty.
+            // Precondition: Visitor is logged in and cart is not empty.
             _market.EnterSystem();
             _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
             // _market.SearchForItem(DefaultValues.ItemName)                                TODO
@@ -52,7 +52,7 @@ namespace AcceptanceTest.AcceptanceTests.Direct
         [TestMethod()]
         public void Logout_Happy()
         {   
-            // Precondition: User is logged in.
+            // Precondition: Visitor is logged in.
             _market.EnterSystem();
             _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
 
@@ -66,7 +66,7 @@ namespace AcceptanceTest.AcceptanceTests.Direct
         [TestMethod()]
         public void Logout_Happy_CartSaved()
         {
-            // Precondition: User is logged in and cart is not empty.
+            // Precondition: Visitor is logged in and cart is not empty.
             _market.EnterSystem();
             _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
             // _market.SearchForItem(DefaultValues.ItemName)                                TODO
@@ -81,11 +81,11 @@ namespace AcceptanceTest.AcceptanceTests.Direct
             //_market.AssertCartNotEmpty();                                                 TODO
         }
 
-        // ================================= Use Case ? - Edit User Details =================================
+        // ================================= Use Case ? - Edit Visitor Details =================================
         [TestMethod()]
-        public void EditUserDetails_Happy()
+        public void EditVisitorDetails_Happy()
         {
-            // Precondition: User is logged in.
+            // Precondition: Visitor is logged in.
             _market.EnterSystem();
             _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
 
@@ -95,14 +95,14 @@ namespace AcceptanceTest.AcceptanceTests.Direct
 
 
             _market.Logout();
-            _market.Login(DefaultValues.BuyerUsername, "newPassword"); // User should be able to login with the new password
+            _market.Login(DefaultValues.BuyerUsername, "newPassword"); // Visitor should be able to login with the new password
             _market.AssertNoError();
         }
 
         [TestMethod()]
-        public void EditUserDetails_Sad_OldPasswordWrong()
+        public void EditVisitorDetails_Sad_OldPasswordWrong()
         {
-            // Precondition: User is logged in.
+            // Precondition: Visitor is logged in.
             _market.EnterSystem();
             _market.Login(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
 
@@ -112,7 +112,7 @@ namespace AcceptanceTest.AcceptanceTests.Direct
 
 
             _market.Logout();
-            _market.Login(DefaultValues.BuyerUsername, "newPassword"); // User should NOT be able to login with the new password
+            _market.Login(DefaultValues.BuyerUsername, "newPassword"); // Visitor should NOT be able to login with the new password
             _market.AssertErrorMessageRecieved();
         }
     }

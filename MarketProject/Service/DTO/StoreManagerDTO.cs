@@ -13,8 +13,8 @@ namespace MarketProject.Service.DTO
         private String _storeName;
         public String StoreName => _storeName;
 
-        private String _username;
-        public String Username => _username;
+        private String _Username;
+        public String Username => _Username;
 
         private String _appointer;
         public String Appointer => _appointer;
@@ -23,7 +23,7 @@ namespace MarketProject.Service.DTO
         {
             _operations = new HashSet<Operation>(storeManager.operations);
             _storeName = storeManager.StoreName;
-            _username = storeManager.UserName;
+            _Username = storeManager.Username;
             _appointer = storeManager.Appointer;
         }
     }

@@ -16,7 +16,7 @@ namespace AcceptanceTest
         MarketAPI marketAPI = new MarketAPI();
         string storeName = "test's Shop";
         //string storeName_outSystem = "bla";
-        string guest_userToken;
+        string guest_VisitorToken;
         string store_founder_token;
         string store_founder_name;
         int itemID_inStock_1;
@@ -28,7 +28,7 @@ namespace AcceptanceTest
         [TestInitialize()]
         public void setup()
         {
-            guest_userToken = (marketAPI.EnterSystem()).Value;
+            guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             store_founder_token = (marketAPI.EnterSystem()).Value;// guest
             store_founder_name = "afik";
             marketAPI.Register(store_founder_token, store_founder_name, "123456789");
@@ -37,19 +37,19 @@ namespace AcceptanceTest
         }
 
         [TestMethod]
-        public void TestAddManager_2UsersAddingDiffRolesSamePerson_oneIsFailed()
+        public void TestAddManager_2VisitorsAddingDiffRolesSamePerson_oneIsFailed()
         {
-            string managerUserName = "new manager";
-            string ownerUserName = "new owner";
+            string managerUsername = "new manager";
+            string ownerUsername = "new owner";
             string store_owner_token = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token, ownerUserName, "123456789"); 
-            marketAPI.AddStoreOwner(store_founder_token, ownerUserName, storeName);
+            marketAPI.Register(store_owner_token, ownerUsername, "123456789"); 
+            marketAPI.AddStoreOwner(store_founder_token, ownerUsername, storeName);
             Boolean res1 = false, res2 = false;
             Thread thread1 = new Thread(() => {
-                res1 = marketAPI.AddStoreManager(store_founder_token, managerUserName, storeName).ErrorOccured;
+                res1 = marketAPI.AddStoreManager(store_founder_token, managerUsername, storeName).ErrorOccured;
             });
             Thread thread2 = new Thread(() => {
-                res2 = marketAPI.AddStoreManager(store_founder_token, managerUserName, storeName).ErrorOccured;
+                res2 = marketAPI.AddStoreManager(store_founder_token, managerUsername, storeName).ErrorOccured;
             });
 
             thread1.Start();
@@ -64,32 +64,32 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestAddManager_circularAppointing_unsuccessful()
         {
-            string ownerUserName1 = "new owner1";
-            string ownerUserName2 = "new owner2";
-            string managerUserName3 = "new manager3";
+            string ownerUsername1 = "new owner1";
+            string ownerUsername2 = "new owner2";
+            string managerUsername3 = "new manager3";
             string password = "123456789";
             bool doubleCheck = false;
             string store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token1, ownerUserName1, password);
+            marketAPI.Register(store_owner_token1, ownerUsername1, password);
             string store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token2, ownerUserName2, password);
+            marketAPI.Register(store_owner_token2, ownerUsername2, password);
             string store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_manager_token3, managerUserName3, password);
+            marketAPI.Register(store_manager_token3, managerUsername3, password);
 
-            store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUserName1, password).Value;
-            store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUserName2, password).Value;
-            store_manager_token3 = marketAPI.Login(store_manager_token3, managerUserName3, password).Value;
-            marketAPI.AddStoreOwner(store_founder_token, ownerUserName1, storeName);
-            marketAPI.AddStoreOwner(store_owner_token1, ownerUserName2, storeName);
+            store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
+            store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
+            store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
+            marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
+            marketAPI.AddStoreOwner(store_owner_token1, ownerUsername2, storeName);
 
             //act
             Response response1 = marketAPI.AddStoreManager(store_owner_token2, store_founder_name, storeName);
-            Response response2 = marketAPI.AddStoreManager(store_owner_token2, ownerUserName1, storeName);
-            Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUserName3, storeName);
+            Response response2 = marketAPI.AddStoreManager(store_owner_token2, ownerUsername1, storeName);
+            Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
             List<StoreManagerDTO> lst = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
             foreach (StoreManagerDTO s in lst)
-                if (s.Username == managerUserName3)
-                    doubleCheck = s.Appointer == ownerUserName2;
+                if (s.Username == managerUsername3)
+                    doubleCheck = s.Appointer == ownerUsername2;
 
             Assert.IsTrue(response1.ErrorOccured);
             Assert.IsTrue(response2.ErrorOccured);

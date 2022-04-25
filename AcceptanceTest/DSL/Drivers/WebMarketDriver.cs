@@ -37,7 +37,7 @@ namespace AcceptanceTest.DSL.Drivers
             throw new NotImplementedException();
         }
 
-        public void Login(string username, string password)
+        public void Login(string Username, string password)
         {
             throw new NotImplementedException();
         }
@@ -47,12 +47,12 @@ namespace AcceptanceTest.DSL.Drivers
             throw new NotImplementedException();
         }
 
-        public void Register(string username, string password)
+        public void Register(string Username, string password)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveRegisteredUser(string username)
+        public void RemoveRegisteredVisitor(string Username)
         {
             throw new NotImplementedException();
         }

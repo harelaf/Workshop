@@ -8,7 +8,7 @@ namespace AcceptanceTest.DSL
 {
     internal static class DefaultValues
     {
-        // Users
+        // Visitors
         public static readonly String BuyerUsername = "Buyer";
         public static readonly String BuyerPassword = "password";
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public class Guest : User
+    public class Guest : Visitor
     {
         private String _token;
         public String Token

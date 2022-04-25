@@ -17,24 +17,24 @@ namespace MarketProject.Domain
                 _storeName = value; 
             }
         }
-        private string _username;
-        public string UserName
+        private string _Username;
+        public string Username
         {
-            get { return _username; }
+            get { return _Username; }
             private set
             {
                 if (value == null || value.Equals(""))
                     throw new ArgumentNullException("a role must get a unique user name.");
-                _username = value;
+                _Username = value;
             }
         }
 
         public ISet<Operation> operations => _operations;
 
-        public SystemRole(ISet<Operation> operations, string userName)
+        public SystemRole(ISet<Operation> operations, string Username)
         {
             _operations = operations;
-            UserName = userName;
+            Username = Username;
         }
 
         public virtual bool grantPermission(Operation op, string store, string grantor)

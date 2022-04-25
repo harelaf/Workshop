@@ -27,11 +27,11 @@ namespace AcceptanceTest.DSL
 
         public void EnterSystem() { _driver.EnterSystem(); }
         public void ExitSystem() { _driver.ExitSystem(); }
-        public void Register(string username, string password) { _driver.Register(username, password); }
+        public void Register(string Username, string password) { _driver.Register(Username, password); }
 
-        public void Login(string username, string password) { _driver.Login(username, password); }
+        public void Login(string Username, string password) { _driver.Login(Username, password); }
 
-        internal void RemoveRegisteredUser(string username) { _driver.RemoveRegisteredUser(username); }
+        internal void RemoveRegisteredVisitor(string Username) { _driver.RemoveRegisteredVisitor(Username); }
 
         internal void Logout() { _driver.Logout(); }
 

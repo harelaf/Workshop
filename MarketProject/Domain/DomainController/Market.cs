@@ -7,7 +7,7 @@ namespace MarketProject.Domain
     public class Market
     {
         private StoreManagement _storeManagement;
-        private UserManagement _userManagement;
+        private VisitorManagement _VisitorManagement;
         private History _history;
         private Object _stockLock = new Object();
         private Object _storeLock = new Object();
@@ -15,17 +15,17 @@ namespace MarketProject.Domain
         public Market()
         {
             _storeManagement = new StoreManagement();
-            _userManagement = new UserManagement();
+            _VisitorManagement = new VisitorManagement();
             _history = new History();
         }
 
         /// <summary>
         /// <para> For Req I.1. </para>
-        /// <para> Starts system with the given credentials setting the user as the current admin.</para>
+        /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
         /// </summary>
         public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
-            _userManagement.AdminStart(adminUsername, adminPassword);
+            _VisitorManagement.AdminStart(adminUsername, adminPassword);
 
             // Do starting system stuff with IPs
 
@@ -34,14 +34,14 @@ namespace MarketProject.Domain
         /// add\update basket eof store with item and amount.
         /// update store stock: itemAmount- amount
 
-        //--userToken should be a visitor in system.
+        //--VisitorToken should be a visitor in system.
         //--item itemID should be an item of storeName
         //--storeName should be a store in system
         //--storeName should have at least amount of itemID
-        public void AddItemToCart(String userToken, int itemID, String storeName, int amount)
+        public void AddItemToCart(String VisitorToken, int itemID, String storeName, int amount)
         {//II.2.3
-            if (!_userManagement.IsUserAVisitor(userToken))
-                throw new Exception("the given user is no longer a visitor in system");
+            if (!_VisitorManagement.IsVisitorAVisitor(VisitorToken))
+                throw new Exception("the given Visitor is no longer a visitor in system");
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception("there is no store in system with the given storeid");
             Store store = _storeManagement.GetStore(storeName);
@@ -52,20 +52,20 @@ namespace MarketProject.Domain
                 lock (store.Stock)
                 {
                     Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
-                    _userManagement.AddItemToUserCart(userToken, store, item, amount);
+                    _VisitorManagement.AddItemToVisitorCart(VisitorToken, store, item, amount);
                 }
             }
 
         }
 
-        public Item RemoveItemFromCart(String userToken, int itemID, String storeName)
+        public Item RemoveItemFromCart(String VisitorToken, int itemID, String storeName)
         {//II.2.4
-            if (!_userManagement.IsUserAVisitor(userToken))
-                throw new Exception("the given user is no longer a visitor in system");
+            if (!_VisitorManagement.IsVisitorAVisitor(VisitorToken))
+                throw new Exception("the given Visitor is no longer a visitor in system");
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
             Item item = _storeManagement.GetItem(storeName, itemID);
-            int amount_removed = _userManagement.RemoveItemFromCart(userToken, item, _storeManagement.GetStore(storeName));
+            int amount_removed = _VisitorManagement.RemoveItemFromCart(VisitorToken, item, _storeManagement.GetStore(storeName));
             // now update store stock
             Store store = _storeManagement.GetStore(storeName);
             lock (store.Stock)
@@ -75,14 +75,14 @@ namespace MarketProject.Domain
             return item;
         }
 
-        public void UpdateQuantityOfItemInCart(String userToken, int itemID, String storeName, int newQuantity)
+        public void UpdateQuantityOfItemInCart(String VisitorToken, int itemID, String storeName, int newQuantity)
         {//II.2.4
-            if (!_userManagement.IsUserAVisitor(userToken))
-                throw new Exception("the given user is no longer a visitor in system");
+            if (!_VisitorManagement.IsVisitorAVisitor(VisitorToken))
+                throw new Exception("the given Visitor is no longer a visitor in system");
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception("there is no store in system with the givn storeid");
             Item item = _storeManagement.GetItem(storeName, itemID);
-            int amount_differnce = _userManagement.GetUpdatingQuantityDifference(userToken, item, _storeManagement.GetStore(storeName), newQuantity);
+            int amount_differnce = _VisitorManagement.GetUpdatingQuantityDifference(VisitorToken, item, _storeManagement.GetStore(storeName), newQuantity);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
@@ -96,7 +96,7 @@ namespace MarketProject.Domain
                         _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
                     else//remove item from cart and add to store stock
                         _storeManagement.UnreserveItemInStore(storeName, item, -1 * amount_differnce);
-                    _userManagement.UpdateItemInUserCart(userToken, store, item, newQuantity);
+                    _VisitorManagement.UpdateItemInVisitorCart(VisitorToken, store, item, newQuantity);
                 }
             }
         }
@@ -106,56 +106,56 @@ namespace MarketProject.Domain
         {
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            if (!_userManagement.IsUserLoggedin(token))
-                throw new Exception($"Only registered users are allowed to rate stores.");
+            if (!_VisitorManagement.IsVisitorLoggedin(token))
+                throw new Exception($"Only registered Visitors are allowed to rate stores.");
             if (_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"A store with the name {storeName} already exists in the system.");
-            string username = _userManagement.GetRegisteredUsernameByToken(token);
-            StoreFounder founder = new StoreFounder(username, storeName);
-            _userManagement.AddRole(username, founder);
+            string Username = _VisitorManagement.GetRegisteredUsernameByToken(token);
+            StoreFounder founder = new StoreFounder(Username, storeName);
+            _VisitorManagement.AddRole(Username, founder);
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
         }
 
         public Store GetStoreInformation(String authToken, String storeName)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("Only registered and logged in users are allowed to perform this operation!");
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("Only registered and logged in Visitors are allowed to perform this operation!");
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
-            string userName = _userManagement.GetRegisteredUsernameByToken(authToken);
+            string Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (_storeManagement.isStoreActive(storeName) || _userManagement.CheckAccess(userName, storeName, Operation.STORE_INFORMATION))
+                if (_storeManagement.isStoreActive(storeName) || _VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_INFORMATION))
                     return _storeManagement.GetStoreInformation(storeName);
-                throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+                throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
             }
         }
 
         public void RateStore(String authToken, String storeName, int rating, String review)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("The given user is no longer logged in to the system.");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_history.CheckIfUserPurchasedInStore(username, storeName))
-                throw new Exception($"User {username} has never purchased in {storeName}.");
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_history.CheckIfVisitorPurchasedInStore(Username, storeName))
+                throw new Exception($"Visitor {Username} has never purchased in {storeName}.");
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Store name is blank.");
             if (rating < 0 || rating > 10)
                 throw new Exception("Invalid Input: rating should be in the range [0, 10].");
-            _storeManagement.RateStore(username, storeName, rating, review);
+            _storeManagement.RateStore(Username, storeName, rating, review);
         }
 
         public void AddItemToStoreStock(String authToken, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("The given user is no longer logged in to the system.");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.MANAGE_INVENTORY))
-                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
+                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
                 if (storeName.Equals(""))
                     throw new Exception("Invalid Input: Blank store name.");
                 if (price < 0)
@@ -174,14 +174,14 @@ namespace MarketProject.Domain
 
         public void RemoveItemFromStore(String authToken, String storeName, int itemID)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("The given user is no longer logged in to the system.");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.MANAGE_INVENTORY))
-                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
+                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
                 if (storeName.Equals(""))
                     throw new Exception("Invalid Input: Blank store name.");
                 lock (store.Stock)
@@ -197,24 +197,24 @@ namespace MarketProject.Domain
                 throw new Exception("Invalid Input: Blank store name.");
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"Store {storeName} does not exist.");
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("The given user is no longer logged in to the system");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_userManagement.CheckAccess(username, storeName, Operation.STORE_HISTORY_INFO))
-                throw new Exception($"This user is not an admin or owner in {storeName}.");
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("The given Visitor is no longer logged in to the system");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_HISTORY_INFO))
+                throw new Exception($"This Visitor is not an admin or owner in {storeName}.");
             return _history.GetStorePurchaseHistory(storeName);
         }
 
         public void UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("The given user is no longer logged in to the system.");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.MANAGE_INVENTORY))
-                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
+                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
                 if (storeName.Equals(""))
                     throw new Exception("Invalid Input: Blank store name.");
                 if (newQuantity < 0)
@@ -228,14 +228,14 @@ namespace MarketProject.Domain
 
         public void CloseStore(string authToken, String storeName)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("The given user is no longer logged in to the system.");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.CLOSE_STORE))
-                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.CLOSE_STORE))
+                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
                 if (storeName.Equals(""))
                     throw new Exception("Invalid Input: Blank store name.");
                 _storeManagement.CloseStore(storeName);
@@ -245,14 +245,14 @@ namespace MarketProject.Domain
             String message = $"I am sad to inform you that {storeName} is temporarily closing down. " +
                 $"Your roles in the store will remain until we decide permanently close down." +
                 $"Yours Truly," +
-                $"{username}.";
+                $"{Username}.";
             foreach (String name in names)
             {
                 SendMessageToRegisterd(storeName, name, title, message);
             }
             /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER))
-             *     throw new Exception($"This user is not the founder of {storeName}.");
+             * if (!_VisitorManagement.CheckVisitorPermission(Username, STORE_FOUNDER))
+             *     throw new Exception($"This Visitor is not the founder of {storeName}.");
              */
             if (storeName.Equals(""))
                 throw new Exception("Invalid Input: Blank store name.");
@@ -261,14 +261,14 @@ namespace MarketProject.Domain
         }
         public void CloseStorePermanently(String authToken, String storeName)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("The given user is no longer logged in to the system.");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (!_userManagement.CheckAccess(username, storeName, Operation.PERMENENT_CLOSE_STORE))
-                    throw new Exception($"User is not an admin.");
+                if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.PERMENENT_CLOSE_STORE))
+                    throw new Exception($"Visitor is not an admin.");
 
                 if (storeName.Equals(""))
                     throw new Exception("Invalid Input: Blank store name.");
@@ -277,10 +277,10 @@ namespace MarketProject.Domain
                 String message = $"I am sad to inform you that {storeName} is closing down. " +
                     $"All of your roles have been revoked." +
                     $"Yours Truly," +
-                    $"{username}.";
+                    $"{Username}.";
                 foreach (String name in names)
                 {
-                    _userManagement.RemoveRole(name, storeName);
+                    _VisitorManagement.RemoveRole(name, storeName);
                     SendMessageToRegisterd(storeName, name, title, message);
                 }
                 _storeManagement.CloseStorePermanently(storeName);
@@ -289,14 +289,14 @@ namespace MarketProject.Domain
 
         public void ReopenStore(string authToken, String storeName)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("The given user is no longer logged in to the system.");
-            String username = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_userManagement.CheckAccess(username, storeName, Operation.REOPEN_STORE))
-                    throw new Exception($"Store {storeName} is currently inactive and user is not the owner.");
+                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.REOPEN_STORE))
+                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
 
                 if (storeName.Equals(""))
                     throw new Exception("Invalid Input: Blank store name.");
@@ -307,7 +307,7 @@ namespace MarketProject.Domain
             String message = $"I am happy to inform you that {storeName} is reopening. " +
                 $"Your roles in the store stayed the same." +
                 $"Yours Truly," +
-                $"{username}.";
+                $"{Username}.";
             foreach (String name in names)
             {
                 SendMessageToRegisterd(storeName, name, title, message);
@@ -316,231 +316,231 @@ namespace MarketProject.Domain
 
         public void EditItemPrice(String authToken, String storeName, int itemID, double newPrice)
         {
-            if (!_userManagement.IsUserLoggedin(authToken)) {
-                throw new Exception("the given user is not a visitor in the system");
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken)) {
+                throw new Exception("the given Visitor is not a visitor in the system");
             }
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_userManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
             {
-                throw new Exception("the given user is not a stock owner of the given store");
+                throw new Exception("the given Visitor is not a stock owner of the given store");
             }
             _storeManagement.EditItemPrice(storeName, itemID, newPrice);
         }
         public void EditItemName(String authToken, String storeName, int itemID, String newName)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
             {
-                throw new Exception("the given user is not a visitor in the system");
+                throw new Exception("the given Visitor is not a visitor in the system");
             }
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_userManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
             {
-                throw new Exception("the given user is not a stock owner of the given store");
+                throw new Exception("the given Visitor is not a stock owner of the given store");
             }
             _storeManagement.EditItemName(storeName, itemID, newName);
         }
         public void EditItemDescription(String authToken, String storeName, int itemID, String newDescription)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
             {
-                throw new Exception("the given user is not a visitor in the system");
+                throw new Exception("the given Visitor is not a visitor in the system");
             }
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_userManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
             {
-                throw new Exception("the given user is not a stock owner of the given store");
+                throw new Exception("the given Visitor is not a stock owner of the given store");
             }
             _storeManagement.EditItemDescription(storeName, itemID, newDescription);
         }
 
         public void RateItem(String authToken, int itemID, String storeName, int rating, String review)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            //should check that this user bought this item by his purches History
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            //should check that this Visitor bought this item by his purches History
             /*if(rating < 1 || rating > 5)
             {
                 throw new ArgumentOutOfRangeException("Rate should be beteen 1 to 5");
             }*/
             Item item = _storeManagement.GetItem(storeName, itemID);
-            if (!_history.CheckIfUserPurchasedItemInStore(appointerUsername, storeName, item))
+            if (!_history.CheckIfVisitorPurchasedItemInStore(appointerUsername, storeName, item))
             {
-                throw new Exception("This user has never bought item with id: " + itemID + " at " + storeName);
+                throw new Exception("This Visitor has never bought item with id: " + itemID + " at " + storeName);
             }
             _storeManagement.RateItem(appointerUsername, item, rating, review);
         }
 
         public List<Item> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_userManagement.IsRegistered(appointerUsername))
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsRegistered(appointerUsername))
             {
-                throw new Exception("User " + appointerUsername + " not found in system");
+                throw new Exception("Visitor " + appointerUsername + " not found in system");
             }
             return _storeManagement.GetItemInformation(itemName, itemCategory, keyWord);
         }
 
         public void SendMessageToStore(String authToken, String storeName, String title, String message)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_userManagement.IsRegistered(appointerUsername))
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsRegistered(appointerUsername))
             {
-                throw new Exception("User " + appointerUsername + " not found in system");
+                throw new Exception("Visitor " + appointerUsername + " not found in system");
             }
             _storeManagement.SendMessageToStore(appointerUsername, storeName, title, message);
         }
 
-        public void SendMessageToRegisterd(String storeName, String usernameReciever, String title, String message)
+        public void SendMessageToRegisterd(String storeName, String UsernameReciever, String title, String message)
         {
             if (!_storeManagement.CheckStoreNameExists(storeName))
             {
                 throw new Exception("Store " + storeName + " not found in system");
             }
-            if (!_userManagement.IsRegistered(usernameReciever))
+            if (!_VisitorManagement.IsRegistered(UsernameReciever))
             {
-                throw new Exception("User " + usernameReciever + " not found in system");
+                throw new Exception("Visitor " + UsernameReciever + " not found in system");
             }
-            _userManagement.SendMessageToRegistered(storeName, usernameReciever, title, message);
+            _VisitorManagement.SendMessageToRegistered(storeName, UsernameReciever, title, message);
         }
 
-        public void AnswerStoreMesseage(String authToken, String storeName, String usernameReciever, String title, String reply)
+        public void AnswerStoreMesseage(String authToken, String storeName, String UsernameReciever, String title, String reply)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
 
-            if (!_userManagement.IsRegistered(usernameReciever))
+            if (!_VisitorManagement.IsRegistered(UsernameReciever))
             {
-                throw new Exception("User " + usernameReciever + " not found in system");
+                throw new Exception("Visitor " + UsernameReciever + " not found in system");
             }
-            _userManagement.SendMessageToRegistered(storeName, usernameReciever, title, reply);
+            _VisitorManagement.SendMessageToRegistered(storeName, UsernameReciever, title, reply);
         }
 
         public void AddStoreManager(string authToken, string managerUsername, string storeName)
         {//II.4.6
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreManager(newManager, storeName))
-                    _userManagement.AddRole(managerUsername, newManager); }
+                    _VisitorManagement.AddRole(managerUsername, newManager); }
         }
     
         public void AddStoreOwner(string authToken, string ownerUsername, string storeName)
         {//II.4.4
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
             {
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreOwner(newOwner, storeName))
-                    _userManagement.AddRole(ownerUsername, newOwner);
+                    _VisitorManagement.AddRole(ownerUsername, newOwner);
             }
         }
 
-        public void PurchaseMyCart(String userToken, String address, String city, String country, String zip, String purchaserName)
+        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName)
         {//II.2.5
-            if (!_userManagement.IsUserAVisitor(userToken))
-                throw new Exception("the given user is no longer a visitor in system");
-            ShoppingCart shoppingCartToDocument = _userManagement.PurchaseMyCart(userToken, address, city, country, zip, purchaserName);
+            if (!_VisitorManagement.IsVisitorAVisitor(VisitorToken))
+                throw new Exception("the given Visitor is no longer a visitor in system");
+            ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
-            if (_userManagement.IsUserLoggedin(userToken))
-                _history.AddRegisterPurchases(shoppingCartToDocument, _userManagement.GetRegisteredUsernameByToken(userToken));
+            if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))
+                _history.AddRegisterPurchases(shoppingCartToDocument, _VisitorManagement.GetRegisteredUsernameByToken(VisitorToken));
         }
 
         public ShoppingCart ViewMyCart(String authToken)
         {//II.2.4
-            if (!_userManagement.IsUserAVisitor(authToken))
-                throw new Exception("the given user is no longer a visitor in system");
-            return _userManagement.GetUserShoppingCart(authToken);
+            if (!_VisitorManagement.IsVisitorAVisitor(authToken))
+                throw new Exception("the given Visitor is no longer a visitor in system");
+            return _VisitorManagement.GetVisitorShoppingCart(authToken);
         }
 
         public void RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.5
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
-                    _userManagement.RemoveRole(ownerUsername, storeName);
+                    _VisitorManagement.RemoveRole(ownerUsername, storeName);
             }
         }
         public void RemoveStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.8
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            if (_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.REMOVE_MANAGER))
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.REMOVE_MANAGER))
             {
                 if (_storeManagement.RemoveStoreManager(managerUsername, storeName))
-                    _userManagement.RemoveRole(managerUsername, storeName);
+                    _VisitorManagement.RemoveRole(managerUsername, storeName);
             }
         }
         public ICollection<Tuple<DateTime, ShoppingCart>> GetMyPurchases(String authToken)
         {//II.3.7
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is no longer a visitor in system");
-            return _history.GetRegistreredPurchaseHistory(_userManagement.GetRegisteredUsernameByToken(authToken));
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is no longer a visitor in system");
+            return _history.GetRegistreredPurchaseHistory(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
         }
-        public Registered GetUserInformation(String authToken)
+        public Registered GetVisitorInformation(String authToken)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is no longer a visitor in system");
-            return _userManagement.GetRegisteredUser(_userManagement.GetRegisteredUsernameByToken(authToken));
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is no longer a visitor in system");
+            return _VisitorManagement.GetRegisteredVisitor(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
         }
 
-        internal void AppointSystemAdmin(string authToken, string adminUserName)
+        internal void AppointSystemAdmin(string authToken, string adminUsername)
         {
-            String registered = _userManagement.GetRegisteredUsernameByToken(_userManagement.GetRegisteredUsernameByToken(authToken));
-            if (_userManagement.CheckAccess(registered, null, Operation.APPOINT_SYSTEM_ADMIN))
-                _userManagement.AppointSystemAdmin(adminUserName);
+            String registered = _VisitorManagement.GetRegisteredUsernameByToken(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
+            if (_VisitorManagement.CheckAccess(registered, null, Operation.APPOINT_SYSTEM_ADMIN))
+                _VisitorManagement.AppointSystemAdmin(adminUsername);
         }
 
         /// <summary>
         /// <para> For Req II.3.8. </para>
-        /// <para> Updates a user's password if given the correct previous password.</para>
+        /// <para> Updates a Visitor's password if given the correct previous password.</para>
         /// </summary>
-        /// <param name="authToken"> The authenticating token of the user changing the password.</param>
-        /// <param name="oldPassword"> The user's current password. </param>
+        /// <param name="authToken"> The authenticating token of the Visitor changing the password.</param>
+        /// <param name="oldPassword"> The Visitor's current password. </param>
         /// <param name="newPassword"> The new updated password. </param>
-        public void EditUserPassword(String authToken, String oldPassword, String newPassword)
+        public void EditVisitorPassword(String authToken, String oldPassword, String newPassword)
         {
-            _userManagement.EditUserPassword(authToken, oldPassword, newPassword);
+            _VisitorManagement.EditVisitorPassword(authToken, oldPassword, newPassword);
         }
 
         public List<StoreManager> getStoreManagers(string storeName, String authToken)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception($"this user does not have permission to permorm this operation");
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
+                throw new Exception($"this Visitor does not have permission to permorm this operation");
             return _storeManagement.getStoreManagers(storeName);
         }
 
         public List<StoreOwner> getStoreOwners(string storeName, String authToken)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception($"this user does not have permission to permorm this operation");
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
+                throw new Exception($"this Visitor does not have permission to permorm this operation");
             return _storeManagement.getStoreOwners(storeName);
         }
 
         public StoreFounder getStoreFounder(string storeName, String authToken)
         {
-            if (!_userManagement.IsUserLoggedin(authToken))
-                throw new Exception("the given user is not a visitor in the system");
-            if (!_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception("this user does not have permission to permorm this operation");
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+                throw new Exception("the given Visitor is not a visitor in the system");
+            if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
+                throw new Exception("this Visitor does not have permission to permorm this operation");
             return _storeManagement.getStoreFounder(storeName);
         }
 
@@ -551,94 +551,94 @@ namespace MarketProject.Domain
 
         /// <summary>
         /// <para> For Req II.1.4. </para>
-        /// <para> If credentials are authenticated, log in user.</para>
+        /// <para> If credentials are authenticated, log in Visitor.</para>
         /// </summary>
-        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
-        /// <returns> The authentication token the user should use with the system.</returns>
-        public String Login(String authToken, String username, String password)
+        /// <returns> The authentication token the Visitor should use with the system.</returns>
+        public String Login(String authToken, String Username, String password)
         {
             // TODO: Transfer cart?
-            return _userManagement.Login(authToken, username, password);
+            return _VisitorManagement.Login(authToken, Username, password);
         }
 
         /// <summary>
         /// <para> For Req II.3.1. </para>
-        /// <para> Log out user identified by authToken.</para>
+        /// <para> Log out Visitor identified by authToken.</para>
         /// </summary>
-        /// <param name="authToken"> The token of the user to log out.</param>
+        /// <param name="authToken"> The token of the Visitor to log out.</param>
         public String Logout(String authToken)
         {
-            return _userManagement.Logout(authToken);
+            return _VisitorManagement.Logout(authToken);
         }
 
         /// <summary>
         /// <para> For Req II.6.2. </para>
-        /// <para> Remove a Registered user from our system and remove their roles from all relevant stores.</para>
+        /// <para> Remove a Registered Visitor from our system and remove their roles from all relevant stores.</para>
         /// </summary>
-        /// <param name="authToken"> The token authenticating the user making the request.</param>
-        /// <param name="usr_toremove"> The user to remove and revoke the roles of.</param>
-        public void RemoveRegisteredUser(String authToken, String usr_toremove)
+        /// <param name="authToken"> The token authenticating the Visitor making the request.</param>
+        /// <param name="usr_toremove"> The Visitor to remove and revoke the roles of.</param>
+        public void RemoveRegisteredVisitor(String authToken, String usr_toremove)
         {
-            if (_userManagement.CheckAccess(_userManagement.GetRegisteredUsernameByToken(authToken), null, Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
+            if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), null, Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
             {
-                Registered registeredToRemove = _userManagement.GetRegisteredUser(usr_toremove);
-                _userManagement.RemoveRegisteredUser(usr_toremove);
+                Registered registeredToRemove = _VisitorManagement.GetRegisteredVisitor(usr_toremove);
+                _VisitorManagement.RemoveRegisteredVisitor(usr_toremove);
                 _storeManagement.RemoveAllRoles(registeredToRemove);
             }
             else
             {
-                throw new Exception("User tried to perform an unautherised operation - Cancel Subscription.");
+                throw new Exception("Visitor tried to perform an unautherised operation - Cancel Subscription.");
             }
         }
 
         public String EnterSystem() // Generating token and returning it
         { //II.1.1
-            return _userManagement.EnterSystem();
+            return _VisitorManagement.EnterSystem();
         }
 
         public void ExitSystem(String authToken) // Removing cart and token assigned to guest
         { //II.1.2
-            _userManagement.ExitSystem(authToken);
+            _VisitorManagement.ExitSystem(authToken);
         }
 
         public void AddManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
-                _userManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
+                _VisitorManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
 
         }
 
         public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
-            string appointerUsername = _userManagement.GetRegisteredUsernameByToken(authToken);
-            if (_userManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
-                _userManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
+                _VisitorManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
         }
         /// <summary>
         /// <para> For Req II.1.3. </para>
-        /// <para> If credentials are valid, register new user.</para>
+        /// <para> If credentials are valid, register new Visitor.</para>
         /// </summary>
         /// <param name="authToken"> The token of the guest currently registering.</param>
-        /// <param name="username"> The username of the user to log in.</param>
+        /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
-        public void Register(String authToken, String username, String password)
+        public void Register(String authToken, String Username, String password)
         {//II.1.3
          // TODO: Transfer cart? (Same dillema as login)
-            _userManagement.Register(username, password);
+            _VisitorManagement.Register(Username, password);
         }
 
         /// <summary>
         /// <para> For Req II.3.6. </para>
         /// <para> Files a complaint to the current system admin.</para>
         /// </summary>
-        /// <param name="authToken"> The token of the user filing the complaint. </param>
+        /// <param name="authToken"> The token of the Visitor filing the complaint. </param>
         /// <param name="cartID"> The cart ID relevant to the complaint. </param>
         /// <param name="message"> The message detailing the complaint. </param>
         public void FileComplaint(String authToken, int cartID, String message)
         {
-            _userManagement.FileComplaint(authToken, cartID, message);
+            _VisitorManagement.FileComplaint(authToken, cartID, message);
         }
 
         /// <summary>
@@ -650,7 +650,7 @@ namespace MarketProject.Domain
         /// <param name="reply"> The response to the complaint. </param>
         public void ReplyToComplaint(String authToken, int complaintID, String reply)
         {
-            _userManagement.ReplyToComplaint(authToken, complaintID, reply);
+            _VisitorManagement.ReplyToComplaint(authToken, complaintID, reply);
         }
     }
 }

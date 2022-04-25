@@ -13,14 +13,14 @@ namespace MarketProject.Service.DTO
         private String _storeName;
         public String StoreName => _storeName;
 
-        private String _username;
-        public String Username => _username;
+        private String _Username;
+        public String Username => _Username;
 
         public StoreFounderDTO(StoreFounder storeFounder)
         {
             _operations = new HashSet<Operation>(storeFounder.operations);
             _storeName = storeFounder.StoreName;
-            _username = storeFounder.UserName;
+            _Username = storeFounder.Username;
         }
     }
 }

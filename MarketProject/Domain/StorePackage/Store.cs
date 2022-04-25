@@ -70,7 +70,7 @@ namespace MarketProject.Domain
 
         public bool AddStoreManager(StoreManager newManager)
         {
-            if (!hasRoleInStore(newManager.UserName))
+            if (!hasRoleInStore(newManager.Username))
             {
                 _managers.Add(newManager);
                 return true;
@@ -80,7 +80,7 @@ namespace MarketProject.Domain
 
         public bool AddStoreOwner(StoreOwner newOwner)
         {
-            if (!hasRoleInStore(newOwner.UserName))
+            if (!hasRoleInStore(newOwner.Username))
             {
                 _owners.Add(newOwner);
                 return true;
@@ -88,15 +88,15 @@ namespace MarketProject.Domain
             throw new Exception("already has a role in this store.");
         }
 
-        private bool hasRoleInStore(string username)
+        private bool hasRoleInStore(string Username)
         {
-            return GetOwner(username) != null || GetManager(username) != null || _founder.UserName.Equals(username);
+            return GetOwner(Username) != null || GetManager(Username) != null || _founder.Username.Equals(Username);
         }
 
-        private StoreManager GetManager(string ownerUserName)
+        private StoreManager GetManager(string ownerUsername)
         {
             foreach(StoreManager manager in _managers)
-                if(manager.UserName == ownerUserName)
+                if(manager.Username == ownerUsername)
                     return manager;
             return null;
         }
@@ -104,7 +104,7 @@ namespace MarketProject.Domain
         private StoreOwner GetOwner(string managerUsername)
         {
             foreach (StoreOwner owner in _owners)
-                if (owner.UserName == managerUsername)
+                if (owner.Username == managerUsername)
                     return owner;
             return null;
         }
@@ -140,14 +140,14 @@ namespace MarketProject.Domain
         public List<String> GetStoreRolesByName()
         {
             List<String> names = new List<String>();
-            names.Add(_founder.UserName);
+            names.Add(_founder.Username);
             foreach (StoreManager manager in _managers)
             {
-                names.Add(manager.UserName);
+                names.Add(manager.Username);
             }
             foreach (StoreOwner owner in _owners)
             {
-                names.Add(owner.UserName);
+                names.Add(owner.Username);
             }
             return names;
         }
@@ -156,17 +156,17 @@ namespace MarketProject.Domain
         public String GetInformation()
         {
             String info = $"{_storeName}\n";
-            info += $"- Founded by {_founder.UserName}\n";
+            info += $"- Founded by {_founder.Username}\n";
             String ownerNames = "";
             foreach (StoreOwner owner in _owners)
             {
-                ownerNames += owner.UserName + ", ";
+                ownerNames += owner.Username + ", ";
             }
             info += $"- Owners: {ownerNames}\n";
             String managerNames = "";
             foreach (StoreManager manager in _managers)
             {
-                managerNames += manager.UserName + ", ";
+                managerNames += manager.Username + ", ";
             }
             info += $"- Managers: {managerNames}\n";
             info += $"- Has a rating of {GetRating()}\n";
@@ -180,11 +180,11 @@ namespace MarketProject.Domain
             return info;
         }
 
-        public void RateStore(String username, int rating, String review)
+        public void RateStore(String Username, int rating, String review)
         {
-            bool result = _rating.AddRating(username, rating, review);
+            bool result = _rating.AddRating(Username, rating, review);
             if (!result)
-                throw new Exception($"User {username} already rated this store.");
+                throw new Exception($"Visitor {Username} already rated this store.");
         }
 
         public void UpdateStockQuantityOfItem(int itemId, int newQuantity)
@@ -239,14 +239,14 @@ namespace MarketProject.Domain
 
         /// <summary>
         /// <para> For Req II.6.2. </para>
-        /// <para> Remove all of a user's roles from this store.</para>
+        /// <para> Remove all of a Visitor's roles from this store.</para>
         /// </summary>
-        /// <param name="username"> The user to revoke the roles of.</param>
-        public void RemoveRoles(String username)
+        /// <param name="Username"> The Visitor to revoke the roles of.</param>
+        public void RemoveRoles(String Username)
         {
-            RemoveManager(username);
-            RemoveOwner(username);
-            if (_founder.UserName == username)
+            RemoveManager(Username);
+            RemoveOwner(Username);
+            if (_founder.Username == Username)
             {
                 // TODO: Decide what to do if founder is removed.
                 return;
@@ -255,24 +255,24 @@ namespace MarketProject.Domain
 
         /// <summary>
         /// <para> For Req II.6.2. </para>
-        /// <para> Removes user as a manager if he is a manager.</para>
+        /// <para> Removes Visitor as a manager if he is a manager.</para>
         /// </summary>
-        /// <param name="username"> The user to revoke the role of.</param>
-        private void RemoveManager(String username)
+        /// <param name="Username"> The Visitor to revoke the role of.</param>
+        private void RemoveManager(String Username)
         {
-            StoreManager manager = GetManager(username);
+            StoreManager manager = GetManager(Username);
             if (manager != null)
                 _managers.Remove(manager);
         }
 
         /// <summary>
         /// <para> For Req II.6.2. </para>
-        /// <para> Removes user as an owner if he is an owner.</para>
+        /// <para> Removes Visitor as an owner if he is an owner.</para>
         /// </summary>
-        /// <param name="username"> The user to revoke the role of.</param>
-        private void RemoveOwner(String username)
+        /// <param name="Username"> The Visitor to revoke the role of.</param>
+        private void RemoveOwner(String Username)
         {
-            StoreOwner owner = GetOwner(username);
+            StoreOwner owner = GetOwner(Username);
             if (owner != null)
                 _owners.Remove(owner);
         }

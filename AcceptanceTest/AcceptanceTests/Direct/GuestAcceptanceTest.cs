@@ -42,7 +42,7 @@ namespace AcceptanceTest.AcceptanceTests.Direct
         public void Register_Happy()
         {
             _market.EnterSystem();
-            _market.Register("username", "password");
+            _market.Register("Username", "password");
 
 
             _market.AssertNoError();
@@ -51,15 +51,15 @@ namespace AcceptanceTest.AcceptanceTests.Direct
         [TestMethod()]
         public void Register_Sad_UsernameTaken()
         {
-            // Precondition: Previous user registered with "username"
+            // Precondition: Previous visitor registered with "Username"
             _market.EnterSystem();
-            _market.Register("username", "password");
+            _market.Register("Username", "password");
             _market.AssertNoError();
             _market.ExitSystem();
 
 
             _market.EnterSystem();
-            _market.Register("username", "password");
+            _market.Register("Username", "password");
 
 
             _market.AssertErrorMessageRecieved();
@@ -82,7 +82,7 @@ namespace AcceptanceTest.AcceptanceTests.Direct
         public void Login_Sad_WrongUsername()
         {   
             _market.EnterSystem();
-            _market.Login("username", "password");
+            _market.Login("Username", "password");
 
 
             _market.AssertErrorMessageRecieved();

@@ -6,7 +6,7 @@ namespace MarketProject.Domain
 {
     public class Rating
     {
-        private Dictionary<String, Tuple<int, String>> _ratings; //<username:String, <rating:int, review:String>>
+        private Dictionary<String, Tuple<int, String>> _ratings; //<Username:String, <rating:int, review:String>>
 
         public Dictionary<String, Tuple<int, String>> Ratings => _ratings;
 
@@ -26,28 +26,28 @@ namespace MarketProject.Domain
             return rating;
         }
 
-        public String GetUserReview(String username)
+        public String GetVisitorReview(String Username)
         {
-            if (!_ratings.ContainsKey(username))
+            if (!_ratings.ContainsKey(Username))
                 return "";
-            Tuple<int, String> review = _ratings[username];
+            Tuple<int, String> review = _ratings[Username];
             if (review.Item2 != "")
-                return $"User: {username}\nGave a rating of: {review.Item1}\nWith a review:\n{review.Item2}\n";
+                return $"Visitor: {Username}\nGave a rating of: {review.Item1}\nWith a review:\n{review.Item2}\n";
             else
-                return $"User: {username}\nGave a rating of: {review.Item1}\nWithout a review\n";
+                return $"Visitor: {Username}\nGave a rating of: {review.Item1}\nWithout a review\n";
         }
 
-        public bool AddRating(String username, int rating, String review)
+        public bool AddRating(String Username, int rating, String review)
         {
-            if (_ratings.ContainsKey(username))
+            if (_ratings.ContainsKey(Username))
                 return false;
-            _ratings[username] = new Tuple<int, String>(rating, review);
+            _ratings[Username] = new Tuple<int, String>(rating, review);
             return true;
         }
 
-        public bool HasRating(String username)
+        public bool HasRating(String Username)
         {
-            return _ratings.ContainsKey(username);
+            return _ratings.ContainsKey(Username);
         }
     }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace MarketProject.Domain
 {
-    public class Registered : User
+    public class Registered : Visitor
     {
-        private ICollection<MessageToUser> _messagesToUser;
-        private String _username;
-        public String Username=> _username;
+        private ICollection<MessageToVisitor> _messagesToUser;
+        private String _Username;
+        public String Username=> _Username;
         private String _password;
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
@@ -58,14 +58,14 @@ namespace MarketProject.Domain
             } 
         }
 
-        public Registered(string username, string password)
+        public Registered(string Username, string password)
         {
-            _messagesToUser = new List<MessageToUser>();
-            _username = username;
+            _messagesToUser = new List<MessageToVisitor>();
+            _Username = Username;
             _password = password;
             _roles = new List<SystemRole>();
         }
-        public void SendMessage(MessageToUser message)
+        public void SendMessage(MessageToVisitor message)
         {
             _messagesToUser.Add(message);
         }

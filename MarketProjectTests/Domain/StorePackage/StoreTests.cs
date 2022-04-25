@@ -36,15 +36,15 @@ namespace MarketProject.Domain.Tests
 
 
         [TestMethod()]
-        public void RateStore_UserHasntRatedStore_NoException()
+        public void RateStore_VisitorHasntRatedStore_NoException()
         {
-            String username = "Squidward Tentacles";
+            String Username = "Squidward Tentacles";
             int rating = 1;
             String review = "NOOOOOOOOOOOO";
 
             try
             {
-                _store.RateStore(username, rating, review);
+                _store.RateStore(Username, rating, review);
                 Assert.AreEqual(_store.GetRating(), "" + rating);
             }
             catch (Exception e)
@@ -54,15 +54,15 @@ namespace MarketProject.Domain.Tests
         }
 
         [TestMethod()]
-        public void RateStore_UserHasRatedStore_ThrowsException()
+        public void RateStore_VisitorHasRatedStore_ThrowsException()
         {
-            String username = "Squidward Tentacles";
+            String Username = "Squidward Tentacles";
             int rating = 1;
             String review = "NOOOOOOOOOOOO";
 
             try
             {
-                _store.RateStore(username, rating, review);
+                _store.RateStore(Username, rating, review);
             }
             catch (Exception)
             {
@@ -71,7 +71,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _store.RateStore(username, rating, review);
+                _store.RateStore(Username, rating, review);
                 Assert.Fail();
             }
             catch (Exception)

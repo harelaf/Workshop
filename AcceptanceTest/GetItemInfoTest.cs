@@ -15,8 +15,8 @@ namespace AcceptanceTest
         MarketAPI marketAPI = new MarketAPI();
         string storeName_inSystem = "Shefa Issachar";
         string storeName_outSystem = "bla";
-        string guest_userToken;
-        string registered_userToken;
+        string guest_VisitorToken;
+        string registered_VisitorToken;
         int itemID_inStock_1;
         int itemAmount_inSttock_1;
         int itemID_inStock_2;
@@ -26,16 +26,16 @@ namespace AcceptanceTest
         [TestInitialize()]
         public void setup()
         {
-            guest_userToken = (marketAPI.EnterSystem()).Value;
-            registered_userToken = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(registered_userToken, "Issachar Shkedi", "123456");
-            registered_userToken = (marketAPI.Login(registered_userToken, "Issachar Shkedi", "123456")).Value;// reg
-            marketAPI.OpenNewStore(registered_userToken, storeName_inSystem);
+            guest_VisitorToken = (marketAPI.EnterSystem()).Value;
+            registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(registered_VisitorToken, "Issachar Shkedi", "123456");
+            registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "Issachar Shkedi", "123456")).Value;// reg
+            marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
             itemID_inStock_1 = 111; itemAmount_inSttock_1 = 150;
             itemID_inStock_2 = 222; itemAmount_inSttock_2 = 30;
-            marketAPI.AddItemToStoreStock(registered_userToken, storeName_inSystem, itemID_inStock_1,
+            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_1,
                 "Leben", 1.6, "Basic product", "Diary", itemAmount_inSttock_1);
-            marketAPI.AddItemToStoreStock(registered_userToken, storeName_inSystem, itemID_inStock_2,
+            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_2,
                 "Tomatoes Juice", 4.2, "500ml bottle", "Drinks", itemAmount_inSttock_2);
         }
 
@@ -43,7 +43,7 @@ namespace AcceptanceTest
         public void GetItemInformation_Happy()
         {
             bool flag1 = false, flag2 = false; ;
-            List<ItemDTO> items = marketAPI.GetItemInformation(registered_userToken, "Leben", "Diary", "").Value;
+            List<ItemDTO> items = marketAPI.GetItemInformation(registered_VisitorToken, "Leben", "Diary", "").Value;
             if (items != null)
             {
                 foreach (ItemDTO item in items)
@@ -53,7 +53,7 @@ namespace AcceptanceTest
                         flag1 = true;
                     }
                 }
-                items = marketAPI.GetItemInformation(registered_userToken, "i", "", "bottle").Value;
+                items = marketAPI.GetItemInformation(registered_VisitorToken, "i", "", "bottle").Value;
                 if (items != null)
                 {
                     foreach (ItemDTO item in items)
@@ -76,7 +76,7 @@ namespace AcceptanceTest
         public void GetItemInformation_Sad_StoreNotExist()
         {
             bool flag1 = false, flag2 = false; ;
-            Response<List<ItemDTO>> items = marketAPI.GetItemInformation(registered_userToken, "aaaaaa", "", "");
+            Response<List<ItemDTO>> items = marketAPI.GetItemInformation(registered_VisitorToken, "aaaaaa", "", "");
             if (items.Value != null && items.Value.Count != 0)
             {
                 Assert.Fail();  

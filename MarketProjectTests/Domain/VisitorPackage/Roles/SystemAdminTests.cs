@@ -6,27 +6,26 @@ using System.Text;
 namespace MarketProject.Domain.Tests
 {
     [TestClass]
-    internal class StoreFounderTests
+    internal class SystemAdminTests
     {
-        private StoreFounder sf;
+        private SystemAdmin sa;
         private string storeName;
-        private string appointer;
-
+        
         [TestInitialize]
         public void setup()
         {
-            storeName = "storeName";
-            appointer = "someAppointer";
-            sf = new StoreFounder("userName", storeName);
+            sa = new SystemAdmin("Username");
+            storeName = null;
         }
 
         [TestMethod]
         public void hasAccess_ExpectedPermissions_returnstrue()
         {
             //act
-            bool actual = sf.hasAccess(storeName, Operation.DEFINE_CONCISTENCY_CONSTRAINT) &&
-                sf.hasAccess(storeName, Operation.CLOSE_STORE) &&
-                sf.hasAccess(storeName, Operation.REOPEN_STORE);
+            bool actual = sa.hasAccess(storeName, Operation.PERMENENT_CLOSE_STORE) &&
+                sa.hasAccess(storeName, Operation.CANCEL_SUBSCRIPTION) &&
+                sa.hasAccess(storeName, Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE) &&
+                sa.hasAccess(storeName, Operation.SYSTEM_STATISTICS);
             //assert
             Assert.IsTrue(actual);
         }
@@ -35,8 +34,9 @@ namespace MarketProject.Domain.Tests
         public void hasAccess_UnExpectedPermissions_returnsfalse()
         {
             //act
-            bool actual = sf.hasAccess(storeName, Operation.PERMENENT_CLOSE_STORE) ||
-                sf.hasAccess(storeName, Operation.CANCEL_SUBSCRIPTION);
+            bool actual = sa.hasAccess(storeName, Operation.DEFINE_CONCISTENCY_CONSTRAINT) ||
+                sa.hasAccess(storeName, Operation.CLOSE_STORE) ||
+                sa.hasAccess(storeName, Operation.APPOINT_MANAGER);
             //assert
             Assert.IsFalse(actual);
         }
@@ -45,10 +45,10 @@ namespace MarketProject.Domain.Tests
         public void grantPermission_returnsfalse()
         {
             //arrange
-            Operation op = Operation.CANCEL_SUBSCRIPTION;
-            bool part1 = sf.grantPermission(op, storeName, appointer);
+            Operation op = Operation.APPOINT_OWNER;
+            bool part1 = sa.grantPermission(op, storeName, "someAppointer");
             //act
-            bool part2 = sf.hasAccess(storeName, op);
+            bool part2 = sa.hasAccess(storeName, op);
             //assert
             Assert.IsFalse(part1);
             Assert.IsFalse(part2);
@@ -58,10 +58,10 @@ namespace MarketProject.Domain.Tests
         public void denyPermission_returnsfalse()
         {
             //arrange
-            Operation op = Operation.APPOINT_OWNER;
+            Operation op = Operation.CANCEL_SUBSCRIPTION;
             //act
-            bool part1 = sf.denyPermission(op, storeName, appointer);
-            bool part2 = sf.hasAccess(storeName, op);
+            bool part1 = sa.denyPermission(op, storeName, "someAppointer");
+            bool part2 = sa.hasAccess(storeName, op);
             //assert
             Assert.IsFalse(part1);
             Assert.IsTrue(part2);

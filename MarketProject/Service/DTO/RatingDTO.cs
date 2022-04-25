@@ -27,15 +27,15 @@ namespace MarketProject.Service.DTO
             return rating;
         }
 
-        public String GetUserReview(String username)
+        public String GetVisitorReview(String Username)
         {
-            if (!_ratings.ContainsKey(username))
+            if (!_ratings.ContainsKey(Username))
                 return "";
-            Tuple<int, String> review = _ratings[username];
+            Tuple<int, String> review = _ratings[Username];
             if (review.Item2 != "")
-                return $"User: {username}\nGave a rating of: {review.Item1}\nWith a review:\n{review.Item2}\n";
+                return $"Visitor: {Username}\nGave a rating of: {review.Item1}\nWith a review:\n{review.Item2}\n";
             else
-                return $"User: {username}\nGave a rating of: {review.Item1}\nWithout a review\n";
+                return $"Visitor: {Username}\nGave a rating of: {review.Item1}\nWithout a review\n";
         }
     }
 }

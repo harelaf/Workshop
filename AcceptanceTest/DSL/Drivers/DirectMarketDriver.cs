@@ -18,7 +18,7 @@ namespace AcceptanceTest.DSL.Drivers
         private MarketAPI _marketAPI = new MarketAPI();
         private String? _errorMessage = null;
         private String? _currentGuestToken = null;
-        private String? _loggedInUserToken = null;
+        private String? _loggedInVisitorToken = null;
 
         public DirectMarketDriver()
         {
@@ -40,15 +40,15 @@ namespace AcceptanceTest.DSL.Drivers
         }
         public void ExitSystem()
         {
-            if(_loggedInUserToken != null)
+            if(_loggedInVisitorToken != null)
             {
-                Response response = _marketAPI.ExitSystem(_loggedInUserToken);
+                Response response = _marketAPI.ExitSystem(_loggedInVisitorToken);
                 if (response.ErrorOccured) 
                 {
                     _errorMessage = response.ErrorMessage;
                     return;
                 } 
-                _loggedInUserToken = null;
+                _loggedInVisitorToken = null;
             }
             else
             {
@@ -66,9 +66,9 @@ namespace AcceptanceTest.DSL.Drivers
             _errorMessage = null;
         }
 
-        public void Register(string username, string password)
+        public void Register(string Username, string password)
         {
-            Response response = _marketAPI.Register(_currentGuestToken, username, password);
+            Response response = _marketAPI.Register(_currentGuestToken, Username, password);
             if (response.ErrorOccured)
             {
                 _errorMessage = response.ErrorMessage;
@@ -76,28 +76,28 @@ namespace AcceptanceTest.DSL.Drivers
             }
         }
 
-        public void Login(string username, string password)
+        public void Login(string Username, string password)
         {
-            Response<String> response = _marketAPI.Login(_currentGuestToken, username, password);
+            Response<String> response = _marketAPI.Login(_currentGuestToken, Username, password);
             if (response.ErrorOccured)
             {
                 _errorMessage = response.ErrorMessage;
                 return;
             }
-            _loggedInUserToken = response.Value;
+            _loggedInVisitorToken = response.Value;
             _currentGuestToken = null;
         }
 
         public void Logout()
         {
-            Response<String> response = _marketAPI.Logout(_loggedInUserToken);
+            Response<String> response = _marketAPI.Logout(_loggedInVisitorToken);
             if (response.ErrorOccured)
             {
                 _errorMessage = response.ErrorMessage;
                 return;
             }
             _currentGuestToken = response.Value;
-            _loggedInUserToken = null;
+            _loggedInVisitorToken = null;
             _errorMessage = null;
         }
 
@@ -111,9 +111,9 @@ namespace AcceptanceTest.DSL.Drivers
             Assert.IsNotNull(_errorMessage);
         }
 
-        public void RemoveRegisteredUser(string username)
+        public void RemoveRegisteredVisitor(string Username)
         {
-            Response response = _marketAPI.RemoveRegisteredUser(_loggedInUserToken, username);
+            Response response = _marketAPI.RemoveRegisteredVisitor(_loggedInVisitorToken, Username);
             if (response.ErrorOccured)
             {
                 _errorMessage = response.ErrorMessage;
@@ -123,7 +123,7 @@ namespace AcceptanceTest.DSL.Drivers
 
         public void ChangePassword(string oldPassword, string newPassword)
         {
-            Response response = _marketAPI.EditUserPassword(_loggedInUserToken, oldPassword, newPassword);
+            Response response = _marketAPI.EditVisitorPassword(_loggedInVisitorToken, oldPassword, newPassword);
             if (response.ErrorOccured)
             {
                 _errorMessage = response.ErrorMessage;

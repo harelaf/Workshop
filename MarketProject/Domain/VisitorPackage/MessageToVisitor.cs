@@ -4,18 +4,18 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public class MessageToUser
+    public class MessageToVisitor
     {
-        private String _username;
+        private String _Username;
         private String _storeName;
 
-        public MessageToUser(String _username, String _storeName)
+        public MessageToVisitor(String _Username, String _storeName)
         {
-            _username = _username;      
+            _Username = _Username;      
             _storeName = _storeName;
         }
 
-        public String Username => _username;
+        public String Username => _Username;
         public String StoreName => _storeName;
     }
 }

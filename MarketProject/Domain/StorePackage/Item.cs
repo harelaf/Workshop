@@ -36,12 +36,12 @@ namespace MarketProject.Domain
             _category = category;
         }
 
-        public void RateItem(String username, int rating, String review)
+        public void RateItem(String Username, int rating, String review)
         {
-            if (_rating.HasRating(username)){
+            if (_rating.HasRating(Username)){
                 throw new Exception("You can't rate the same item twice or more.");
             }
-            _rating.AddRating(username, rating, review);
+            _rating.AddRating(Username, rating, review);
         }
 
         public void SetName(String name)

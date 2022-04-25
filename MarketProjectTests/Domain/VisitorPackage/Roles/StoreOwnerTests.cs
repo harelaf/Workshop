@@ -17,7 +17,7 @@ namespace MarketProject.Domain.Tests
         {
             storeName = "storeName";
             appointer = "someAppointer";
-            so = new StoreOwner("userName", storeName, appointer);
+            so = new StoreOwner("Username", storeName, appointer);
         }
 
         [TestMethod]

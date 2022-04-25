@@ -10,44 +10,44 @@ namespace MarketProject.Domain.Tests
     public class RatingTests
     {
         [TestMethod()]
-        public void AddRating_UserHasntRatedYet_ReturnsTrue()
+        public void AddRating_VisitorHasntRatedYet_ReturnsTrue()
         {
             Rating _rating = new Rating();
-            String username = "SpongeBob SquarePants";
+            String Username = "SpongeBob SquarePants";
             int rating = 2;
             String review = "";
 
-            bool result = _rating.AddRating(username, rating, review);
+            bool result = _rating.AddRating(Username, rating, review);
 
             Assert.IsTrue(result);
         }
 
         [TestMethod()]
-        public void AddRating_UserRatedAlready_ReturnsFalse()
+        public void AddRating_VisitorRatedAlready_ReturnsFalse()
         {
             Rating _rating = new Rating();
-            String username = "SpongeBob SquarePants";
+            String Username = "SpongeBob SquarePants";
             int rating = 2;
             String review = "Not bad...";
-            _rating.AddRating(username, rating + 1, "");
+            _rating.AddRating(Username, rating + 1, "");
 
-            bool result = _rating.AddRating(username, rating, review);
+            bool result = _rating.AddRating(Username, rating, review);
 
             Assert.IsFalse(result);
         }
 
         [TestMethod()]
-        public void GetRating_AllUsersRated5_Returns5()
+        public void GetRating_AllVisitorsRated5_Returns5()
         {
             Rating _rating = new Rating();
-            String username = "SpongeBob SquarePants";
+            String Username = "SpongeBob SquarePants";
             int rating = 5;
             String review = "Not bad...";
-            _rating.AddRating(username, rating, review);
-            username = "Patrick Star";
-            _rating.AddRating(username, rating, review);
-            username = "Mr. Krab";
-            _rating.AddRating(username, rating, review);
+            _rating.AddRating(Username, rating, review);
+            Username = "Patrick Star";
+            _rating.AddRating(Username, rating, review);
+            Username = "Mr. Krab";
+            _rating.AddRating(Username, rating, review);
 
             float result = _rating.GetRating();
 

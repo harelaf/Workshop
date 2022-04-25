@@ -18,13 +18,13 @@ namespace AcceptanceTest.DSL.Drivers
     {
         void EnterSystem();
         void ExitSystem();
-        void Register(string username, string password);
+        void Register(string Username, string password);
 
-        void Login(string username, string password);
+        void Login(string Username, string password);
         void Logout();
         void AssertNoError();
         void AssertErrorMessageRecieved();
-        void RemoveRegisteredUser(string username);
+        void RemoveRegisteredVisitor(string Username);
         void ChangePassword(string oldPassword, string newPassword);
     }
 }

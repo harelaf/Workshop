@@ -66,10 +66,10 @@ namespace MarketProject.Domain
             item.SetName(newDescription);
         }
 
-        public void RateItem(String username, Item item, int rating, String review)
+        public void RateItem(String Username, Item item, int rating, String review)
 
         {
-            item.RateItem(username, rating, review);
+            item.RateItem(Username, rating, review);
         }
 
         public List<Item> GetItemInformation(String itemName, String itemCategory, String keyWord)
@@ -92,10 +92,10 @@ namespace MarketProject.Domain
             return filteredItems;
         }
 
-        public void SendMessageToStore(String username, String storeName, String title, String message)
+        public void SendMessageToStore(String Username, String storeName, String title, String message)
         {
             Store store = GetStore(storeName);
-            MessageToStore messageToStore = new MessageToStore(storeName, username, title, message);
+            MessageToStore messageToStore = new MessageToStore(storeName, Username, title, message);
             store.AddMessage(messageToStore);
         }
 
@@ -132,10 +132,10 @@ namespace MarketProject.Domain
             return store.GetStoreRolesByName();
         }
 
-        public void RateStore(String username, String storeName, int rating, String review)
+        public void RateStore(String Username, String storeName, int rating, String review)
         {
             Store store = GetStore(storeName);
-            store.RateStore(username, rating, review);
+            store.RateStore(Username, rating, review);
         }
 
         public void UpdateStockQuantityOfItem(String storeName, int itemID, int newQuantity)
@@ -229,9 +229,9 @@ namespace MarketProject.Domain
 
         /// <summary>
         /// <para> For Req II.6.2. </para>
-        /// <para> Remove a Registered user's roles from all relevant stores.</para>
+        /// <para> Remove a Registered Visitor's roles from all relevant stores.</para>
         /// </summary>
-        /// <param name="registered"> The user to revoke the roles of.</param>
+        /// <param name="registered"> The Visitor to revoke the roles of.</param>
         internal void RemoveAllRoles(Registered registered)
         {
             ICollection<String> storeNames = registered.StoresWithRoles;

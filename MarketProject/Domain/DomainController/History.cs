@@ -7,7 +7,7 @@ namespace MarketProject.Domain
     public class History
     {
         private IDictionary<String, List<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
-        private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //username:String
+        private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //Username:String
 
         public History()
         {
@@ -15,12 +15,12 @@ namespace MarketProject.Domain
             _registeredPurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingCart>>>();
         }
 
-        public bool CheckIfUserPurchasedInStore(String username, String storeName)
+        public bool CheckIfVisitorPurchasedInStore(String Username, String storeName)
         {
-            if (!_registeredPurchaseHistory.ContainsKey(username))
+            if (!_registeredPurchaseHistory.ContainsKey(Username))
                 return false;
 
-            ICollection<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[username];
+            ICollection<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[Username];
             foreach (Tuple<DateTime, ShoppingCart> purchase in purchases)
             {
                 ShoppingBasket basket = purchase.Item2.GetShoppingBasket(storeName);
@@ -33,12 +33,12 @@ namespace MarketProject.Domain
         }
 
 
-        public bool CheckIfUserPurchasedItemInStore(String username, String storeName, Item item)
+        public bool CheckIfVisitorPurchasedItemInStore(String Username, String storeName, Item item)
         {
-            if (!_registeredPurchaseHistory.ContainsKey(username))
+            if (!_registeredPurchaseHistory.ContainsKey(Username))
                 return false;
 
-            ICollection<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[username];
+            ICollection<Tuple<DateTime, ShoppingCart>> purchases = _registeredPurchaseHistory[Username];
             foreach (Tuple<DateTime, ShoppingCart> purchase in purchases)
             {
                 ShoppingBasket basket = purchase.Item2.GetShoppingBasket(storeName);
@@ -70,18 +70,18 @@ namespace MarketProject.Domain
                 _storePurchaseHistory[storeName].Add(new Tuple<DateTime, ShoppingBasket>(DateTime.Now, shoppingBasket));              
             }
         }
-        public void AddRegisterPurchases(ShoppingCart shoppingCart, String username)
+        public void AddRegisterPurchases(ShoppingCart shoppingCart, String Username)
         {
-            if (!_registeredPurchaseHistory.ContainsKey(username))
-                _registeredPurchaseHistory.Add(username, new List<Tuple<DateTime, ShoppingCart>>());
-            _registeredPurchaseHistory[username].Add(new Tuple<DateTime, ShoppingCart>(DateTime.Now, shoppingCart));
+            if (!_registeredPurchaseHistory.ContainsKey(Username))
+                _registeredPurchaseHistory.Add(Username, new List<Tuple<DateTime, ShoppingCart>>());
+            _registeredPurchaseHistory[Username].Add(new Tuple<DateTime, ShoppingCart>(DateTime.Now, shoppingCart));
 
         }
-        public ICollection<Tuple<DateTime, ShoppingCart>> GetRegistreredPurchaseHistory(String username)
+        public ICollection<Tuple<DateTime, ShoppingCart>> GetRegistreredPurchaseHistory(String Username)
         {
-            if (!_registeredPurchaseHistory.ContainsKey(username))
-                throw new Exception($"Purchase History of User: {username} is Empty. User has'nt purchased yet.");
-            return _registeredPurchaseHistory[username];
+            if (!_registeredPurchaseHistory.ContainsKey(Username))
+                throw new Exception($"Purchase History of Visitor: {Username} is Empty. Visitor has'nt purchased yet.");
+            return _registeredPurchaseHistory[Username];
         }
     }
 }
