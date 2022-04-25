@@ -75,14 +75,14 @@ namespace MarketProject.Domain
         public List<Item> GetItemInformation(String itemName, String itemCategory, String keyWord)
         {
             List<Item> filteredItems = new List<Item>();
-            foreach(String storeName in _stores.Keys)
+            foreach (String storeName in _stores.Keys)
             {
                 List<Item> items = _stores[storeName].getItemsByName(itemName);
-                foreach(Item item in items)
+                foreach (Item item in items)
                 {
-                    if(itemCategory == null || itemCategory.Length == 0 || item.Category == itemCategory)
+                    if (itemCategory == null || itemCategory.Length == 0 || item.Category.Contains(itemCategory))
                     {
-                        if(keyWord == null || item.Description == null || keyWord.Length == 0 || item.Description.Contains(keyWord))
+                        if (keyWord == null || keyWord.Length == 0 || item.Description == null || item.Description.Length == 0 || item.Description.Contains(keyWord))
                         {
                             filteredItems.Add(item);
                         }

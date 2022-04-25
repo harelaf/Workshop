@@ -531,7 +531,7 @@ namespace MarketProject.Domain
 
         public void SendMessageToRegistered(String storeName, String UsernameReciever, String title, String message)
         {
-            MessageToRegistered messageToRegistered = new MessageToRegistered(UsernameReciever, storeName);
+            MessageToRegistered messageToRegistered = new MessageToRegistered(UsernameReciever, storeName, title, message);
             Registered reciever = GetRegisteredVisitor(UsernameReciever);
             reciever.SendMessage(messageToRegistered);
         }
