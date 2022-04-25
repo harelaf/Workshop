@@ -22,7 +22,7 @@ namespace MarketProject.Domain
         private SystemAdmin _currentAdmin;
         public SystemAdmin CurrentAdmin { get { return _currentAdmin; } set { _currentAdmin = value; } }
         private int _nextComplaintID = 1;
-        private static readonly string DEFAULT_ADMIN_Username = "admin";
+        private static readonly string DEFAULT_ADMIN_USERNAME = "admin";
         private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
 
 
@@ -39,10 +39,10 @@ namespace MarketProject.Domain
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_Username, DEFAULT_ADMIN_PASSWORD);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_Username);
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_Username, defaultAdmin);
+            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens)
@@ -51,10 +51,10 @@ namespace MarketProject.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_Username, DEFAULT_ADMIN_PASSWORD);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_Username);
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_Username, defaultAdmin);
+            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Guest> visitorsGuestsTokens)
@@ -63,10 +63,10 @@ namespace MarketProject.Domain
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = visitorsGuestsTokens;
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_Username, DEFAULT_ADMIN_PASSWORD);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_Username);
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_Username, defaultAdmin);
+            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens)
@@ -75,10 +75,10 @@ namespace MarketProject.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_Username, DEFAULT_ADMIN_PASSWORD);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_Username);
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_Username, defaultAdmin);
+            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
         }
 
 
@@ -531,9 +531,9 @@ namespace MarketProject.Domain
 
         public void SendMessageToRegistered(String storeName, String UsernameReciever, String title, String message)
         {
-            MessageToVisitor messageToVisitor = new MessageToVisitor(UsernameReciever, storeName);
+            MessageToRegistered messageToRegistered = new MessageToRegistered(UsernameReciever, storeName);
             Registered reciever = GetRegisteredVisitor(UsernameReciever);
-            reciever.SendMessage(messageToVisitor);
+            reciever.SendMessage(messageToRegistered);
         }
 
         public void RemoveManagerPermission(String appointer, String managerUsername, String storeName, Operation op)

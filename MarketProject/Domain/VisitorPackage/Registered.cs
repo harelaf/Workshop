@@ -5,9 +5,9 @@ namespace MarketProject.Domain
 {
     public class Registered : Visitor
     {
-        private ICollection<MessageToVisitor> _messagesToUser;
-        private String _Username;
-        public String Username=> _Username;
+        private ICollection<MessageToRegistered> _messageToRegistered;
+        private String _username;
+        public String Username=> _username;
         private String _password;
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
@@ -60,14 +60,14 @@ namespace MarketProject.Domain
 
         public Registered(string Username, string password)
         {
-            _messagesToUser = new List<MessageToVisitor>();
-            _Username = Username;
+            _messageToRegistered = new List<MessageToRegistered>();
+            _username = Username;
             _password = password;
             _roles = new List<SystemRole>();
         }
-        public void SendMessage(MessageToVisitor message)
+        public void SendMessage(MessageToRegistered message)
         {
-            _messagesToUser.Add(message);
+            _messageToRegistered.Add(message);
         }
 
         internal bool hasAccess(String storeName, Operation op)
