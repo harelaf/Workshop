@@ -6,6 +6,7 @@ namespace MarketProject.Domain
 {
     public class Market
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private StoreManagement _storeManagement;
         private VisitorManagement _VisitorManagement;
         private History _history;
@@ -559,6 +560,7 @@ namespace MarketProject.Domain
         public String Login(String authToken, String Username, String password)
         {
             // TODO: Transfer cart?
+            log.Error("successsssss!!");
             return _VisitorManagement.Login(authToken, Username, password);
         }
 
