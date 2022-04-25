@@ -250,14 +250,6 @@ namespace MarketProject.Domain
             {
                 SendMessageToRegisterd(storeName, name, title, message);
             }
-            /*
-             * if (!_userManagement.CheckUserPermission(username, STORE_FOUNDER))
-             *     throw new Exception($"This user is not the founder of {storeName}.");
-             */
-            if (storeName.Equals(""))
-                throw new Exception("Invalid Input: Blank store name.");
-            _storeManagement.CloseStore(storeName);
-            // Send Alerts to all roles of [storeName]
         }
         public void CloseStorePermanently(String authToken, String storeName)
         {

@@ -6,6 +6,7 @@ namespace MarketProject.Domain
     public class Registered : User
     {
         private ICollection<MessageToUser> _messagesToUser;
+        public ICollection<MessageToUser> MessagesToUser => _messagesToUser;
         private String _username;
         public String Username=> _username;
         private String _password;
