@@ -503,12 +503,12 @@ namespace MarketProject.Domain
 
         // ===================================== ROLE OPERATIONS =====================================
 
-        internal bool CheckAccess(string appointerUsername, string storeName, Operation op)
+        internal bool CheckAccess(string username, string storeName, Operation op)
         {
-            Registered Visitor = GetRegisteredVisitor(appointerUsername);
+            Registered Visitor = GetRegisteredVisitor(username);
             if (Visitor != null)
                 return Visitor.hasAccess(storeName, op);
-            return false;
+            throw new Exception($"'{username}' visitor is not permitted this operation.");
         }
 
         public void AddRole(string Username, SystemRole role)

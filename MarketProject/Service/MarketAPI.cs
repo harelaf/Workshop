@@ -613,10 +613,23 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Boolean GetStoreMessage(String authToken, String storeName)
+        public Response<Queue<MessageToStoreDTO>> GetStoreMessage(String authToken, String storeName)
         {//II.4.12
             //should return with id
-            throw new NotImplementedException();
+            Response<Queue<MessageToStoreDTO>> response;
+            try
+            {
+                Queue<MessageToStore> messages = _market.GetStoreMessages(authToken, storeName);
+                Queue<MessageToStoreDTO> messagesDTOs = new Queue<MessageToStoreDTO>();
+                foreach(MessageToStore messageToStore in messages)
+                    messagesDTOs.Enqueue(new MessageToStoreDTO(messageToStore));
+                response = new Response<Queue<MessageToStoreDTO>>(messagesDTOs);
+            }
+            catch (Exception e)
+            {
+                response = new Response<Queue<MessageToStoreDTO>>(e);
+            }
+            return response;
         }
         public Response AnswerStoreMesseage(String authToken, String storeName, string recieverUsername, String title, String reply)
         {//II.4.12

@@ -241,5 +241,11 @@ namespace MarketProject.Domain
                 store.RemoveRoles(registered.Username);
             }
         }
+
+        internal Queue<MessageToStore> GetStoreMessages(string storeName)
+        {
+            Store store = GetStore(storeName);
+            return store.MessagesToStore;
+        }
     }
 }
