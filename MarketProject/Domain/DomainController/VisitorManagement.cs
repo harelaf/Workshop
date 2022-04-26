@@ -552,5 +552,10 @@ namespace MarketProject.Domain
                 throw new Exception("this Visitor is not registered.");
             GetRegisteredVisitor(adminUsername).AddRole(new SystemAdmin(adminUsername));
         }
+
+        internal ICollection<MessageToRegistered> getRegisteredMessages(string authToken)
+        {
+            return GetRegisteredByToken(authToken).MessagesToRegistered;
+        }
     }
 }

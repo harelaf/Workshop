@@ -15,7 +15,7 @@ namespace MarketProject.Service.DTO
         public String Title => _title;
 
         private String _message;
-        public String Messages => _message;
+        public String Message => _message;
 
         public MessageToStoreDTO(MessageToStore messageToStore)
         {

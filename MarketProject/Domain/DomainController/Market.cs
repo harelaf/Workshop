@@ -421,11 +421,9 @@ namespace MarketProject.Domain
             _VisitorManagement.SendMessageToRegistered(storeName, UsernameReciever, title, reply);
         }
 
-        internal Queue<MessageToStore> GetStoreMessages(String authToken, String storeName)
+        public Queue<MessageToStore> GetStoreMessages(String authToken, String storeName)
         {
             String username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_VisitorManagement.IsVisitorLoggedin(username))
-                throw new Exception("the given Visitor is not a visitor in the system");
             if(_VisitorManagement.CheckAccess(username, storeName, Operation.RECEIVE_AND_REPLY_STORE_MESSAGE))
                 return _storeManagement.GetStoreMessages(storeName);
             return null;
@@ -442,7 +440,12 @@ namespace MarketProject.Domain
                 if (_storeManagement.AddStoreManager(newManager, storeName))
                     _VisitorManagement.AddRole(managerUsername, newManager); }
         }
-    
+
+        internal ICollection<MessageToRegistered> GetRegisteredMessages(string authToken)
+        {
+            return _VisitorManagement.getRegisteredMessages(authToken);
+        }
+
         public void AddStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.4
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))

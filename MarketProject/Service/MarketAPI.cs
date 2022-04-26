@@ -613,7 +613,7 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response<Queue<MessageToStoreDTO>> GetStoreMessage(String authToken, String storeName)
+        public Response<Queue<MessageToStoreDTO>> GetStoreMessages(String authToken, String storeName)
         {//II.4.12
             //should return with id
             Response<Queue<MessageToStoreDTO>> response;
@@ -628,6 +628,24 @@ namespace MarketProject.Service
             catch (Exception e)
             {
                 response = new Response<Queue<MessageToStoreDTO>>(e);
+            }
+            return response;
+        }
+        public Response<ICollection<MessageToRegisteredDTO>> GetRegisteredMessages(String authToken)
+        {//II.4.12
+            //should return with id
+            Response<ICollection<MessageToRegisteredDTO>> response;
+            try
+            {
+                ICollection<MessageToRegistered> messages = _market.GetRegisteredMessages(authToken);
+                ICollection<MessageToRegisteredDTO> messagesDTOs = new List<MessageToRegisteredDTO>();
+                foreach (MessageToRegistered message in messages)
+                    messagesDTOs.Add(new MessageToRegisteredDTO(message));
+                response = new Response<ICollection<MessageToRegisteredDTO>>(messagesDTOs);
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<MessageToRegisteredDTO>>(e);
             }
             return response;
         }

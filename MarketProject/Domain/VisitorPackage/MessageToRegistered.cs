@@ -21,5 +21,7 @@ namespace MarketProject.Domain
 
         public String Username => _username;
         public String StoreName => _storeName;
+        public String Title => _title;
+        public String Message => _message;
     }
 }
