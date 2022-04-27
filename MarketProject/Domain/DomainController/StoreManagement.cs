@@ -6,6 +6,7 @@ namespace MarketProject.Domain
 {
     public class StoreManagement
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Dictionary<String, Store> _stores; //<storeName:String, Store>
 
         public StoreManagement()
@@ -15,9 +16,12 @@ namespace MarketProject.Domain
 
         public Store GetStore(String storeName)
         {
+            String errorMessage;
             if (_stores.ContainsKey(storeName))
                 return _stores[storeName];
-            throw new Exception("Store '" + storeName + "' does not exists.");
+            errorMessage = "Store '" + storeName + "' does not exists.";
+            LogErrorMessage("GetStore", errorMessage);
+            throw new Exception(errorMessage);
         }
 
         public bool IsStoreExist(String storeName)
@@ -27,20 +31,34 @@ namespace MarketProject.Domain
 
         public Item ReserveItemFromStore(String storeName, int itemID, int amount)
         {
+            String errorMessage;
             if (amount <= 0)
-                throw new Exception("can't reserve non-positive amount of item");
+            {
+                errorMessage = "can't reserve non-positive amount of item";
+                LogErrorMessage("ReserveItemFromStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Store store = GetStore(storeName);
             return store.ReserveItem(itemID, amount);
         }
 
         public Item GetItem(String storeName, int itemID)
         {
+            String errorMessage;
             Store store = GetStore(storeName);
             if (store == null)
-                throw new Exception("there is no store in system with the givn storeid");
+            {
+                errorMessage = "there is no store in system with the givn storeid";
+                LogErrorMessage("GetItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Item item= store.GetItem(itemID);
             if (item == null)
-                throw new Exception("there is no item: "+itemID+" in the given store");
+            {
+                errorMessage = "there is no item: " + itemID + " in the given store";
+                LogErrorMessage("GetItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return item;    
         }
         public void EditItemPrice(String storeName, int itemID, double newPrice)
@@ -52,10 +70,13 @@ namespace MarketProject.Domain
             }  
         }
         public void EditItemName(String storeName, int itemID, String newName)
-        { 
-            if(newName == null)
+        {
+            String errorMessage;
+            if (newName == null)
             {
-                throw new ArgumentNullException("Store name mustn't be empty!");
+                errorMessage = "Store name mustn't be empty!";
+                LogErrorMessage("EditItemName", errorMessage);
+                throw new ArgumentNullException(errorMessage);
             }
             Item item = GetItem(storeName, itemID); 
             item.SetName(newName);
@@ -101,8 +122,13 @@ namespace MarketProject.Domain
 
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {
+            String errorMessage;
             if (amount_to_add <= 0)
-                throw new Exception("can't unreserve non-positive amount of item");
+            {
+                errorMessage = "can't unreserve non-positive amount of item";
+                LogErrorMessage("UnreserveItemInStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Store store = GetStore(storeName);
             store.UnReserveItem(item, amount_to_add);
         }
@@ -120,8 +146,13 @@ namespace MarketProject.Domain
 
         public Store GetStoreInformation(String storeName)
         {
+            String errorMessage;
             if (!CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
+            {
+                errorMessage = $"Store {storeName} does not exist.";
+                LogErrorMessage("GetStoreInformation", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Store store = _stores[storeName];
             return store;
         }
@@ -172,9 +203,14 @@ namespace MarketProject.Domain
 
         public void ReopenStore(String storeName)
         {
+            String errorMessage;
             Store store = GetStore(storeName);
             if (store.State != StoreState.Inactive)
-                throw new Exception($"Store {storeName} is not inactive.");
+            {
+                errorMessage = $"Store {storeName} is not inactive.";
+                LogErrorMessage("GetStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
             store.ReopenStore();
         }
 
@@ -240,6 +276,11 @@ namespace MarketProject.Domain
                 Store store = GetStore(storeName);
                 store.RemoveRoles(registered.Username);
             }
+        }
+
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in StoreManagement.{functionName}. Cause: {message}.");
         }
     }
 }

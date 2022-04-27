@@ -6,6 +6,7 @@ namespace MarketProject.Domain
 {
     public class Item
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Rating _rating;
         private ICollection<IDiscount> _discounts;
         private int _itemID;
@@ -25,7 +26,9 @@ namespace MarketProject.Domain
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                String errorMessage = "Name is null";
+                LogErrorMessage("Constructor", errorMessage);
+                throw new Exception(errorMessage);
             }
             _rating = new Rating();
             _discounts = new List<IDiscount>();
@@ -38,15 +41,24 @@ namespace MarketProject.Domain
 
         public void RateItem(String Username, int rating, String review)
         {
+            String errorMessage;
             if (_rating.HasRating(Username)){
-                throw new Exception("You can't rate the same item twice or more.");
+                errorMessage = "You can't rate the same item twice or more.";
+                LogErrorMessage("RateItem", errorMessage);
+                throw new Exception(errorMessage);
             }
             _rating.AddRating(Username, rating, review);
         }
 
         public void SetName(String name)
         {
-            if (name == null) { throw new ArgumentNullException("name"); }
+            String errorMessage;
+            if (name == null) 
+            {
+                errorMessage = "name";
+                LogErrorMessage("SetName", errorMessage);
+                throw new ArgumentNullException(errorMessage);
+            }
             _name = name;
         }
 
@@ -60,6 +72,9 @@ namespace MarketProject.Domain
             _description = description;
         }
 
-        
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in Item.{functionName}. Cause: {message}.");
+        }
     }
 }

@@ -55,6 +55,7 @@ namespace AcceptanceTest
         {
             /*
              * NEED TO FIGURE OUT HOW TO USE AN ADMIN TO CLOSE STORE PERMANENTLY.
+             * THIS FUNCTION FAILS -- FOR NOW!!!
              */
             Response response = marketAPI.CloseStorePermanently(admin_token, storeName_inSystem);
             Assert.IsFalse(response.ErrorOccured);

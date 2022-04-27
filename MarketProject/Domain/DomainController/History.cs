@@ -6,6 +6,7 @@ namespace MarketProject.Domain
 {
     public class History
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private IDictionary<String, List<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
         private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //Username:String
 
@@ -56,7 +57,11 @@ namespace MarketProject.Domain
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String storeName)
         {
             if (!_storePurchaseHistory.ContainsKey(storeName))
-                throw new Exception($"There is purchase history for {storeName} yet.");
+            {
+                String errorMessage = $"There is purchase history for {storeName} yet.";
+                LogErrorMessage("GetStorePurchaseHistory", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return _storePurchaseHistory[storeName];
         }
 
@@ -80,8 +85,17 @@ namespace MarketProject.Domain
         public ICollection<Tuple<DateTime, ShoppingCart>> GetRegistreredPurchaseHistory(String Username)
         {
             if (!_registeredPurchaseHistory.ContainsKey(Username))
-                throw new Exception($"Purchase History of Visitor: {Username} is Empty. Visitor has'nt purchased yet.");
+            {
+                String errorMessage = $"Purchase History of Visitor: {Username} is Empty. Visitor has'nt purchased yet.";
+                LogErrorMessage("GetRegistreredPurchaseHistory", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return _registeredPurchaseHistory[Username];
+        }
+
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in History.{functionName}. Cause: {message}.");
         }
     }
 }
