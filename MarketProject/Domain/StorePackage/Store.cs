@@ -13,6 +13,7 @@ namespace MarketProject.Domain
 
     public class Store
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Stock _stock;
         public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
@@ -54,13 +55,19 @@ namespace MarketProject.Domain
 
         public Item ReserveItem(int itemID, int amount)
         {
+            String errorMessage = null;
             Item item  = _stock.GetItem(itemID);
             if (item == null)
-                throw new Exception("there is no such item: " + itemID + " is store");
-            if (amount <= 0)
-                throw new Exception("cannt reserve item with amount<1");
-            if (!_stock.ReserveItem(item, amount))
-                throw new Exception("can't reseve amount: " + amount+" of " + itemID + ".the avalable amount is: " + _stock.GetItemAmount(item));
+                errorMessage = "there is no such item: " + itemID + " is store";
+            else if (amount <= 0)
+                errorMessage = "cannt reserve item with amount<1";
+            else if (!_stock.ReserveItem(item, amount))
+                errorMessage = "can't reseve amount: " + amount + " of " + itemID + ".the avalable amount is: " + _stock.GetItemAmount(item);
+            if (errorMessage != null)
+            {
+                LogErrorMessage("ReserveItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return item; // else: reservation done secsussfully-> return reserved item
         }
         public Item GetItem(int itemID)
@@ -70,22 +77,28 @@ namespace MarketProject.Domain
 
         public bool AddStoreManager(StoreManager newManager)
         {
+            String errorMessage;
             if (!hasRoleInStore(newManager.Username))
             {
                 _managers.Add(newManager);
                 return true;
             }
-            throw new Exception("already has a role in this store.");
+            errorMessage = "already has a role in this store.";
+            LogErrorMessage("AddStoreManager", errorMessage);
+            throw new Exception(errorMessage);
         }
 
         public bool AddStoreOwner(StoreOwner newOwner)
         {
+            String errorMessage;
             if (!hasRoleInStore(newOwner.Username))
             {
                 _owners.Add(newOwner);
                 return true;
             }
-            throw new Exception("already has a role in this store.");
+            errorMessage = "already has a role in this store.";
+            LogErrorMessage("AddStoreOwner", errorMessage);
+            throw new Exception(errorMessage);
         }
 
         private bool hasRoleInStore(string Username)
@@ -111,10 +124,16 @@ namespace MarketProject.Domain
         
         public void UnReserveItem(Item item, int amount_to_add)
         {
+            String errorMessage = null;
             if (amount_to_add <= 0)
-                throw new Exception("cannt unreserve item with amount<1");
-            if (!_stock.UnreserveItem(item, amount_to_add))
-                throw new Exception("can't unreserve item from that doesn't exists is store stock");
+                errorMessage = "cannt unreserve item with amount<1";
+            else if (!_stock.UnreserveItem(item, amount_to_add))
+                errorMessage = "can't unreserve item from that doesn't exists is store stock";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("UnReserveItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
         }
 
         public String GetName()
@@ -182,30 +201,50 @@ namespace MarketProject.Domain
 
         public void RateStore(String Username, int rating, String review)
         {
+            String errorMessage;
             bool result = _rating.AddRating(Username, rating, review);
             if (!result)
-                throw new Exception($"Visitor {Username} already rated this store.");
+            {
+                errorMessage = $"Visitor {Username} already rated this store.";
+                LogErrorMessage("RateStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
         }
 
         public void UpdateStockQuantityOfItem(int itemId, int newQuantity)
         {
+            String errorMessage;
             if (_stock.GetItem(itemId) == null)
-                throw new Exception($"An item with ID {itemId} doesnt exist in the stock.");
+            {
+                errorMessage = $"An item with ID {itemId} doesnt exist in the stock.";
+                LogErrorMessage("UpdateStockQuantityOfItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
             _stock.ChangeItemQuantity(itemId, newQuantity);
         }
 
         public void AddItemToStoreStock(int itemId, String name, double price, String description, String category, int quantity)
         {
+            String errorMessage;
             if (_stock.GetItem(itemId) != null)
-                throw new Exception($"An item with ID {itemId} already exists in the stock.");
+            {
+                errorMessage = $"An item with ID {itemId} already exists in the stock.";
+                LogErrorMessage("AddItemToStoreStock", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Item newItem = new Item(itemId, name, price, description, category);
             _stock.AddItem(newItem, quantity);
         }
 
         public void RemoveItemFromStore(int itemId)
         {
+            String errorMessage;
             if (_stock.GetItem(itemId) == null)
-                throw new Exception($"An item with ID {itemId} doesnt exist in the stock.");
+            {
+                errorMessage = $"An item with ID {itemId} doesnt exist in the stock.";
+                LogErrorMessage("RemoveItemFromStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
             _stock.RemoveItem(itemId);
         }
 
@@ -302,13 +341,9 @@ namespace MarketProject.Domain
             return _founder;
         }
 
-        //public List<SystemRole> getRoles()
-        //{
-        //    List<SystemRole> roles = new List<SystemRole>();
-        //    roles.AddRange(_managers);
-        //    roles.AddRange(_owners);
-        //    roles.Add(_founder);
-        //    return roles;
-        //}
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in Store.{functionName}. Cause: {message}.");
+        }
     }
 }

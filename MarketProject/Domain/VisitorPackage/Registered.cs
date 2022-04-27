@@ -5,6 +5,7 @@ namespace MarketProject.Domain
 {
     public class Registered : Visitor
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private ICollection<MessageToRegistered> _messagesToRegistered;
         public ICollection<MessageToRegistered> MessagesToRegistered => _messagesToRegistered;
         private String _username;
@@ -83,8 +84,13 @@ namespace MarketProject.Domain
 
         public void AddRole(SystemRole role)
         {
+            String errorMessage;
             if (hasRoleInStore(role.StoreName))
-                throw new UnauthorizedAccessException("already has this role.");
+            {
+                errorMessage = "already has this role.";
+                LogErrorMessage("AddRole", errorMessage);
+                throw new UnauthorizedAccessException(errorMessage);
+            }
             _roles.Add(role);
         }
 
@@ -120,13 +126,16 @@ namespace MarketProject.Domain
 
         internal void UpdatePassword(string oldPassword, string newPassword)
         {
+            String errorMessage;
             if (Login(oldPassword))
             {
                 _password = newPassword;
             }
             else
             {
-                throw new Exception("Wrong password.");
+                errorMessage = "Wrong password.";
+                LogErrorMessage("UpdatePassword", errorMessage);
+                throw new Exception(errorMessage);
             }
         }
 
@@ -153,6 +162,11 @@ namespace MarketProject.Domain
                 if(role.StoreName == storeName)
                     return role;
             return null;
+        }
+
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in Registered.{functionName}. Cause: {message}.");
         }
     }
 }

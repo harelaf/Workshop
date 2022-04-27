@@ -6,6 +6,7 @@ namespace MarketProject.Domain
 {
     public class PurchaseProcess
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual PaymentHandlerProxy _paymentHandlerProxy { get; set; }
         public virtual ShippingHandlerProxy _shippingHandlerProxy{ get; set; }
         //singelton:
@@ -47,8 +48,9 @@ namespace MarketProject.Domain
             {
                 errorMessage = "Purchase failed: Shipping services refuse to provide your cart.";
             } 
-             //relaseCart:
-             cartToPurchase.RelaseItemsOfCart();
+            //relaseCart:
+            cartToPurchase.RelaseItemsOfCart();
+            LogErrorMessage("Purchase", errorMessage);
             throw new Exception(errorMessage);
         }
         private double CalculatePrice(ShoppingCart shoppingCart)
@@ -69,5 +71,9 @@ namespace MarketProject.Domain
             return price;
         }
 
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in PurchaseProcess.{functionName}. Cause: {message}.");
+        }
     }
 }
