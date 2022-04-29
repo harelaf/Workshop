@@ -550,7 +550,7 @@ namespace MarketProject.Domain
             return newQuantity - old_quantity;
         }
 
-        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName)
+        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode)
         {
             String errorMessage;
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
@@ -560,7 +560,7 @@ namespace MarketProject.Domain
                 LogErrorMessage("PurchaseMyCart", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName);
+            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
         }
 
 

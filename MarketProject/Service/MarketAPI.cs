@@ -196,13 +196,13 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response PurchaseMyCart(String authToken, String address, String city, String country, String zip, String purchaserName)
+        public Response PurchaseMyCart(String authToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
         {//II.2.5
             Response response;
             try
             {
                 log.Info($"Purchase My Cart called with parameters: authToken={authToken}, address={address}, city={city}, country={country}, zip={zip}, purchaserName={purchaserName}.");
-                _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName); 
+                _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode); 
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Purchase My Cart.");
             }

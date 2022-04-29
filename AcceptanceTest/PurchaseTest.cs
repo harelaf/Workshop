@@ -23,6 +23,10 @@ namespace AcceptanceTest
         int itemId_inGuestCart;
         int itemAmount_inRegCart = 10;
         int itemAmount_inGuestCart = 10;
+        public static readonly string shippingMethode_mock_false = "mock_false";
+        public static readonly string shippingMethode_mock_true = "mock_true";
+        public static readonly string paymentMethode_mock_false = "mock_false";
+        public static readonly string paymentMethode_mock_true = "mock_true";
 
         [TestInitialize()]
         public void setup()
@@ -45,19 +49,19 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestPurchaseCart_CartIsEmpty()
         {
-            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi");
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true);
             if (!guest_res.ErrorOccured)
                 Assert.Fail("should've faild: can't purchase empty cart");
         }
 
         [TestMethod]
-        public void TestPurchase_CartNonEmptyGuest()
+        public void Test_happy_Purchase_Guest()
         {
             marketAPI.AddItemToCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, itemAmount_inGuestCart);
-            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi");
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true);
             if (guest_res.ErrorOccured)
                 Assert.Fail("should'nt faild");
-            //check recored added in history:
+            //check recored added in store history:
             ICollection<Tuple<DateTime, ShoppingBasketDTO>> store_purchasedBasket = marketAPI.GetStorePurchasesHistory(registered_VisitorToken, storeName_inSystem).Value;
             Assert.IsNotNull(store_purchasedBasket);
             Assert.AreEqual(1, store_purchasedBasket.Count);
@@ -84,10 +88,86 @@ namespace AcceptanceTest
 
         }
         [TestMethod]
-        public void TestPurchase_CartNonEmptyRegistred()
+        public void Test_sad_Purchase_Guest_shippmentFaild()
+        {
+            marketAPI.AddItemToCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, itemAmount_inGuestCart);
+
+            StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_before_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
+
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_true, shippingMethode_mock_false);
+            if (!guest_res.ErrorOccured)
+                Assert.Fail("should faild");
+
+            store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_after_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
+
+            //check there was no  recored added in store  history:
+            ICollection<Tuple<DateTime, ShoppingBasketDTO>> store_purchasedBasket = marketAPI.GetStorePurchasesHistory(registered_VisitorToken, storeName_inSystem).Value;
+            if (store_purchasedBasket != null)
+                Assert.AreEqual(0, store_purchasedBasket.Count);
+           
+            //check if stock was refilled:
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase+ itemAmount_inGuestCart);
+
+        }
+
+        [TestMethod]
+        public void Test_sad_Purchase_Guest_paymentFaild()
+        {
+            marketAPI.AddItemToCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, itemAmount_inGuestCart);
+
+            StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_before_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
+
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_true);
+            if (!guest_res.ErrorOccured)
+                Assert.Fail("should faild");
+
+            store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_after_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
+
+            //check there was no  recored added in store  history:
+            ICollection<Tuple<DateTime, ShoppingBasketDTO>> store_purchasedBasket = marketAPI.GetStorePurchasesHistory(registered_VisitorToken, storeName_inSystem).Value;
+            if (store_purchasedBasket != null)
+                Assert.AreEqual(0, store_purchasedBasket.Count);
+
+            //check if stock was refilled:
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase + itemAmount_inGuestCart);
+
+        }
+
+        [TestMethod]
+        public void Test_sad_Purchase_Guest_bothPaymentNShippmentFaild()
+        {
+            marketAPI.AddItemToCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, itemAmount_inGuestCart);
+
+            StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_before_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
+
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_false);
+            if (!guest_res.ErrorOccured)
+                Assert.Fail("should faild");
+
+            store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_after_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
+
+            //check there was no  recored added in store  history:
+            ICollection<Tuple<DateTime, ShoppingBasketDTO>> store_purchasedBasket = marketAPI.GetStorePurchasesHistory(registered_VisitorToken, storeName_inSystem).Value;
+            if (store_purchasedBasket != null)
+                Assert.AreEqual(0, store_purchasedBasket.Count);
+
+            //check if stock was refilled:
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase + itemAmount_inGuestCart);
+
+        }
+
+
+        [TestMethod]
+        public void Test_happy_Purchase_Registred()
         {
             marketAPI.AddItemToCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inRegCart);
-            Response guest_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi");
+            Response guest_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true);
             if (guest_res.ErrorOccured)
                 Assert.Fail("should'nt faild");
             //check recored added in store history:
@@ -145,6 +225,103 @@ namespace AcceptanceTest
                     }
                 }
             }
+        }
+
+        [TestMethod]
+        public void Test_sad_Purchase_Register_shippmentFaild()
+        {
+            marketAPI.AddItemToCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inRegCart);
+
+            StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_before_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
+
+            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_true, shippingMethode_mock_false);
+            if (!reg_res.ErrorOccured)
+                Assert.Fail("should faild");
+
+            store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_after_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
+
+            //check there was no  recored added in store  history:
+            ICollection<Tuple<DateTime, ShoppingBasketDTO>> store_purchasedBasket = marketAPI.GetStorePurchasesHistory(registered_VisitorToken, storeName_inSystem).Value;
+            if (store_purchasedBasket != null)
+                Assert.AreEqual(0, store_purchasedBasket.Count);
+
+            //check there was recored added in Visitor history:
+            ICollection<PurchasedCartDTO> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
+            if(Visitor_history != null)
+                Assert.AreEqual(0, Visitor_history.Count);
+            //check if stock was refilled:
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+
+        }
+
+        [TestMethod]
+        public void Test_sad_Purchase_Register_paymentFaild()
+        {
+            marketAPI.AddItemToCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inRegCart);
+
+            StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_before_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
+
+            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_true);
+            if (!reg_res.ErrorOccured)
+                Assert.Fail("should faild");
+
+            store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_after_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
+
+            //check there was no  recored added in store  history:
+            ICollection<Tuple<DateTime, ShoppingBasketDTO>> store_purchasedBasket = marketAPI.GetStorePurchasesHistory(registered_VisitorToken, storeName_inSystem).Value;
+            if (store_purchasedBasket != null)
+                Assert.AreEqual(0, store_purchasedBasket.Count);
+
+            //check there was recored added in Visitor history:
+            ICollection<PurchasedCartDTO> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
+            if(Visitor_history != null)
+                Assert.AreEqual(0, Visitor_history.Count);
+            //check if stock was refilled:
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+
+        }
+
+        [TestMethod]
+        public void Test_sad_Purchase_Register_bothPaymentNShippmentFaild()
+        {
+            marketAPI.AddItemToCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inRegCart);
+
+            StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_before_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
+
+            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_false);
+            if (!reg_res.ErrorOccured)
+                Assert.Fail("should faild");
+
+            store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_after_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
+
+            //check there was no  recored added in store  history:
+            ICollection<Tuple<DateTime, ShoppingBasketDTO>> store_purchasedBasket = marketAPI.GetStorePurchasesHistory(registered_VisitorToken, storeName_inSystem).Value;
+            if (store_purchasedBasket != null)
+                Assert.AreEqual(0, store_purchasedBasket.Count);
+
+            //check there was recored added in Visitor history:
+            ICollection<PurchasedCartDTO> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
+            if(Visitor_history != null)
+                Assert.AreEqual(0, Visitor_history.Count);
+            //check if stock was refilled:
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+
+        }
+
+        private int getAmountOfItemInStock(int itemID, StockDTO stock)
+        {
+            foreach (ItemDTO item in stock.Items.Keys)
+            {
+                if (itemID == item.ItemID)
+                    return stock.Items[item];
+            }
+            return 0;
         }
     }
 }

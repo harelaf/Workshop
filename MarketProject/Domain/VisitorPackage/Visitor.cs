@@ -71,10 +71,10 @@ namespace MarketProject.Domain
             }
             return shoppingBasket.GetAmountOfItem(item);
         }
-        public ShoppingCart PurchaseMyCart(String address, String city, String country, String zip, String purchaserName)
+        public ShoppingCart PurchaseMyCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
         {
             ShoppingCart cart = _shoppingCart;
-            PurchaseProcess.GetInstance().Purchase(address, city, country, zip, purchaserName, cart);
+            PurchaseProcess.GetInstance().Purchase(address, city, country, zip, purchaserName, cart, paymentMethode, shipmentMethode);
             _shoppingCart = new ShoppingCart();
             return cart;
         }

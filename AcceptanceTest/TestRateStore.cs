@@ -20,6 +20,10 @@ namespace AcceptanceTest
         string registered_userToken;
         string review;
         int ratingInRange;
+        public static readonly string paymentMethode_mock_flase = "mock_false";
+        public static readonly string paymentMethode_mock_true = "mock_true";
+        public static readonly string shippingMethode_mock_flase = "mock_false";
+        public static readonly string shippingMethode_mock_true = "mock_true";
 
         [TestInitialize]
         public void setup()
@@ -62,7 +66,7 @@ namespace AcceptanceTest
             Response response1 = marketAPI.AddItemToCart(registered_userToken, 1, storeName_inSystem, 1);
             Assert.IsFalse(response1.ErrorOccured);
 
-            Response response2 = marketAPI.PurchaseMyCart(registered_userToken, "City Center", "Jerusalem", "Israel", "123456", username);
+            Response response2 = marketAPI.PurchaseMyCart(registered_userToken, "City Center", "Jerusalem", "Israel", "123456", username, paymentMethode_mock_true, shippingMethode_mock_true);
             Assert.IsFalse(response2.ErrorOccured);
 
             Response response3 = marketAPI.RateStore(registered_userToken, storeName_inSystem, ratingInRange, review);

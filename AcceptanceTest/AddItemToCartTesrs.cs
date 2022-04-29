@@ -130,16 +130,42 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestAddItemToCart_addingSuccses()
         {
-            Response response_reg = marketAPI.AddItemToCart(registered_VisitorToken, itemID_inStock_1, storeName_inSystem, itemAmount_inSttock_1);
-            Response response_guest = marketAPI.AddItemToCart(guest_VisitorToken, itemID_inStock_2, storeName_inSystem, itemAmount_inSttock_2);
+            int reg_amount_to_add = itemAmount_inSttock_1 - 2;
+            int guest_amount_to_add = itemAmount_inSttock_2 - 2;
+
+            StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_before_reg_add = getAmountOfItemInStock(itemID_inStock_1, store.Stock);
+            int amount_of_item_before_guest_add = getAmountOfItemInStock(itemID_inStock_2, store.Stock);
+            
+            Response response_reg = marketAPI.AddItemToCart(registered_VisitorToken, itemID_inStock_1, storeName_inSystem,reg_amount_to_add );
+            Response response_guest = marketAPI.AddItemToCart(guest_VisitorToken, itemID_inStock_2, storeName_inSystem, guest_amount_to_add);
+
+            store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
+            int amount_of_item_after_reg_add = getAmountOfItemInStock(itemID_inStock_1, store.Stock);
+            int amount_of_item_agter_guest_add = getAmountOfItemInStock(itemID_inStock_2, store.Stock);
+
             if (response_guest.ErrorOccured || response_reg.ErrorOccured)
                 Assert.Fail("reg_err: " + response_reg.ErrorMessage + " ;  guest_errL " + response_guest.ErrorMessage);
+            
             ShoppingCartDTO cart_registered = marketAPI.ViewMyCart(registered_VisitorToken).Value;
             ShoppingCartDTO cart_guest = marketAPI.ViewMyCart(guest_VisitorToken).Value;
             if (cart_guest.Baskets.Count < 0 || cart_registered.Baskets.Count < 0)
                 Assert.Fail(" item should have been added to cart ");
-            Assert.AreEqual(itemAmount_inSttock_1, cart_registered.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_1));
-            Assert.AreEqual(itemAmount_inSttock_2, cart_guest.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_2));
+            
+            Assert.AreEqual(reg_amount_to_add, cart_registered.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_1));
+            Assert.AreEqual(guest_amount_to_add, cart_guest.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_2));
+            Assert.AreEqual(amount_of_item_after_reg_add, amount_of_item_before_reg_add - reg_amount_to_add);
+            Assert.AreEqual(amount_of_item_agter_guest_add, amount_of_item_before_guest_add - guest_amount_to_add);
+        }
+        
+        private int getAmountOfItemInStock(int itemID, StockDTO stock)
+        {
+            foreach (ItemDTO item in stock.Items.Keys)
+            {
+                if (itemID == item.ItemID)
+                    return stock.Items[item];
+            }
+            return 0;
         }
         
     }

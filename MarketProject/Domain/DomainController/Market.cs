@@ -532,10 +532,10 @@ namespace MarketProject.Domain
             }
         }
 
-        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName)
+        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
         {//II.2.5
             CheckIsVisitorAVisitor(VisitorToken, "PurchaseMyCart");
-            ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName);
+            ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
             if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))

@@ -13,8 +13,8 @@ namespace MarketProject.Domain
         private static PurchaseProcess _instance;
         private PurchaseProcess()
         {
-            _paymentHandlerProxy = new PaymentHandlerProxy(null);
-            _shippingHandlerProxy = new ShippingHandlerProxy(null);
+            _paymentHandlerProxy = new PaymentHandlerProxy();
+            _shippingHandlerProxy = new ShippingHandlerProxy();
         }
         private PurchaseProcess(PaymentHandlerProxy paymentHandlerProxy, ShippingHandlerProxy shippingHandlerProxy)
         {
@@ -32,15 +32,15 @@ namespace MarketProject.Domain
             _instance._shippingHandlerProxy = shippingHandlerProxy;
             _instance._paymentHandlerProxy = paymentHandlerProxy;
         }
-        public void Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase)
+        public void Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase, string paymentMethode, string shipmentMethode)
         {
             string errorMessage="";
             //first: should check that shippingSystem willig to provide cart:
-            if(_shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName))
+            if(_shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode))
             {
                 //second: the actual payment:
                 double price = CalculatePrice(cartToPurchase);
-                if (_paymentHandlerProxy.Pay(price))// payment succseded
+                if (_paymentHandlerProxy.Pay(price, paymentMethode))// payment succseded
                     return;
                 errorMessage = "Purchase failed: paymentSystem refuses.";
             }
