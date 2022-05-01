@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public class ShoppingCart
+    public class ShoppingCart : ISearchable, IPriceable
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual ICollection<ShoppingBasket> _shoppingBaskets { get; set; }
@@ -56,6 +56,37 @@ namespace MarketProject.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in ShoppingCart.{functionName}. Cause: {message}.");
+        }
+
+        public int SearchItemAmount(string itemName)
+        {
+            int result = 0;
+            foreach(ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.SearchItemAmount(itemName);
+            }
+            return result;
+        }
+
+        public int SearchCategoryAmount(string category)
+        {
+            int result = 0;
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.SearchCategoryAmount(category);
+            }
+            return result;
+        }
+
+        //before discounts
+        public int GetTotalPrice()
+        {
+            int result = 0;
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.GetTotalPrice();
+            }
+            return result;
         }
     }
 }
