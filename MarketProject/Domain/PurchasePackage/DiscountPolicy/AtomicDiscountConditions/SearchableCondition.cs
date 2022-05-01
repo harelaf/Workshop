@@ -16,23 +16,5 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
             _minAmount = minAmount;
             _maxAmount = maxAmount;
         }
-
-        public override bool Check()
-        {
-            if (_maxAmount < 0)
-            {
-                if (_minAmount < 0)
-                {
-                    return false;
-                }
-                return _searchable.SearchCategoryAmount(_keyWord) >= _minAmount;
-            }
-            else if (_minAmount < 0)
-            {
-                return _searchable.SearchCategoryAmount(_keyWord) <= _maxAmount;
-            }
-            return _searchable.SearchCategoryAmount(_keyWord) >= _minAmount &&
-                   _searchable.SearchCategoryAmount(_keyWord) <= _maxAmount;
-        }
     }
 }
