@@ -109,7 +109,7 @@ namespace MarketProject.Domain
             return result;
         }
         //before discounts
-        public int GetTotalPrice()
+        public double GetTotalPrice()
         {
             throw new NotImplementedException();
         }

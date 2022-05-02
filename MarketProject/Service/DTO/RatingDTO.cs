@@ -16,9 +16,9 @@ namespace MarketProject.Service.DTO
             _ratings = rating.Ratings;
         }
 
-        public float GetRating()
+        public double GetRating()
         {
-            float rating = 0;
+            double rating = 0;
             foreach (KeyValuePair<String, Tuple<int, String>> entry in _ratings)
             {
                 rating += entry.Value.Item1;
