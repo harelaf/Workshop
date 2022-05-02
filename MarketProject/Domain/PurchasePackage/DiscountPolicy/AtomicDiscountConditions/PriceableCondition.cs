@@ -17,20 +17,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         }
         public override bool Check()
         {
-            if (_maxPrice < 0)
-            {
-                if (_minPrice < 0)
-                {
-                    return false;
-                }
-                return _priceable.GetTotalPrice() >= _minPrice;
-            }
-            else if (_minPrice < 0)
-            {
-                return _priceable.GetTotalPrice() <= _maxPrice;
-            }
-            return _priceable.GetTotalPrice() >= _minPrice &&
-                   _priceable.GetTotalPrice() <= _maxPrice;
+            return IsInRange(_priceable.GetTotalPrice(), _minPrice, _maxPrice);
         }
     }
 }
