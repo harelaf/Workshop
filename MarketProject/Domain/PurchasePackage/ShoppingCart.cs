@@ -79,14 +79,19 @@ namespace MarketProject.Domain
         }
 
         //before discounts
-        public int GetTotalPrice()
+        public double GetTotalPrice()
         {
-            int result = 0;
+            double result = 0;
             foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
             {
                 result += shoppingBasket.GetTotalPrice();
             }
             return result;
+        }
+
+        int IPriceable.GetTotalPrice()
+        {
+            throw new NotImplementedException();
         }
     }
 }

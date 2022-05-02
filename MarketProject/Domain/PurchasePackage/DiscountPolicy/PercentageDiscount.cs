@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal class PercentageDiscount : AtomicDiscount
+    internal abstract class PercentageDiscount : AtomicDiscount
     {
         private double _percentage_to_subtract;
         public double PercentageToSubtract
@@ -12,21 +12,20 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
             get { return _percentage_to_subtract; }
             private set
             {
+                if (_percentage_to_subtract < 0 || _percentage_to_subtract > 100)
+                    throw new ArgumentException("the percentage must be non-negative and at most 100.");
                 _percentage_to_subtract = value;
             }
         }
 
-
-        public PercentageDiscount(double percentage_to_subtract, DiscountCondition _condition) : base(_condition)
+        public PercentageDiscount(double percentage_to_subtract, DiscountCondition _condition, DateTime expiration) : base(_condition, expiration)
         {
             _percentage_to_subtract = percentage_to_subtract;
         }
 
-        internal override double GetTotalDiscount(ShoppingCart cart)
+        public PercentageDiscount(double percentage_to_subtract, DateTime expiration) : base(expiration)
         {
-            if(!_condition.Check())
-                return 0;
-            return cart.GetTotalPrice() * (100 - _percentage_to_subtract);
+            _percentage_to_subtract = percentage_to_subtract;
         }
     }
 }

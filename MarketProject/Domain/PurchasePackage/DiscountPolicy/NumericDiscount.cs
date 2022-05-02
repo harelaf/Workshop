@@ -12,21 +12,35 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
             get { return _price_to_subtract; }
             private set
             {
+                if (_price_to_subtract < 0)
+                    throw new ArgumentException("the discount must be non-negative.");
                 _price_to_subtract = value;
             }
         }
 
 
-        public NumericDiscount(double priceToSubtract, DiscountCondition _condition) : base(_condition)
+        public NumericDiscount(double priceToSubtract, DiscountCondition _condition, DateTime expiration) : base(_condition, expiration)
+        {
+            _price_to_subtract = priceToSubtract;
+        }
+        public NumericDiscount(double priceToSubtract, DateTime expiration) : base(null, expiration)
         {
             _price_to_subtract = priceToSubtract;
         }
 
-        internal override double GetTotalDiscount(ShoppingCart cart)
+        public override double GetTotalDiscount(ShoppingCart cart)
         {
-            if(!_condition.Check())
+            if(!CheckCondition() || GetExpirationDate(cart) < DateTime.Now)
                 return 0;
-            return cart.GetTotalPrice() - _price_to_subtract;
+            double totalDis = cart.GetTotalPrice() > PriceToSubtract ? PriceToSubtract : 0;
+            return totalDis;
+        }
+
+        public override string GetDiscountString(ShoppingCart cart)
+        {
+            return PriceToSubtract + " off total price." +
+                "\n\n" + ExpirationToString() +
+                "\n\n" + ConditionToString();
         }
     }
 }

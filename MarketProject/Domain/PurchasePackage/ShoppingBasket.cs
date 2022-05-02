@@ -111,7 +111,7 @@ namespace MarketProject.Domain
         //before discounts
         public double GetTotalPrice()
         {
-            throw new NotImplementedException();
+            //return _store.calcDiscounts(this);
         }
     }
 }

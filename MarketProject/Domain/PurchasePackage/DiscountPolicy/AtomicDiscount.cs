@@ -6,8 +6,23 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
     internal abstract class AtomicDiscount : Discount
     {
-        protected AtomicDiscount(DiscountCondition condition) : base(condition)
+        private DateTime _expiration;
+        public override DateTime GetExpirationDate(ShoppingCart cart)
         {
+            return _expiration;
+        }
+        protected String ExpirationToString()
+        { 
+            return "Expired on: " + _expiration.ToString();
+        }
+        protected AtomicDiscount(DiscountCondition condition, DateTime expiration) : base(condition)
+        {
+            _expiration = expiration;
+        }
+
+        protected AtomicDiscount(DateTime expiration) : base()
+        {
+            _expiration = expiration;
         }
     }
 }
