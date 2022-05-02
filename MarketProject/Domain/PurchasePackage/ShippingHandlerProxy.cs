@@ -4,20 +4,31 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public class ShippingHandlerProxy : IShipping
+    public class ShippingHandlerProxy
     {
-        private RealShippingSystem _realShippingSystem;
+        private IDictionary<string, int> _shipmentServices_name_ip;
+        public static readonly string shippingMethode_mock_flase = "mock_false";
+        public static readonly string shippingMethode_mock_true = "mock_true";
 
-        public ShippingHandlerProxy(RealShippingSystem realShippingSystem)
+        public ShippingHandlerProxy()
         {
-            _realShippingSystem = realShippingSystem;
+            _shipmentServices_name_ip = new Dictionary<string, int>();
         }
         // includes mock of shipp
-        public virtual bool ShippingApproval(String address, String city, String country, String zip, String purchaserName)
+        public virtual bool ShippingApproval(String address, String city, String country, String zip, String purchaserName, string shipmentMethode)
         {
-            if(_realShippingSystem == null)
+            if(shipmentMethode == shippingMethode_mock_flase)
+                return false;
+            if(shipmentMethode == shippingMethode_mock_true)
                 return true;
-            return _realShippingSystem.ShippingAproval(address, city, country, zip, purchaserName);
+            if(!_shipmentServices_name_ip.ContainsKey(shipmentMethode))
+                return false;//defult mock
+            return realShippment(address, city, country, zip, purchaserName, _shipmentServices_name_ip[shipmentMethode]);
+        }
+     
+        private bool realShippment(String address, String city, String country, String zip, String purchaserName, int ip)
+        {
+            throw new NotImplementedException();
         }
     }
 }

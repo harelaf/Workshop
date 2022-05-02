@@ -5,8 +5,8 @@ using System.Text;
 namespace MarketProject.Domain
 {
     public class VisitorManagement
-
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         /// <summary>
         /// Dictionary mapping Username to Visitor
         /// </summary>
@@ -104,8 +104,13 @@ namespace MarketProject.Domain
         /// <returns> The Username associated with a token.</returns>
         public String GetRegisteredUsernameByToken(String token)
         {
+            String errorMessage;
             if (!IsVisitorLoggedin(token))
-                throw new ArgumentException("No registered Visitor with the given token.");
+            {
+                errorMessage = "No registered Visitor with the given token.";
+                LogErrorMessage("GetRegisteredUsernameByToken", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return _loggedinVisitorsTokens[token].Username;
         }
 
@@ -116,8 +121,13 @@ namespace MarketProject.Domain
         /// <returns> The Registered associated with a token.</returns>
         public Registered GetRegisteredByToken(String token)
         {
+            String errorMessage;
             if (!IsVisitorLoggedin(token))
-                throw new ArgumentException("No registered Visitor with the given token.");
+            {
+                errorMessage = "No registered Visitor with the given token.";
+                LogErrorMessage("GetRegisteredByToken", errorMessage);
+                throw new ArgumentException(errorMessage);
+            }
             return _loggedinVisitorsTokens[token];
         }
 
@@ -130,11 +140,14 @@ namespace MarketProject.Domain
         /// <returns> The Visitor associated with a token.</returns>
         public Visitor GetVisitorVisitor(String VisitorToken)
         {
+            String errorMessage;
             if (_loggedinVisitorsTokens.ContainsKey(VisitorToken))
                 return _loggedinVisitorsTokens[VisitorToken];
             if (_visitorsGuestsTokens.ContainsKey(VisitorToken))
                 return _visitorsGuestsTokens[VisitorToken];
-            throw new Exception("No Visitor with the given token.");
+            errorMessage = "No Visitor with the given token.";
+            LogErrorMessage("GetVisitorVisitor", errorMessage);
+            throw new Exception(errorMessage);
         }
 
         internal ShoppingCart GetVisitorShoppingCart(string VisitorToken)
@@ -213,6 +226,7 @@ namespace MarketProject.Domain
         /// <param name="authToken"> The token of the Visitor exiting.</param>
         public void ExitSystem(string authToken)
         {
+            String errorMessage;
             if (IsVisitorLoggedin(authToken))
             {
                 //_loggedinVisitorsTokens[authToken].saveCart(); ---> save cart in exit
@@ -224,7 +238,9 @@ namespace MarketProject.Domain
             }
             else
             {
-                throw new Exception("Exit failed: there is no Visitor with the given token currently in the system.");
+                errorMessage = "Exit failed: there is no Visitor with the given token currently in the system.";
+                LogErrorMessage("ExitSystem", errorMessage);
+                throw new Exception(errorMessage);
             }
         }
 
@@ -240,12 +256,18 @@ namespace MarketProject.Domain
         /// <param name="password"> The password to check.</param>
         public void Register(String Username, String password)
         {
+            String errorMessage = null;
             if (_registeredVisitors.ContainsKey(Username))
-                throw new Exception($"Username {Username} unavailable.");
-            if (!CheckValidUsername(Username))
-                throw new Exception($"Username {Username} invalid.");
-            if (!CheckValidPassword(password))
-                throw new Exception($"Password is invalid.");
+                errorMessage = $"Username {Username} unavailable.";
+            else if (!CheckValidUsername(Username))
+                errorMessage = $"Username {Username} invalid.";
+            else if (!CheckValidPassword(password))
+                errorMessage = $"Password is invalid.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("Register", errorMessage);
+                throw new Exception(errorMessage);
+            }
 
             Registered newRegistered = new Registered(Username, password);
 
@@ -290,20 +312,32 @@ namespace MarketProject.Domain
         /// <returns> The authentication token the Visitor should use with the system.</returns>
         public String Login(String curToken, String Username, String password)
         {
+            String errorMessage = null;
             if (!IsVisitorAGuest(curToken))
-                throw new Exception("Must enter system as a guest in order to login.");
+            {
+                errorMessage = "Must enter system as a guest in order to login.";
+                LogErrorMessage("Login", errorMessage);
+                throw new Exception(errorMessage);
+            }
             _visitorsGuestsTokens.Remove(curToken);
             Registered registered = GetRegisteredVisitor(Username);
             if (registered != null && _loggedinVisitorsTokens.Values.Contains(registered))
-                throw new Exception($"Visitor: {Username} is already logged in to the system.");
-            if (registered == null ||  // Visitor with the Username doesn't exists
+                errorMessage = $"Visitor: {Username} is already logged in to the system.";
+            else if (registered == null ||  // Visitor with the Username doesn't exists
                     !registered.Login(password))// Login details incorrect
-                throw new Exception("Username or password are incorrect.");
+                errorMessage = "Username or password are incorrect.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("Login", errorMessage);
+                throw new Exception(errorMessage);
+            }
 
             String authToken = VisitorManagement.GenerateToken();
             if (!_loggedinVisitorsTokens.TryAdd(authToken, registered))
             { // Something went wrong, couldn't add.
-                throw new Exception("Login failed.");
+                errorMessage = "Login failed.";
+                LogErrorMessage("Login", errorMessage);
+                throw new Exception(errorMessage);
             }
             return authToken;
         }
@@ -351,19 +385,26 @@ namespace MarketProject.Domain
         /// <param name="authToken"> The token of the Visitor to log out.</param>
         public String Logout(String authToken)
         {
+            String errorMessage;
             if (IsVisitorLoggedin(authToken))
             {
                 _loggedinVisitorsTokens.Remove(authToken);
                 String guestToken = GenerateToken();
                 if (guestToken == null)
-                    throw new Exception("Logout failed: could not tranfer to guest mode. Please try again");
+                {
+                    errorMessage = "Logout failed: could not tranfer to guest mode. Please try again";
+                    LogErrorMessage("Logout", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 _visitorsGuestsTokens.Add(guestToken, new Guest(guestToken));
                 return guestToken;
 
             }
             else
             {
-                throw new Exception("Logout failed: Visitor not logged in.");
+                errorMessage = "Logout failed: Visitor not logged in.";
+                LogErrorMessage("Logout", errorMessage);
+                throw new Exception(errorMessage);
             }
         }
 
@@ -414,9 +455,14 @@ namespace MarketProject.Domain
         /// <param name="newPassword"> The new updated password. </param>
         public void EditVisitorPassword(String authToken, String oldPassword, String newPassword)
         {
+            String errorMessage;
             Registered registered = GetRegisteredByToken(authToken);
             if (!CheckValidPassword(newPassword))
-                throw new Exception($"Password is invalid.");
+            {
+                errorMessage = $"Password is invalid.";
+                LogErrorMessage("EditVisitorPassword", errorMessage);
+                throw new Exception(errorMessage);
+            }
             registered.UpdatePassword(oldPassword, newPassword);
         }
 
@@ -431,9 +477,12 @@ namespace MarketProject.Domain
         /// <param name="Username"> The Username of the Visitor to log out.</param>
         public void RemoveRegisteredVisitor(string Username)
         {
+            String errorMessage;
             if (!IsRegistered(Username))
             {
-                throw new Exception("No such registered Visitor.");
+                errorMessage = "No such registered Visitor.";
+                LogErrorMessage("RemoveRegisteredVisitor", errorMessage);
+                throw new Exception(errorMessage);
             }
 
             LogoutByUsername(Username);
@@ -453,10 +502,15 @@ namespace MarketProject.Domain
         /// <param name="reply"> The response to the complaint. </param>
         public void ReplyToComplaint(String authToken, int complaintID, String reply)
         {
+            String errorMessage;
             Registered admin = GetRegisteredByToken(authToken);
             SystemAdmin adminRole = admin.GetAdminRole;
             if (adminRole == null)
-                throw new Exception("Visitor is not an admin.");
+            {
+                errorMessage = "Visitor is not an admin.";
+                LogErrorMessage("ReplyToComplaint", errorMessage);
+                throw new Exception(errorMessage);
+            }
             adminRole.ReplyToComplaint(complaintID, reply);
         }
 
@@ -478,8 +532,13 @@ namespace MarketProject.Domain
 
         public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity)
         {
+            String errorMessage;
             if (newQuantity <= 0)
-                throw new ArgumentOutOfRangeException("Cannot update quantity of item to non-positive amount.");
+            {
+                errorMessage = "Cannot update quantity of item to non-positive amount.";
+                LogErrorMessage("UpdateItemInVisitorCart", errorMessage);
+                throw new ArgumentOutOfRangeException(errorMessage);
+            }
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
             Visitor.UpdateItemInCart(store, item, newQuantity);
         }
@@ -491,12 +550,17 @@ namespace MarketProject.Domain
             return newQuantity - old_quantity;
         }
 
-        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName)
+        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode)
         {
+            String errorMessage;
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
             if (Visitor.ShoppingCart.isCartEmpty())
-                throw new Exception("Cannot purchase an empty cart.");
-            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName);
+            {
+                errorMessage = "Cannot purchase an empty cart.";
+                LogErrorMessage("PurchaseMyCart", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
         }
 
 
@@ -548,14 +612,25 @@ namespace MarketProject.Domain
 
         internal void AppointSystemAdmin(string adminUsername)
         {
+            String errorMessage;
             if (!IsRegistered(adminUsername))
-                throw new Exception("this Visitor is not registered.");
+            {
+                errorMessage = "this Visitor is not registered.";
+                LogErrorMessage("AppointSystemAdmin", errorMessage);
+                throw new Exception(errorMessage);
+            }
             GetRegisteredVisitor(adminUsername).AddRole(new SystemAdmin(adminUsername));
         }
 
+<<<<<<< HEAD
         internal ICollection<MessageToRegistered> getRegisteredMessages(string authToken)
         {
             return GetRegisteredByToken(authToken).MessagesToRegistered;
+=======
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in VisitorManagement.{functionName}. Cause: {message}.");
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
         }
     }
 }

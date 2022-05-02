@@ -6,14 +6,15 @@ namespace MarketProject.Domain
 {
     public class PurchaseProcess
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual PaymentHandlerProxy _paymentHandlerProxy { get; set; }
         public virtual ShippingHandlerProxy _shippingHandlerProxy{ get; set; }
         //singelton:
         private static PurchaseProcess _instance;
         private PurchaseProcess()
         {
-            _paymentHandlerProxy = new PaymentHandlerProxy(null);
-            _shippingHandlerProxy = new ShippingHandlerProxy(null);
+            _paymentHandlerProxy = new PaymentHandlerProxy();
+            _shippingHandlerProxy = new ShippingHandlerProxy();
         }
         private PurchaseProcess(PaymentHandlerProxy paymentHandlerProxy, ShippingHandlerProxy shippingHandlerProxy)
         {
@@ -31,15 +32,15 @@ namespace MarketProject.Domain
             _instance._shippingHandlerProxy = shippingHandlerProxy;
             _instance._paymentHandlerProxy = paymentHandlerProxy;
         }
-        public void Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase)
+        public void Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase, string paymentMethode, string shipmentMethode)
         {
             string errorMessage="";
             //first: should check that shippingSystem willig to provide cart:
-            if(_shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName))
+            if(_shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode))
             {
                 //second: the actual payment:
                 double price = CalculatePrice(cartToPurchase);
-                if (_paymentHandlerProxy.Pay(price))// payment succseded
+                if (_paymentHandlerProxy.Pay(price, paymentMethode))// payment succseded
                     return;
                 errorMessage = "Purchase failed: paymentSystem refuses.";
             }
@@ -47,8 +48,9 @@ namespace MarketProject.Domain
             {
                 errorMessage = "Purchase failed: Shipping services refuse to provide your cart.";
             } 
-             //relaseCart:
-             cartToPurchase.RelaseItemsOfCart();
+            //relaseCart:
+            cartToPurchase.RelaseItemsOfCart();
+            LogErrorMessage("Purchase", errorMessage);
             throw new Exception(errorMessage);
         }
         private double CalculatePrice(ShoppingCart shoppingCart)
@@ -69,5 +71,9 @@ namespace MarketProject.Domain
             return price;
         }
 
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in PurchaseProcess.{functionName}. Cause: {message}.");
+        }
     }
 }

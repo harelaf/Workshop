@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace AcceptanceTest
 {
     [TestClass]
-    public class AddRolesTest
+    public class AddAndRemoveRolesTest
     {
         MarketAPI marketAPI = new MarketAPI();
         string storeName = "test's Shop";

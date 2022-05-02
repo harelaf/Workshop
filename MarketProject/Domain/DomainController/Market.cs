@@ -6,11 +6,10 @@ namespace MarketProject.Domain
 {
     public class Market
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private StoreManagement _storeManagement;
         private VisitorManagement _VisitorManagement;
         private History _history;
-        private Object _stockLock = new Object();
-        private Object _storeLock = new Object();
 
         public Market()
         {
@@ -40,15 +39,25 @@ namespace MarketProject.Domain
         //--storeName should have at least amount of itemID
         public void AddItemToCart(String VisitorToken, int itemID, String storeName, int amount)
         {//II.2.3
-            if (!_VisitorManagement.IsVisitorAVisitor(VisitorToken))
-                throw new Exception("the given Visitor is no longer a visitor in system");
+            String errorMessage = null;
+            CheckIsVisitorAVisitor(VisitorToken, "AddItemToCart");
             if (!_storeManagement.CheckStoreNameExists(storeName))
-                throw new Exception("there is no store in system with the given storeid");
+                errorMessage = "there is no store in system with the given storeid";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("AddItemToCart", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName))
-                    throw new Exception($"Store {storeName} is currently inactive.");
+                    errorMessage = $"Store {storeName} is currently inactive.";
+                if (errorMessage != null)
+                {
+                    LogErrorMessage("AddItemToCart", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 lock (store.Stock)
                 {
                     Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
@@ -60,10 +69,15 @@ namespace MarketProject.Domain
 
         public Item RemoveItemFromCart(String VisitorToken, int itemID, String storeName)
         {//II.2.4
-            if (!_VisitorManagement.IsVisitorAVisitor(VisitorToken))
-                throw new Exception("the given Visitor is no longer a visitor in system");
+            String errorMessage = null;
+            CheckIsVisitorAVisitor(VisitorToken, "RemoveItemFromCart");
             if (!_storeManagement.CheckStoreNameExists(storeName))
-                throw new Exception("there is no store in system with the givn storeid");
+                errorMessage = "there is no store in system with the givn storeid";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("RemoveItemFromCart", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Item item = _storeManagement.GetItem(storeName, itemID);
             int amount_removed = _VisitorManagement.RemoveItemFromCart(VisitorToken, item, _storeManagement.GetStore(storeName));
             // now update store stock
@@ -77,21 +91,35 @@ namespace MarketProject.Domain
 
         public void UpdateQuantityOfItemInCart(String VisitorToken, int itemID, String storeName, int newQuantity)
         {//II.2.4
-            if (!_VisitorManagement.IsVisitorAVisitor(VisitorToken))
-                throw new Exception("the given Visitor is no longer a visitor in system");
+            String errorMessage = null;
+            CheckIsVisitorAVisitor(VisitorToken, "UpdateQuantityOfItemInCart");
             if (!_storeManagement.CheckStoreNameExists(storeName))
-                throw new Exception("there is no store in system with the givn storeid");
+                errorMessage = "there is no store in system with the givn storeid";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("UpdateQuantityOfItemInCart", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Item item = _storeManagement.GetItem(storeName, itemID);
             int amount_differnce = _VisitorManagement.GetUpdatingQuantityDifference(VisitorToken, item, _storeManagement.GetStore(storeName), newQuantity);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName))
-                    throw new Exception($"Store {storeName} is currently inactive.");
+                {
+                    errorMessage = $"Store {storeName} is currently inactive.";
+                    LogErrorMessage("UpdateQuantityOfItemInCart", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 lock (store.Stock)
                 {
                     if (amount_differnce == 0)
-                        throw new Exception("Update Quantity Of Item In Cart faild: current quantity and new quantity are the same!");
+                        errorMessage = "Update Quantity Of Item In Cart faild: current quantity and new quantity are the same!";
+                    if (errorMessage != null)
+                    {
+                        LogErrorMessage("UpdateQuantityOfItemInCart", errorMessage);
+                        throw new Exception(errorMessage);
+                    }
                     if (amount_differnce > 0)// add item to cart and remove it from store stock
                         _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
                     else//remove item from cart and add to store stock
@@ -102,15 +130,29 @@ namespace MarketProject.Domain
         }
 
 
-        public void OpenNewStore(String token, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
+        public void OpenNewStore(String authToken, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "OpenNewStore");
             if (storeName.Equals(""))
+<<<<<<< HEAD
                 throw new Exception("Invalid Input: Blank store name.");
             if (!_VisitorManagement.IsVisitorLoggedin(token))
                 throw new Exception($"Only registered Visitors are allowed to rate stores.");
             if (_storeManagement.CheckStoreNameExists(storeName))
                 throw new Exception($"A store with the name {storeName} already exists in the system.");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(token);
+=======
+                errorMessage = "Invalid Input: Blank store name.";
+            else if (_storeManagement.CheckStoreNameExists(storeName))
+                errorMessage = $"A store with the name {storeName} already exists in the system.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("OpenNewStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            string Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             StoreFounder founder = new StoreFounder(Username, storeName);
             _VisitorManagement.AddRole(Username, founder);
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
@@ -118,52 +160,77 @@ namespace MarketProject.Domain
 
         public Store GetStoreInformation(String authToken, String storeName)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("Only registered and logged in Visitors are allowed to perform this operation!");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "GetStoreInformation");
             if (storeName.Equals(""))
+<<<<<<< HEAD
                 throw new Exception("Invalid Input: Blank store name.");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+                errorMessage = "Invalid Input: Blank store name.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("GetStoreInformation", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            string Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (_storeManagement.isStoreActive(storeName) || _VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_INFORMATION))
                     return _storeManagement.GetStoreInformation(storeName);
-                throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
+                else
+                {
+                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
+                    LogErrorMessage("GetStoreInformation", errorMessage);
+                    throw new Exception(errorMessage);
+                }
             }
         }
 
         public void RateStore(String authToken, String storeName, int rating, String review)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "RateStore");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_history.CheckIfVisitorPurchasedInStore(Username, storeName))
-                throw new Exception($"Visitor {Username} has never purchased in {storeName}.");
-            if (storeName.Equals(""))
-                throw new Exception("Invalid Input: Store name is blank.");
-            if (rating < 0 || rating > 10)
-                throw new Exception("Invalid Input: rating should be in the range [0, 10].");
+                errorMessage = $"Visitor {Username} has never purchased in {storeName}.";
+            else if (storeName.Equals(""))
+                errorMessage = "Invalid Input: Store name is blank.";
+            else if (rating < 0 || rating > 10)
+                errorMessage = "Invalid Input: rating should be in the range [0, 10].";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("RateStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
             _storeManagement.RateStore(Username, storeName, rating, review);
         }
 
         public void AddItemToStoreStock(String authToken, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "AddItemToStoreStock");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
-                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
-                if (storeName.Equals(""))
-                    throw new Exception("Invalid Input: Blank store name.");
-                if (price < 0)
-                    throw new Exception("Invalid Input: Price has to be at least 0.");
-                if (name.Equals(""))
-                    throw new Exception("Invalid Input: Blank item name.");
-                if (quantity < 0)
-                    throw new Exception("Invalid Input: Quantity has to be at least 0.");
+                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
+                else if (storeName.Equals(""))
+                    errorMessage = "Invalid Input: Blank store name.";
+                else if (price < 0)
+                    errorMessage = "Invalid Input: Price has to be at least 0.";
+                else if (name.Equals(""))
+                    errorMessage = "Invalid Input: Blank item name.";
+                else if (quantity < 0)
+                    errorMessage = "Invalid Input: Quantity has to be at least 0.";
+                if (errorMessage != null)
+                {
+                    LogErrorMessage("AddItemToStoreStock", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 lock (store.Stock)
                 {
                     _storeManagement.AddItemToStoreStock(storeName, itemID, name, price, description, category, quantity);
@@ -174,16 +241,21 @@ namespace MarketProject.Domain
 
         public void RemoveItemFromStore(String authToken, String storeName, int itemID)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "RemoveItemFromStore");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
-                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
-                if (storeName.Equals(""))
-                    throw new Exception("Invalid Input: Blank store name.");
+                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
+                else if (storeName.Equals(""))
+                    errorMessage = "Invalid Input: Blank store name.";
+                if (errorMessage != null)
+                {
+                    LogErrorMessage("RemoveItemFromStore", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 lock (store.Stock)
                 {
                     _storeManagement.RemoveItemFromStore(storeName, itemID);
@@ -193,32 +265,42 @@ namespace MarketProject.Domain
 
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchasesHistory(String authToken, String storeName)
         {
-            if (storeName.Equals(""))
-                throw new Exception("Invalid Input: Blank store name.");
-            if (!_storeManagement.CheckStoreNameExists(storeName))
-                throw new Exception($"Store {storeName} does not exist.");
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("The given Visitor is no longer logged in to the system");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "GetStorePurchasesHistory");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_HISTORY_INFO))
-                throw new Exception($"This Visitor is not an admin or owner in {storeName}.");
+            if (storeName.Equals(""))
+                errorMessage = "Invalid Input: Blank store name.";
+            else if (!_storeManagement.CheckStoreNameExists(storeName))
+                errorMessage = $"Store {storeName} does not exist.";
+            else if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_HISTORY_INFO))
+                errorMessage = $"This Visitor is not an admin or owner in {storeName}.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("GetStorePurchasesHistory", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return _history.GetStorePurchaseHistory(storeName);
         }
 
         public void UpdateStockQuantityOfItem(String authToken, String storeName, int itemID, int newQuantity)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "UpdateStockQuantityOfItem");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
-                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
-                if (storeName.Equals(""))
-                    throw new Exception("Invalid Input: Blank store name.");
-                if (newQuantity < 0)
-                    throw new Exception("Invalid Input: Quantity has to be at least 0.");
+                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
+                else if (storeName.Equals(""))
+                    errorMessage = "Invalid Input: Blank store name.";
+                else if (newQuantity < 0)
+                    errorMessage = "Invalid Input: Quantity has to be at least 0.";
+                if (errorMessage != null)
+                {
+                    LogErrorMessage("UpdateStockQuantityOfItem", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 lock (store.Stock)
                 {
                     _storeManagement.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
@@ -228,16 +310,21 @@ namespace MarketProject.Domain
 
         public void CloseStore(String authToken, String storeName)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "CloseStore");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.CLOSE_STORE))
-                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
-                if (storeName.Equals(""))
-                    throw new Exception("Invalid Input: Blank store name.");
+                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
+                else if (storeName.Equals(""))
+                    errorMessage = "Invalid Input: Blank store name.";
+                if (errorMessage != null)
+                {
+                    LogErrorMessage("CloseStore", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 _storeManagement.CloseStore(storeName);
             }
             List<String> names = _storeManagement.GetStoreRolesByName(storeName);
@@ -250,28 +337,25 @@ namespace MarketProject.Domain
             {
                 SendMessageToRegisterd(storeName, name, title, message);
             }
-            /*
-             * if (!_VisitorManagement.CheckVisitorPermission(Username, STORE_FOUNDER))
-             *     throw new Exception($"This Visitor is not the founder of {storeName}.");
-             */
-            if (storeName.Equals(""))
-                throw new Exception("Invalid Input: Blank store name.");
-            _storeManagement.CloseStore(storeName);
-            // Send Alerts to all roles of [storeName]
         }
+
         public void CloseStorePermanently(String authToken, String storeName)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "CloseStorePermanently");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.PERMENENT_CLOSE_STORE))
-                    throw new Exception($"Visitor is not an admin.");
-
-                if (storeName.Equals(""))
-                    throw new Exception("Invalid Input: Blank store name.");
+                    errorMessage = $"Visitor is not an admin.";
+                else if (storeName.Equals(""))
+                    errorMessage = "Invalid Input: Blank store name.";
+                if (errorMessage != null)
+                {
+                    LogErrorMessage("CloseStorePermanently", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 List<String> names = _storeManagement.GetStoreRolesByName(storeName);
                 String title = $"Store: {storeName} is permanently closing down: [{DateTime.Now.ToString()}].";
                 String message = $"I am sad to inform you that {storeName} is closing down. " +
@@ -289,17 +373,21 @@ namespace MarketProject.Domain
 
         public void ReopenStore(String authToken, String storeName)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("The given Visitor is no longer logged in to the system.");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "ReopenStore");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.REOPEN_STORE))
-                    throw new Exception($"Store {storeName} is currently inactive and Visitor is not the owner.");
-
-                if (storeName.Equals(""))
-                    throw new Exception("Invalid Input: Blank store name.");
+                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
+                else if (storeName.Equals(""))
+                    errorMessage = "Invalid Input: Blank store name.";
+                if (errorMessage != null)
+                {
+                    LogErrorMessage("ReopenStore", errorMessage);
+                    throw new Exception(errorMessage);
+                }
                 _storeManagement.ReopenStore(storeName);
             }
             List<String> names = _storeManagement.GetStoreRolesByName(storeName);
@@ -316,45 +404,73 @@ namespace MarketProject.Domain
 
         public void EditItemPrice(String authToken, String storeName, int itemID, double newPrice)
         {
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken)) {
                 throw new Exception("the given Visitor is not a visitor in the system");
             }
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "EditItemPrice");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+                errorMessage = "the given Visitor is not a stock owner of the given store";
+            if (errorMessage != null)
             {
-                throw new Exception("the given Visitor is not a stock owner of the given store");
+                LogErrorMessage("EditItemPrice", errorMessage);
+                throw new Exception(errorMessage);
             }
             _storeManagement.EditItemPrice(storeName, itemID, newPrice);
         }
         public void EditItemName(String authToken, String storeName, int itemID, String newName)
         {
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
             {
                 throw new Exception("the given Visitor is not a visitor in the system");
             }
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "EditItemName");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+                errorMessage = "the given Visitor is not a stock owner of the given store";
+            if (errorMessage != null)
             {
-                throw new Exception("the given Visitor is not a stock owner of the given store");
+                LogErrorMessage("EditItemName", errorMessage);
+                throw new Exception(errorMessage);
             }
             _storeManagement.EditItemName(storeName, itemID, newName);
         }
         public void EditItemDescription(String authToken, String storeName, int itemID, String newDescription)
         {
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
             {
                 throw new Exception("the given Visitor is not a visitor in the system");
             }
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "EditItemDescription");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
+                errorMessage = "the given Visitor is not a stock owner of the given store";
+            if (errorMessage != null)
             {
-                throw new Exception("the given Visitor is not a stock owner of the given store");
+                LogErrorMessage("EditItemDescription", errorMessage);
+                throw new Exception(errorMessage);
             }
             _storeManagement.EditItemDescription(storeName, itemID, newDescription);
         }
 
         public void RateItem(String authToken, int itemID, String storeName, int rating, String review)
         {
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
                 throw new Exception("the given Visitor is not a visitor in the system");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
@@ -363,60 +479,99 @@ namespace MarketProject.Domain
             {
                 throw new ArgumentOutOfRangeException("Rate should be beteen 1 to 5");
             }*/
+=======
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "RateItem");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             Item item = _storeManagement.GetItem(storeName, itemID);
-            if (!_history.CheckIfVisitorPurchasedItemInStore(appointerUsername, storeName, item))
+            if (rating < 0 || rating > 10)
+                errorMessage = "Rate should be beteen 0 to 10";
+            else if (!_history.CheckIfVisitorPurchasedItemInStore(appointerUsername, storeName, item))
+                errorMessage = "This Visitor has never bought item with id: " + itemID + " at " + storeName;
+            if (errorMessage != null)
             {
-                throw new Exception("This Visitor has never bought item with id: " + itemID + " at " + storeName);
+                LogErrorMessage("RateItem", errorMessage);
+                throw new Exception(errorMessage);
             }
             _storeManagement.RateItem(appointerUsername, item, rating, review);
         }
 
         public List<Item> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
                 throw new Exception("the given Visitor is not a visitor in the system");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "GetItemInformation");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.IsRegistered(appointerUsername))
+                errorMessage = "Visitor " + appointerUsername + " not found in system";
+            if (errorMessage != null)
             {
-                throw new Exception("Visitor " + appointerUsername + " not found in system");
+                LogErrorMessage("GetItemInformation", errorMessage);
+                throw new Exception(errorMessage);
             }
             return _storeManagement.GetItemInformation(itemName, itemCategory, keyWord);
         }
 
         public void SendMessageToStore(String authToken, String storeName, String title, String message)
         {
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
                 throw new Exception("the given Visitor is not a visitor in the system");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "SendMessageToStore");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.IsRegistered(appointerUsername))
+                errorMessage = "Visitor " + appointerUsername + " not found in system";
+            if (errorMessage != null)
             {
-                throw new Exception("Visitor " + appointerUsername + " not found in system");
+                LogErrorMessage("SendMessageToStore", errorMessage);
+                throw new Exception(errorMessage);
             }
             _storeManagement.SendMessageToStore(appointerUsername, storeName, title, message);
         }
 
         public void SendMessageToRegisterd(String storeName, String UsernameReciever, String title, String message)
         {
+            String errorMessage = null;
             if (!_storeManagement.CheckStoreNameExists(storeName))
+                errorMessage = "Store " + storeName + " not found in system";
+            else if (!_VisitorManagement.IsRegistered(UsernameReciever))
+                errorMessage = "Visitor " + UsernameReciever + " not found in system";
+            if (errorMessage != null)
             {
-                throw new Exception("Store " + storeName + " not found in system");
-            }
-            if (!_VisitorManagement.IsRegistered(UsernameReciever))
-            {
-                throw new Exception("Visitor " + UsernameReciever + " not found in system");
+                LogErrorMessage("SendMessageToRegisterd", errorMessage);
+                throw new Exception(errorMessage);
             }
             _VisitorManagement.SendMessageToRegistered(storeName, UsernameReciever, title, message);
         }
 
         public void AnswerStoreMesseage(String authToken, String storeName, String UsernameReciever, String title, String reply)
         {
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
                 throw new Exception("the given Visitor is not a visitor in the system");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
 
+=======
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "AnswerStoreMesseage");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.IsRegistered(UsernameReciever))
+                errorMessage = "Visitor " + UsernameReciever + " not found in system";
+            if (errorMessage != null)
             {
-                throw new Exception("Visitor " + UsernameReciever + " not found in system");
+                LogErrorMessage("AnswerStoreMesseage", errorMessage);
+                throw new Exception(errorMessage);
             }
             _VisitorManagement.SendMessageToRegistered(storeName, UsernameReciever, title, reply);
         }
@@ -431,9 +586,14 @@ namespace MarketProject.Domain
 
         public void AddStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.6
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
                 throw new Exception("the given Visitor is not a visitor in the system");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+            CheckIsVisitorLoggedIn(authToken, "AddStoreManager");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
@@ -448,9 +608,14 @@ namespace MarketProject.Domain
 
         public void AddStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.4
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
                 throw new Exception("the given Visitor is not a visitor in the system");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+            CheckIsVisitorLoggedIn(authToken, "AddStoreOwner");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
             {
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
@@ -459,11 +624,10 @@ namespace MarketProject.Domain
             }
         }
 
-        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName)
+        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
         {//II.2.5
-            if (!_VisitorManagement.IsVisitorAVisitor(VisitorToken))
-                throw new Exception("the given Visitor is no longer a visitor in system");
-            ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName);
+            CheckIsVisitorAVisitor(VisitorToken, "PurchaseMyCart");
+            ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
             if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))
@@ -472,16 +636,20 @@ namespace MarketProject.Domain
 
         public ShoppingCart ViewMyCart(String authToken)
         {//II.2.4
-            if (!_VisitorManagement.IsVisitorAVisitor(authToken))
-                throw new Exception("the given Visitor is no longer a visitor in system");
+            CheckIsVisitorAVisitor(authToken, "ViewMyCart");
             return _VisitorManagement.GetVisitorShoppingCart(authToken);
         }
 
         public void RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.5
+<<<<<<< HEAD
             if (!_VisitorManagement.IsVisitorLoggedin(authToken))
                 throw new Exception("the given Visitor is not a visitor in the system");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+=======
+            CheckIsVisitorLoggedIn(authToken, "RemoveStoreOwner");
+            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+>>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
@@ -490,8 +658,7 @@ namespace MarketProject.Domain
         }
         public void RemoveStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.8
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
+            CheckIsVisitorLoggedIn(authToken, "RemoveStoreManager");
             if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.REMOVE_MANAGER))
             {
                 if (_storeManagement.RemoveStoreManager(managerUsername, storeName))
@@ -500,14 +667,12 @@ namespace MarketProject.Domain
         }
         public ICollection<Tuple<DateTime, ShoppingCart>> GetMyPurchases(String authToken)
         {//II.3.7
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is no longer a visitor in system");
+            CheckIsVisitorLoggedIn(authToken, "GetMyPurchases");
             return _history.GetRegistreredPurchaseHistory(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
         }
         public Registered GetVisitorInformation(String authToken)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is no longer a visitor in system");
+            CheckIsVisitorLoggedIn(authToken, "GetVisitorInformation");
             return _VisitorManagement.GetRegisteredVisitor(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
         }
 
@@ -532,28 +697,43 @@ namespace MarketProject.Domain
 
         public List<StoreManager> getStoreManagers(String storeName, String authToken)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "getStoreManagers");
             if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception($"this Visitor does not have permission to permorm this operation");
+                errorMessage = $"this Visitor does not have permission to permorm this operation";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("getStoreManagers", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return _storeManagement.getStoreManagers(storeName);
         }
 
         public List<StoreOwner> getStoreOwners(String storeName, String authToken)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "getStoreOwners");
             if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception($"this Visitor does not have permission to permorm this operation");
+                errorMessage = $"this Visitor does not have permission to permorm this operation";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("getStoreOwners", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return _storeManagement.getStoreOwners(storeName);
         }
 
         public StoreFounder getStoreFounder(String storeName, String authToken)
         {
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "getStoreFounder");
             if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.STORE_WORKERS_INFO))
-                throw new Exception("this Visitor does not have permission to permorm this operation");
+                errorMessage = "this Visitor does not have permission to permorm this operation";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("getStoreFounder", errorMessage);
+                throw new Exception(errorMessage);
+            }
             return _storeManagement.getStoreFounder(storeName);
         }
 
@@ -593,6 +773,7 @@ namespace MarketProject.Domain
         /// <param name="usr_toremove"> The Visitor to remove and revoke the roles of.</param>
         public void RemoveRegisteredVisitor(String authToken, String usr_toremove)
         {
+            String errorMessage = null;
             if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), null, Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
             {
                 Registered registeredToRemove = _VisitorManagement.GetRegisteredVisitor(usr_toremove);
@@ -601,7 +782,9 @@ namespace MarketProject.Domain
             }
             else
             {
-                throw new Exception("Visitor tried to perform an unautherised operation - Cancel Subscription.");
+                errorMessage = "Visitor tried to perform an unautherised operation - Cancel Subscription.";
+                LogErrorMessage("RemoveRegisteredVisitor", errorMessage);
+                throw new Exception(errorMessage);
             }
         }
 
@@ -664,6 +847,33 @@ namespace MarketProject.Domain
         public void ReplyToComplaint(String authToken, int complaintID, String reply)
         {
             _VisitorManagement.ReplyToComplaint(authToken, complaintID, reply);
+        }
+
+        private void CheckIsVisitorLoggedIn(String authToken, String functionName)
+        {
+            String errorMessage;
+            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
+            {
+                errorMessage = $"This user is no longer logged in.";
+                LogErrorMessage(functionName, errorMessage);
+                throw new Exception(errorMessage);
+            }
+        }
+
+        private void CheckIsVisitorAVisitor(String authToken, String functionName)
+        {
+            String errorMessage;
+            if (!_VisitorManagement.IsVisitorAVisitor(authToken))
+            {
+                errorMessage = $"This user is no longer a visitor in the system.";
+                LogErrorMessage(functionName, errorMessage);
+                throw new Exception(errorMessage);
+            }
+        }
+
+        private void LogErrorMessage(String functionName, String message)
+        {
+            log.Error($"Exception thrown in Market.{functionName}. Cause: {message}.");
         }
     }
 }

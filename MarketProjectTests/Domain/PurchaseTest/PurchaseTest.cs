@@ -23,8 +23,8 @@ namespace MarketProject.Domain.Tests
         [TestInitialize]
         public void setUp()
         {
-            paymentProxyMoq = new Mock<PaymentHandlerProxy>(null);
-            shippingProxyMoq = new Mock<ShippingHandlerProxy>(null);
+            paymentProxyMoq = new Mock<PaymentHandlerProxy>();
+            shippingProxyMoq = new Mock<ShippingHandlerProxy>();
             purchase = PurchaseProcess.GetInstance();
             cartMoq = new Mock<ShoppingCart>();
             basketMoq1 = new Mock<ShoppingBasket>((new Mock<Store>("1", null, null, null)).Object);
@@ -66,12 +66,12 @@ namespace MarketProject.Domain.Tests
         public void TestPurchase_PaymentNShippingAproved()
         {
             //arrange
-            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>())).Returns(true);
-            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(true);
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
             //action
             try
             {
-                purchase.Purchase("adr","", "", "","", cartMoq.Object);
+                purchase.Purchase("adr","", "", "","", cartMoq.Object, "", "");
             }
             catch (Exception ex) { Assert.Fail(ex.Message); }
 
@@ -82,12 +82,12 @@ namespace MarketProject.Domain.Tests
         {
             //arrange
             setUp();
-            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>())).Returns(true);
-            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(true);
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
             //action
             try
             {
-                purchase.Purchase("adr","", "", "", " ", cartMoq.Object);
+                purchase.Purchase("adr","", "", "", " ", cartMoq.Object,"","");
                 Assert.Fail();
             }
             catch (Exception ex) { }
@@ -97,12 +97,12 @@ namespace MarketProject.Domain.Tests
         public void TestPurchase_ShippingAproved_PaymentNot()
         {
             //arrange
-            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>())).Returns(false);
-            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(false);
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
             //action
             try
             {
-                purchase.Purchase("adr", "", "", "", "", cartMoq.Object);
+                purchase.Purchase("adr", "", "", "", "", cartMoq.Object,"", "");
                 Assert.Fail();
             }
             catch (Exception ex) { }
@@ -112,12 +112,12 @@ namespace MarketProject.Domain.Tests
         public void TestPurchase_ShippingNPaymentNotAproved()
         {
             //arrange
-            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>())).Returns(false);
-            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(false);
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
             //action
             try
             {
-                purchase.Purchase("adr","", "", "", "", cartMoq.Object);
+                purchase.Purchase("adr","", "", "", "", cartMoq.Object,"","");
                 Assert.Fail();
             }
             catch (Exception ex) { }
