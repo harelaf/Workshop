@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public class ShoppingBasket : ISearchable, IPriceable
+    public class ShoppingBasket : ISearchablePriceable
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual Store _store { get; set; }
@@ -108,10 +108,20 @@ namespace MarketProject.Domain
             }
             return result;
         }
-        //before discounts
+
         public double GetTotalPrice()
         {
-            //return _store.calcDiscounts(this);
+            throw new NotImplementedException();
+        }
+
+        public double GetItemPrice(string itemName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetCategoryPrice(string category)
+        {
+            throw new NotImplementedException();
         }
     }
 }

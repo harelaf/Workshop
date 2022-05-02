@@ -18,9 +18,9 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
             _condition = null;
         }
 
-        protected bool CheckCondition()
+        protected bool CheckCondition(ISearchablePriceable searchablePriceable)
         {
-            return _condition == null || _condition.Check();
+            return _condition == null || _condition.Check(searchablePriceable);
         }
 
         protected String ConditionToString()
@@ -28,8 +28,8 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
             return _condition == null ? "" : "Condition(s): \n" + _condition.ToString();
         }
 
-        public abstract double GetTotalDiscount(ShoppingCart cart);
-        public abstract String GetDiscountString(ShoppingCart cart);
-        public abstract DateTime GetExpirationDate(ShoppingCart);
+        public abstract double GetTotalDiscount(ISearchablePriceable searchablePriceable);
+        public abstract String GetDiscountString(ISearchablePriceable searchablePriceable);
+        public abstract DateTime GetExpirationDate(ISearchablePriceable searchablePriceable);
     }
 }

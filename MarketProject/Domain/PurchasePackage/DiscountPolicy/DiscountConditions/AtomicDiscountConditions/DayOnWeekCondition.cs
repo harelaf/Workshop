@@ -12,7 +12,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy.AtomicDiscountCond
         {
             _dayOnWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), day);
         }
-        public override bool Check()
+        public override bool Check(ISearchablePriceable searchablePriceable)
         {
             return _now.DayOfWeek == _dayOnWeek;
         }

@@ -28,19 +28,24 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
             _price_to_subtract = priceToSubtract;
         }
 
-        public override double GetTotalDiscount(ShoppingCart cart)
+        public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
-            if(!CheckCondition() || GetExpirationDate(cart) < DateTime.Now)
+            if(!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
                 return 0;
-            double totalDis = cart.GetTotalPrice() > PriceToSubtract ? PriceToSubtract : 0;
+            double totalDis = searchablePriceable.GetTotalPrice() > PriceToSubtract ? PriceToSubtract : 0;
             return totalDis;
         }
 
-        public override string GetDiscountString(ShoppingCart cart)
+        public override string GetDiscountString(ISearchablePriceable searchablePriceable)
         {
             return PriceToSubtract + " off total price." +
                 "\n\n" + ExpirationToString() +
                 "\n\n" + ConditionToString();
+        }
+
+        public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
+        {
+            throw new NotImplementedException();
         }
     }
 }

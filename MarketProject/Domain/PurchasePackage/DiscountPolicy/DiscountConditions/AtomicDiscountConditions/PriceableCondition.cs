@@ -4,20 +4,15 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    public class PriceableCondition : AtomicDiscountCondition
+    public class PriceableCondition : SearchablePriceableCondition
     {
-        protected IPriceable _priceable;
-        protected int _minPrice, _maxPrice;
-
-        public PriceableCondition(IPriceable priceable, int minPrice, int maxPrice)
+        public PriceableCondition(string keyWord, int minAmount, int maxAmount) : base(keyWord, minAmount, maxAmount)
         {
-            _priceable = priceable;
-            _minPrice = minPrice;
-            _maxPrice = maxPrice;
         }
-        public override bool Check()
+
+        public override bool Check(ISearchablePriceable searchablePriceable)
         {
-            return IsInRange(_priceable.GetTotalPrice(), _minPrice, _maxPrice);
+            return IsInRange(searchablePriceable.GetTotalPrice(), _minValue, _maxValue);
         }
     }
 }

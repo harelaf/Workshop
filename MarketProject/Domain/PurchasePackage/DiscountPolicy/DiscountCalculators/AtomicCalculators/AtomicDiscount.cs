@@ -7,7 +7,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
     internal abstract class AtomicDiscount : Discount
     {
         private DateTime _expiration;
-        public override DateTime GetExpirationDate(ShoppingCart cart)
+        public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
         {
             return _expiration;
         }

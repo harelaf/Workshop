@@ -6,17 +6,17 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
     public class XorComposition : ComposedDiscountCondition
     {
-        public override bool Check()
+        public override bool Check(ISearchablePriceable searchablePriceable)
         {
             bool result = false;
             bool found = false;
             foreach (DiscountCondition discountCondition in this._discountConditionList)
             {
-                if (!found && discountCondition.Check())
+                if (!found && discountCondition.Check(searchablePriceable))
                 {
                     found = true;
                 }
-                if(found && discountCondition.Check())
+                if(found && discountCondition.Check(searchablePriceable))
                 {
                     result = false;
                     break;

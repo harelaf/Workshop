@@ -13,7 +13,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy.AtomicDiscountCond
             _minHour = minHour;
             _maxHour = maxHour;
         }
-        public override bool Check()
+        public override bool Check(ISearchablePriceable searchablePriceable)
         {
             if(_minHour < 0)
             {

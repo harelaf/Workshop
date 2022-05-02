@@ -9,6 +9,6 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         protected bool _toNegative;
 
         public void ToNegative() { _toNegative = true; }
-        public abstract bool Check();
+        public abstract bool Check(ISearchablePriceable searchablePriceable);
     }
 }

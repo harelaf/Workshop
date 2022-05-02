@@ -10,32 +10,32 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 
         public PlusDiscount(List<Discount> discounts, DiscountCondition condition) : base(discounts, condition){}
 
-        public override double GetTotalDiscount(ShoppingCart cart)
+        public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
             double sumDis = 0;
             foreach(Discount dis in _discountList)
-                sumDis += dis.GetTotalDiscount(cart);
+                sumDis += dis.GetTotalDiscount(searchablePriceable);
             return sumDis;
         }
 
-        public override String GetDiscountString(ShoppingCart cart)
+        public override String GetDiscountString(ISearchablePriceable searchablePriceable)
         {
             String str = "";
             foreach(Discount discount in _discountList)
             {
-                str += discount.GetDiscountString(cart) + "\n";
+                str += discount.GetDiscountString(searchablePriceable) + "\n";
             }
             return str;
         }
 
-        public override DateTime GetExpirationDate(ShoppingCart cart)
+        public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
         {
             DateTime ans = DateTime.MinValue;
             foreach (Discount dis in _discountList)
             {
-                if (dis.GetTotalDiscount(cart) > 0)
+                if (dis.GetTotalDiscount(searchablePriceable) > 0)
                 {
-                    DateTime date = dis.GetExpirationDate(cart);
+                    DateTime date = dis.GetExpirationDate(searchablePriceable);
                     ans = Math.Min(date.Ticks, ans.Ticks) == ans.Ticks ?
                         ans : date;
                 }

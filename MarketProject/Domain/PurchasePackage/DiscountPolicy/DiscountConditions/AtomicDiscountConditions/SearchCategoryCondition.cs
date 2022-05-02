@@ -4,12 +4,12 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    public class SearchCategoryCondition : SearchableCondition
+    public class SearchCategoryCondition : SearchablePriceableCondition
     {
-        public SearchCategoryCondition(string keyWord, ISearchable searchable, int minAmount, int maxAmount) : base(keyWord, searchable, minAmount, maxAmount) { }
-        public override bool Check()
+        public SearchCategoryCondition(string keyWord, int minAmount, int maxAmount) : base(keyWord, minAmount, maxAmount) { }
+        public override bool Check(ISearchablePriceable searchablePriceable)
         {
-            return IsInRange(_searchable.SearchCategoryAmount(_keyWord), _minAmount, _maxAmount);
+            return IsInRange(searchablePriceable.SearchCategoryAmount(_keyWord), _minValue, _maxValue);
         }
     }
 }

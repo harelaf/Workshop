@@ -22,14 +22,14 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
             _category = category;
         }
 
-        public override double GetTotalDiscount(ShoppingCart cart)
+        public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
-            if (!CheckCondition() || GetExpirationDate(cart) < DateTime.Now)
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
                 return 0;
-            return cart.GetTotalPrice(Category) * (100 - PercentageToSubtract) / 100;
+            return searchablePriceable.GetCategoryPrice(Category) * (100 - PercentageToSubtract) / 100;
         }
 
-        public override string GetDiscountString(ShoppingCart cart)
+        public override string GetDiscountString(ISearchablePriceable searchablePriceable)
         {
             return PercentageToSubtract + "% off all " + Category + " products prices." +
                 "\n\n" + ExpirationToString() +
