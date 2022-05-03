@@ -1,8 +1,8 @@
 ﻿@{
-     if (Model.IsGuest)
+    if (Model.IsGuest)
         Layout = "~/Views/Shared/_LayoutGuest.cshtml";
     else if (Model.IsLoggedIn)
-         Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
     else
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Privacy Policy";

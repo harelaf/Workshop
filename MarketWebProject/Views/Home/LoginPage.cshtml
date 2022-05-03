@@ -4,7 +4,7 @@
     if (Model.IsGuest)
         Layout = "~/Views/Shared/_LayoutGuest.cshtml";
     else if (Model.IsLoggedIn)
-         Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
     else
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Login Page";
@@ -14,22 +14,26 @@
     <h1 class="display-4">Login To Your Account:</h1>
     <br />
     <br />
-<form action="/Home/LoginForm" method="post">
-    <font color="black">Username: </font>
-    <input type="text" name="name" title="user name" />
-    <br />
-    <br />
-    <font color="black">Password: </font>
-    <input type="password" name="password" title="password" />
-    <br />
-    <br />
-    <input type="submit" value="Login" />
+    <form action="/Home/LoginForm" method="post">
+        <font color="black">Username: </font>
+        <input type="text" name="name" title="user name" />
+        <br />
+        <br />
+        <font color="black">Password: </font>
+        <input type="password" name="password" title="password" />
+        <br />
+        <br />
+        <input type="submit" value="Login" />
+        <br />
+        <br />
+        <br />
 
-        @if (!string.IsNullOrEmpty(Model.ErrorMsg))
+        @if (!string.IsNullOrEmpty(Model.ErrorMsg) && !Model.ErrorOccurred)
         {
-            <br />
-            <br />
-            <br />
+            <p style="background:green">@Model.ErrorMsg</p>
+        }
+        else
+        {
             <p style="background:red">@Model.ErrorMsg</p>
         }
 

@@ -2,10 +2,7 @@
 {
     public class MainModel
     {
-        public string? RequestId { get; set; }
-
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-
+        public bool ErrorOccurred { get; set; }
         public String? ErrorMsg { get; set; }
 
         public bool IsGuest { get; set; }
@@ -14,14 +11,16 @@
 
         public MainModel()
         {
+            ErrorOccurred = false;
             ErrorMsg = null;
             IsGuest = true;
             IsLoggedIn = false;
             IsAdmin = false;
 
         }
-        public MainModel(string err)
+        public MainModel(bool ErrorOccurred, string err)
         {
+            this.ErrorOccurred = ErrorOccurred;
             ErrorMsg = err;
             IsGuest = true;
             IsLoggedIn = false;
@@ -29,6 +28,7 @@
         }
         public MainModel(bool isGuest, bool isLoggedIn , bool isAdmin)
         {
+            ErrorOccurred = false;
             ErrorMsg = null;
             IsGuest = isGuest;
             IsLoggedIn = isLoggedIn;
