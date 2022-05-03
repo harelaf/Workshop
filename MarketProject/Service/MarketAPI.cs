@@ -859,5 +859,22 @@ namespace MarketProject.Service
             }
             return response;
         }
+
+        public Response AddStoreDiscount(String authToken, String storeName, IDiscountDTO discount_dto)
+        {
+            Response response;
+            try
+            {
+                log.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName}, .");
+                //_market.AddStoreDiscount(authToken, storeName, discount);
+                response = new Response();
+                log.Info($"SUCCESSFULY executed Appoint System Admin.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
+        }
     }
 }

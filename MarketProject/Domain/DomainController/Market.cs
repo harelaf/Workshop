@@ -778,6 +778,22 @@ namespace MarketProject.Domain
         {
             log.Error($"Exception thrown in Market.{functionName}. Cause: {message}.");
         }
+
+        public void AddStoreDiscount(String authToken, String storeName, Discount discount)
+        {
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY))
+                errorMessage = "Visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("AddStoreDiscount", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            _storeManagement.AddStoreDiscount(storeName, discount);
+        }
     }
 }
 
