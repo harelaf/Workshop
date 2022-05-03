@@ -1,4 +1,5 @@
-﻿using MarketWebProject.Models;
+﻿using MarketWebProject.DTO;
+using MarketWebProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,6 +8,7 @@ namespace MarketWebProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        //private Service service
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -30,7 +32,21 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            return View(modelcs);
+            //viewMyCart
+            //CALL THE CLIENT-> server-> market api
+            //_CLIENT<- server <-market api
+            Response<ShoppingCartDTO> cart = new Response<ShoppingCartDTO>(new ShoppingCartDTO());
+            if (cart.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = cart.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["cart"] = cart.Value;
+                return viewResult;
+            }
+           
         }
         public IActionResult RegistrationPage(MainModel modelcs)
         {
@@ -92,15 +108,24 @@ namespace MarketWebProject.Controllers
             return RedirectToAction("Index", "Home", new { IsGuest = true, IsLoggedIn = false, IsAdmin = false }); ;
 
         }
-        public IActionResult MyCart()
-        {//viewMyCart
-            //CALL THE CLIENT-> server-> market api
-            //_CLIENT<- server <-market api
-            String err_msg = "yourCartIsEmpty";
-            //for ourtest:
-            Res
-            return RedirectToAction("Index", "Home", new { Message = err_msg }); ;
 
+        public ActionResult RemoveItemFormCart(int itemId, String storeName)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            try
+            {
+                Response res = null;//service.removeItemFromCart(itemId, store)
+                if (!res.ErrorOccured)
+                {
+                    return RedirectToAction("MyStores", new { storename = storeName });
+                }
+            }
+            catch
+            {
+
+            }
+            ViewData["alertRemoveProduct"] = true;
+            return RedirectToAction("Item", new { storename = storeName, productname = itemId });
         }
     }
 }

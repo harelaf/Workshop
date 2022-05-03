@@ -1,4 +1,6 @@
-﻿@using MarketWebProject.Models
+﻿@using MarketWebProject.DTO
+@using MarketWebProject.Models
+@using System.Collections
 @model MainModel
 @{
     if (Model.IsGuest)
@@ -8,4 +10,58 @@
     else
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "My Cart";
+}
+
+
+@if ((ViewData["cart"] as ShoppingCartDTO).Baskets.Count>0)
+{
+    @foreach (ShoppingBasketDTO shoppingBasketDTO in (ViewData["cart"] as ShoppingCartDTO).Baskets)
+    {
+        string storeName = shoppingBasketDTO.StoreName;
+        double total = 0;
+        IDictionary<ItemDTO, int> items = shoppingBasketDTO.Items;
+                <!-- store = items-->
+                <h4>@storeName</h4>
+                <table style="width:100%" id="@storeName">
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Amount</th>
+                        <th>price per unit</th>
+                    </tr>
+            @foreach (KeyValuePair<ItemDTO, int> item_amount in items)
+            {
+                            <tr id="@(item_amount.Key.Name + storeName)">
+                            <th>@item_amount.Key.Name</th>
+                            <th>@item_amount.Value</th>
+                            <th>$@item_amount.Key.Price</th>
+
+                                <th>
+                                    <button id="br_@(item_amount.Key.Name+storeName)" onclick="show_form('remove_','@storeName','@item_amount.Key.Name','br_')">remove</button>
+                                    <form action="update_product_inCart" id="remove_@(item_amount.Key.Name+storeName)" style="visibility:hidden" method="post">
+                                        Are you sure you wants to remove the item from your cart? <br />
+                                        <input type="submit" value="remove">
+                                        <input type="hidden" name="newAmount" value="0"/>
+                                        <input type="hidden" value="@storeName" name="store" />
+                                        <input type="hidden" value="@item_amount.Key.Name" name="product" />
+                                    </form>
+                                </th>
+                                <th>
+                                    <button id="update_@(item_amount.Key.Name+storeName)" onclick="show_form('form_','@storeName','@item_amount.Key.Name','update_')">update</button>
+                                    <form action="update_product_inCart" id="form_@(item_amount.Key.Name+storeName)" style="visibility:hidden" method="post">
+                                        please enter the new amount of products: <br />
+                                        <input type="number" name="newAmount" min="0" value="@item_amount.Value"/>
+                                        <input type="submit" value="update">
+                                        <input type="hidden" value="@storeName" name="store" />
+                                        <input type="hidden" value="@item_amount.Key.Name" name="product" />
+
+                                    </form>
+                                </th>
+                            </tr>
+            }
+                </table>
+    }
+}
+else
+{
+    <h4>your cart is empty</h4>
 }
