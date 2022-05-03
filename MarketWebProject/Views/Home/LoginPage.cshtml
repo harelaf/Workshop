@@ -28,13 +28,13 @@
         <br />
         <br />
 
-        @if (!string.IsNullOrEmpty(Model.ErrorMsg) && !Model.ErrorOccurred)
+        @if (!Model.ErrorOccurred)
         {
-            <p style="background:green">@Model.ErrorMsg</p>
+            <p style="background:green">@Model.Message</p>
         }
         else
         {
-            <p style="background:red">@Model.ErrorMsg</p>
+            <p style="background:red">@Model.Message</p>
         }
 
     </form>
