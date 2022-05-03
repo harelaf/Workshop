@@ -694,12 +694,8 @@ namespace MarketProject.Service
             }
             return response;
         }
-<<<<<<< HEAD
-        public Response<Queue<MessageToStoreDTO>> GetStoreMessages(String authToken, String storeName)
-=======
 
-        public Boolean GetStoreMessage(String authToken, String storeName)
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
+        public Response<Queue<MessageToStoreDTO>> GetStoreMessages(String authToken, String storeName)
         {//II.4.12
             //should return with id
             Response<Queue<MessageToStoreDTO>> response;

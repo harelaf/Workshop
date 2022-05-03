@@ -25,15 +25,7 @@ namespace MarketProject.Domain
         private string _username;
         public string Username
         {
-<<<<<<< HEAD
             get { return _username; }
-            private set
-            {
-                if (value == null || value.Equals(""))
-                    throw new ArgumentNullException("a role must get a unique user name.");
-                _username = value;
-=======
-            get { return _Username; }
             protected set
             {
                 if (value == null || value.Equals(""))
@@ -42,8 +34,7 @@ namespace MarketProject.Domain
                     LogErrorMessage("Username", errorMessage);
                     throw new ArgumentNullException(errorMessage);
                 }
-                _Username = value;
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
+                _username = value;
             }
         }
 
@@ -52,11 +43,7 @@ namespace MarketProject.Domain
         public SystemRole(ISet<Operation> operations, string Username)
         {
             _operations = operations;
-<<<<<<< HEAD
             _username = Username;
-=======
-            this.Username = Username;
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
         }
 
         public virtual bool grantPermission(Operation op, string store, string grantor)
