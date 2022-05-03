@@ -278,16 +278,15 @@ namespace MarketProject.Domain
             }
         }
 
-<<<<<<< HEAD
         public Queue<MessageToStore> GetStoreMessages(string storeName)
         {
             Store store = GetStore(storeName);
             return store.MessagesToStore;
-=======
+        }
+
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in StoreManagement.{functionName}. Cause: {message}.");
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
         }
     }
 }

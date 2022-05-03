@@ -622,15 +622,15 @@ namespace MarketProject.Domain
             GetRegisteredVisitor(adminUsername).AddRole(new SystemAdmin(adminUsername));
         }
 
-<<<<<<< HEAD
         internal ICollection<MessageToRegistered> getRegisteredMessages(string authToken)
         {
             return GetRegisteredByToken(authToken).MessagesToRegistered;
-=======
+        }
+
+
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in VisitorManagement.{functionName}. Cause: {message}.");
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
         }
     }
 }

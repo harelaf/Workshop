@@ -135,14 +135,6 @@ namespace MarketProject.Domain
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "OpenNewStore");
             if (storeName.Equals(""))
-<<<<<<< HEAD
-                throw new Exception("Invalid Input: Blank store name.");
-            if (!_VisitorManagement.IsVisitorLoggedin(token))
-                throw new Exception($"Only registered Visitors are allowed to rate stores.");
-            if (_storeManagement.CheckStoreNameExists(storeName))
-                throw new Exception($"A store with the name {storeName} already exists in the system.");
-            String Username = _VisitorManagement.GetRegisteredUsernameByToken(token);
-=======
                 errorMessage = "Invalid Input: Blank store name.";
             else if (_storeManagement.CheckStoreNameExists(storeName))
                 errorMessage = $"A store with the name {storeName} already exists in the system.";
@@ -152,7 +144,6 @@ namespace MarketProject.Domain
                 throw new Exception(errorMessage);
             }
             string Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             StoreFounder founder = new StoreFounder(Username, storeName);
             _VisitorManagement.AddRole(Username, founder);
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
@@ -163,10 +154,6 @@ namespace MarketProject.Domain
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "GetStoreInformation");
             if (storeName.Equals(""))
-<<<<<<< HEAD
-                throw new Exception("Invalid Input: Blank store name.");
-            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
                 errorMessage = "Invalid Input: Blank store name.";
             if (errorMessage != null)
             {
@@ -174,7 +161,6 @@ namespace MarketProject.Domain
                 throw new Exception(errorMessage);
             }
             string Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
@@ -404,16 +390,9 @@ namespace MarketProject.Domain
 
         public void EditItemPrice(String authToken, String storeName, int itemID, double newPrice)
         {
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken)) {
-                throw new Exception("the given Visitor is not a visitor in the system");
-            }
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "EditItemPrice");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
                 errorMessage = "the given Visitor is not a stock owner of the given store";
             if (errorMessage != null)
@@ -425,17 +404,9 @@ namespace MarketProject.Domain
         }
         public void EditItemName(String authToken, String storeName, int itemID, String newName)
         {
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-            {
-                throw new Exception("the given Visitor is not a visitor in the system");
-            }
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "EditItemName");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
                 errorMessage = "the given Visitor is not a stock owner of the given store";
             if (errorMessage != null)
@@ -447,17 +418,9 @@ namespace MarketProject.Domain
         }
         public void EditItemDescription(String authToken, String storeName, int itemID, String newDescription)
         {
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-            {
-                throw new Exception("the given Visitor is not a visitor in the system");
-            }
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "EditItemDescription");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
                 errorMessage = "the given Visitor is not a stock owner of the given store";
             if (errorMessage != null)
@@ -470,20 +433,9 @@ namespace MarketProject.Domain
 
         public void RateItem(String authToken, int itemID, String storeName, int rating, String review)
         {
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            //should check that this Visitor bought this item by his purches History
-            /*if(rating < 1 || rating > 5)
-            {
-                throw new ArgumentOutOfRangeException("Rate should be beteen 1 to 5");
-            }*/
-=======
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "RateItem");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             Item item = _storeManagement.GetItem(storeName, itemID);
             if (rating < 0 || rating > 10)
                 errorMessage = "Rate should be beteen 0 to 10";
@@ -499,15 +451,9 @@ namespace MarketProject.Domain
 
         public List<Item> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "GetItemInformation");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.IsRegistered(appointerUsername))
                 errorMessage = "Visitor " + appointerUsername + " not found in system";
             if (errorMessage != null)
@@ -520,15 +466,9 @@ namespace MarketProject.Domain
 
         public void SendMessageToStore(String authToken, String storeName, String title, String message)
         {
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "SendMessageToStore");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.IsRegistered(appointerUsername))
                 errorMessage = "Visitor " + appointerUsername + " not found in system";
             if (errorMessage != null)
@@ -556,16 +496,9 @@ namespace MarketProject.Domain
 
         public void AnswerStoreMesseage(String authToken, String storeName, String UsernameReciever, String title, String reply)
         {
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-
-=======
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "AnswerStoreMesseage");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (!_VisitorManagement.IsRegistered(UsernameReciever))
                 errorMessage = "Visitor " + UsernameReciever + " not found in system";
             if (errorMessage != null)
@@ -586,14 +519,8 @@ namespace MarketProject.Domain
 
         public void AddStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.6
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
             CheckIsVisitorLoggedIn(authToken, "AddStoreManager");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
@@ -608,14 +535,8 @@ namespace MarketProject.Domain
 
         public void AddStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.4
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
             CheckIsVisitorLoggedIn(authToken, "AddStoreOwner");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
             {
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
@@ -642,14 +563,8 @@ namespace MarketProject.Domain
 
         public void RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.5
-<<<<<<< HEAD
-            if (!_VisitorManagement.IsVisitorLoggedin(authToken))
-                throw new Exception("the given Visitor is not a visitor in the system");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-=======
             CheckIsVisitorLoggedIn(authToken, "RemoveStoreOwner");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
