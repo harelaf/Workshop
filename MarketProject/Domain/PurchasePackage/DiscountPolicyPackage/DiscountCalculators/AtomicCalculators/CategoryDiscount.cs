@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal class CategoryDiscount : PercentageDiscount
+    public class CategoryDiscount : PercentageDiscount
     {
         private String _category;
         public String Category
@@ -26,7 +26,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         {
             if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
                 return 0;
-            return searchablePriceable.GetCategoryPrice(Category) * (100 - PercentageToSubtract) / 100;
+            return searchablePriceable.GetCategoryPrice(Category) * PercentageToSubtract / 100;
         }
 
         public override string GetDiscountString(ISearchablePriceable searchablePriceable)

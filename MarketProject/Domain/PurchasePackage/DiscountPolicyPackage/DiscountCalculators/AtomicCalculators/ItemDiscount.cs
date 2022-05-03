@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal class ItemDiscount : PercentageDiscount
+    public class ItemDiscount : PercentageDiscount
     {
         private String _itemName;
         public String ItemName

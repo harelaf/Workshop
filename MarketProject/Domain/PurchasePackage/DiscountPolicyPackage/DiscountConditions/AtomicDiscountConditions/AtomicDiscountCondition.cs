@@ -6,6 +6,10 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
     public abstract class AtomicDiscountCondition : DiscountCondition
     {
+        protected AtomicDiscountCondition(bool negative) : base(negative)
+        {
+        }
+
         public bool IsInRange(double value, double min, double max)
         {
             if (max < 0)

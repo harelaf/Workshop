@@ -4,26 +4,27 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    public class XorComposition : ComposedDiscountCondition
+    public class OrComposition : ComposedDiscountCondition
     {
+        public OrComposition(bool negative) : base(negative)
+        {
+        }
+
+        public OrComposition(bool negative, List<DiscountCondition> conditions) : base(negative, conditions)
+        {
+        }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
-            bool result = false;
-            bool found = false;
+            bool result = _discountConditionList.Count == 0; // returns true when the condition list is empty.
             foreach (DiscountCondition discountCondition in this._discountConditionList)
             {
-                if (!found && discountCondition.Check(searchablePriceable))
+                if (discountCondition.Check(searchablePriceable))
                 {
-                    found = true;
-                }
-                if(found && discountCondition.Check(searchablePriceable))
-                {
-                    result = false;
+                    result = true;
                     break;
                 }
             }
-            result = found;
-            if (_toNegative)
+            if (ToNegative)
             {
                 return !result;
             }

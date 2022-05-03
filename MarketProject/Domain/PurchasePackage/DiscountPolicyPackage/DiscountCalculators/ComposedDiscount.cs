@@ -4,27 +4,33 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal abstract class ComposedDiscount : Discount
+    public abstract class ComposedDiscount : Discount
     {
-        protected List<Discount> _discountList
+        private List<Discount> _discountList = new List<Discount>();
+        public List<Discount> DiscountList
         {
             get { return _discountList; }
             private set
             {
-                if(value == null)
-                    throw new ArgumentNullException("discount list must contain at least one discount.");
+                //if (value == null)
+                //    throw new ArgumentNullException("discount list must contain at least one discount.");
                 _discountList = value;
             }
         }
 
         public ComposedDiscount(List<Discount> discounts, DiscountCondition condition) : base(condition)
         {
-            _discountList = discounts;
+            lock(_discountList){
+                _discountList = discounts;
+            }
         }
 
         public ComposedDiscount(List<Discount> discounts) : base()
         {
-            _discountList = discounts;
+            lock (_discountList)
+            {
+                _discountList = discounts;
+            }
         }
     }
 }

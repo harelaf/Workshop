@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal abstract class AtomicDiscount : Discount
+    public abstract class AtomicDiscount : Discount
     {
         private DateTime _expiration;
         public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)

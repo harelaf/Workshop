@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal abstract class PercentageDiscount : AtomicDiscount
+    public abstract class PercentageDiscount : AtomicDiscount
     {
         private double _percentage_to_subtract;
         public double PercentageToSubtract

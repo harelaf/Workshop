@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPolicy.AtomicDiscountConditions
+namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    public class DayOnWeekCondition : DateTimeCondition
+    public class DayOnWeekCondition : AtomicDiscountCondition
     {
         protected DayOfWeek _dayOnWeek; //between 
         
-        public DayOnWeekCondition(String day) : base()
+        public DayOnWeekCondition(String day, bool negative) : base(negative)
         {
             _dayOnWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), day);
         }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
-            return _now.DayOfWeek == _dayOnWeek;
+            return DateTime.Now.DayOfWeek == _dayOnWeek;
         }
     }
 }

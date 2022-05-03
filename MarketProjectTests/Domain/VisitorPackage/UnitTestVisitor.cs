@@ -3,7 +3,7 @@ using MarketProject.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using MarketProject.Domain.PurchasePackage.DiscountPolicy;
 
 namespace MarketProject.Domain.Tests
 {

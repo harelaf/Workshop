@@ -111,17 +111,28 @@ namespace MarketProject.Domain
 
         public double GetTotalPrice()
         {
-            throw new NotImplementedException();
+            double sum = 0;
+            foreach(Item i in _items.Keys)
+                sum += i._price * _items[i];
+            return sum;
         }
 
-        public double GetItemPrice(string itemName)
+        public double GetItemPrice(String itemName)
         {
-            throw new NotImplementedException();
+            double sum = 0;
+            foreach (Item item in _items.Keys)
+                if (itemName == item.Name)
+                    sum += item._price * _items[item];
+            return sum;
         }
 
-        public double GetCategoryPrice(string category)
+        public double GetCategoryPrice(String category)
         {
-            throw new NotImplementedException();
+            double sum = 0;
+            foreach(Item item in _items.Keys)
+                if (category == item.Category)
+                    sum += item._price * _items[item];
+            return sum;
         }
     }
 }

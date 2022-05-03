@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal class NumericDiscount : AtomicDiscount
+    public class NumericDiscount : AtomicDiscount
     {
         private double _price_to_subtract;
         public double PriceToSubtract
@@ -17,8 +17,6 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
                 _price_to_subtract = value;
             }
         }
-
-
         public NumericDiscount(double priceToSubtract, DiscountCondition _condition, DateTime expiration) : base(_condition, expiration)
         {
             _price_to_subtract = priceToSubtract;
@@ -27,25 +25,17 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         {
             _price_to_subtract = priceToSubtract;
         }
-
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
             if(!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
                 return 0;
-            double totalDis = searchablePriceable.GetTotalPrice() > PriceToSubtract ? PriceToSubtract : 0;
-            return totalDis;
+            return PriceToSubtract;
         }
-
         public override string GetDiscountString(ISearchablePriceable searchablePriceable)
         {
             return PriceToSubtract + " off total price." +
                 "\n\n" + ExpirationToString() +
                 "\n\n" + ConditionToString();
-        }
-
-        public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
-        {
-            throw new NotImplementedException();
         }
     }
 }

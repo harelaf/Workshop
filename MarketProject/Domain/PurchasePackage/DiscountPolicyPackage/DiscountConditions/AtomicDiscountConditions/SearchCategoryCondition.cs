@@ -6,7 +6,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
     public class SearchCategoryCondition : SearchablePriceableCondition
     {
-        public SearchCategoryCondition(string keyWord, int minAmount, int maxAmount) : base(keyWord, minAmount, maxAmount) { }
+        public SearchCategoryCondition(string keyWord, int minAmount, int maxAmount, bool negative) : base(keyWord, minAmount, maxAmount, negative) { }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
             return IsInRange(searchablePriceable.SearchCategoryAmount(_keyWord), _minValue, _maxValue);

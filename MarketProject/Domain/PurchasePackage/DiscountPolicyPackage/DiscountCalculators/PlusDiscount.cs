@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal class PlusDiscount : ComposedDiscount
+    public class PlusDiscount : ComposedDiscount
     {
         public PlusDiscount(List<Discount> discounts) : base(discounts){}
 
@@ -13,7 +13,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
             double sumDis = 0;
-            foreach(Discount dis in _discountList)
+            foreach(Discount dis in DiscountList)
                 sumDis += dis.GetTotalDiscount(searchablePriceable);
             return sumDis;
         }
@@ -21,7 +21,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         public override String GetDiscountString(ISearchablePriceable searchablePriceable)
         {
             String str = "";
-            foreach(Discount discount in _discountList)
+            foreach(Discount discount in DiscountList)
             {
                 str += discount.GetDiscountString(searchablePriceable) + "\n";
             }
@@ -31,7 +31,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
         {
             DateTime ans = DateTime.MinValue;
-            foreach (Discount dis in _discountList)
+            foreach (Discount dis in DiscountList)
             {
                 if (dis.GetTotalDiscount(searchablePriceable) > 0)
                 {
@@ -41,6 +41,11 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
                 }
             }
             return ans;
+        }
+
+        public void AddDiscount(Discount discount)
+        {
+            DiscountList.Add(discount);
         }
     }
 }

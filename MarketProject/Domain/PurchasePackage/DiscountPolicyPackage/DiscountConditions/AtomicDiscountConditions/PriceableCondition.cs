@@ -6,7 +6,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
     public class PriceableCondition : SearchablePriceableCondition
     {
-        public PriceableCondition(string keyWord, int minAmount, int maxAmount) : base(keyWord, minAmount, maxAmount)
+        public PriceableCondition(string keyWord, int minAmount, int maxAmount, bool negative) : base(keyWord, minAmount, maxAmount, negative)
         {
         }
 

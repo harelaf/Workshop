@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal class MaxDiscount : ComposedDiscount
+    public class MaxDiscount : ComposedDiscount
     {
         public MaxDiscount(List<Discount> _discountsList) : base(_discountsList){}
         public MaxDiscount(List<Discount> discounts, DiscountCondition condition) : base(discounts, condition){}
@@ -18,12 +18,12 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         private Discount GetMaxDiscount(ISearchablePriceable searchablePriceable)
         {
             Discount maxDis = new NumericDiscount(0, DateTime.MaxValue);
-            foreach (Discount dis in _discountList)
+            foreach (Discount dis in DiscountList)
             {
                 maxDis = Math.Max(maxDis.GetTotalDiscount(searchablePriceable), 
-                                    dis.GetTotalDiscount(searchablePriceable)) 
-                                        == maxDis.GetTotalDiscount(searchablePriceable) ?
-                                                                                    maxDis : dis;
+                            dis.GetTotalDiscount(searchablePriceable)) 
+                            == maxDis.GetTotalDiscount(searchablePriceable) ?
+                            maxDis : dis;
             }
             return maxDis;
         }
@@ -31,7 +31,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
             double totalDis = 0;
-            foreach(Discount dis in _discountList)
+            foreach(Discount dis in DiscountList)
             {
                 totalDis = Math.Max(totalDis, dis.GetTotalDiscount(searchablePriceable));
             }

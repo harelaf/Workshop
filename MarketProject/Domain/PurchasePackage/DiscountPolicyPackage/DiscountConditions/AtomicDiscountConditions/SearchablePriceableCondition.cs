@@ -8,7 +8,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
     {
         protected String _keyWord;
         protected int _minValue, _maxValue;
-        public SearchablePriceableCondition(String keyWord, int minAmount, int maxAmount)
+        public SearchablePriceableCondition(String keyWord, int minAmount, int maxAmount, bool negative) : base(negative)
         {
             _keyWord = keyWord;
             _minValue = minAmount;

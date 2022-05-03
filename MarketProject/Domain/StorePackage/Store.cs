@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain.PurchasePackage.DiscountPolicy;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -344,6 +345,11 @@ namespace MarketProject.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in Store.{functionName}. Cause: {message}.");
+        }
+
+        public void AddDiscount(Discount discount)
+        {
+            _discountPolicy.AddDiscount(discount);
         }
     }
 }

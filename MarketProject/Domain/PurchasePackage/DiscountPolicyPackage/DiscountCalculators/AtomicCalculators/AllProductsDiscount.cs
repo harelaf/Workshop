@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
-    internal class AllProductsDiscount : PercentageDiscount
+    public class AllProductsDiscount : PercentageDiscount
     {
         public AllProductsDiscount(double percentage_to_subtract, DateTime expiration) : base(percentage_to_subtract, expiration){}
 
@@ -21,7 +21,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         {
             if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
                 return 0;
-            return searchablePriceable.GetTotalPrice() * (100 - PercentageToSubtract) / 100;
+            return searchablePriceable.GetTotalPrice() * PercentageToSubtract / 100;
         }
     }
 }

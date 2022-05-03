@@ -6,10 +6,18 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 {
     public class AndComposition : ComposedDiscountCondition
     {
+        public AndComposition(bool negative) : base(negative)
+        {
+        }
+
+        public AndComposition(bool negative, List<DiscountCondition> conditions) : base(negative, conditions)
+        {
+        }
+
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
             bool result = true;
-            foreach (DiscountCondition discountCondition in this._discountConditionList)
+            foreach (DiscountCondition discountCondition in _discountConditionList)
             {
                 if (!discountCondition.Check(searchablePriceable))
                 {
@@ -17,7 +25,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
                     break;
                 }
             }
-            if (_toNegative)
+            if (ToNegative)
             {
                 return !result;
             }
