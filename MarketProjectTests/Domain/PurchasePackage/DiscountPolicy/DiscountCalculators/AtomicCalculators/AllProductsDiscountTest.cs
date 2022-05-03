@@ -3,12 +3,13 @@ using MarketProject.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketProject.Domain.PurchasePackage.DiscountPackage;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 {
-	[TestClass()]
-	public class ItemDiscountTests
-	{
+	[TestClass]
+    public class AllProductsDiscountTest
+    {
 		String itemName = "cookie";
 		String storeName = "capCake";
 		String founderName = "george washington";
@@ -19,7 +20,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 
 		[TestInitialize]
 		public void setup()
-        {
+		{
 			founder = new StoreFounder(founderName, storeName);
 			store = new Store(storeName, founder, new PurchasePolicy(), new DiscountPolicy());
 			basket = new ShoppingBasket(store);
@@ -29,7 +30,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 		public void GetTotalDiscount_noCondition_success()
 		{
 			double percentage_to_subtract = 10;
-			ItemDiscount dis = new ItemDiscount(percentage_to_subtract, itemName, expiration);
+			AllProductsDiscount dis = new AllProductsDiscount(percentage_to_subtract, expiration);
 			//store.AddDiscount(dis);
 			basket.AddItem(new Item(1, itemName, 10, "desc", "category"), 1);
 
@@ -51,19 +52,17 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			DiscountCondition hourCondition = new HourCondition(DateTime.Now.Hour - 1, DateTime.Now.Hour + 1, false);
 			andCondition.AddConditionToComposition(itemCondition);
 			andCondition.AddConditionToComposition(hourCondition);
-			ItemDiscount dis = new ItemDiscount(percentage_to_subtract, itemName, andCondition, expiration);
+			AllProductsDiscount dis = new AllProductsDiscount(percentage_to_subtract, andCondition, expiration);
 			//store.AddDiscount(dis);
-			basket.AddItem(new Item(1, itemName, price, "desc", "category"), amount); 
-			
+			basket.AddItem(new Item(1, itemName, price, "desc", "category"), amount);
+
 			//act
 			double expected = 1.0;
 			double actual = dis.GetTotalDiscount(basket);
 
-            //Assert
-            Assert.AreEqual(expected, actual);
-            //Assert.IsTrue(itemCondition.Check(basket));
-            //Assert.AreEqual(basket.GetItemPrice(itemName), 10);
-        }
+			//Assert
+			Assert.AreEqual(actual, expected);
+		}
 
 		[TestMethod]
 		public void GetDiscountString_noCondition_success()
@@ -71,12 +70,12 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			double percentage_to_subtract = 10;
 			int amount = 10;
 			double price = 1;
-			ItemDiscount dis = new ItemDiscount(percentage_to_subtract, itemName, expiration);
+			AllProductsDiscount dis = new AllProductsDiscount(percentage_to_subtract, expiration);
 			//store.AddDiscount(dis);
 			basket.AddItem(new Item(1, itemName, price, "desc", "category"), amount);
 
 			//act
-			String expected = $"{percentage_to_subtract}% off {itemName}.\n\nExpired on: {expiration}\n\n";
+			String expected = $"{percentage_to_subtract}% off all products.\n\nExpired on: {expiration}\n\n";
 			String actual = dis.GetDiscountString(basket);
 
 			//Assert
@@ -94,14 +93,14 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			DiscountCondition hourCondition = new HourCondition(DateTime.Now.Hour - 1, DateTime.Now.Hour + 1, false);
 			andCondition.AddConditionToComposition(itemCondition);
 			andCondition.AddConditionToComposition(hourCondition);
-			ItemDiscount dis = new ItemDiscount(percentage_to_subtract, itemName, andCondition, expiration);
+			AllProductsDiscount dis = new AllProductsDiscount(percentage_to_subtract, andCondition, expiration);
 			//store.AddDiscount(dis);
 			basket.AddItem(new Item(1, itemName, price, "desc", "category"), amount);
 
 			//act
-			String expected = $"{percentage_to_subtract}% off {itemName}.\n\nExpired on: {expiration}\n\nCondition(s): \n{andCondition.ToString()}";
+			String expected = $"{percentage_to_subtract}% off all products.\n\nExpired on: {expiration}\n\nCondition(s): \n{andCondition.ToString()}";
 			String actual = dis.GetDiscountString(basket);
-			
+
 			//Assert
 			Assert.AreEqual(actual, expected);
 		}

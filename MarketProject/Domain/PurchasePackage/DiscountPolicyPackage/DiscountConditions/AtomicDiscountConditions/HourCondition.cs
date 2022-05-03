@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
+namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
     public class HourCondition : AtomicDiscountCondition
     {
@@ -30,8 +30,8 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
         
         public HourCondition(int minHour, int maxHour, bool negative) : base(negative)
         {
-            MaxHour = minHour;
-            MinHour = maxHour;
+            MaxHour = maxHour;
+            MinHour = minHour;
         }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {

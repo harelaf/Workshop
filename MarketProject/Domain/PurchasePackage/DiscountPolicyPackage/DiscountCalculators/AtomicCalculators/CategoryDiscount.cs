@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
+namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
     public class CategoryDiscount : PercentageDiscount
     {
@@ -31,9 +31,9 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
 
         public override string GetDiscountString(ISearchablePriceable searchablePriceable)
         {
-            return PercentageToSubtract + "% off all " + Category + " products prices." +
-                "\n\n" + ExpirationToString() +
-                "\n\n" + ConditionToString();
+            return $"{PercentageToSubtract}% off all '{Category}' products prices." +
+                $"\n\n{ExpirationToString()}" +
+                $"\n\n{ConditionToString()}";
         }
     }
 }

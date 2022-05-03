@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPolicy
+namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
     public abstract class Discount
     {

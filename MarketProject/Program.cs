@@ -1,5 +1,5 @@
 ﻿using MarketProject.Domain;
-using MarketProject.Domain.PurchasePackage.DiscountPolicy;
+using MarketProject.Domain.PurchasePackage.DiscountPackage;
 using System;
 
 namespace MarketProject
