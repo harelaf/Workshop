@@ -13,18 +13,31 @@ namespace MarketWebProject.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(MainModel modelcs)
         {
-            return View();
+            if (modelcs == null)
+                modelcs = new MainModel();
+            return View(modelcs);
         }
 
-        public IActionResult Privacy()
+        public IActionResult Privacy(MainModel modelcs)
         {
-            return View();
+            if (modelcs == null)
+                modelcs = new MainModel();
+            return View(modelcs);
         }
-        public IActionResult RegistrationPage()
+
+        public IActionResult RegistrationPage(MainModel modelcs)
         {
-            return View();
+            if(modelcs == null)
+                modelcs = new MainModel();
+            return View(modelcs);
+        }
+        public IActionResult LoginPage(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            return View(modelcs);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -41,7 +54,35 @@ namespace MarketWebProject.Controllers
             Console.WriteLine("dob: " + dob);
             //CALL THE CLIENT-> server-> market api
             //_CLIENT<- server <-market api
-            return RedirectToAction("Index");
+            String err_msg = "yourpass is not valid";
+            return RedirectToAction("RegistrationPage","Home", new {ErrorMsg = err_msg });
         }
+        public IActionResult LoginForm(string name, string password)
+        {
+            Console.WriteLine("worksssssssssssssssssssssssssssssssssssss");
+            Console.WriteLine("name: " + name);
+            Console.WriteLine("pass: " + password);
+            //CALL THE CLIENT-> server-> market api
+            //_CLIENT<- server <-market api
+            String err_msg = "loggin faild: your username or password are wrong!";
+            //for ourtest:
+            if(name == "fail")
+                return RedirectToAction("LoginPage", "Home", new { ErrorMsg = err_msg });
+            else
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = false , IsLoggedIn=true, IsAdmin =false});;
+            }
+        }
+        public IActionResult Logout()
+        {
+            //CALL THE CLIENT-> server-> market api
+            //_CLIENT<- server <-market api
+            String err_msg = "loggin faild: your username or password are wrong!";
+            //for ourtest:
+           
+            return RedirectToAction("Index", "Home", new { IsGuest = true, IsLoggedIn = false, IsAdmin = false }); ;
+            
+        }
+
     }
 }
