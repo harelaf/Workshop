@@ -1,11 +1,11 @@
 ﻿@model WelcomeModelcs
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Registration Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Registration process:</h1>
 
 <h2>Register</h2>
 <form action="/Home/RegisterForm" method="post">
@@ -14,6 +14,9 @@
     <br />
     <font color="black">Password: </font>
     <input type="password" name="password" title="password" />
+    <br />
+    <font color="black">Date of Birth: </font>
+    <input type="date" name="DOB" title="DOB" />
     <br />
     <input type="submit" value="Register" />
 </form>

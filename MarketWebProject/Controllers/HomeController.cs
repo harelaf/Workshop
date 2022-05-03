@@ -22,11 +22,26 @@ namespace MarketWebProject.Controllers
         {
             return View();
         }
+        public IActionResult RegistrationPage()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult RegisterForm(string name, string password, DateTime dob)
+        {
+            Console.WriteLine("worksssssssssssssssssssssssssssssssssssss");
+            Console.WriteLine("name: "+name);
+            Console.WriteLine("pass: " + password);
+            Console.WriteLine("dob: " + dob);
+            //CALL THE CLIENT-> server-> market api
+            //_CLIENT<- server <-market api
+            return RedirectToAction("Index");
         }
     }
 }
