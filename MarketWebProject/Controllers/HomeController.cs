@@ -26,7 +26,12 @@ namespace MarketWebProject.Controllers
                 modelcs = new MainModel();
             return View(modelcs);
         }
-
+        public IActionResult CartPage(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            return View(modelcs);
+        }
         public IActionResult RegistrationPage(MainModel modelcs)
         {
             if (modelcs == null)
@@ -93,7 +98,7 @@ namespace MarketWebProject.Controllers
             //_CLIENT<- server <-market api
             String err_msg = "yourCartIsEmpty";
             //for ourtest:
-
+            Res
             return RedirectToAction("Index", "Home", new { Message = err_msg }); ;
 
         }
