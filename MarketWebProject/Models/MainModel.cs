@@ -18,7 +18,7 @@
             IsAdmin = false;
 
         }
-        public MainModel(bool ErrorOccurred, string err)
+        public MainModel(bool ErrorOccurred, string err, bool isGuest, bool isLoggedIn, bool isAdmin)
         {
             this.ErrorOccurred = ErrorOccurred;
             Message = err;
