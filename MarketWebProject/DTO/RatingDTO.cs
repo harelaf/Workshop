@@ -11,6 +11,10 @@ namespace MarketWebProject.DTO
 
         public Dictionary<String, Tuple<int, String>> Ratings => _ratings;
 
+        public RatingDTO()
+        {
+            _ratings = new Dictionary<String, Tuple<int, String>>();
+        }
 
         public float GetRating()
         {

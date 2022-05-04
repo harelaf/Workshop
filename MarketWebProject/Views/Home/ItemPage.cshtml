@@ -9,26 +9,24 @@
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Item Search Result";
 }
-
- <font color="black">item name: </font>
- <p> @((ViewData["item"] as ItemDTO).Name)</p>
-
-  <font color="black">item price: </font>
- <p>$ @(String.Format("{0:0.00}", (ViewData["item"] as ItemDTO).Price))</p>
-
-  <font color="black">item category: </font>
- <p> @((ViewData["item"] as ItemDTO).Category)</p>
-
-  <font color="black">item description: </font>
- <p> @((ViewData["item"] as ItemDTO).Description)</p>
- <!-- add button for adding this item to cart -->
+<div class="text-center">
+    <h1 class="display-4">Item @((ViewData["item"] as ItemDTO).Name) Page</h1>
+    <br />
+    <br />
+<div/>
+<br />
+<h1 style="text-align:left;font-size:200%;">item price:</h1>
+<p style="text-align:left;font-size:160%;">$ @(String.Format("{0:0.00}", (ViewData["item"] as ItemDTO).Price))</p>
+<br />
+<h1 style="text-align:left;font-size:200%;"> item category: </h1> 
+<p style="text-align:left;font-size:160%;"> @((ViewData["item"] as ItemDTO).Category)</p>
+<br />
+<h1 style="text-align:left;font-size:200%;"> item description: </h1>
+<p style="text-align:left;font-size:160%;"> @((ViewData["item"] as ItemDTO).Description)</p>
+    <!-- add button for adding this item to cart -->
 <br />
 <br />
-<br />
-<br />
-<br />
-<br />
-<h1 class="display-4">Item Ratings and Comments:</h1>
+<h1 style="text-align:left;font-size:200%;">Item Ratings and Comments: </h1>
 
 @if ((ViewData["item"] as ItemDTO).Rating.Ratings.Count > 0)
 {
@@ -57,5 +55,5 @@
 }
 else
 {
-<font color="black">no one has rated this item yet.. </font>
+<p style="text-align:left;font-size:160%;">no one has rated this item yet..</p>
 }

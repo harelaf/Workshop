@@ -25,6 +25,7 @@ namespace MarketWebProject.DTO
             _name = name;
             _price = price;
             _storeName = storeName;
+            _rating = new RatingDTO();
         }
 
         public RatingDTO Rating => _rating;
