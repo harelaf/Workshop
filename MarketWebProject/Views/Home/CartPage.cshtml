@@ -39,9 +39,11 @@
                         <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="RemoveItemFromCart" asp-route-storename="@storeName" asp-route-itemId="@item_amount.Key.ItemID">Remove</a> 
                     </th>
                     <th> 
-                        <font color="black">new quantity: </font>
-                        <input type="number" id="newQuantity" name="newQuantity" title="newQuantity" />
-                         <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="UpdateItemQuantityInCart" asp-route-storename="@storeName" asp-route-itemId="@item_amount.Key.ItemID" asp-route-newQuantity="newQuantity">Update</a> 
+                        <form method="post">
+                            <font color="black">new quantity: </font>
+                            <input type="number" id="newQuantity" name="newQuantity" title="newQuantity" />
+                            <input class="btn btn-info" type="submit" value="Update" asp-area="" asp-controller="Home" asp-action="UpdateItemQuantityInCart" asp-route-newQuantity="" asp-route-storename="@storeName" asp-route-itemId="@item_amount.Key.ItemID" />
+                        </form>
                     </th>
                 </tr>
             }
