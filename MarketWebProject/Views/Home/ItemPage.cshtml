@@ -9,3 +9,53 @@
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Item Search Result";
 }
+
+ <font color="black">item name: </font>
+ <p> @((ViewData["item"] as ItemDTO).Name)</p>
+
+  <font color="black">item price: </font>
+ <p>$ @(String.Format("{0:0.00}", (ViewData["item"] as ItemDTO).Price))</p>
+
+  <font color="black">item category: </font>
+ <p> @((ViewData["item"] as ItemDTO).Category)</p>
+
+  <font color="black">item description: </font>
+ <p> @((ViewData["item"] as ItemDTO).Description)</p>
+ <!-- add button for adding this item to cart -->
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<h1 class="display-4">Item Ratings and Comments:</h1>
+
+@if ((ViewData["item"] as ItemDTO).Rating.Ratings.Count > 0)
+{
+    Dictionary<String, Tuple<int, String>> rating = (ViewData["item"] as ItemDTO).Rating.Ratings; 
+        <table class="table">
+            <thead>
+                <tr>
+                <th>User name</th>
+                <th>Rating Score</th>
+                <th>Review</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (String userName in rating.Keys)
+            {
+
+                    <tr>
+                        <td>@userName</td>
+                        <td>@rating[userName].Item1</td>
+                        <td>@rating[userName].Item2</td>
+                    </tr>
+            }
+
+            <tbody />
+        </table>
+}
+else
+{
+<font color="black">no one has rated this item yet.. </font>
+}
