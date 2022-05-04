@@ -54,7 +54,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			int amount = 10;
 			ComposedDiscountCondition andCondition = new OrComposition(false);
 			DiscountCondition categoryCondition = new SearchCategoryCondition(category, 5, 15, false);
-			DiscountCondition hourCondition = new HourCondition(DateTime.Now.Hour - 1, DateTime.Now.Hour + 1, false);
+			DiscountCondition hourCondition = new HourCondition((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
 			andCondition.AddConditionToComposition(categoryCondition);
 			andCondition.AddConditionToComposition(hourCondition);
 			CategoryDiscount dis = new CategoryDiscount(percentage_to_subtract, category, andCondition, expiration);
@@ -75,7 +75,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			int amount = 10;
 			ComposedDiscountCondition andCondition = new AndComposition(false);
 			DiscountCondition itemCondition = new SearchCategoryCondition(category, 5, 15, false);
-			DiscountCondition hourCondition = new HourCondition(DateTime.Now.Hour - 1, DateTime.Now.Hour + 1, false);
+			DiscountCondition hourCondition = new HourCondition((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
 			andCondition.AddConditionToComposition(itemCondition);
 			andCondition.AddConditionToComposition(hourCondition);
 			CategoryDiscount dis = new CategoryDiscount(percentage_to_subtract, category, andCondition, expiration);
@@ -114,7 +114,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			int amount = 10;
 			ComposedDiscountCondition andCondition = new AndComposition(false);
 			DiscountCondition itemCondition = new SearchItemCondition(category, 5, 15, false);
-			DiscountCondition hourCondition = new HourCondition(DateTime.Now.Hour - 1, DateTime.Now.Hour + 1, false);
+			DiscountCondition hourCondition = new HourCondition((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
 			andCondition.AddConditionToComposition(itemCondition);
 			andCondition.AddConditionToComposition(hourCondition);
 			CategoryDiscount dis = new CategoryDiscount(percentage_to_subtract, category, andCondition, expiration);

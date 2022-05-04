@@ -1,0 +1,26 @@
+﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MarketProject.Service.DTO
+{
+    public class DayOnWeekConditionDTO : IConditionDTO
+    {
+        private DayOfWeek _dayOnWeek;
+        private bool _negative;
+
+        public String DayOnWeek => _dayOnWeek.ToString();
+        public bool Negative => _negative;
+
+        public DayOnWeekConditionDTO(String day, bool negative)
+        {
+            _dayOnWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), day);
+            _negative = negative;
+        }
+        public DiscountCondition ConvertMe(dtoConditionConverter converter)
+        {
+            return converter.convertConcrete(this);
+        }
+    }
+}

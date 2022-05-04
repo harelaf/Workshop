@@ -48,7 +48,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			double price = 1;
 			ComposedDiscountCondition andCondition = new AndComposition(false);
 			DiscountCondition itemCondition = new SearchItemCondition(itemName, 5, 15, false);
-			DiscountCondition hourCondition = new HourCondition(DateTime.Now.Hour - 1, DateTime.Now.Hour + 1, false);
+			DiscountCondition hourCondition = new HourCondition((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
 			andCondition.AddConditionToComposition(itemCondition);
 			andCondition.AddConditionToComposition(hourCondition);
 			ItemDiscount dis = new ItemDiscount(percentage_to_subtract, itemName, andCondition, expiration);
@@ -91,7 +91,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			double price = 1;
 			ComposedDiscountCondition andCondition = new AndComposition(false);
 			DiscountCondition itemCondition = new SearchItemCondition(itemName, 5, 15, false);
-			DiscountCondition hourCondition = new HourCondition(DateTime.Now.Hour - 1, DateTime.Now.Hour + 1, false);
+			DiscountCondition hourCondition = new HourCondition((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
 			andCondition.AddConditionToComposition(itemCondition);
 			andCondition.AddConditionToComposition(hourCondition);
 			ItemDiscount dis = new ItemDiscount(percentage_to_subtract, itemName, andCondition, expiration);

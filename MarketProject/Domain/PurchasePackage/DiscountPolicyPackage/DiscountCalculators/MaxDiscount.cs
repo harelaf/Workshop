@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Service.DTO;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,6 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
     {
         public MaxDiscount(List<Discount> _discountsList) : base(_discountsList){}
         public MaxDiscount(List<Discount> discounts, DiscountCondition condition) : base(discounts, condition){}
-
         public override string GetDiscountString(ISearchablePriceable searchablePriceable)
         {
             Discount maxDis = GetMaxDiscount(searchablePriceable);
