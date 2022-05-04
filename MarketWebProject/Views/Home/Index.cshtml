@@ -11,6 +11,38 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-
+    <h1 class="display-4">Welcome to MarketWebProject!</h1>
+    <br />
+    @if (!Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    <br />
+    <form action="/Home/ItemSearchPage" method="post" style="border:black; border-width:4px; border-style:solid;">
+        <div style="text-align:center;">
+            <h1 style="text-decoration-style:double">Item Search Box</h1>
+            <p>In order to search for a specific item, fill the following boxes:</p>
+            <ul class="nav" style="display:inline-table;">
+                <li style="display:inline;">
+                    <font color="black">Name:</font>
+                    <input type="text" name="itemname" title="itemname" />
+                </li>
+                <br />
+                <li style="display:inline;">
+                    <font color="black">Category: </font>
+                    <input type="text" name="category" title="category" />
+                </li>
+                <br />
+                <li style="display:inline;">
+                    <font color="black">Key Word: </font>
+                    <input type="text" name="keyword" title="keyword" />
+                </li>
+            </ul>
+        </div>
+        <br />
+        <input type="submit" value="Search Items" />
+        <p></p>
+    </form>
+    <br />
+    <br />
 </div>

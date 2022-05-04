@@ -68,7 +68,6 @@ namespace MarketWebProject.Controllers
                 viewResult.ViewData["searchedItems"] = response.Value;
                 return viewResult;
             }
-
         }
 
         public IActionResult ItemPage(string storeName, int itemId)
