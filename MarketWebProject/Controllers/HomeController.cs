@@ -149,23 +149,31 @@ namespace MarketWebProject.Controllers
 
         }
 
-        public ActionResult RemoveItemFormCart(int itemId, String storeName)
+        public ActionResult RemoveItemFromCart(String storeName, int itemID)
         {
             //I_User_ServiceLayer SL = validateConnection();
-            try
+            Response res = new Response(new Exception("could'nt remove item: " + itemID + " from store: " + storeName));//=service.removeItemFromCart(token,itemID, storeName)
+            if (res.ErrorOccured)
             {
-                Response res = null;//service.removeItemFromCart(itemId, store)
-                if (!res.ErrorOccured)
-                {
-                    return RedirectToAction("MyStores", new { storename = storeName });
-                }
+                return RedirectToAction("CartPage", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
             }
-            catch
+            else
             {
-
+                return RedirectToAction("CartPage", "Home");
             }
-            ViewData["alertRemoveProduct"] = true;
-            return RedirectToAction("Item", new { storename = storeName, productname = itemId });
+        }
+        public ActionResult UpdateItemQuantityInCart(String storeName, int itemID, int newQuantity)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt update item: "+itemID+" from store: "+storeName+" to quantity: "+newQuantity));//=service.removeItemFromCart(token,itemID, storeName, newQuantity)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("CartPage", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("CartPage", "Home");
+            }
         }
 
 
