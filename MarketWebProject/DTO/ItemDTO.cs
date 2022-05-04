@@ -13,11 +13,18 @@ namespace MarketWebProject.DTO
         private double _price;
         private String _description;
         private String _category;
+        private String _storeName;
 
         public ItemDTO(string name, double price)
         {
             _name = name;
             _price = price;
+        }
+        public ItemDTO(string name, double price, string storeName)
+        {
+            _name = name;
+            _price = price;
+            _storeName = storeName;
         }
 
         public RatingDTO Rating => _rating;
@@ -28,6 +35,8 @@ namespace MarketWebProject.DTO
         public String Description => _description;
         public String Category => _category;
 
-        
+        public String StoreName => _storeName;
+
+
     }
 }

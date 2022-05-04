@@ -449,7 +449,7 @@ namespace MarketProject.Domain
             _storeManagement.RateItem(appointerUsername, item, rating, review);
         }
 
-        public List<Item> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
+        public IDictionary<string, List<Item>> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "GetItemInformation");

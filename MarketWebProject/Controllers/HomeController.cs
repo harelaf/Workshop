@@ -48,6 +48,47 @@ namespace MarketWebProject.Controllers
             }
            
         }
+
+        public IActionResult ItemSearchPage(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            List<ItemDTO> items = new List<ItemDTO>();
+            items.Add(new ItemDTO("item1", 10.5, "store1"));
+            items.Add(new ItemDTO("item2", 9.5, "store1"));
+            items.Add(new ItemDTO("item3", 15.5, "store2"));
+            Response<List<ItemDTO>> response = new Response<List<ItemDTO>>(items);
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["searchedItems"] = response.Value;
+                return viewResult;
+            }
+
+        }
+
+        public IActionResult ItemPage(string storeName, int itemId)
+        {
+            
+            MainModel modelcs = new MainModel();
+            //Response<ItemDTO> response=  getItem(storeName, itemId)
+            Response<ItemDTO> response = new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["item"] = response.Value;
+                return viewResult;
+            }
+        }
+
         public IActionResult RegistrationPage(MainModel modelcs)
         {
             if (modelcs == null)
@@ -127,5 +168,7 @@ namespace MarketWebProject.Controllers
             ViewData["alertRemoveProduct"] = true;
             return RedirectToAction("Item", new { storename = storeName, productname = itemId });
         }
+
+
     }
 }

@@ -1,0 +1,45 @@
+﻿@model MainModel
+@using MarketWebProject.DTO
+@{
+    if (Model.IsGuest)
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    else if (Model.IsLoggedIn)
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    else
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Item Search Result";
+}
+
+
+<h2>SearchResults</h2>
+@if ((ViewData["searchedItems"] as List<ItemDTO>).Count == 0)
+{
+    <font color="red"><b>no items found for your search parameters.</b></font>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Store Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ItemDTO item in (ViewData["searchedItems"] as List<ItemDTO>))
+            {
+
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Price</td>
+                <td>@item.StoreName</td>
+                <td>
+                    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="ItemPage" asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID">View @item.Name Page</a>
+                </td>
+            </tr>
+            }
+
+        <tbody />
+    </table>
+}
