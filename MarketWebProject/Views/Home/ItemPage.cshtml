@@ -15,45 +15,50 @@
     <br />
 </div>
 <br />
-<h1 style="text-align:left;font-size:200%;">item price:</h1>
-<p style="text-align:left;font-size:160%;">$ @(String.Format("{0:0.00}", (ViewData["item"] as ItemDTO).Price))</p>
+<h1 style="font-size:200%;">Item Price:</h1>
+<p style="font-size:160%;">$ @(String.Format("{0:0.00}", (ViewData["item"] as ItemDTO).Price))</p>
 <br />
-<h1 style="text-align:left;font-size:200%;"> item category: </h1> 
-<p style="text-align:left;font-size:160%;"> @((ViewData["item"] as ItemDTO).Category)</p>
+<h1 style="font-size:200%;">Item Category: </h1>
+<p style="font-size:160%;"> @((ViewData["item"] as ItemDTO).Category)</p>
 <br />
-<h1 style="text-align:left;font-size:200%;"> item description: </h1>
-<p style="text-align:left;font-size:160%;"> @((ViewData["item"] as ItemDTO).Description)</p>
-    <!-- add button for adding this item to cart -->
+<h1 style="font-size:200%;">Item Description: </h1>
+<p style="font-size:160%;"> @((ViewData["item"] as ItemDTO).Description)</p>
+<div>
+    <form method="post">
+        <h1 style="font-size:200%;">Choose Amount To Add To Your Cart: </h1>
+        <font color="black">Amount: </font>
+        <input type="number" name="amount" title="amount" id="amount" />
+        <input class="btn btn-info" type="submit" value="Add To Cart" asp-area="" asp-controller="Home" asp-action="AddItemToCart" asp-route-amount="" asp-route-storename="@((ViewData["item"] as ItemDTO).StoreName)" asp-route-itemid="@((ViewData["item"] as ItemDTO).ItemID)" />
+    </form>
+</div>
 <br />
 <br />
-<h1 style="text-align:left;font-size:200%;">Item Ratings and Comments: </h1>
+<h1 style="font-size:200%;">Item Ratings and Comments: </h1>
 
 @if ((ViewData["item"] as ItemDTO).Rating.Ratings.Count > 0)
 {
-    Dictionary<String, Tuple<int, String>> rating = (ViewData["item"] as ItemDTO).Rating.Ratings; 
-        <table class="table">
-            <thead>
-                <tr>
+    Dictionary<String, Tuple<int, String>> rating = (ViewData["item"] as ItemDTO).Rating.Ratings;
+    <table class="table">
+        <thead>
+            <tr>
                 <th>User name</th>
                 <th>Rating Score</th>
                 <th>Review</th>
-                </tr>
-            </thead>
-            <tbody>
+            </tr>
+        </thead>
+        <tbody>
             @foreach (String userName in rating.Keys)
             {
-
-                    <tr>
-                        <td>@userName</td>
-                        <td>@rating[userName].Item1</td>
-                        <td>@rating[userName].Item2</td>
-                    </tr>
+                <tr>
+                    <td>@userName</td>
+                    <td>@rating[userName].Item1</td>
+                    <td>@rating[userName].Item2</td>
+                </tr>
             }
-
-            <tbody />
-        </table>
+        <tbody />
+    </table>
 }
 else
 {
-<p style="text-align:left;font-size:160%;">no one has rated this item yet..</p>
+    <p style="font-size:160%;">no one has rated this item yet..</p>
 }
