@@ -36,6 +36,11 @@ namespace MarketWebProject.DTO
         //private StoreState _state;
         //public StoreState State => _state;
 
+        public StoreDTO()
+        {
+            _storeName = "store1";
+            _founder = new StoreFounderDTO();
+        }
         
     }
 }

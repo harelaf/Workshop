@@ -1,4 +1,5 @@
 ﻿@model MainModel
+@using MarketWebProject.DTO
 
 @{
     if (Model.IsGuest)
@@ -49,4 +50,33 @@
     </form>
     <br />
     <br />
+    <h2>Active Stores</h2>
+    @if ((ViewData["activeStores"] as List<StoreDTO>).Count == 0)
+    {
+        <font><b>There are no active stores in the market.</b></font>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Store Name</th>
+                    <th>Founder Name</th>
+                    <th>View Store Button</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (StoreDTO item in (ViewData["activeStores"] as List<StoreDTO>))
+                {
+                    <tr>
+                        <td>@item.StoreName</td>
+                        <td>@item.Founder.Username</td>
+                        <td>
+                            <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePage" asp-route-storename="@(item.StoreName)">View @item.StoreName Page</a>
+                        </td>
+                    </tr>
+                }
+            <tbody />
+        </table>
+    }
 </div>
