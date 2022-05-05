@@ -1,0 +1,19 @@
+﻿@model MainModel
+@using MarketWebProject.DTO
+
+@{
+    if (Model.IsGuest)
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    else if (Model.IsLoggedIn)
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    else
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Store @((ViewData["store"] as StoreDTO).StoreName) Page</h1>
+    <br />
+    <br />
+</div>
+<br />
