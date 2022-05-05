@@ -125,21 +125,29 @@ namespace MarketWebProject.Controllers
             }
         }
 
-        public IActionResult StorePage(MainModel modelcs)
+        public IActionResult StorePage(MainModel modelcs, string storename)
         {
             if (modelcs == null)
                 modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            string viewName = "StorePageGuest";
+            Response isManager = new Response();// service.isManager(token, storeName)
+            Response isOwner = new Response();// service.isOwner(token, storeName)
+            Response isFounder = new Response();// service.isFounder(token, storeName)
+            if (!isManager.ErrorOccured)
+            {
+                viewName = "StorePageManager";
+            }
             //GetStore
             //CALL THE CLIENT-> server-> market api
             //_CLIENT<- server <-market api
-            Response<StoreDTO> response = new Response<StoreDTO>(new StoreDTO());
+            Response<StoreDTO> response = new Response<StoreDTO>(new StoreDTO());// get store frome service
             if (response.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
             }
             else
             {
-                ViewResult viewResult = View(modelcs);
+                ViewResult viewResult = View(viewName, modelcs);
                 viewResult.ViewData["store"] = response.Value;
                 return viewResult;
             }
@@ -218,7 +226,7 @@ namespace MarketWebProject.Controllers
             }
         }
 
-        public ActionResult RemoveItemFromCart(String storeName, int itemID)
+        public IActionResult RemoveItemFromCart(String storeName, int itemID)
         {
             //I_User_ServiceLayer SL = validateConnection();
             Response res = new Response(new Exception("could'nt remove item: " + itemID + " from store: " + storeName));//=service.removeItemFromCart(token,itemID, storeName)
@@ -231,7 +239,7 @@ namespace MarketWebProject.Controllers
                 return RedirectToAction("CartPage", "Home");
             }
         }
-        public ActionResult UpdateItemQuantityInCart(String storeName, int itemID, int newQuantity)
+        public IActionResult UpdateItemQuantityInCart(String storeName, int itemID, int newQuantity)
         {
             //I_User_ServiceLayer SL = validateConnection();
             Response res = new Response(new Exception("could'nt update item: "+itemID+" from store: "+storeName+" to quantity: "+newQuantity));//=service.removeItemFromCart(token,itemID, storeName, newQuantity)
@@ -245,7 +253,7 @@ namespace MarketWebProject.Controllers
             }
         }
 
-        public ActionResult AddItemToCart(int amount, string storename, int itemid)
+        public IActionResult AddItemToCart(int amount, string storename, int itemid)
         {
             Console.WriteLine(amount + storename + itemid);
             Response res = new Response();//service.AddItemToCart(itemId, store, amount)
@@ -259,7 +267,7 @@ namespace MarketWebProject.Controllers
             }
         }
 
-        public ActionResult PurchaseUserCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
+        public IActionResult PurchaseUserCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
         {
             String purchaseDet = "address: "+address+", city: "+ city+", country: "+country+", zip: "+zip+", purchaserName: "+purchaserName;
             Response response = new Response();// service.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode)
@@ -270,6 +278,63 @@ namespace MarketWebProject.Controllers
             else
             {
                 return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage }); ;
+            }
+        }
+
+        public IActionResult StorePurchaseHistoryPage(MainModel modelcs, string storeName)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            List<Tuple<DateTime, ShoppingBasketDTO>> tuples = new List<Tuple<DateTime, ShoppingBasketDTO>>();
+            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 30, 14, 30, 0), new ShoppingBasketDTO()));
+            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 18, 10, 14, 0), new ShoppingBasketDTO()));
+            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 1, 22, 55, 0), new ShoppingBasketDTO()));
+            Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(tuples);// service.GetStorePurchaseHistory(token storeName);
+            if (!response.ErrorOccured)
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["history"] = response.Value;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage }); ;
+            }
+        }
+
+        public IActionResult StoreMessagesPage(MainModel modelcs, string storeName)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            Queue<MessageToStoreDTO> messages = new Queue<MessageToStoreDTO>();
+            messages.Enqueue(new MessageToStoreDTO(storeName, "afik", "mmm", "shit store"));
+            messages.Enqueue(new MessageToStoreDTO(storeName, "harel", "mmm", "nice store"));
+            messages.Enqueue(new MessageToStoreDTO(storeName, "moshe", "mmm", "nice store, shit people"));
+            Response<Queue<MessageToStoreDTO>> response = new Response<Queue<MessageToStoreDTO>>(messages);// service.GetStoreMessages(token, storeName);
+            if (!response.ErrorOccured)
+            {
+                ViewResult viewResult = View("StoreMessagesPage",modelcs);
+                viewResult.ViewData["messages"] = response.Value;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage }); ;
+            }
+        }
+
+        public IActionResult ReplyMessage(string storename, string userName, string title, string replyMessage)
+        {
+            Response response = new Response();// service.AnswerStoreMesseage(token, storename, userName, title,replyMessage );
+            if (!response.ErrorOccured)
+            {
+                return RedirectToAction("StoreMessagesPage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = false, Message = "reply sent" });
+            }
+            else
+            {
+                return RedirectToAction("StoreMessagesPage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
             }
         }
 

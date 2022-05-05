@@ -40,6 +40,8 @@ namespace MarketWebProject.DTO
         {
             _storeName = "store1";
             _founder = new StoreFounderDTO();
+            _stock = new StockDTO();
+            _rating = new RatingDTO();
         }
         
     }
