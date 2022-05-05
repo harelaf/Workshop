@@ -151,6 +151,12 @@ namespace MarketWebProject.Controllers
                 modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
             return View(modelcs);
         }
+        public IActionResult PurchasePage(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            return View(modelcs);
+        }
 
         public IActionResult LoginPage(MainModel modelcs)
         {
@@ -252,5 +258,20 @@ namespace MarketWebProject.Controllers
                 return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = res.ErrorMessage }); ;
             }
         }
+
+        public ActionResult PurchaseUserCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
+        {
+            String purchaseDet = "address: "+address+", city: "+ city+", country: "+country+", zip: "+zip+", purchaserName: "+purchaserName;
+            Response response = new Response();// service.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode)
+            if (!response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = false, Message = "congratulations on your purchase!!\nyour purchase details: \n"+purchaseDet });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage }); ;
+            }
+        }
+
     }
 }
