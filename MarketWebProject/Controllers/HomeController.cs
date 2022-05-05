@@ -35,9 +35,16 @@ namespace MarketWebProject.Controllers
 
         public IActionResult Index(MainModel modelcs)
         {
+            StoreDTO store1 = new StoreDTO();
+            StoreDTO store2 = new StoreDTO();
+            List<StoreDTO> lst = new List<StoreDTO>();
+            lst.Add(store1);
+            lst.Add(store2);
             if (modelcs == null)
                 modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
-            return View(modelcs);
+            ViewResult view = View(modelcs);
+            view.ViewData["activeStores"] = lst;
+            return view;
         }
 
         public IActionResult Privacy(MainModel modelcs)

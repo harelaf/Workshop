@@ -16,6 +16,11 @@ namespace MarketWebProject.DTO
         private String _Username;
         public String Username => _Username;
 
+        public StoreFounderDTO()
+        {
+            _storeName = "store1";
+            _Username = "joe mama";
+        }
 
     }
 }
