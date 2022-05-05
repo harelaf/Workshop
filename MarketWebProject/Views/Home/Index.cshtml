@@ -13,10 +13,14 @@
 <div class="text-center">
     <h1 class="display-4">Welcome to MarketWebProject!</h1>
     <br />
-    @if (!Model.ErrorOccurred)
-    {
-        <p style="background:red">@Model.Message</p>
-    }
+        @if (Model.ErrorOccurred)
+        {
+            <p style="background:red">@Model.Message</p>
+        }
+        else if(Model.Message!=null && Model.Message.Length>0)
+        {
+            <p style="background:green">@Model.Message</p>
+        }
     <br />
     <form action="/Home/ItemSearchPage" method="post" style="border:black; border-width:4px; border-style:solid;">
         <div style="text-align:center;">
