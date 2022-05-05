@@ -35,15 +35,26 @@ namespace MarketWebProject.Controllers
 
         public IActionResult Index(MainModel modelcs)
         {
+            if (modelcs == null)
+                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
             StoreDTO store1 = new StoreDTO();
             StoreDTO store2 = new StoreDTO();
             List<StoreDTO> lst = new List<StoreDTO>();
             lst.Add(store1);
             lst.Add(store2);
-            if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
-            ViewResult view = View(modelcs);
-            view.ViewData["activeStores"] = lst;
+            Response<List<StoreDTO>> response = new Response<List<StoreDTO>>(lst);
+            ViewResult view;
+            if (response.ErrorOccured)
+            {
+                view = View(modelcs);
+                view.ViewData["activeStores"] = new List<StoreDTO>();
+                //TODO: SOMEHOW PASS ERROR MESSAGE?
+            }
+            else
+            {
+                view = View(modelcs);
+                view.ViewData["activeStores"] = response.Value;
+            }
             return view;
         }
 
@@ -110,6 +121,26 @@ namespace MarketWebProject.Controllers
             {
                 ViewResult viewResult = View(modelcs);
                 viewResult.ViewData["item"] = response.Value;
+                return viewResult;
+            }
+        }
+
+        public IActionResult StorePage(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            //GetStore
+            //CALL THE CLIENT-> server-> market api
+            //_CLIENT<- server <-market api
+            Response<StoreDTO> response = new Response<StoreDTO>(new StoreDTO());
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["store"] = response.Value;
                 return viewResult;
             }
         }
