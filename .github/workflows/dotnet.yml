@@ -1,0 +1,34 @@
+name: .NET
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 5.0.x
+    - name: where are we
+      run: pwd
+    - name: list some key files
+      run: ls -lrt
+    - name: try a different die
+      run: ls -lrt MarketProject
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./MarketProject/
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./MarketProject/
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./MarketProject/
