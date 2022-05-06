@@ -101,7 +101,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 
 			//act
 			String expected = $"{percentage_to_subtract}% off all '{category}' products prices.\n\nExpired on: {expiration}\n\n";
-			String actual = dis.GetDiscountString(basket);
+			String actual = dis.GetDiscountString(0);
 
 			//Assert
 			Assert.AreEqual(expected, actual);
@@ -123,7 +123,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 
 			//act
 			String expected = $"{percentage_to_subtract}% off all '{category}' products prices.\n\nExpired on: {expiration}\n\nCondition(s): \n{andCondition.ToString()}";
-			String actual = dis.GetDiscountString(basket);
+			String actual = dis.GetDiscountString(0);
 
 			//Assert
 			Assert.AreEqual(expected, actual);

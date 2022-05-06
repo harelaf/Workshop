@@ -17,7 +17,15 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         {
             _toNegative = negative;
         }
+        protected String newLine(int indent)
+        {
+            String str = "\n";
+            for (int i = 0; i < indent; i++)
+                str += '\t';
+            return str;
+        }
 
         public abstract bool Check(ISearchablePriceable searchablePriceable);
+        public abstract string GetConditionString(int indent);
     }
 }

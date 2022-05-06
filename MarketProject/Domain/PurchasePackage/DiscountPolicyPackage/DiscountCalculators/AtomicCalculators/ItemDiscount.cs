@@ -29,11 +29,19 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             return searchablePriceable.GetItemPrice(_itemName) * PercentageToSubtract / 100;
         }
 
-        public override string GetDiscountString(ISearchablePriceable searchablePriceable)
+        public override string GetDiscountString(int indent)
         {
             return PercentageToSubtract + "% off " + _itemName + "." +
-                "\n\n" + ExpirationToString() + 
-                "\n\n" + ConditionToString();
+                ExpirationToString(indent) + 
+                ConditionToString(indent);
+        }
+
+        public override string GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
+        {
+            return PercentageToSubtract + "% off " + _itemName + "." +
+                $"{newLine(indent)}{searchablePriceable.GetItemPrice(ItemName)} - {GetTotalDiscount(searchablePriceable)} = {searchablePriceable.GetItemPrice(ItemName) - GetTotalDiscount(searchablePriceable)}" + 
+                ExpirationToString(indent) +
+                ConditionToString(indent);
         }
     }
 }

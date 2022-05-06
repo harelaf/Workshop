@@ -18,12 +18,15 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             return sumDis;
         }
 
-        public override String GetDiscountString(ISearchablePriceable searchablePriceable)
+        public override String GetDiscountString(int indent)
         {
-            String str = "";
+            String pad = newLine(indent);
+            String pad2 = newLine(indent + 1);
+            String str = pad + "sum all of the following:\n";
+            int index = 0;
             foreach(Discount discount in DiscountList)
             {
-                str += discount.GetDiscountString(searchablePriceable) + "\n";
+                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 1)}";
             }
             return str;
         }
@@ -46,6 +49,18 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         public void AddDiscount(Discount discount)
         {
             DiscountList.Add(discount);
+        }
+
+        public override string GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
+        {
+            String pad2 = newLine(indent + 1);
+            String str = "sum all of the following:\n";
+            int index = 0;
+            foreach (Discount discount in DiscountList)
+            {
+                str += $"{pad2}{++index}. {discount.GetActualDiscountString(searchablePriceable, indent + 1)}";
+            }
+            return str;
         }
     }
 }

@@ -763,6 +763,12 @@ namespace MarketProject.Domain
             }
         }
 
+        internal double CalcCartActualPrice(string authToken)
+        {
+            CheckIsVisitorAVisitor(authToken, "CalcCartActualPrice");
+            return _VisitorManagement.GetVisitorShoppingCart(authToken).getActualPrice();
+        }
+
         private void CheckIsVisitorAVisitor(String authToken, String functionName)
         {
             String errorMessage;
@@ -772,6 +778,12 @@ namespace MarketProject.Domain
                 LogErrorMessage(functionName, errorMessage);
                 throw new Exception(errorMessage);
             }
+        }
+
+        internal string GetCartReceipt(string authToken)
+        {
+            CheckIsVisitorAVisitor(authToken, "GetCartReceipt");
+            return _VisitorManagement.GetVisitorShoppingCart(authToken).GetCartReceipt();
         }
 
         private void LogErrorMessage(String functionName, String message)

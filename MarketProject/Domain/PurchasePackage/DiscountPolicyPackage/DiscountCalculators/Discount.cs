@@ -23,13 +23,21 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             return _condition == null || _condition.Check(searchablePriceable);
         }
 
-        protected String ConditionToString()
+        protected String ConditionToString(int indent)
         {
-            return _condition == null ? "" : "Condition(s): \n" + _condition.ToString();
+            return _condition == null ? "" : newLine(indent) + "Condition(s): " + _condition.GetConditionString(indent);
         }
 
         public abstract double GetTotalDiscount(ISearchablePriceable searchablePriceable);
-        public abstract String GetDiscountString(ISearchablePriceable searchablePriceable);
+        public abstract String GetDiscountString(int indent);
+        public abstract String GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent);
         public abstract DateTime GetExpirationDate(ISearchablePriceable searchablePriceable);
+        protected String newLine(int numOfTabs)
+        {
+            String str = "\n";
+            for (int i = 0; i < numOfTabs; i++)
+                str += '\t';
+            return str;
+        }
     }
 }

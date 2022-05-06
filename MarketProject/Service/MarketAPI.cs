@@ -878,5 +878,39 @@ namespace MarketProject.Service
             }
             return response;
         }
+
+        public Response<Double> CalcCartActualPrice(String authToken)
+        {
+            Response<Double> response;
+            try
+            {
+                log.Info($"calculate shopping cart actual price - called with parameters: authToken={authToken}.");
+                Double price = _market.CalcCartActualPrice(authToken);
+                response = new Response<Double>(price);
+                log.Info($"SUCCESSFULY executed Calculate Cart Actual Price.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<Double>(e);
+            }
+            return response;
+        }
+
+        public Response<String> GetCartReceipt(String authToken)
+        {
+            Response<String> response;
+            try
+            {
+                log.Info($"get current cart info - called with parameters: authToken={authToken}.");
+                String receipt = _market.GetCartReceipt(authToken);
+                response = new Response<String>(receipt);
+                log.Info($"SUCCESSFULY executed Get Cart Receipt.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(e);
+            }
+            return response;
+        }
     }
 }

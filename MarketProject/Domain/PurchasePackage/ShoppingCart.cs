@@ -91,12 +91,43 @@ namespace MarketProject.Domain
 
         public double GetItemPrice(string itemName)
         {
-            throw new NotImplementedException();
+            double result = 0;
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.GetItemPrice(itemName);
+            }
+            return result;
         }
 
         public double GetCategoryPrice(string category)
         {
-            throw new NotImplementedException();
+            double result = 0;
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.GetCategoryPrice(category);
+            }
+            return result;
+        }
+
+        internal double getActualPrice()
+        {
+            double actualPrice = 0;
+            foreach(ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                actualPrice += shoppingBasket.getActualPrice();
+            }
+            return actualPrice;
+        }
+
+        internal string GetCartReceipt()
+        {
+            String cartReceipt = "";
+            ////////////////////////
+            foreach(ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                cartReceipt += shoppingBasket.GetBasketReceipt() + "\n";
+            }
+            return cartReceipt;
         }
     }
 }

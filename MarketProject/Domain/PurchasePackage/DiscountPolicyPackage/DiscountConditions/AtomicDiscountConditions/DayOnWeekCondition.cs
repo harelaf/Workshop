@@ -16,5 +16,9 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         {
             return DateTime.Now.DayOfWeek == _dayOnWeek;
         }
+        public override String GetConditionString(int indent)
+        {
+            return $"Today is {_dayOnWeek}.";
+        }
     }
 }

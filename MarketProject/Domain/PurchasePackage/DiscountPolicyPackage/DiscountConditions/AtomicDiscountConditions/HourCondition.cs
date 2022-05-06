@@ -40,5 +40,9 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             else
                 return IsInRange(DateTime.Now.Hour, MinHour, MaxHour);
         }
+        public override String GetConditionString(int indent)
+        {
+            return $"It is between {MinHour}:00 and {MaxHour}:00 o'clock.";
+        }
     }
 }

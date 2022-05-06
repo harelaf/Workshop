@@ -30,5 +30,14 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             }
             return result;
         }
+        public override String GetConditionString(int indent)
+        {
+            String pad2 = newLine(indent + 1);
+            String str = "Apply logic OR on the following expressions:";
+            int index = 0;
+            foreach (DiscountCondition con in _discountConditionList)
+                str += $"{pad2}{++index}. {con.GetConditionString(indent + 1)}";
+            return str;
+        }
     }
 }

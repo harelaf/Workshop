@@ -29,11 +29,18 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             return searchablePriceable.GetCategoryPrice(Category) * PercentageToSubtract / 100;
         }
 
-        public override string GetDiscountString(ISearchablePriceable searchablePriceable)
+        public override string GetDiscountString(int indent)
         {
             return $"{PercentageToSubtract}% off all '{Category}' products prices." +
-                $"\n\n{ExpirationToString()}" +
-                $"\n\n{ConditionToString()}";
+                ExpirationToString(indent) +
+                ConditionToString(indent);
+        }
+        public override string GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
+        {
+            return $"{PercentageToSubtract}% off all '{Category}' products prices." +
+                $"{newLine(indent)}{searchablePriceable.GetCategoryPrice(Category)} - {GetTotalDiscount(searchablePriceable)} = {searchablePriceable.GetCategoryPrice(Category) - GetTotalDiscount(searchablePriceable)}" +
+                ExpirationToString(indent) +
+                ConditionToString(indent);
         }
     }
 }

@@ -31,11 +31,16 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
                 return 0;
             return PriceToSubtract;
         }
-        public override string GetDiscountString(ISearchablePriceable searchablePriceable)
+        public override String GetDiscountString(int indent)
         {
             return PriceToSubtract + " off total price." +
-                "\n\n" + ExpirationToString() +
-                "\n\n" + ConditionToString();
+                ExpirationToString(indent) +
+                ConditionToString(indent);
+        }
+
+        public override String GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
+        {
+            return GetDiscountString(indent);
         }
     }
 }

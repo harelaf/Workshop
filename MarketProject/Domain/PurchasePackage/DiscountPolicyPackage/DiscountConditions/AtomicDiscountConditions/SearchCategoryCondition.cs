@@ -11,5 +11,9 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         {
             return IsInRange(searchablePriceable.SearchCategoryAmount(_keyWord), _minValue, _maxValue);
         }
+        public override String GetConditionString(int indent)
+        {
+            return $"The cost of {_keyWord} products is between {_minValue} and {_maxValue}.";
+        }
     }
 }

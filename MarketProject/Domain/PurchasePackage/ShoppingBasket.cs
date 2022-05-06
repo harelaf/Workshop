@@ -117,6 +117,13 @@ namespace MarketProject.Domain
             return sum;
         }
 
+        internal double getActualPrice()
+        {
+            double totalDiscount = _store.DiscountPolicy.calculateDiscounts(this);
+            double totalPrice = GetTotalPrice();
+            return totalPrice - totalDiscount;
+        }
+
         public double GetItemPrice(String itemName)
         {
             double sum = 0;
@@ -133,6 +140,17 @@ namespace MarketProject.Domain
                 if (category == item.Category)
                     sum += item._price * _items[item];
             return sum;
+        }
+
+        internal string GetBasketReceipt()
+        {
+            String receipt = "";
+            foreach(Item item in Items.Keys)
+            {
+                receipt += $"{Items[item]} {item._price} -> {Items[item] * item._price}\n";
+                receipt += _store.DiscountPolicy.GetActualDiscountString(this);
+            }
+            return receipt;
         }
     }
 }
