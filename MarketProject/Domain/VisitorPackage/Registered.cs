@@ -10,7 +10,13 @@ namespace MarketProject.Domain
         public ICollection<MessageToRegistered> MessagesToRegistered => _messagesToRegistered;
         private String _username;
         public String Username=> _username;
+        /// <summary>
+        /// Password is salted and hashed!
+        /// </summary>
         private String _password;
+        private String _salt;
+        public String Salt => _salt;
+
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
@@ -64,7 +70,7 @@ namespace MarketProject.Domain
         {
             _messagesToRegistered = new List<MessageToRegistered>();
             _username = Username;
-            _password = password;
+            SetPassword(password);
             _roles = new List<SystemRole>();
         }
         public void SendMessage(MessageToRegistered message)
@@ -114,7 +120,7 @@ namespace MarketProject.Domain
         /// <returns> True if the password authorises login, false otherwise.</returns>
         public bool Login(String password)
         {
-            return (_password == password);
+            return HashManager.CompareCleartextToHash(password, _salt, _password);
         }
         public bool RemoveRole(string storeName)
         {
@@ -124,12 +130,18 @@ namespace MarketProject.Domain
             return false;
         }
 
+        private void SetPassword(string password)
+        {
+            _salt = HashManager.GenerateSalt();
+            _password = HashManager.Hash(password, Salt);
+        }
+
         internal void UpdatePassword(string oldPassword, string newPassword)
         {
             String errorMessage;
             if (Login(oldPassword))
             {
-                _password = newPassword;
+                SetPassword(newPassword);
             }
             else
             {
