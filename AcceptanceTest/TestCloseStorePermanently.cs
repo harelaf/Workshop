@@ -51,6 +51,7 @@ namespace AcceptanceTest
         }
 
         [TestMethod]
+        [Ignore]
         public void happy_CloseStorePermanentlySuccess()
         {
             /*

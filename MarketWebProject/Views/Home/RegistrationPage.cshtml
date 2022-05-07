@@ -1,0 +1,45 @@
+﻿@using MarketWebProject.Models
+@model MainModel
+
+@{
+    if (Model.IsGuest)
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    else if (Model.IsLoggedIn)
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    else
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Registration Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Registration process:</h1>
+    <br />
+    <br />
+    <form action="/Home/RegisterForm" method="post">
+        <font color="black">Username: </font>
+        <input type="text" name="name" title="user name" />
+        <br />
+        <br />
+        <font color="black">Password: </font>
+        <input type="password" name="password" title="password" />
+        <br />
+        <br />
+        <font color="black">Date of Birth: </font>
+        <input type="date" name="DOB" title="DOB" />
+        <br />
+        <br />
+        <input type="submit" value="Register" />
+
+        <br />
+        <br />
+        <br />
+        @if (!Model.ErrorOccurred)
+        {
+            <p style="background:green">@Model.Message</p>
+        }
+        else
+        {
+            <p style="background:red">@Model.Message</p>
+        }
+    </form>
+</div>

@@ -1,0 +1,54 @@
+﻿@using MarketWebProject.DTO
+@using MarketWebProject.Models
+@using System.Collections
+@model MainModel
+@{
+    if (Model.IsGuest)
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    else if (Model.IsLoggedIn)
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    else
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Store Purchase History";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@(ViewData["storeName"] as string) Purchases History</h1>
+    <br />
+    <br />
+</div>
+<br />
+
+@if ((ViewData["history"] as List<Tuple<DateTime, ShoppingBasketDTO>>).Count>0)
+{
+    @foreach (Tuple<DateTime, ShoppingBasketDTO> purchase in (ViewData["history"] as List<Tuple<DateTime, ShoppingBasketDTO>>))
+    {
+        DateTime date = purchase.Item1;
+        ShoppingBasketDTO basket = purchase.Item2;
+        <h4>@date</h4>
+        <table style="width:100%" id="@date">
+            <tr>
+                <th>Product Name</th>
+                <th>Amount</th>
+                <th>price per unit</th>
+            </tr>
+            @foreach (KeyValuePair<ItemDTO, int> item_amount in basket.Items)
+            {
+                <tr id="@(item_amount.Key.Name + date.ToString())">
+                    <th>@item_amount.Key.Name</th>
+                    <th>@item_amount.Value</th>
+                    <th>$@item_amount.Key.Price</th>
+                </tr>
+            }
+        </table>
+        <br /> 
+    }
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+}
+else
+{
+    <h4> there was no purchase made in store yet!</h4>
+}
