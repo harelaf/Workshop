@@ -444,11 +444,14 @@ namespace MarketProject.Service
             try
             {
                 log.Info($"Get Item Information called with parameters: authToken={authToken}, itemName={itemName}, itemCategory={itemCategory}, keyWord={keyWord}.");
-                List<Item> result = _market.GetItemInformation(authToken, itemName, itemCategory, keyWord);
+                IDictionary<string, List<Item>> result = _market.GetItemInformation(authToken, itemName, itemCategory, keyWord);
                 List<ItemDTO> resultDTO = new List<ItemDTO>();
-                foreach(Item item in result)
+                foreach(KeyValuePair<string, List<Item>> storeNItems in result)
                 {
-                    resultDTO.Add(new ItemDTO(item));
+                    foreach(Item item in storeNItems.Value)
+                    {
+                        resultDTO.Add(new ItemDTO(item, storeNItems.Key));
+                    }   
                 }
                 response = new Response<List<ItemDTO>>(resultDTO);
                 log.Info($"SUCCESSFULY executed Get Item Information.");
@@ -587,7 +590,7 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response AddManagerPermission(String authToken, String managerUsername, String storeName, Operation op)//permission param is Enum
+        public Response AddManagerPermission(String authToken, String managerUsername, String storeName, String op)//permission param is Enum
         {//II.4.7
             Response response;
             try
