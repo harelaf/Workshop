@@ -1,19 +1,11 @@
 ﻿@page "/"
-@using MarketProject.Service
-@inject MarketAPI marketApi
+@attribute [Authorize]
+@inject IAccountService AccountService
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-Token: @token
-
-<SurveyPrompt Title="How is Blazor working for you?" />
-@code {
-    private String token;
-
-    protected override async Task OnInitializedAsync()
-    {
-        token = marketApi.EnterSystem().Value;
-    }
-}
+<div class="p-4">
+    <div class="container">
+        <h1>Hi @AccountService.User.FirstName!</h1>
+        <p>You're logged in with Blazor WebAssembly!!</p>
+        <p><NavLink href="users">Manage Users</NavLink></p>
+    </div>
+</div>
