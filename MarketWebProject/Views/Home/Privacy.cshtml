@@ -1,0 +1,14 @@
+﻿@using MarketWebProject.Models
+@model MainModel
+@{
+    if (Model.IsGuest)
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    else if (Model.IsLoggedIn)
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    else
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Privacy Policy";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your site's privacy policy.</p>

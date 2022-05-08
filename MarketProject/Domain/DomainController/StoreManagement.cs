@@ -94,22 +94,24 @@ namespace MarketProject.Domain
             item.RateItem(Username, rating, review);
         }
 
-        public List<Item> GetItemInformation(String itemName, String itemCategory, String keyWord)
+        public IDictionary<string, List<Item>> GetItemInformation(String itemName, String itemCategory, String keyWord)
         {
-            List<Item> filteredItems = new List<Item>();
+            Dictionary<string, List<Item>> filteredItems = new Dictionary<string, List<Item>>();
             foreach (String storeName in _stores.Keys)
             {
                 List<Item> items = _stores[storeName].getItemsByName(itemName);
                 foreach (Item item in items)
                 {
-                    if (itemCategory == null || itemCategory.Length == 0 || item.Category.Contains(itemCategory))
+                    if (itemCategory != null && itemCategory.Length > 0 && !item.Category.Contains(itemCategory))
                     {
-                        if (keyWord == null || keyWord.Length == 0 || item.Description == null || item.Description.Length == 0 || item.Description.Contains(keyWord))
+                        if (keyWord != null && keyWord.Length > 0 && item.Description != null && item.Description.Length > 0 && !item.Description.Contains(keyWord))
                         {
-                            filteredItems.Add(item);
+                            items.Remove(item);
                         }
                     }
                 }
+                if (items.Count > 0)
+                    filteredItems.Add(storeName, items);
             }
             return filteredItems;
         }
@@ -283,16 +285,15 @@ namespace MarketProject.Domain
             }
         }
 
-<<<<<<< HEAD
         public Queue<MessageToStore> GetStoreMessages(string storeName)
         {
             Store store = GetStore(storeName);
             return store.MessagesToStore;
-=======
+        }
+
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in StoreManagement.{functionName}. Cause: {message}.");
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
         }
     }
 }

@@ -15,7 +15,7 @@ namespace MarketProject.Service.DTO
         private double _price;
         private String _description;
         private String _category;
-
+        private String _storeName;
         public RatingDTO Rating => _rating;
         public ICollection<Discount> Discounts => _discounts;
         public int ItemID => _itemID;
@@ -33,6 +33,17 @@ namespace MarketProject.Service.DTO
             _price = item._price;
             _description = item.Description;
             _category = item.Category;
+        }
+        public ItemDTO(Item item, string storeName)
+        {
+            _rating = new RatingDTO(item.Rating);
+            _discounts = item.Discounts;
+            _itemID = item.ItemID;
+            _name = item.Name;
+            _price = item._price;
+            _description = item.Description;
+            _category = item.Category;
+            _storeName = storeName;
         }
     }
 }

@@ -455,7 +455,7 @@ namespace MarketProject.Domain
             _storeManagement.RateItem(appointerUsername, item, rating, review);
         }
 
-        public List<Item> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
+        public IDictionary<string, List<Item>> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "GetItemInformation");
@@ -719,8 +719,15 @@ namespace MarketProject.Domain
             _VisitorManagement.ExitSystem(authToken);
         }
 
-        public void AddManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
+        public void AddManagerPermission(String authToken, String managerUsername, String storeName, string op_name)
         {
+            Operation op;
+            if (op_name == "RECEIVE_AND_REPLY_STORE_MESSAGE")
+                op = Operation.RECEIVE_AND_REPLY_STORE_MESSAGE;
+            else if (op_name == "STORE_HISTORY_INFO")
+                op = Operation.STORE_HISTORY_INFO;
+            else
+                throw new Exception("Manager can only haave permiisions: 4.12: RECEIVE_AND_REPLY_STORE_MESSAGE or 4.13:STORE_HISTORY_INFO");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
