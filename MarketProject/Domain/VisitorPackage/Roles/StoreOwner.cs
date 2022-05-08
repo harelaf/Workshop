@@ -8,9 +8,8 @@ namespace MarketProject.Domain
     {
         private string _appointer;
         public string Appointer => _appointer;
-        public StoreOwner(string Username, string storeName, string appointer) : base(getOps(), Username)
+        public StoreOwner(string Username, string storeName, string appointer) : base(getOps(), Username, storeName)
         {
-            StoreName = storeName;
             _appointer = appointer;
         }
 

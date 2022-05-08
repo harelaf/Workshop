@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -80,7 +81,10 @@ namespace MarketProject.Domain
             String errorMessage;
             if (!hasRoleInStore(newManager.Username))
             {
-                _managers.Add(newManager);
+                lock (_managers)
+                {
+                    _managers.Add(newManager);
+                }
                 return true;
             }
             errorMessage = "already has a role in this store.";
@@ -93,7 +97,10 @@ namespace MarketProject.Domain
             String errorMessage;
             if (!hasRoleInStore(newOwner.Username))
             {
-                _owners.Add(newOwner);
+                lock (_owners)
+                {
+                    _owners.Add(newOwner);
+                }
                 return true;
             }
             errorMessage = "already has a role in this store.";
@@ -344,6 +351,14 @@ namespace MarketProject.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in Store.{functionName}. Cause: {message}.");
+        }
+
+        public void AddDiscount(Discount discount)
+        {
+            lock (_discountPolicy)
+            {
+                _discountPolicy.AddDiscount(discount);
+            }
         }
     }
 }

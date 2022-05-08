@@ -1,4 +1,5 @@
 ﻿using MarketProject.Domain;
+using MarketProject.Domain.PurchasePackage.DiscountPackage;
 using MarketProject.Service.DTO;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,11 @@ namespace MarketProject.Service
                 response = new Response<String>(null, e);
             }
             return response;
+        }
+
+        public Registered getUser(string store_founder_token)
+        {
+            return _market.getUser(store_founder_token);
         }
 
         /// <summary>
@@ -890,6 +896,59 @@ namespace MarketProject.Service
             catch (Exception e)
             {
                 response = new Response(e);
+            }
+            return response;
+        }
+
+        public Response AddStoreDiscount(String authToken, String storeName, IDiscountDTO discount_dto)
+        {
+            Response response;
+            try
+            {
+                /////////// is log should keep the whole description of the discount??????
+                log.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName} and the actual discount.");
+                Discount discount = new dtoDiscountConverter().convertDiscount(discount_dto);
+                _market.AddStoreDiscount(authToken, storeName, discount);
+                response = new Response();
+                log.Info($"SUCCESSFULY executed Add Store Discount.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
+        }
+
+        public Response<Double> CalcCartActualPrice(String authToken)
+        {
+            Response<Double> response;
+            try
+            {
+                log.Info($"calculate shopping cart actual price - called with parameters: authToken={authToken}.");
+                Double price = _market.CalcCartActualPrice(authToken);
+                response = new Response<Double>(price);
+                log.Info($"SUCCESSFULY executed Calculate Cart Actual Price.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<Double>(e);
+            }
+            return response;
+        }
+
+        public Response<String> GetCartReceipt(String authToken)
+        {
+            Response<String> response;
+            try
+            {
+                log.Info($"get current cart info - called with parameters: authToken={authToken}.");
+                String receipt = _market.GetCartReceipt(authToken);
+                response = new Response<String>(receipt);
+                log.Info($"SUCCESSFULY executed Get Cart Receipt.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(e);
             }
             return response;
         }

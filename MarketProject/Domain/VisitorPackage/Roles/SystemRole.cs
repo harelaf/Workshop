@@ -25,15 +25,7 @@ namespace MarketProject.Domain
         private string _username;
         public string Username
         {
-<<<<<<< HEAD
             get { return _username; }
-            private set
-            {
-                if (value == null || value.Equals(""))
-                    throw new ArgumentNullException("a role must get a unique user name.");
-                _username = value;
-=======
-            get { return _Username; }
             protected set
             {
                 if (value == null || value.Equals(""))
@@ -42,21 +34,17 @@ namespace MarketProject.Domain
                     LogErrorMessage("Username", errorMessage);
                     throw new ArgumentNullException(errorMessage);
                 }
-                _Username = value;
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
+                _username = value;
             }
         }
 
         public ISet<Operation> operations => _operations;
 
-        public SystemRole(ISet<Operation> operations, string Username)
+        public SystemRole(ISet<Operation> operations, string username, String storeName)
         {
             _operations = operations;
-<<<<<<< HEAD
-            _username = Username;
-=======
-            this.Username = Username;
->>>>>>> a17b52dc018ee39fcfe818c25ecdbef501e7abce
+            Username = username;
+            _storeName = storeName;
         }
 
         public virtual bool grantPermission(Operation op, string store, string grantor)
@@ -75,12 +63,9 @@ namespace MarketProject.Domain
 
         public bool hasAccess(string storeName, Operation op)
         {
-            String errorMessage;
             if(storeName == _storeName && _operations.Contains(op))
                 return true;
-            errorMessage = "no permission for this operation.";
-            LogErrorMessage("hasAccess", errorMessage);
-            throw new Exception(errorMessage);
+            return false;
         }
 
         private void LogErrorMessage(String functionName, String message)

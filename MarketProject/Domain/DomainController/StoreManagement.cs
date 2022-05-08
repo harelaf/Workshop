@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -221,6 +222,10 @@ namespace MarketProject.Domain
             _stores.Remove(storeName);
         }
 
+        public void AddStoreDiscount(String storeName, Discount discount)
+        {
+            GetStore(storeName).AddDiscount(discount);
+        }
 
         public bool AddStoreManager(StoreManager newManager, string storeName)
         {
