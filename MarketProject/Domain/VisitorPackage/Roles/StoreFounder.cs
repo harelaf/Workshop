@@ -6,10 +6,8 @@ namespace MarketProject.Domain
 {
     public class StoreFounder : SystemRole
     {
-        //private String _storeName;
-        public StoreFounder(string Username, string storeName) : base(getOps(), Username)
+        public StoreFounder(string Username, string storeName) : base(getOps(), Username, storeName)
         {
-            //base.StoreName = storeName;
         }
 
         private static ISet<Operation> getOps()

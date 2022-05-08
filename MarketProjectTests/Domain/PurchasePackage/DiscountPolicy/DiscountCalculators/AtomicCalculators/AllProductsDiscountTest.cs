@@ -39,7 +39,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			double actual = dis.GetTotalDiscount(basket);
 
 			//Assert
-			Assert.AreEqual(actual, expected);
+			Assert.AreEqual(expected, actual);
 		}
 		[TestMethod]
 		public void GetTotalDiscount_withCondition_success()
@@ -61,7 +61,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			double actual = dis.GetTotalDiscount(basket);
 
 			//Assert
-			Assert.AreEqual(actual, expected);
+			Assert.AreEqual(expected, actual);
 		}
 
 		[TestMethod]
@@ -75,11 +75,11 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			basket.AddItem(new Item(1, itemName, price, "desc", "category"), amount);
 
 			//act
-			String expected = $"{percentage_to_subtract}% off all products.\n\nExpired on: {expiration}\n\n";
+			String expected = $"{percentage_to_subtract}% off all products.\nExpired on: {expiration}";
 			String actual = dis.GetDiscountString(0);
 
 			//Assert
-			Assert.AreEqual(actual, expected);
+			Assert.AreEqual(expected, actual);
 		}
 
 		[TestMethod]
@@ -98,11 +98,11 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			basket.AddItem(new Item(1, itemName, price, "desc", "category"), amount);
 
 			//act
-			String expected = $"{percentage_to_subtract}% off all products.\n\nExpired on: {expiration}\n\nCondition(s): \n{andCondition.ToString()}";
+			String expected = $"{percentage_to_subtract}% off all products.\nExpired on: {expiration}\nCondition(s): {andCondition.GetConditionString(0)}";
 			String actual = dis.GetDiscountString(0);
 
 			//Assert
-			Assert.AreEqual(actual, expected);
+			Assert.AreEqual(expected, actual);
 		}
 	}
 }

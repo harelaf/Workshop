@@ -40,10 +40,11 @@ namespace MarketProject.Domain
 
         public ISet<Operation> operations => _operations;
 
-        public SystemRole(ISet<Operation> operations, string Username)
+        public SystemRole(ISet<Operation> operations, string username, String storeName)
         {
             _operations = operations;
-            this.Username = Username;
+            Username = username;
+            _storeName = storeName;
         }
 
         public virtual bool grantPermission(Operation op, string store, string grantor)
@@ -62,12 +63,9 @@ namespace MarketProject.Domain
 
         public bool hasAccess(string storeName, Operation op)
         {
-            String errorMessage;
             if(storeName == _storeName && _operations.Contains(op))
                 return true;
-            errorMessage = "no permission for this operation.";
-            LogErrorMessage("hasAccess", errorMessage);
-            throw new Exception(errorMessage);
+            return false;
         }
 
         private void LogErrorMessage(String functionName, String message)

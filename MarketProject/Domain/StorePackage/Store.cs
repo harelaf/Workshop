@@ -81,7 +81,10 @@ namespace MarketProject.Domain
             String errorMessage;
             if (!hasRoleInStore(newManager.Username))
             {
-                _managers.Add(newManager);
+                lock (_managers)
+                {
+                    _managers.Add(newManager);
+                }
                 return true;
             }
             errorMessage = "already has a role in this store.";
@@ -94,7 +97,10 @@ namespace MarketProject.Domain
             String errorMessage;
             if (!hasRoleInStore(newOwner.Username))
             {
-                _owners.Add(newOwner);
+                lock (_owners)
+                {
+                    _owners.Add(newOwner);
+                }
                 return true;
             }
             errorMessage = "already has a role in this store.";
@@ -349,7 +355,10 @@ namespace MarketProject.Domain
 
         public void AddDiscount(Discount discount)
         {
-            _discountPolicy.AddDiscount(discount);
+            lock (_discountPolicy)
+            {
+                _discountPolicy.AddDiscount(discount);
+            }
         }
     }
 }

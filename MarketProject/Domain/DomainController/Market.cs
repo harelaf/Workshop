@@ -90,6 +90,11 @@ namespace MarketProject.Domain
             return item;
         }
 
+        internal Registered getUser(String store_founder_token)
+        {
+            return _VisitorManagement.GetRegisteredByToken(store_founder_token);
+        }
+
         public void UpdateQuantityOfItemInCart(String VisitorToken, int itemID, String storeName, int newQuantity)
         {//II.2.4
             String errorMessage = null;
@@ -144,7 +149,7 @@ namespace MarketProject.Domain
                 LogErrorMessage("OpenNewStore", errorMessage);
                 throw new Exception(errorMessage);
             }
-            string Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             StoreFounder founder = new StoreFounder(Username, storeName);
             _VisitorManagement.AddRole(Username, founder);
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
@@ -161,7 +166,7 @@ namespace MarketProject.Domain
                 LogErrorMessage("GetStoreInformation", errorMessage);
                 throw new Exception(errorMessage);
             }
-            string Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
@@ -295,7 +300,7 @@ namespace MarketProject.Domain
             }
         }
 
-        public void CloseStore(string authToken, String storeName)
+        public void CloseStore(String authToken, String storeName)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "CloseStore");
@@ -358,7 +363,7 @@ namespace MarketProject.Domain
             }
         }
 
-        public void ReopenStore(string authToken, String storeName)
+        public void ReopenStore(String authToken, String storeName)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "ReopenStore");
@@ -393,7 +398,7 @@ namespace MarketProject.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "EditItemPrice");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
                 errorMessage = "the given Visitor is not a stock owner of the given store";
             if (errorMessage != null)
@@ -407,7 +412,7 @@ namespace MarketProject.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "EditItemName");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
                 errorMessage = "the given Visitor is not a stock owner of the given store";
             if (errorMessage != null)
@@ -421,7 +426,7 @@ namespace MarketProject.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "EditItemDescription");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.STOCK_EDITOR))
                 errorMessage = "the given Visitor is not a stock owner of the given store";
             if (errorMessage != null)
@@ -436,7 +441,7 @@ namespace MarketProject.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "RateItem");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Item item = _storeManagement.GetItem(storeName, itemID);
             if (rating < 0 || rating > 10)
                 errorMessage = "Rate should be beteen 0 to 10";
@@ -454,7 +459,7 @@ namespace MarketProject.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "GetItemInformation");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_VisitorManagement.IsRegistered(appointerUsername))
                 errorMessage = "Visitor " + appointerUsername + " not found in system";
             if (errorMessage != null)
@@ -469,7 +474,7 @@ namespace MarketProject.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "SendMessageToStore");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_VisitorManagement.IsRegistered(appointerUsername))
                 errorMessage = "Visitor " + appointerUsername + " not found in system";
             if (errorMessage != null)
@@ -499,7 +504,7 @@ namespace MarketProject.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "AnswerStoreMesseage");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_VisitorManagement.IsRegistered(UsernameReciever))
                 errorMessage = "Visitor " + UsernameReciever + " not found in system";
             if (errorMessage != null)
@@ -510,10 +515,10 @@ namespace MarketProject.Domain
             _VisitorManagement.SendMessageToRegistered(storeName, UsernameReciever, title, reply);
         }
 
-        public void AddStoreManager(string authToken, string managerUsername, string storeName)
+        public void AddStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.6
             CheckIsVisitorLoggedIn(authToken, "AddStoreManager");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
             {
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
@@ -521,10 +526,10 @@ namespace MarketProject.Domain
                     _VisitorManagement.AddRole(managerUsername, newManager); }
         }
     
-        public void AddStoreOwner(string authToken, string ownerUsername, string storeName)
+        public void AddStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.4
             CheckIsVisitorLoggedIn(authToken, "AddStoreOwner");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
             {
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
@@ -533,7 +538,7 @@ namespace MarketProject.Domain
             }
         }
 
-        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
+        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, String paymentMethode, String shipmentMethode)
         {//II.2.5
             CheckIsVisitorAVisitor(VisitorToken, "PurchaseMyCart");
             ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
@@ -552,7 +557,7 @@ namespace MarketProject.Domain
         public void RemoveStoreOwner(String authToken, String ownerUsername, String storeName)
         {//II.4.5
             CheckIsVisitorLoggedIn(authToken, "RemoveStoreOwner");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
                 if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
@@ -579,7 +584,7 @@ namespace MarketProject.Domain
             return _VisitorManagement.GetRegisteredVisitor(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
         }
 
-        internal void AppointSystemAdmin(string authToken, string adminUsername)
+        internal void AppointSystemAdmin(String authToken, String adminUsername)
         {
             String registered = _VisitorManagement.GetRegisteredUsernameByToken(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
             if (_VisitorManagement.CheckAccess(registered, null, Operation.APPOINT_SYSTEM_ADMIN))
@@ -598,7 +603,7 @@ namespace MarketProject.Domain
             _VisitorManagement.EditVisitorPassword(authToken, oldPassword, newPassword);
         }
 
-        public List<StoreManager> getStoreManagers(string storeName, String authToken)
+        public List<StoreManager> getStoreManagers(String storeName, String authToken)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "getStoreManagers");
@@ -612,7 +617,7 @@ namespace MarketProject.Domain
             return _storeManagement.getStoreManagers(storeName);
         }
 
-        public List<StoreOwner> getStoreOwners(string storeName, String authToken)
+        public List<StoreOwner> getStoreOwners(String storeName, String authToken)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "getStoreOwners");
@@ -626,7 +631,7 @@ namespace MarketProject.Domain
             return _storeManagement.getStoreOwners(storeName);
         }
 
-        public StoreFounder getStoreFounder(string storeName, String authToken)
+        public StoreFounder getStoreFounder(String storeName, String authToken)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "getStoreFounder");
@@ -703,7 +708,7 @@ namespace MarketProject.Domain
 
         public void AddManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
 
@@ -711,7 +716,7 @@ namespace MarketProject.Domain
 
         public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
         }
@@ -763,7 +768,7 @@ namespace MarketProject.Domain
             }
         }
 
-        internal double CalcCartActualPrice(string authToken)
+        internal double CalcCartActualPrice(String authToken)
         {
             CheckIsVisitorAVisitor(authToken, "CalcCartActualPrice");
             return _VisitorManagement.GetVisitorShoppingCart(authToken).getActualPrice();
@@ -780,7 +785,7 @@ namespace MarketProject.Domain
             }
         }
 
-        internal string GetCartReceipt(string authToken)
+        internal String GetCartReceipt(String authToken)
         {
             CheckIsVisitorAVisitor(authToken, "GetCartReceipt");
             return _VisitorManagement.GetVisitorShoppingCart(authToken).GetCartReceipt();

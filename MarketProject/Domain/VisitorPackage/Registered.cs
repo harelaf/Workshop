@@ -74,12 +74,15 @@ namespace MarketProject.Domain
 
         internal bool hasAccess(String storeName, Operation op)
         {
+            String errorMessage;
             foreach (SystemRole role in _roles)
             {
                 if (role.hasAccess(storeName, op))
                     return true;
             }
-            return false;
+            errorMessage = "no permission for this operation.";
+            LogErrorMessage("hasAccess", errorMessage);
+            throw new Exception(errorMessage);
         }
 
         public void AddRole(SystemRole role)

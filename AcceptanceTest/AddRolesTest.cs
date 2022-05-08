@@ -1,4 +1,5 @@
-﻿using MarketProject.Service;
+﻿using MarketProject.Domain;
+using MarketProject.Service;
 using MarketProject.Service.DTO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -14,11 +15,11 @@ namespace AcceptanceTest
     public class AddRolesTest
     {
         MarketAPI marketAPI = new MarketAPI();
-        string storeName = "test's Shop";
-        //string storeName_outSystem = "bla";
-        string guest_VisitorToken;
-        string store_founder_token;
-        string store_founder_name;
+        String storeName = "test's Shop";
+        //String storeName_outSystem = "bla";
+        String guest_VisitorToken;
+        String store_founder_token;
+        String store_founder_name;
         int itemID_inStock_1;
         int itemAmount_inSttock_1;
         int itemID_inStock_2;
@@ -39,9 +40,9 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestAddManager_2VisitorsAddingDiffRolesSamePerson_oneIsFailed()
         {
-            string managerUsername = "new manager";
-            string ownerUsername = "new owner";
-            string store_owner_token = (marketAPI.EnterSystem()).Value;// guest
+            String managerUsername = "new manager";
+            String ownerUsername = "new owner";
+            String store_owner_token = (marketAPI.EnterSystem()).Value;// guest
             marketAPI.Register(store_owner_token, ownerUsername, "123456789"); 
             marketAPI.AddStoreOwner(store_founder_token, ownerUsername, storeName);
             Boolean res1 = false, res2 = false;
@@ -64,16 +65,17 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestAddManager_circularAppointing_unsuccessful()
         {
-            string ownerUsername1 = "new owner1";
-            string ownerUsername2 = "new owner2";
-            string managerUsername3 = "new manager3";
-            string password = "123456789";
+            Registered user = marketAPI.getUser(store_founder_token);
+            String ownerUsername1 = "new owner1";
+            String ownerUsername2 = "new owner2";
+            String managerUsername3 = "new manager3";
+            String password = "123456789";
             bool doubleCheck = false;
-            string store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
+            String store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
             marketAPI.Register(store_owner_token1, ownerUsername1, password);
-            string store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
+            String store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
             marketAPI.Register(store_owner_token2, ownerUsername2, password);
-            string store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
+            String store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
             marketAPI.Register(store_manager_token3, managerUsername3, password);
 
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;

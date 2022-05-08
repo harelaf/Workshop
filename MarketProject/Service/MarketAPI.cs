@@ -64,6 +64,11 @@ namespace MarketProject.Service
             return response;
         }
 
+        public Registered getUser(string store_founder_token)
+        {
+            return _market.getUser(store_founder_token);
+        }
+
         /// <summary>
         /// <para> For Req II.3.1. </para>
         /// <para> Log out Visitor identified by authToken.</para>
