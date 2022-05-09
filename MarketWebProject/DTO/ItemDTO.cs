@@ -20,6 +20,8 @@ namespace MarketWebProject.DTO
             _name = name;
             _price = price;
             _itemID = name[name.Length - 1];
+            _description = "blaaaaaaaaa";
+            _category = "fruts";
         }
         public ItemDTO(string name, double price, string storeName)
         {
@@ -28,6 +30,8 @@ namespace MarketWebProject.DTO
             _storeName = storeName;
             _rating = new RatingDTO();
             _itemID = name[name.Length - 1];
+            _description = "blaaaaaaaaa";
+            _category = "fruts";
         }
 
         public RatingDTO Rating => _rating;

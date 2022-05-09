@@ -1,16 +1,34 @@
 ﻿@model MainModel
 @using MarketWebProject.DTO
+@using MarketWebProject.Views.Shared
+
 @{
-    if (Model.IsGuest)
-        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
-    else if (Model.IsLoggedIn)
+    @if (LayoutConfig.IsLoggedIn)
+    {
         Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    else
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
     ViewData["Title"] = "Item Editable Page";
 }
 <div class="text-center">
     <h1 class="display-4">Store @((ViewData["storename"] as string)) Roles Page</h1>
+    <br />
+      <br />
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    else if (Model.Message != null && Model.Message.Length > 0)
+    {
+        <p style="background:green">@Model.Message</p>
+    }
     <br />
 </div>
  <h4>Founder</h4>

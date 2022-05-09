@@ -404,7 +404,7 @@ namespace MarketWebProject.Controllers
             Response res = new Response();//service.AddItemToCart(itemId, store, amount)
             if (!res.ErrorOccured)
             {
-                return RedirectToAction("Index", "Home", ModelState);
+                return RedirectToAction("CartPage", "Home", ModelState);
             }
             else
             {
@@ -444,7 +444,7 @@ namespace MarketWebProject.Controllers
             }
             else
             {
-                return RedirectToAction("StorePage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage }); ;
+                return RedirectToAction("StorePage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage }); 
             }
         }
 
@@ -490,17 +490,11 @@ namespace MarketWebProject.Controllers
             res = new Response(new Exception("could'nt remove item: " + itemID + " from stock of store: " + storeName));//err
             if (res.ErrorOccured)
             {
-                ViewResult viewResult = View("StoreMessagesPage", new MainModel());
-                viewResult.ViewData["messages"] = res.ErrorMessage;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = "removed item: "+itemID+" from stock.\n";
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = false, Message = "item removed successfully" });
             }
         }//
 
@@ -510,17 +504,11 @@ namespace MarketWebProject.Controllers
             Response res = new Response(new Exception("could'nt update item: " + itemID + " from store: " + storeName + " to quantity: " + newQuantity));//=service.removeItemFromStock(itemID, storeName, newQuantity)
             if (res.ErrorOccured)
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = res.ErrorMessage;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = "updatet q of item: " + itemID + " in stock to: "+newQuantity;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = false, Message = "item quantity updateed successfully" });
             }
         }
         public IActionResult AppointStoreOwner(String storeName, string ownerUsername)
@@ -530,17 +518,12 @@ namespace MarketWebProject.Controllers
             res = new Response(new Exception("could'nt appoint user: " + ownerUsername + " to be owner of store: " + storeName));//err
             if (res.ErrorOccured)
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = res.ErrorMessage;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = "appoint user: " + ownerUsername + " to be owner of store: " + storeName;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = false, Message = "user: " + ownerUsername + " is employed!" });
+
             }
         }//
 
@@ -551,17 +534,14 @@ namespace MarketWebProject.Controllers
             res = new Response(new Exception("could'nt Fire user: " + ownerUsername + " from being owner of store: " + storeName));//err
             if (res.ErrorOccured)
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = res.ErrorMessage;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", 
+                    new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = "Fire user: " + ownerUsername + " from being owner of store: " + storeName;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home",
+                    new { storeName = storeName, ErrorOccurred = false, Message = "user: " + ownerUsername + " got fired!" });
+
             }
         }
         public IActionResult AppointStoreManager(String storeName, string managerUsername)
@@ -571,17 +551,14 @@ namespace MarketWebProject.Controllers
             res = new Response(new Exception("could'nt appoint user: " + managerUsername + " to be Manager of store: " + storeName));//err
             if (res.ErrorOccured)
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = res.ErrorMessage;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home",
+                    new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = "appoint user: " + managerUsername + " to be Manager of store: " + storeName;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", 
+                    new { storeName = storeName, ErrorOccurred = false, Message = "user: " + managerUsername + " is employed!"});
+
             }
         }//
 
@@ -592,43 +569,64 @@ namespace MarketWebProject.Controllers
             res = new Response(new Exception("could'nt Fire user: " + managerUsername + " from being Manager of store: " + storeName));//err
             if (res.ErrorOccured)
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = res.ErrorMessage;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home",
+                    new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                ViewResult viewResult = View("StorePage", new MainModel());
-                viewResult.ViewData["messages"] = "Fire user: " + managerUsername + " from being Manager of store: " + storeName;
-                viewResult.ViewData["storeName"] = storeName;
-                return viewResult;
+                return RedirectToAction("StorePage", "Home", 
+                    new { storeName = storeName, ErrorOccurred = false, Message ="user: " +managerUsername+" got fired!" });
+                    
             }
         }
         public IActionResult ModifyStoreManagerPermission(String storeName, string managerUsername, bool ReceiveInfoAndReply, bool ReceiveStorePurchaseHistory)
         {
+            string feedback = "";
             //hasPermmission(
             //I_User_ServiceLayer SL = validateConnection();
-            Response res_history;//=service.FireStoreManager(itemID, storeName)
-            if (ReceiveStorePurchaseHistory)
-                res_history = new Response();//service.AddManagerPermmision(storeName,managerUsername,"STORE_HISTORY_INFO");
-            else
+            Response res_history= new Response();
+            Response res_hasAcces_history = new Response();// service.HasPermission(storeName,managerUsername,"STORE_HISTORY_INFO")
+            if((!res_hasAcces_history.ErrorOccured) != ReceiveStorePurchaseHistory)
             {
-                res_history = new Response();//service.RemoveManagerPermmision(storeName,managerUsername,"STORE_HISTORY_INFO");
+                if (ReceiveStorePurchaseHistory)
+                {
+                    res_history = new Response();//service.AddManagerPermmision(storeName,managerUsername,"STORE_HISTORY_INFO");
+                    feedback += "add to store manager : " + managerUsername + " permission: Store Purchase History\n";
+                }
+                else
+                {
+                    res_history = new Response();//service.RemoveManagerPermmision(storeName,managerUsername,"STORE_HISTORY_INFO");
+                    feedback += "remove from store manager : " + managerUsername + " permission: Store Purchase History\n";
+                }
             }
-            Response res_info;
-            if (ReceiveInfoAndReply)
-                res_info = new Response();//service.AddManagerPermmision(storeName,managerUsername,"RECEIVE_AND_REPLY_STORE_MESSAGE");
-            else
+            
+            Response res_info = new Response();
+            Response res_hasAcces_info = new Response();// service.HasPermission(storeName,managerUsername,"RECEIVE_AND_REPLY_STORE_MESSAGE")
+            if ((!res_hasAcces_info.ErrorOccured) != ReceiveInfoAndReply)
             {
-                res_info = new Response();//service.RemoveManagerPermmision(storeName,managerUsername,"RECEIVE_AND_REPLY_STORE_MESSAGE");
+                if (ReceiveInfoAndReply)
+                {
+                    res_info = new Response();//service.AddManagerPermmision(storeName,managerUsername,"RECEIVE_AND_REPLY_STORE_MESSAGE");
+                    feedback += "add to store manager : " + managerUsername + " permission: Recive and Reply to Msg\n";
+                }
+                else
+                {
+                    res_info = new Response();//service.RemoveManagerPermmision(storeName,managerUsername,"RECEIVE_AND_REPLY_STORE_MESSAGE");
+                    feedback += "remove from store manager : " + managerUsername + " permission: Recive and Reply to Msg\n";
+                }
             }
             //res = new Response(new Exception("could'nt Fire user: " + managerUsername + " from being Manager of store: " + storeName));//err
+            if (res_info.ErrorOccured || res_history.ErrorOccured)
+            {
+                return RedirectToAction("StorePage", "Home",
+                    new { storeName = storeName, ErrorOccurred = true, Message = "history permission: "+res_history.ErrorMessage+"\nMsg permission: "+res_info.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home",
+                    new { storeName = storeName, ErrorOccurred = false, Message =feedback });
 
-            ViewResult viewResult = View("StorePage", new MainModel());
-            viewResult.ViewData["messages"] = "update manager user: " + managerUsername + " from being Manager of store: " + storeName;
-            viewResult.ViewData["storeName"] = storeName;
-            return viewResult;
+            }
         }
         public IActionResult UpdateItemName(string storename, string itemId, string newName)
         {
@@ -637,11 +635,13 @@ namespace MarketWebProject.Controllers
             //=service.EditItemName(token,itemId, storemame, newName)
             if (res.ErrorOccured)
             {
-                return RedirectToAction("ItemPageEditable", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
+                return RedirectToAction("ItemPageEditable", "Home",
+                    new { storeName= storename, itemId= itemId, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                return RedirectToAction("ItemPageEditable", "Home");
+                return RedirectToAction("ItemPageEditable", "Home",
+                    new { storeName = storename, itemId = itemId });
             }
         }
         public IActionResult UpdateItemPrice(string storename, string itemId, string newPrice)
@@ -651,11 +651,13 @@ namespace MarketWebProject.Controllers
             //=service.EditItemPrice(token,itemId, storemame, newPrice)
             if (res.ErrorOccured)
             {
-                return RedirectToAction("ItemPageEditable", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
+                return RedirectToAction("ItemPageEditable", "Home",
+                    new { storeName = storename, itemId = itemId, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                return RedirectToAction("ItemPageEditable", "Home");
+                return RedirectToAction("ItemPageEditable", "Home",
+                     new { storeName = storename, itemId = itemId });
             }
         }
         public IActionResult UpdateItemDescription(string storename, string itemId, string newDescription)
@@ -665,11 +667,13 @@ namespace MarketWebProject.Controllers
             //=service.EditItemDescription(token,itemId, storemame, newDescription)
             if (res.ErrorOccured)
             {
-                return RedirectToAction("ItemPageEditable", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
+                return RedirectToAction("ItemPageEditable", "Home",
+                    new { storeName = storename, itemId = itemId, ErrorOccurred = true, Message = res.ErrorMessage });
             }
             else
             {
-                return RedirectToAction("ItemPageEditable", "Home");
+                return RedirectToAction("ItemPageEditable", "Home",
+                    new { storeName = storename, itemId = itemId});
             }
         }
     }
