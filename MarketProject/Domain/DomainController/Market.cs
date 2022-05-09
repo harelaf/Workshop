@@ -10,14 +10,18 @@ namespace MarketProject.Domain
         private StoreManagement _storeManagement;
         private VisitorManagement _VisitorManagement;
         private History _history;
+        private IDictionary<string, Operation> _opNameToOp;
 
         public Market()
         {
             _storeManagement = new StoreManagement();
             _VisitorManagement = new VisitorManagement();
             _history = new History();
+            _opNameToOp = new Dictionary<string, Operation>();
+            setOPerationDictionary();
         }
-
+        
+       
         /// <summary>
         /// <para> For Req I.1. </para>
         /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
@@ -716,18 +720,29 @@ namespace MarketProject.Domain
         public void AddManagerPermission(String authToken, String managerUsername, String storeName, string op_name)
         {
             Operation op;
-            if (op_name == "RECEIVE_AND_REPLY_STORE_MESSAGE")
-                op = Operation.RECEIVE_AND_REPLY_STORE_MESSAGE;
-            else if (op_name == "STORE_HISTORY_INFO")
-                op = Operation.STORE_HISTORY_INFO;
+            if (_opNameToOp.ContainsKey(op_name))
+            {
+                op = _opNameToOp[op_name];
+            }
             else
-                throw new Exception("Manager can only haave permiisions: 4.12: RECEIVE_AND_REPLY_STORE_MESSAGE or 4.13:STORE_HISTORY_INFO");
+                throw new Exception("Manager can only have permiisions: 4.12: RECEIVE_AND_REPLY_STORE_MESSAGE or 4.13:STORE_HISTORY_INFO");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
 
         }
-
+        public void HasPermission(string userToken, string storeName, string op_name)
+        {
+            Operation op;
+            if (_opNameToOp.ContainsKey(op_name))
+            {
+                op = _opNameToOp[op_name];
+            }
+            else
+                throw new Exception("the given operation name isn't exists.");
+            if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(userToken), storeName, op))
+                throw new Exception("Access denied!");
+        }
         public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
@@ -796,6 +811,31 @@ namespace MarketProject.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in Market.{functionName}. Cause: {message}.");
+        }
+
+
+        private void setOPerationDictionary()
+        {
+            _opNameToOp.Add("MANAGE_STOCK", Operation.MANAGE_INVENTORY);
+            _opNameToOp.Add("CHANGE_SHOP_AND_DISCOUNT_POLICY", Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY);
+            _opNameToOp.Add("DEFINE_CONCISTENCY_CONSTRAINT", Operation.DEFINE_CONCISTENCY_CONSTRAINT);
+            _opNameToOp.Add("APPOINT_OWNER", Operation.APPOINT_OWNER);
+            _opNameToOp.Add("REMOVE_OWNER", Operation.REMOVE_OWNER);
+            _opNameToOp.Add("APPOINT_MANAGER", Operation.APPOINT_MANAGER);
+            _opNameToOp.Add("REMOVE_MANAGER", Operation.REMOVE_MANAGER);
+            _opNameToOp.Add("CHANGE_MANAGER_PREMISSIONS", Operation.CHANGE_MANAGER_PREMISSIONS);
+            _opNameToOp.Add("CLOSE_STORE", Operation.CLOSE_STORE);
+            _opNameToOp.Add("REOPEN_STORE", Operation.REOPEN_STORE);
+            _opNameToOp.Add("STORE_WORKERS_INFO", Operation.STORE_WORKERS_INFO);
+            _opNameToOp.Add("RECEIVE_AND_REPLY_STORE_MESSAGE", Operation.RECEIVE_AND_REPLY_STORE_MESSAGE);
+            _opNameToOp.Add("STORE_HISTORY_INFO", Operation.STORE_HISTORY_INFO);
+            _opNameToOp.Add("STORE_INFORMATION", Operation.STORE_INFORMATION);
+            _opNameToOp.Add("PERMENENT_CLOSE_STORE", Operation.PERMENENT_CLOSE_STORE);
+            _opNameToOp.Add("CANCEL_SUBSCRIPTION", Operation.CANCEL_SUBSCRIPTION);
+            _opNameToOp.Add("RECEIVE_AND_REPLY_ADMIN_MESSAGE", Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE);
+            _opNameToOp.Add("CHANGE_MANAGER_PREMISSIONS", Operation.CHANGE_MANAGER_PREMISSIONS);
+            _opNameToOp.Add("SYSTEM_STATISTICS", Operation.SYSTEM_STATISTICS);
+            _opNameToOp.Add("APPOINT_SYSTEM_ADMIN", Operation.APPOINT_SYSTEM_ADMIN);
         }
     }
 }

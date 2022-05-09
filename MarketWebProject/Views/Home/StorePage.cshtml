@@ -1,0 +1,185 @@
+﻿@model MainModel
+@using MarketWebProject.DTO
+
+@{
+    if (Model.IsGuest)
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    else if (Model.IsLoggedIn)
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    else
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Store Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Store @((ViewData["store"] as StoreDTO).StoreName) Page</h1>
+    <br />
+    <br />
+</div>
+<br />
+@if (Model.ErrorOccurred)
+{
+    <p style="background:red">@Model.Message</p>
+}
+else if(Model.Message!=null && Model.Message.Length>0)
+{
+    <p style="background:green">@Model.Message</p>
+}
+
+@if ((bool)(ViewData["purchaseHistory"]) || (bool)(ViewData["storeMsg"]))
+{
+    <h2>Store Administration:</h2>
+}
+@if ((bool)(ViewData["purchaseHistory"]))
+{
+    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePurchaseHistoryPage"
+        asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" > 
+        View @((ViewData["store"] as StoreDTO).StoreName) Purchase History
+    </a>
+}
+@if ((bool)(ViewData["storeMsg"]))
+{
+    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StoreMessagesPage" 
+        asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" >
+        View @((ViewData["store"] as StoreDTO).StoreName) Messages
+   </a>
+}
+@if ((bool)(ViewData["manageRoles"]))
+{
+    <h2> Manage Store Role: </h2>
+    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StoreRolePage" 
+        asp-route-storeName="@((ViewData["store"] as StoreDTO).StoreName)"> View Store Roles
+    </a>
+    <form method="post">
+        <font color="black">Username of New Owner: </font>
+        <input type="text" id="ownerUsername" name="ownerUsername" title="ownerUsername" />
+        <input class="btn btn-info" type="submit" value="Apopint" asp-area="" asp-controller="Home" 
+            asp-action="AppointStoreOwner" asp-route-newQuantity="" 
+            asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+    <form method="post">
+        <font color="black">Username of Owner to fire: </font>
+        <input type="text" id="ownerUsername" name="ownerUsername" title="ownerUsername" />
+        <input class="btn btn-info" type="submit" value="Fire" asp-area="" asp-controller="Home" 
+            asp-action="FireStoreOwner" asp-route-newQuantity="" 
+            asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+    <form method="post">
+        <font color="black">Username of New Manager: </font>
+        <input type="text" id="managerUsername" name="managerUsername" title="managerUsername" />
+        <input class="btn btn-info" type="submit" value="Apopint" asp-area="" asp-controller="Home" 
+            asp-action="AppointStoreManager" asp-route-newQuantity="" 
+            asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+    <form method="post">
+        <font color="black">Username of Manager to fire: </font>
+        <input type="text" id="managerUsername" name="managerUsername" title="managerUsername" />
+        <input class="btn btn-info" type="submit" value="Fire" asp-area="" asp-controller="Home" 
+            asp-action="FireStoreManager" asp-route-newQuantity="" 
+            asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+    <form method="post">
+        <font color="black">Manager Usernamw to Modify Permissions: </font>
+        <input type="text" id="managerUsername" name="managerUsername" title="managerUsername" />
+        <input id="ReceiveInfoAndReply" name="ReciveInfoAndReply" type="checkbox" value="Receive information and Reply" />
+        <input id="ReceiveStorePurchaseHistory" name="ReceiveStorePurchaseHistory" type="checkbox" value="Receive Store Purchase History" />
+        <input class="btn btn-info" type="submit" value="mModify" asp-area="" asp-controller="Home" 
+            asp-action="ModifyStoreManagerPermission" asp-route-newQuantity="" 
+            asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+}
+
+
+
+<h2>Our Items:</h2>
+@if ((ViewData["store"] as StoreDTO).Stock.Items.Count==0)
+{
+    <font color="red"><b> this store doesn't have any items yet...</b></font>
+}
+else
+{
+    IDictionary<ItemDTO, int> stock_dictionary = (ViewData["store"] as StoreDTO).Stock.Items;
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Item Name</th>
+                <th>Item Price</th>
+                <th>View Item Button</th>
+                @if ((bool)(ViewData["manageStock"]))
+                {
+                    <th>Item Amount in Stock</th>
+                    <th>Remove Item from Stock</th>
+                    <th>Update Quantoty of Item in Stock</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ItemDTO item in stock_dictionary.Keys)
+            {
+                <tr>
+                    <th>@item.Name</th>
+                    <th>@item.Price</th>
+                    @if ((bool)(ViewData["manageStock"]))
+                    {
+                        <th>
+                        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="ItemPageEditable" asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID">View @item.Name Page</a>
+                        </th>
+                        <th> @stock_dictionary[item]</th>
+                        <th>
+                            <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="RemoveItemFromStock" asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID">Remove</a> 
+                        </th>
+                        <th> 
+                            <form method="post">
+                                <font color="black">new quantity: </font>
+                                <input type="number" id="newQuantity" name="newQuantity" title="newQuantity" />
+                                <input class="btn btn-info" type="submit" value="Update" asp-area="" asp-controller="Home" 
+                                    asp-action="UpdateItemQuantityInStock" asp-route-newQuantity="" 
+                                    asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID" />
+                            </form>
+                        </th>
+                    }
+                    else
+                    {
+                        <th>
+                        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="ItemPage" asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID">View @item.Name Page</a>
+                        </th>
+                    }
+                    
+                </tr>
+            }
+        <tbody />
+    </table>
+}
+
+
+
+<h1 style="font-size:200%;">Store Ratings and Comments: </h1>
+
+@if ((ViewData["store"] as StoreDTO).Rating.Ratings.Count > 0)
+{
+    Dictionary<String, Tuple<int, String>> rating = (ViewData["store"] as StoreDTO).Rating.Ratings;
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User name</th>
+                <th>Rating Score</th>
+                <th>Review</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (String userName in rating.Keys)
+            {
+                <tr>
+                    <td>@userName</td>
+                    <td>@rating[userName].Item1</td>
+                    <td>@rating[userName].Item2</td>
+                </tr>
+            }
+        <tbody />
+    </table>
+}
+else
+{
+    <p style="font-size:160%;">no one has rated this store yet..</p>
+}
+<!-- add review button-->

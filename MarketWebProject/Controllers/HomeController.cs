@@ -107,7 +107,56 @@ namespace MarketWebProject.Controllers
             }
         }
 
+        public IActionResult StoreRolePage(string storeName)
+        {
+            MainModel modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            //Response<ItemDTO> response=  getItem(storeName, itemId)
+            Response<StoreFounderDTO> founder_res =new Response<StoreFounderDTO>(new StoreFounderDTO(storeName, "Yafa"));//service.GetStoreFounder(storeName);
+            List<StoreOwnerDTO> owners_list = new List<StoreOwnerDTO>();
+            owners_list.Add(new StoreOwnerDTO(storeName, "Afik", "Shlomi"));
+            owners_list.Add(new StoreOwnerDTO(storeName, "Shlomi", "Beni"));
+            owners_list.Add(new StoreOwnerDTO(storeName, "Beni", "Yafa"));
+            Response<List<StoreOwnerDTO>> owners_res = new Response<List<StoreOwnerDTO>>(owners_list); //_service.GetStoreOwners(storeName);
+            List<StoreManagerDTO> managers_list = new List<StoreManagerDTO>();
+            managers_list.Add(new StoreManagerDTO(storeName, "Afik", "Shlomi"));
+            managers_list.Add(new StoreManagerDTO(storeName, "Shlomi", "Beni"));
+            managers_list.Add(new StoreManagerDTO(storeName, "Beni", "Yafa"));
+            Response<List<StoreManagerDTO>> managers_res = new Response<List<StoreManagerDTO>>(managers_list); //_service.GetStoreManagers(storeName);
+            if (owners_res.ErrorOccured || managers_res.ErrorOccured || founder_res.ErrorOccured)
+            {
+                string message = "owners: " + owners_res.ErrorMessage + "\nmanagers: " + managers_res.ErrorMessage + "\nfounder: "+founder_res.ErrorMessage;
+                return RedirectToAction("StorePage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn,
+                    IsAdmin = IsAdmin, ErrorOccurred = true, Message = message });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["owners"] = owners_res.Value;
+                viewResult.ViewData["managers"] = managers_res.Value;
+                viewResult.ViewData["founder"] = founder_res.Value;
+                viewResult.ViewData["storename"] = storeName;
+                return viewResult;
+            }
+        }
         public IActionResult ItemPage(string storeName, int itemId)
+        {
+
+            MainModel modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            //Response<ItemDTO> response=  getItem(storeName, itemId)
+            Response<ItemDTO> response = new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["item"] = response.Value;
+                return viewResult;
+            }
+        }
+
+        public IActionResult ItemPageEditable(string storeName, int itemId)
         {
 
             MainModel modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
@@ -129,14 +178,8 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
-            string viewName = "StorePageGuest";
-            Response isManager = new Response();// service.isManager(token, storeName)
-            Response isOwner = new Response();// service.isOwner(token, storeName)
-            Response isFounder = new Response();// service.isFounder(token, storeName)
-            if (!isManager.ErrorOccured)
-            {
-                viewName = "StorePageManager";
-            }
+            string viewName = "StorePage";
+
             //GetStore
             //CALL THE CLIENT-> server-> market api
             //_CLIENT<- server <-market api
@@ -147,8 +190,23 @@ namespace MarketWebProject.Controllers
             }
             else
             {
+                Response stockPermissions = new Response();// _service.HasPermission(storename, "MANAGE_STOCK");
+                Response rolesPermission = new Response(); // _service.HasPermission(storename, "APPOINT_OWNER"); // if has accsess to appoint owner' he has all roles permissions.
+                Response closePermission = new Response(); // _service.HasPermission(storename, "CLOSE_STORE"); 
+                Response reopenPermission = new Response(); // _service.HasPermission(storename, "REOPEN_STORE"); 
+                Response closePermenantlyPermission = new Response(); // _service.HasPermission(storename, "PERMENENT_CLOSE_STORE"); 
+                Response purchaseHistoryPermission = new Response(); // _service.HasPermission(storename, "STORE_HISTORY_INFO"); 
+                Response storeMsgPermission = new Response(); // _service.HasPermission(storename, "RECEIVE_AND_REPLY_STORE_MESSAGE"); 
+
                 ViewResult viewResult = View(viewName, modelcs);
                 viewResult.ViewData["store"] = response.Value;
+                viewResult.ViewData["manageRoles"] = !rolesPermission.ErrorOccured;
+                viewResult.ViewData["manageStock"] = !stockPermissions.ErrorOccured;
+                viewResult.ViewData["closeStore"] = !closePermission.ErrorOccured;
+                viewResult.ViewData["reopenStore"] = !reopenPermission.ErrorOccured;
+                viewResult.ViewData["closeStorePermenantly"] = !closePermenantlyPermission.ErrorOccured;
+                viewResult.ViewData["purchaseHistory"] = !purchaseHistoryPermission.ErrorOccured;
+                viewResult.ViewData["storeMsg"] = !storeMsgPermission.ErrorOccured;
                 return viewResult;
             }
         }
@@ -252,7 +310,7 @@ namespace MarketWebProject.Controllers
                 return RedirectToAction("CartPage", "Home");
             }
         }
-
+        
         public IActionResult AddItemToCart(int amount, string storename, int itemid)
         {
             Console.WriteLine(amount + storename + itemid);
@@ -338,5 +396,194 @@ namespace MarketWebProject.Controllers
             }
         }
 
+        public IActionResult RemoveItemFromStock(String storeName, int itemID)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res;//=service.RemoveItemFromStock(itemID, storeName)
+            res = new Response(new Exception("could'nt remove item: " + itemID + " from stock of store: " + storeName));//err
+            if (res.ErrorOccured)
+            {
+                ViewResult viewResult = View("StoreMessagesPage", new MainModel());
+                viewResult.ViewData["messages"] = res.ErrorMessage;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+            else
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = "removed item: "+itemID+" from stock.\n";
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+        }//
+
+        public IActionResult UpdateItemQuantityInStock(String storeName, int itemID, int newQuantity)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt update item: " + itemID + " from store: " + storeName + " to quantity: " + newQuantity));//=service.removeItemFromStock(itemID, storeName, newQuantity)
+            if (res.ErrorOccured)
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = res.ErrorMessage;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+            else
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = "updatet q of item: " + itemID + " in stock to: "+newQuantity;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+        }
+        public IActionResult AppointStoreOwner(String storeName, string ownerUsername)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res;//=service.AppointStoreOwner(token,itemID, storeName)
+            res = new Response(new Exception("could'nt appoint user: " + ownerUsername + " to be owner of store: " + storeName));//err
+            if (res.ErrorOccured)
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = res.ErrorMessage;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+            else
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = "appoint user: " + ownerUsername + " to be owner of store: " + storeName;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+        }//
+
+        public IActionResult FireStoreOwner(String storeName, string ownerUsername)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res;//=service.FireStoreOwner(token,itemID, storeName)
+            res = new Response(new Exception("could'nt Fire user: " + ownerUsername + " from being owner of store: " + storeName));//err
+            if (res.ErrorOccured)
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = res.ErrorMessage;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+            else
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = "Fire user: " + ownerUsername + " from being owner of store: " + storeName;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+        }
+        public IActionResult AppointStoreManager(String storeName, string managerUsername)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res;//=service.AppointStoreManager(itemID, storeName)
+            res = new Response(new Exception("could'nt appoint user: " + managerUsername + " to be Manager of store: " + storeName));//err
+            if (res.ErrorOccured)
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = res.ErrorMessage;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+            else
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = "appoint user: " + managerUsername + " to be Manager of store: " + storeName;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+        }//
+
+        public IActionResult FireStoreManager(String storeName, string managerUsername)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res;//=service.FireStoreManager(itemID, storeName)
+            res = new Response(new Exception("could'nt Fire user: " + managerUsername + " from being Manager of store: " + storeName));//err
+            if (res.ErrorOccured)
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = res.ErrorMessage;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+            else
+            {
+                ViewResult viewResult = View("StorePage", new MainModel());
+                viewResult.ViewData["messages"] = "Fire user: " + managerUsername + " from being Manager of store: " + storeName;
+                viewResult.ViewData["storeName"] = storeName;
+                return viewResult;
+            }
+        }
+        public IActionResult ModifyStoreManagerPermission(String storeName, string managerUsername, bool ReceiveInfoAndReply, bool ReceiveStorePurchaseHistory)
+        {
+            //hasPermmission(
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res_history;//=service.FireStoreManager(itemID, storeName)
+            if (ReceiveStorePurchaseHistory)
+                res_history = new Response();//service.AddManagerPermmision(storeName,managerUsername,"STORE_HISTORY_INFO");
+            else
+            {
+                res_history = new Response();//service.RemoveManagerPermmision(storeName,managerUsername,"STORE_HISTORY_INFO");
+            }
+            Response res_info;
+            if (ReceiveInfoAndReply)
+                res_info = new Response();//service.AddManagerPermmision(storeName,managerUsername,"RECEIVE_AND_REPLY_STORE_MESSAGE");
+            else
+            {
+                res_info = new Response();//service.RemoveManagerPermmision(storeName,managerUsername,"RECEIVE_AND_REPLY_STORE_MESSAGE");
+            }
+            //res = new Response(new Exception("could'nt Fire user: " + managerUsername + " from being Manager of store: " + storeName));//err
+
+            ViewResult viewResult = View("StorePage", new MainModel());
+            viewResult.ViewData["messages"] = "update manager user: " + managerUsername + " from being Manager of store: " + storeName;
+            viewResult.ViewData["storeName"] = storeName;
+            return viewResult;
+        }
+        public IActionResult UpdateItemName(string storename, string itemId, string newName)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt update item: " + itemId + " from store: " + storename + " to new name: " + newName));
+            //=service.EditItemName(token,itemId, storemame, newName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("ItemPageEditable", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("ItemPageEditable", "Home");
+            }
+        }
+        public IActionResult UpdateItemPrice(string storename, string itemId, string newPrice)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt update item: " + itemId + " from store: " + storename + " to new price: " + newPrice));
+            //=service.EditItemPrice(token,itemId, storemame, newPrice)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("ItemPageEditable", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("ItemPageEditable", "Home");
+            }
+        }
+        public IActionResult UpdateItemDescription(string storename, string itemId, string newDescription)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt update item: " + itemId + " from store: " + storename + " to new Description: " + newDescription));
+            //=service.EditItemDescription(token,itemId, storemame, newDescription)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("ItemPageEditable", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("ItemPageEditable", "Home");
+            }
+        }
     }
 }

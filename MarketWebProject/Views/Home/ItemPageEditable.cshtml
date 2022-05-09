@@ -1,0 +1,128 @@
+﻿@model MainModel
+@using MarketWebProject.DTO
+@{
+    if (Model.IsGuest)
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    else if (Model.IsLoggedIn)
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    else
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Item Editable Page";
+}
+<div class="text-center">
+    <h1 class="display-4">Item @((ViewData["item"] as ItemDTO).Name) Page</h1>
+    <br />
+
+<table class="table">
+    <!-- <thead>
+        <tr>
+            <th>Detail Name</th>
+            <th>Value</th>
+            <th>Edit Item Detail</th>
+        </tr>
+    </thead>-->
+    <tbody>
+        <tr>  
+            <th>Item Name:  </th>
+            <th>@((ViewData["item"] as ItemDTO).Name)</th>
+            <th> 
+            <form method="post">
+                <font color="black">new name: </font>
+                <input type="float" id="newName" name="newName" title="newName" />
+                <input class="btn btn-info" type="submit" value="Edit" asp-area="" asp-controller="Home" 
+                    asp-action="UpdateItemName" asp-route-newQuantity="" 
+                    asp-route-storename="@((ViewData["item"] as ItemDTO).StoreName)" asp-route-itemId="@((ViewData["item"] as ItemDTO).ItemID)" />
+            </form>
+            </th>
+        </tr>
+        <tr> 
+        <tr>  
+            <th>Item Price:  </th>
+            <th>$ @(String.Format("{0:0.00}", (ViewData["item"] as ItemDTO).Price))</th>
+            <th> 
+            <form method="post">
+                <font color="black">new price: </font>
+                <input type="float" id="newPrice" name="newPrice" title="newPrice" />
+                <input class="btn btn-info" type="submit" value="Edit" asp-area="" asp-controller="Home" 
+                    asp-action="UpdateItemPrice" asp-route-newQuantity="" 
+                    asp-route-storename="@((ViewData["item"] as ItemDTO).StoreName)" asp-route-itemId="@((ViewData["item"] as ItemDTO).ItemID)" />
+            </form>
+            </th>
+        </tr>
+        <tr>  
+            <th>Item Description: </th>
+             
+                @if ((ViewData["item"] as ItemDTO).Description.Length == 0)
+                {
+                    <th>Empty </th>
+                }
+                else
+                {
+                    <th>@((ViewData["item"] as ItemDTO).Description) </th>
+                }
+            <th> 
+            <form method="post">
+                <font color="black">new Description: </font>
+                <input type="text" id="newDescription" name="newDescription" title="newDescription" />
+                <input class="btn btn-info" type="submit" value="Edit" asp-area="" asp-controller="Home" 
+                    asp-action="UpdateItemDescription" asp-route-newQuantity="" 
+                    asp-route-storename="@((ViewData["item"] as ItemDTO).StoreName)" asp-route-itemId="@((ViewData["item"] as ItemDTO).ItemID)" />
+            </form>
+            </th>
+        </tr>
+         <tr>  
+            <th>Item Category:  </th>
+            <th>@((ViewData["item"] as ItemDTO).Category)</th>
+            
+        </tr>
+    <tbody />
+</table>
+</div>
+
+
+<h1 style="font-size:200%;">Item Description: </h1>
+<p style="font-size:160%;"> @((ViewData["item"] as ItemDTO).Description)</p>
+
+
+<div>
+    <form method="post">
+        <h1 style="font-size:200%;">Choose Amount To Add To Your Cart: </h1>
+        <font color="black">Amount: </font>
+        <input type="number" name="amount" title="amount" id="amount" />
+        <input class="btn btn-info" type="submit" value="Add To Cart" asp-area="" asp-controller="Home" asp-action="AddItemToCart" asp-route-amount="" asp-route-storename="@((ViewData["item"] as ItemDTO).StoreName)" asp-route-itemid="@((ViewData["item"] as ItemDTO).ItemID)" />
+    </form>
+</div>
+
+
+
+<br />
+<br />
+<h1 style="font-size:200%;">Item Ratings and Comments: </h1>
+
+@if ((ViewData["item"] as ItemDTO).Rating.Ratings.Count > 0)
+{
+    Dictionary<String, Tuple<int, String>> rating = (ViewData["item"] as ItemDTO).Rating.Ratings;
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User name</th>
+                <th>Rating Score</th>
+                <th>Review</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (String userName in rating.Keys)
+            {
+                <tr>
+                    <td>@userName</td>
+                    <td>@rating[userName].Item1</td>
+                    <td>@rating[userName].Item2</td>
+                </tr>
+            }
+        <tbody />
+    </table>
+}
+else
+{
+    <p style="font-size:160%;">no one has rated this item yet..</p>
+}
