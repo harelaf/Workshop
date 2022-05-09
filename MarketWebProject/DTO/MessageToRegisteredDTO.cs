@@ -18,7 +18,12 @@ namespace MarketWebProject.DTO
         private String _message;
         public String Message => _message;
 
-
-       
+        public MessageToRegisteredDTO(string storeName, string username, string title, string message)
+        {
+            _storeName = storeName;
+            _username = username;
+            _title = title;
+            _message = message;
+        }
     }
 }

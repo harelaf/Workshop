@@ -125,6 +125,98 @@ namespace MarketWebProject.Controllers
             }
         }
 
+        public IActionResult MyProfile(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            //Response<RegisteredDTO> response = GetUserInformation(authToken);
+            Response<RegisteredDTO> response = new Response<RegisteredDTO>(new RegisteredDTO());
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["visitor"] = response.Value;
+                return viewResult;
+            }
+        }
+
+        public IActionResult MyPurchaseHistory(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            //Response<ICollection<PurchasedCartDTO>> response1 = GetMyPurchasesHistory(authToken);
+            //Response<RegisteredDTO> response2 = GetUserInformation(authToken);
+            List<PurchasedCartDTO> history = new List<PurchasedCartDTO>();
+            history.Add(new PurchasedCartDTO());
+            history.Add(new PurchasedCartDTO());
+            Response<ICollection<PurchasedCartDTO>> response1 = new Response<ICollection<PurchasedCartDTO>>(history);
+            Response<RegisteredDTO> response2 = new Response<RegisteredDTO>(new RegisteredDTO());
+            if (response1.ErrorOccured || response2.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response1.ErrorMessage });
+            }
+            else if (response2.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response2.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["history"] = response1.Value;
+                viewResult.ViewData["username"] = response2.Value.Username;
+                return viewResult;
+            }
+        }
+
+        public IActionResult MyMessages(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            //Response<RegisteredDTO> response = GetUserInformation(authToken);
+            Response<RegisteredDTO> response = new Response<RegisteredDTO>(new RegisteredDTO());
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["visitor"] = response.Value;
+                return viewResult;
+            }
+        }
+
+        public IActionResult ChangeUsername(MainModel modelcs, string newUsername)
+        {
+            //Response response = EditVisitorUsername(authToken, newUsername);
+            Response response = new Response();
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = false, Message = "Operation Successful!" });
+            }
+        }
+
+        public IActionResult ChangePassword(MainModel modelcs, string newPassword, string oldPassword)
+        {
+            //Response response = EditPassword(authToken, newPassword, oldPassword);
+            Response response = new Response();
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = false, Message = "Operation Successful!" });
+            }
+        }
+
         public IActionResult StorePage(MainModel modelcs, string storename)
         {
             if (modelcs == null)
