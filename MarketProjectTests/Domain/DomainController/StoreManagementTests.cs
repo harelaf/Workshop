@@ -271,7 +271,7 @@ namespace MarketProject.Domain.Tests
         public void AddStoreOwner_removeAsManagerAddAsOwner_returnsTrue()
         {
             bool arrange = _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName);
-            arrange = arrange & _storeManagement.RemoveStoreManager(Username, storeName);
+            arrange = arrange & _storeManagement.RemoveStoreManager(Username, storeName, founder);
 
             bool act = _storeManagement.AddStoreOwner(new StoreOwner(Username, storeName, founder), storeName);
 
@@ -291,28 +291,28 @@ namespace MarketProject.Domain.Tests
             string storeManager = "tommy shelby";
             bool add = _storeManagement.AddStoreManager(new StoreManager(storeManager, storeName, founder), storeName);
 
-            bool actual = _storeManagement.RemoveStoreManager(storeManager, storeName);
+            bool actual = _storeManagement.RemoveStoreManager(storeManager, storeName, founder);
             Assert.IsTrue(add);
             Assert.IsTrue(actual);
         }
         [TestMethod()]
         public void RemoveStoreManager_removeFounder_returnsfalse()
         {
-            bool actual = _storeManagement.RemoveStoreManager(founder, storeName);
+            bool actual = _storeManagement.RemoveStoreManager(founder, storeName, founder);
             Assert.IsFalse(actual);
         }
 
         [TestMethod()]
         public void RemoveStoreManager_NonWorker_returnsfalse()
         {
-            bool actual = _storeManagement.RemoveStoreManager("123", storeName);
+            bool actual = _storeManagement.RemoveStoreManager("123", storeName, founder);
             Assert.IsFalse(actual);
         }
 
         [TestMethod]
         public void RemoveStoreManager_NonStore_returnsfalse()
         {
-            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(Username, storeName + "123"));
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(Username, storeName + "123", founder));
         }
 
         [TestMethod()]
@@ -321,21 +321,21 @@ namespace MarketProject.Domain.Tests
             string storeOwner = "amos";
             bool add = _storeManagement.AddStoreOwner(new StoreOwner(storeOwner, storeName, founder), storeName);
 
-            bool actual = _storeManagement.RemoveStoreOwner(storeOwner, storeName);
+            bool actual = _storeManagement.RemoveStoreOwner(storeOwner, storeName, founder);
             Assert.IsTrue(add);
             Assert.IsTrue(actual);
         }
         [TestMethod()]
         public void RemoveStoreOwner_removeFounder_returnsfalse()
         {
-            bool actual = _storeManagement.RemoveStoreOwner(founder, storeName);
+            bool actual = _storeManagement.RemoveStoreOwner(founder, storeName, founder);
             Assert.IsFalse(actual);
         }
 
         [TestMethod()]
         public void RemoveStoreOwner_NonWorker_returnsfalse()
         {
-            bool actual = _storeManagement.RemoveStoreOwner("123", storeName);
+            bool actual = _storeManagement.RemoveStoreOwner("123", storeName, founder);
             Assert.IsFalse(actual);
         }
     }

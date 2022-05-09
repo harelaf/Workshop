@@ -323,14 +323,33 @@ namespace MarketProject.Domain
                 _owners.Remove(owner);
         }
 
-        public bool RemoveStoreOwner(string ownerUsername)
+        public bool RemoveStoreOwner(string ownerUsername, String appointerUsername)
         {
-            return _owners.Remove(GetOwner(ownerUsername));
+            String errorMessage = null;
+            StoreOwner owner = GetOwner(ownerUsername);
+            if (owner == null)
+                errorMessage = $"{ownerUsername} is not a owner in this store.";
+            else if (owner.isAppointer(appointerUsername))
+                errorMessage = "this visitor has no permission to remove this owner.";
+            else
+                return _owners.Remove(owner);
+            LogErrorMessage("RemoveStoreOwner", errorMessage);
+            throw new Exception(errorMessage);
+
         }
 
-        public bool RemoveStoreManager(string managerUsername)
+        public bool RemoveStoreManager(string managerUsername, String appointerUsername)
         {
-            return _managers.Remove(GetManager(managerUsername));
+            String errorMessage = null;
+            StoreManager manager = GetManager(managerUsername);
+            if (manager == null)
+                errorMessage = $"{managerUsername} is not a manager in this store.";
+            else if (manager.isAppointer(appointerUsername))
+                errorMessage = "this visitor has no permission to remove this manager.";
+            else
+                return _managers.Remove(manager);
+            LogErrorMessage("RemoveStoreManager", errorMessage);
+            throw new Exception(errorMessage);
         }
 
         internal List<StoreManager> GetManagers()

@@ -349,7 +349,7 @@ namespace MarketProject.Domain.Tests
         public void AddStoreOwner_removeAsManagerAddAsOwner_returnsTrue()
         {
             bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
-            arrange = arrange & _store.RemoveStoreManager(name);
+            arrange = arrange & _store.RemoveStoreManager(name, storeFounder);
 
             bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
 
@@ -362,21 +362,21 @@ namespace MarketProject.Domain.Tests
             string storeManager = "tommy shelby";
             bool add = _store.AddStoreManager(new StoreManager(storeManager, storeName, storeFounder));
 
-            bool actual = _store.RemoveStoreManager(storeManager);
+            bool actual = _store.RemoveStoreManager(storeManager, storeFounder);
             Assert.IsTrue(add);
             Assert.IsTrue(actual);
         }
         [TestMethod()]
         public void RemoveStoreManager_removeFounder_returnsfalse()
         {
-            bool actual = _store.RemoveStoreManager(storeFounder);
+            bool actual = _store.RemoveStoreManager(storeFounder, null);
             Assert.IsFalse(actual);
         }
 
         [TestMethod()]
         public void RemoveStoreManager_NonWorker_returnsfalse()
         {
-            bool actual = _store.RemoveStoreManager("123");
+            bool actual = _store.RemoveStoreManager("123", null);
             Assert.IsFalse(actual);
         }
 
@@ -386,21 +386,21 @@ namespace MarketProject.Domain.Tests
             string storeOwner = "amos";
             bool add = _store.AddStoreOwner(new StoreOwner(storeOwner, storeName, storeFounder));
 
-            bool actual = _store.RemoveStoreOwner(storeOwner);
+            bool actual = _store.RemoveStoreOwner(storeOwner, storeFounder);
             Assert.IsTrue(add);
             Assert.IsTrue(actual);
         }
         [TestMethod()]
         public void RemoveStoreOwner_removeFounder_returnsfalse()
         {
-            bool actual = _store.RemoveStoreOwner(storeFounder);
+            bool actual = _store.RemoveStoreOwner(storeFounder, storeFounder);
             Assert.IsFalse(actual);
         }
 
         [TestMethod()]
         public void RemoveStoreOwner_NonWorker_returnsfalse()
         {
-            bool actual = _store.RemoveStoreOwner("123");
+            bool actual = _store.RemoveStoreOwner("123", null);
             Assert.IsFalse(actual);
            // Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
         }

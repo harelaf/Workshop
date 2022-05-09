@@ -240,16 +240,16 @@ namespace MarketProject.Domain
             Store store = GetStore(storeName);
             return store.AddStoreOwner(newOwner);
         }
-        public bool RemoveStoreOwner(string ownerUsername, string storeName)
+        public bool RemoveStoreOwner(string ownerUsername, string storeName, String appointerUsername)
         {
             Store store = GetStore(storeName);
-            return store.RemoveStoreOwner(ownerUsername);
+            return store.RemoveStoreOwner(ownerUsername, appointerUsername);
         }
 
-        public bool RemoveStoreManager(string managerUsername, string storeName)
+        public bool RemoveStoreManager(string managerUsername, string storeName, String appointerUsername)
         {
             Store store = GetStore(storeName);
-            return store.RemoveStoreManager(managerUsername);
+            return store.RemoveStoreManager(managerUsername, appointerUsername);
         }
 
         internal List<StoreManager> getStoreManagers(string storeName)

@@ -573,16 +573,17 @@ namespace MarketProject.Domain
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
-                if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName))
+                if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName, appointerUsername))
                     _VisitorManagement.RemoveRole(ownerUsername, storeName);
             }
         }
         public void RemoveStoreManager(String authToken, String managerUsername, String storeName)
         {//II.4.8
             CheckIsVisitorLoggedIn(authToken, "RemoveStoreManager");
-            if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), storeName, Operation.REMOVE_MANAGER))
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_MANAGER))
             {
-                if (_storeManagement.RemoveStoreManager(managerUsername, storeName))
+                if (_storeManagement.RemoveStoreManager(managerUsername, storeName, appointerUsername))
                     _VisitorManagement.RemoveRole(managerUsername, storeName);
             }
         }
