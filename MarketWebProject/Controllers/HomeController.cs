@@ -106,7 +106,7 @@ namespace MarketWebProject.Controllers
 
         public IActionResult StoreRolePage(string storeName)
         {
-            MainModel modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            MainModel modelcs = new MainModel();
             //Response<ItemDTO> response=  getItem(storeName, itemId)
             Response<StoreFounderDTO> founder_res =new Response<StoreFounderDTO>(new StoreFounderDTO(storeName, "Yafa"));//service.GetStoreFounder(storeName);
             List<StoreOwnerDTO> owners_list = new List<StoreOwnerDTO>();
@@ -122,8 +122,7 @@ namespace MarketWebProject.Controllers
             if (owners_res.ErrorOccured || managers_res.ErrorOccured || founder_res.ErrorOccured)
             {
                 string message = "owners: " + owners_res.ErrorMessage + "\nmanagers: " + managers_res.ErrorMessage + "\nfounder: "+founder_res.ErrorMessage;
-                return RedirectToAction("StorePage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn,
-                    IsAdmin = IsAdmin, ErrorOccurred = true, Message = message });
+                return RedirectToAction("StorePage", "Home", new {ErrorOccurred = true, Message = message });
             }
             else
             {
@@ -247,12 +246,12 @@ namespace MarketWebProject.Controllers
         public IActionResult ItemPageEditable(string storeName, int itemId)
         {
 
-            MainModel modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            MainModel modelcs = new MainModel();
             //Response<ItemDTO> response=  getItem(storeName, itemId)
             Response<ItemDTO> response = new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
             if (response.ErrorOccured)
             {
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+                return RedirectToAction("Index", "Home", new {ErrorOccurred = true, Message = response.ErrorMessage });
             }
             else
             {
@@ -265,7 +264,7 @@ namespace MarketWebProject.Controllers
         public IActionResult StorePage(MainModel modelcs, string storename)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             string viewName = "StorePage";
 
             //GetStore
