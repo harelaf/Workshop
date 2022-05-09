@@ -1,0 +1,66 @@
+﻿@using MarketWebProject.DTO
+@using MarketWebProject.Models
+@using System.Collections
+@model MainModel
+@using MarketWebProject.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "My Messages";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@((ViewData["visitor"] as RegisteredDTO).Username)'s Messages</h1>
+    <br />
+    <br />
+</div>
+<br />
+
+@if (((ViewData["visitor"] as RegisteredDTO).Messages).Count > 0)
+{
+    <table style="width:100%" class="table">
+        <tr>
+            <th><h1>Message</h1></th>
+            <th><h1>Answer</h1></th>
+        </tr>
+        @foreach (Tuple<MessageToStoreDTO, MessageToRegisteredDTO> message_answer in (ViewData["visitor"] as RegisteredDTO).Messages)
+        {
+            MessageToStoreDTO message = message_answer.Item1;
+            MessageToRegisteredDTO answer = message_answer.Item2;
+            <tr>
+                <th><h3>Store:</h3> <p>@message.StoreName</p>
+                <h3>Title:</h3> <p>@message.Title</p>
+                <h3>Message:</h3> <p>@message.Message</p></th>
+                @if (answer != null)
+                {
+                    <th><h3>Title:</h3> <p>@answer.Title</p>
+                    <h3>Message:</h3> <p>@answer.Message</p></th>
+                }
+                else
+                {
+                    <th>No answer was received yet.</th>
+                }
+            </tr>
+        }
+    </table>
+    <br />
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+}
+else
+{
+    <h4>This user doesn't have any sent messages!</h4>
+}

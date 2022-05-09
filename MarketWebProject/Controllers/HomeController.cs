@@ -1,5 +1,6 @@
 ﻿using MarketWebProject.DTO;
 using MarketWebProject.Models;
+using MarketWebProject.Views.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -9,23 +10,26 @@ namespace MarketWebProject.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         //private Service service
-        private bool IsGuest = true;
-        private bool IsLoggedIn = false;
-        private bool IsAdmin = false;
 
         private void TurnGuest()
         {
-            IsGuest = true; IsLoggedIn = false; IsAdmin = false;
+            LayoutConfig.IsGuest = true;
+            LayoutConfig.IsLoggedIn = false;
+            LayoutConfig.IsAdmin = false;
         }
 
         private void TurnLoggedIn()
         {
-            IsGuest = false; IsLoggedIn = true; IsAdmin = false;
+            LayoutConfig.IsGuest = false;
+            LayoutConfig.IsLoggedIn = true;
+            LayoutConfig.IsAdmin = false;
         }
 
         private void TurnAdmin()
         {
-            IsGuest = false; IsLoggedIn = false; IsAdmin = true;
+            LayoutConfig.IsGuest = false;
+            LayoutConfig.IsLoggedIn = false;
+            LayoutConfig.IsAdmin = true;
         }
 
         public HomeController(ILogger<HomeController> logger)
@@ -36,7 +40,7 @@ namespace MarketWebProject.Controllers
         public IActionResult Index(MainModel modelcs)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             StoreDTO store1 = new StoreDTO();
             StoreDTO store2 = new StoreDTO();
             List<StoreDTO> lst = new List<StoreDTO>();
@@ -58,24 +62,17 @@ namespace MarketWebProject.Controllers
             return view;
         }
 
-        public IActionResult Privacy(MainModel modelcs)
-        {
-            if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
-            return View(modelcs);
-        }
-
         public IActionResult CartPage(MainModel modelcs)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             //viewMyCart
             //CALL THE CLIENT-> server-> market api
             //_CLIENT<- server <-market api
             Response<ShoppingCartDTO> cart = new Response<ShoppingCartDTO>(new ShoppingCartDTO());
             if (cart.ErrorOccured)
             {
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = cart.ErrorMessage });
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = cart.ErrorMessage });
             }
             else
             {
@@ -89,7 +86,7 @@ namespace MarketWebProject.Controllers
         public IActionResult ItemSearchPage(MainModel modelcs)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             List<ItemDTO> items = new List<ItemDTO>();
             items.Add(new ItemDTO("item1", 10.5, "store1"));
             items.Add(new ItemDTO("item2", 9.5, "store1"));
@@ -97,7 +94,7 @@ namespace MarketWebProject.Controllers
             Response<List<ItemDTO>> response = new Response<List<ItemDTO>>(items);
             if (response.ErrorOccured)
             {
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
             }
             else
             {
@@ -140,19 +137,110 @@ namespace MarketWebProject.Controllers
         }
         public IActionResult ItemPage(string storeName, int itemId)
         {
-
-            MainModel modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+            MainModel modelcs = new MainModel();
             //Response<ItemDTO> response=  getItem(storeName, itemId)
             Response<ItemDTO> response = new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
             if (response.ErrorOccured)
             {
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
             }
             else
             {
                 ViewResult viewResult = View(modelcs);
                 viewResult.ViewData["item"] = response.Value;
                 return viewResult;
+            }
+        }
+
+        public IActionResult MyProfile(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            //Response<RegisteredDTO> response = GetUserInformation(authToken);
+            Response<RegisteredDTO> response = new Response<RegisteredDTO>(new RegisteredDTO());
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["visitor"] = response.Value;
+                return viewResult;
+            }
+        }
+
+        public IActionResult MyPurchaseHistory(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            //Response<ICollection<PurchasedCartDTO>> response1 = GetMyPurchasesHistory(authToken);
+            //Response<RegisteredDTO> response2 = GetUserInformation(authToken);
+            List<PurchasedCartDTO> history = new List<PurchasedCartDTO>();
+            history.Add(new PurchasedCartDTO());
+            history.Add(new PurchasedCartDTO());
+            Response<ICollection<PurchasedCartDTO>> response1 = new Response<ICollection<PurchasedCartDTO>>(history);
+            Response<RegisteredDTO> response2 = new Response<RegisteredDTO>(new RegisteredDTO());
+            if (response1.ErrorOccured || response2.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response1.ErrorMessage });
+            }
+            else if (response2.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response2.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["history"] = response1.Value;
+                viewResult.ViewData["username"] = response2.Value.Username;
+                return viewResult;
+            }
+        }
+
+        public IActionResult MyMessages(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            //Response<RegisteredDTO> response = GetUserInformation(authToken);
+            Response<RegisteredDTO> response = new Response<RegisteredDTO>(new RegisteredDTO());
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                ViewResult viewResult = View(modelcs);
+                viewResult.ViewData["visitor"] = response.Value;
+                return viewResult;
+            }
+        }
+
+        public IActionResult ChangeUsername(MainModel modelcs, string newUsername)
+        {
+            //Response response = EditVisitorUsername(authToken, newUsername);
+            Response response = new Response();
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = false, Message = "Operation Successful!" });
+            }
+        }
+
+        public IActionResult ChangePassword(MainModel modelcs, string newPassword, string oldPassword)
+        {
+            //Response response = EditPassword(authToken, newPassword, oldPassword);
+            Response response = new Response();
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = false, Message = "Operation Successful!" });
             }
         }
 
@@ -186,7 +274,7 @@ namespace MarketWebProject.Controllers
             Response<StoreDTO> response = new Response<StoreDTO>(new StoreDTO());// get store frome service
             if (response.ErrorOccured)
             {
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
             }
             else
             {
@@ -214,20 +302,20 @@ namespace MarketWebProject.Controllers
         public IActionResult RegistrationPage(MainModel modelcs)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             return View(modelcs);
         }
         public IActionResult PurchasePage(MainModel modelcs)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             return View(modelcs);
         }
 
         public IActionResult LoginPage(MainModel modelcs)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             return View(modelcs);
         }
 
@@ -244,7 +332,7 @@ namespace MarketWebProject.Controllers
             String err_msg = "register faild: your pass\\username are not valid";
             String SuccessMessage = "Successfully registered! You can now log in.";
             Response response = new Response(new Exception(err_msg));//call register(name, password, dob)
-            return RedirectToAction("RegistrationPage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = response.ErrorOccured, Message = response.ErrorMessage });
+            return RedirectToAction("RegistrationPage", "Home", new { ErrorOccurred = response.ErrorOccured, Message = response.ErrorMessage });
         }
 
         public IActionResult LoginForm(string name, string password)
@@ -256,13 +344,13 @@ namespace MarketWebProject.Controllers
             if (response.ErrorOccured)
             {
                 TurnGuest();
-                return RedirectToAction("LoginPage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = response.ErrorOccured, Message = err_msg });
+                return RedirectToAction("LoginPage", "Home", new { ErrorOccurred = response.ErrorOccured, Message = err_msg });
             }
             else
             {
                 //TODO: CHECK IF IS ADMIN THEN TurnAdmin();
                 TurnLoggedIn();
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin });
+                return RedirectToAction("Index", "Home", new { });
             }
         }
 
@@ -271,16 +359,16 @@ namespace MarketWebProject.Controllers
             //CALL THE CLIENT-> server-> market api
             //_CLIENT<- server <-market api
             String err_msg = "Logout Failed";
-            Response response = new Response(new Exception(err_msg));//call login(name, password)
+            Response response = new Response(new Exception(err_msg));//call logout()
             if (response.ErrorOccured)
             {
                 TurnGuest();
-                return RedirectToAction("LoginPage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = response.ErrorOccured, Message = err_msg });
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = response.ErrorOccured, Message = err_msg });
             }
             else
             {
                 TurnLoggedIn();
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin });
+                return RedirectToAction("Index", "Home", new { });
             }
         }
 
@@ -321,7 +409,7 @@ namespace MarketWebProject.Controllers
             }
             else
             {
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = res.ErrorMessage }); ;
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage }); ;
             }
         }
 
@@ -331,18 +419,18 @@ namespace MarketWebProject.Controllers
             Response response = new Response();// service.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode)
             if (!response.ErrorOccured)
             {
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = false, Message = "congratulations on your purchase!!\nyour purchase details: \n"+purchaseDet });
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = false, Message = "congratulations on your purchase!!\nyour purchase details: \n"+purchaseDet });
             }
             else
             {
-                return RedirectToAction("Index", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage }); ;
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage }); ;
             }
         }
 
         public IActionResult StorePurchaseHistoryPage(MainModel modelcs, string storeName)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             List<Tuple<DateTime, ShoppingBasketDTO>> tuples = new List<Tuple<DateTime, ShoppingBasketDTO>>();
             tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 30, 14, 30, 0), new ShoppingBasketDTO()));
             tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 18, 10, 14, 0), new ShoppingBasketDTO()));
@@ -357,14 +445,14 @@ namespace MarketWebProject.Controllers
             }
             else
             {
-                return RedirectToAction("StorePage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage }); ;
+                return RedirectToAction("StorePage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage }); ;
             }
         }
 
         public IActionResult StoreMessagesPage(MainModel modelcs, string storeName)
         {
             if (modelcs == null)
-                modelcs = new MainModel(IsGuest, IsLoggedIn, IsAdmin);
+                modelcs = new MainModel();
             Queue<MessageToStoreDTO> messages = new Queue<MessageToStoreDTO>();
             messages.Enqueue(new MessageToStoreDTO(storeName, "afik", "mmm", "shit store"));
             messages.Enqueue(new MessageToStoreDTO(storeName, "harel", "mmm", "nice store"));
@@ -379,7 +467,7 @@ namespace MarketWebProject.Controllers
             }
             else
             {
-                return RedirectToAction("StorePage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage }); ;
+                return RedirectToAction("StorePage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage }); ;
             }
         }
 
@@ -388,11 +476,11 @@ namespace MarketWebProject.Controllers
             Response response = new Response();// service.AnswerStoreMesseage(token, storename, userName, title,replyMessage );
             if (!response.ErrorOccured)
             {
-                return RedirectToAction("StoreMessagesPage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = false, Message = "reply sent" });
+                return RedirectToAction("StoreMessagesPage", "Home", new { ErrorOccurred = false, Message = "reply sent" });
             }
             else
             {
-                return RedirectToAction("StoreMessagesPage", "Home", new { IsGuest = IsGuest, IsLoggedIn = IsLoggedIn, IsAdmin = IsAdmin, ErrorOccurred = true, Message = response.ErrorMessage });
+                return RedirectToAction("StoreMessagesPage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
             }
         }
 

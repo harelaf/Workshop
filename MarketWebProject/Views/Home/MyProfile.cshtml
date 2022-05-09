@@ -1,0 +1,44 @@
+﻿@model MainModel
+@using MarketWebProject.DTO
+@using MarketWebProject.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "My Profile";
+}
+<div class="text-center">
+    <h1 class="display-4">@((ViewData["visitor"] as RegisteredDTO).Username)' Profile</h1>
+    <br />
+    <br />
+</div>
+<br />
+<h1>Username:</h1>
+<p>@((ViewData["visitor"] as RegisteredDTO).Username)</p>
+<form method="post">
+    <p>Please enter a new username:</p>
+    <input type="text" name="newUsername" title="newUsername" id="newUsername" />
+    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangeUsername" asp-route-newUsername=""/>
+</form>
+<br />
+<h1>Date of Birth:</h1>
+<p>**GET DOB FROM DTO**</p>
+<br />
+<h1>Update Password:</h1>
+<form method="post">
+    <p>Please enter your old password:</p>
+    <input type="text" name="oldPassword" title="oldPassword" id="oldPassword" />
+    <p>Please enter a new password:</p>
+    <input type="text" name="newPassword" title="newPassword" id="newPassword" />
+    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangePassword" asp-route-newPassword="" asp-route-oldPassword=""/>
+</form>
