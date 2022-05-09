@@ -31,17 +31,20 @@ namespace BlazorApp.Services
         private NavigationManager _navigationManager;
         private ILocalStorageService _localStorageService;
         private IConfiguration _configuration;
+        private IAccountService _accountService;
 
         public HttpService(
             HttpClient httpClient,
             NavigationManager navigationManager,
             ILocalStorageService localStorageService,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IAccountService accountService
         ) {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
             _localStorageService = localStorageService;
             _configuration = configuration;
+            _accountService = accountService;
         }
 
         public async Task<T> Get<T>(string uri)
@@ -138,10 +141,9 @@ namespace BlazorApp.Services
         private async Task addJwtHeader(HttpRequestMessage request)
         {
             // add jwt auth header if user is logged in and request is to the api url
-            var user = await _localStorageService.GetItem<User>("user");
             var isApiUrl = !request.RequestUri.IsAbsoluteUri;
-            if (user != null && isApiUrl)
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+            if (_accountService.User != null && isApiUrl)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accountService.User.Token);
         }
 
         private async Task handleErrors(HttpResponseMessage response)

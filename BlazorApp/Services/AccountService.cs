@@ -40,20 +40,19 @@ namespace BlazorApp.Services
 
         public async Task Initialize()
         {
-            User = await _localStorageService.GetItem<User>(_userKey);
+            // User = await _httpService.Post<User>("/users/enter", true);
+            User = null;
         }
 
         public async Task Login(Login model)
         {
             User = await _httpService.Post<User>("/users/authenticate", model);
-            await _localStorageService.SetItem(_userKey, User);
         }
 
         public async Task Logout()
         {
+            await _httpService.Post("/users/logout", true);
             User = null;
-            await _localStorageService.RemoveItem(_userKey);
-            _navigationManager.NavigateTo("account/login");
         }
 
         public async Task Register(AddUser model)

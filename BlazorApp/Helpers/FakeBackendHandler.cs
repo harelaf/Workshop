@@ -33,6 +33,8 @@ namespace BlazorApp.Helpers
 
             async Task<HttpResponseMessage> handleRoute()
             {
+                if (path == "/users/enter" && method == HttpMethod.Post)
+                    return await enter();
                 if (path == "/users/authenticate" && method == HttpMethod.Post)
                     return await authenticate();
                 if (path == "/users/register" && method == HttpMethod.Post)
@@ -51,7 +53,22 @@ namespace BlazorApp.Helpers
             }
 
             // route functions
-            
+
+            async Task<HttpResponseMessage> enter()
+            {
+                var bodyJson = await request.Content.ReadAsStringAsync();
+                var body = JsonSerializer.Deserialize<bool>(bodyJson);
+
+                return await ok(new
+                {
+                    Id = "",
+                    Username = "",
+                    FirstName = "",
+                    LastName = "",
+                    Token = "fake-jwt-token"
+                });
+            }
+
             async Task<HttpResponseMessage> authenticate()
             {
                 var bodyJson = await request.Content.ReadAsStringAsync();

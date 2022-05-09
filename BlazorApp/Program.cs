@@ -1,5 +1,6 @@
 using BlazorApp.Helpers;
 using BlazorApp.Services;
+using MarketProject.Service;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -12,6 +13,7 @@ namespace BlazorApp
     {
         public static async Task Main(string[] args)
         {
+            Console.WriteLine("test1");
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
@@ -19,7 +21,8 @@ namespace BlazorApp
                 .AddScoped<IAccountService, AccountService>()
                 .AddScoped<IAlertService, AlertService>()
                 .AddScoped<IHttpService, HttpService>()
-                .AddScoped<ILocalStorageService, LocalStorageService>();
+                .AddScoped<ILocalStorageService, LocalStorageService>()
+                .AddScoped<MarketAPI>();
 
             // configure http client
             builder.Services.AddScoped(x => {
@@ -31,6 +34,10 @@ namespace BlazorApp
                     var fakeBackendHandler = new FakeBackendHandler(x.GetService<ILocalStorageService>());
                     return new HttpClient(fakeBackendHandler) { BaseAddress = apiUrl };
                 }
+                else
+                {
+                    return new HttpClient(new ClientHandler(x.GetService<MarketAPI>())) { BaseAddress = apiUrl };
+                }
 
                 return new HttpClient() { BaseAddress = apiUrl };
             });
@@ -39,6 +46,7 @@ namespace BlazorApp
 
             var accountService = host.Services.GetRequiredService<IAccountService>();
             await accountService.Initialize();
+            Console.WriteLine("test1");
 
             await host.RunAsync();
         }
