@@ -2,13 +2,21 @@
 @using MarketWebProject.Models
 @using System.Collections
 @model MainModel
+@using MarketWebProject.Views.Shared
+
 @{
-    if (Model.IsGuest)
-        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
-    else if (Model.IsLoggedIn)
+    @if (LayoutConfig.IsLoggedIn)
+    {
         Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    else
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
     ViewData["Title"] = "Purchase My Cart";
 }
 
