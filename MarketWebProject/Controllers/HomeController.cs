@@ -125,10 +125,14 @@ namespace MarketWebProject.Controllers
             }
         }
 
-        public IActionResult ItemSearchPage(MainModel modelcs)
+        public IActionResult ItemSearchPage(MainModel modelcs, string category, string itemname,string keyword)
         {
+            Console.WriteLine("category:"+category+"name:"+itemname+"key:"+keyword+"end");
             if (modelcs == null)
                 modelcs = new MainModel();
+            if (category == null && itemname == null && keyword == null)
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = "must enter at least one option of search" });
+            
             List<ItemDTO> items = new List<ItemDTO>();
             items.Add(new ItemDTO("item1", 10.5, "store1"));
             items.Add(new ItemDTO("item2", 9.5, "store1"));
@@ -321,7 +325,7 @@ namespace MarketWebProject.Controllers
             //GetStore
             //CALL THE CLIENT-> server-> market api
             //_CLIENT<- server <-market api
-            Response<StoreDTO> response = new Response<StoreDTO>(new StoreDTO());// get store frome service
+            Response<StoreDTO> response = new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
             if (response.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
@@ -345,6 +349,7 @@ namespace MarketWebProject.Controllers
                 viewResult.ViewData["closeStorePermenantly"] = !closePermenantlyPermission.ErrorOccured;
                 viewResult.ViewData["purchaseHistory"] = !purchaseHistoryPermission.ErrorOccured;
                 viewResult.ViewData["storeMsg"] = !storeMsgPermission.ErrorOccured;
+                viewResult.ViewData["ActiveStore"] = response.Value.isActive();
                 return viewResult;
             }
         }
@@ -731,6 +736,128 @@ namespace MarketWebProject.Controllers
             {
                 return RedirectToAction("ItemPageEditable", "Home",
                     new { storeName = storename, itemId = itemId});
+            }
+        }
+        public IActionResult AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, String category, int quantity)
+        {//II.4.1
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt add item: " + itemID + " to store: " + storeName + " stock. "));//=service.AddItemToStoreStock(storeName, itemID, name, price, description, category, quantity)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = false, Message = "item added successfully" });
+            }
+        }
+        
+        public IActionResult CloseStore(string storeName)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt close store: " + storeName));//=service.CloseStore(storeName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home", 
+                    new { storeName = storeName, ErrorOccurred = false, Message = "store closed successfully" });
+            }
+        }
+        public IActionResult ReopenStore(string storeName)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt reopen store: " + storeName));//=service.ReopenStore(storeName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home",
+                    new { storeName = storeName, ErrorOccurred = false, Message = "store reopend successfully" });
+            }
+        }
+     
+        public IActionResult CloseStorePermenantltz(string storeName)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            Response res = new Response(new Exception("could'nt close store: " + storeName));//=service.CloseStore(storeName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home", 
+                    new { storeName = storeName, ErrorOccurred = false, Message = "store closed successfully" });
+            }
+        }
+
+        public ActionResult AddStoreReview(string storeName, int rating,string comment)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            if (comment == null)
+                comment = "";
+            Response res = new Response(new Exception("could'nt add review for store: " + storeName+"with rating: "+rating+" and comment: "+comment));//=service.CloseStore(storeName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("StorePage", "Home", new { storeName = storeName, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home", 
+                    new { storeName = storeName, ErrorOccurred = false, Message = "review added successfully" });
+            }
+        }
+
+        public ActionResult AddItemReview(string storeName, int itemId, int rating, string comment)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            if (comment == null)
+                comment = "";
+            Response res = new Response(new Exception("could'nt add review for item: " + itemId + "with rating: " + rating + " and comment: " + comment));//=service.CloseStore(storeName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("ItemPage", "Home", new { storeName=storeName,  itemId = itemId, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("ItemPage", "Home",
+                    new { storeName = storeName, itemId = itemId, ErrorOccurred = false, Message = "review added successfully" });
+            }
+        }
+
+        public ActionResult AddItemEditableReview(string storeName, int itemId, int rating, string comment)
+        {
+            //I_User_ServiceLayer SL = validateConnection();
+            if (comment == null)
+                comment = "";
+            Response res = new Response(new Exception("could'nt add review for item: " + itemId + "with rating: " + rating + " and comment: " + comment));//=service.CloseStore(storeName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("ItemPageEditable", "Home", new { storeName = storeName, itemId = itemId, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("ItemPageEditable", "Home",
+                    new { storeName = storeName, itemId = itemId, ErrorOccurred = false, Message = "review added successfully" });
+            }
+        }
+
+        public IActionResult SendMsgToStore(string storename, string msg)
+        {
+            Response res = new Response(new Exception("could'nt send your msg: "+msg+" to store: "+storename));//=service.CloseStore(storeName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("StorePage", "Home", new { storeName = storename, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home",
+                    new { storeName = storename, ErrorOccurred = false, Message = "send msg successfully" });
             }
         }
     }

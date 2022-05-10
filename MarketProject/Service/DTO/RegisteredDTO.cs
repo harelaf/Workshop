@@ -16,7 +16,7 @@ namespace MarketProject.Service.DTO
             _username = registered.Username;
             _shoppingCart = new ShoppingCartDTO(registered.ShoppingCart);
             _messagesToUsers = new List<MessageToRegisteredDTO>();
-            foreach (MessageToRegistered msg in registered.MessagesToRegistered)
+            foreach (AdminMessageToRegistered msg in registered.AdminMessages)
                 _messagesToUsers.Add(new MessageToRegisteredDTO(msg));
         }
         public String ToString()

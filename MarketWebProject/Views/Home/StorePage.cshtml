@@ -20,6 +20,10 @@
 
 <div class="text-center">
     <h1 class="display-4">Store @((ViewData["store"] as StoreDTO).StoreName) Page</h1>
+    @if(!(bool)(ViewData["ActiveStore"]))
+    {
+        <h2 class="display-4" style="color:red">Store is Inactive</h2>
+    }
     <br />
 </div>
 @if (Model.ErrorOccurred)
@@ -48,8 +52,36 @@ else if(Model.Message!=null && Model.Message.Length>0)
         asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" >
         View @((ViewData["store"] as StoreDTO).StoreName) Messages
    </a>
+
 }
-<br />
+@if ((bool)(ViewData["closeStore"]))
+{
+    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="CloseStore" 
+        asp-route-storeName="@((ViewData["store"] as StoreDTO).StoreName)" >
+        close @((ViewData["store"] as StoreDTO).StoreName)
+   </a>
+   <br />
+   <br /> 
+}
+@if ((bool)(ViewData["closeStorePermenantly"]))
+{
+    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="CloseStorePermenantly" 
+        asp-route-storeName="@((ViewData["store"] as StoreDTO).StoreName)" >
+        close @((ViewData["store"] as StoreDTO).StoreName) Permenantly
+   </a>
+   <br />
+   <br /> 
+}
+@if((!(bool)(ViewData["ActiveStore"])) && (bool)(ViewData["reopenStore"]))
+{
+    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="ReopenStore" 
+        asp-route-storeName="@((ViewData["store"] as StoreDTO).StoreName)" >
+        Reopen @((ViewData["store"] as StoreDTO).StoreName)
+   </a>
+   <br />
+   <br /> 
+}
+
 <br />
 @if ((bool)(ViewData["manageRoles"]))
 {
@@ -62,7 +94,7 @@ else if(Model.Message!=null && Model.Message.Length>0)
     <h5>Appoint Store Owner: </h5>
     <form method="post">
         <font color="black">New Owner Username: </font>
-        <input type="text" id="ownerUsername" name="ownerUsername" title="ownerUsername" />
+        <input type="text" required  id="ownerUsername" name="ownerUsername" title="ownerUsername" />
         <input class="btn btn-info" type="submit" value="Appoint" asp-area="" asp-controller="Home" 
             asp-action="AppointStoreOwner" asp-route-newQuantity="" 
             asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
@@ -71,7 +103,7 @@ else if(Model.Message!=null && Model.Message.Length>0)
     <h5>Fire Store Owner: </h5>
     <form method="post">
         <font color="black">Owner Username: </font>
-        <input type="text" id="ownerUsername" name="ownerUsername" title="ownerUsername" />
+        <input type="text" required id="ownerUsername" name="ownerUsername" title="ownerUsername" />
         <input class="btn btn-info" type="submit" value="Fire" asp-area="" asp-controller="Home" 
             asp-action="FireStoreOwner" asp-route-newQuantity="" 
             asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
@@ -80,7 +112,7 @@ else if(Model.Message!=null && Model.Message.Length>0)
     <h5>Appoint Store Manager: </h5>
     <form method="post">
         <font color="black">New Manager Username: </font>
-        <input type="text" id="managerUsername" name="managerUsername" title="managerUsername" />
+        <input type="text" required id="managerUsername" name="managerUsername" title="managerUsername" />
         <input class="btn btn-info" type="submit" value="Appoint" asp-area="" asp-controller="Home" 
             asp-action="AppointStoreManager" asp-route-newQuantity="" 
             asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
@@ -89,7 +121,7 @@ else if(Model.Message!=null && Model.Message.Length>0)
     <h5>Fire Store Manager: </h5>
     <form method="post">
         <font color="black">Manager Username: </font>
-        <input type="text" id="managerUsername" name="managerUsername" title="managerUsername" />
+        <input type="text" required id="managerUsername" name="managerUsername" title="managerUsername" />
         <input class="btn btn-info" type="submit" value="Fire" asp-area="" asp-controller="Home" 
             asp-action="FireStoreManager" asp-route-newQuantity="" 
             asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
@@ -98,7 +130,7 @@ else if(Model.Message!=null && Model.Message.Length>0)
     <h5>Manage Permission of Store Manager: </h5>
     <form method="post">
         <font color="black">Manager Username: </font>
-        <input type="text" id="managerUsername" name="managerUsername" title="managerUsername" />
+        <input type="text" required id="managerUsername" name="managerUsername" title="managerUsername" />
          <br />
         <font color="black">Permission- Receive information and Reply: </font>
         <input id="ReceiveInfoAndReply" name="ReciveInfoAndReply" type="checkbox" value="Receive information and Reply" />
@@ -113,6 +145,17 @@ else if(Model.Message!=null && Model.Message.Length>0)
 }<br />
 <br />
 
+@if (LayoutConfig.IsLoggedIn || LayoutConfig.IsAdmin)
+{
+    <h4>Send Question\Query to Store:</h4>
+    <form method="post">
+        <font color="black">Question\Query: </font>
+        <input type="text" required  id="msg" name="msg" title="msg" />
+        <input class="btn btn-info" type="submit" value="Send" asp-area="" asp-controller="Home" 
+            asp-action="SendMsgToStore" asp-route-newQuantity="" 
+            asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+}
 
 
 <h2>Our Items:</h2>
@@ -155,7 +198,7 @@ else
                         <th> 
                             <form method="post">
                                 <font color="black">new quantity: </font>
-                                <input type="number" id="newQuantity" name="newQuantity" title="newQuantity" />
+                                <input type="number" min="0" required  id="newQuantity" name="newQuantity" title="newQuantity" />
                                 <input class="btn btn-info" type="submit" value="Update" asp-area="" asp-controller="Home" 
                                     asp-action="UpdateItemQuantityInStock" asp-route-newQuantity="" 
                                     asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID" />
@@ -173,6 +216,35 @@ else
             }
         <tbody />
     </table>
+    @if ((bool)(ViewData["manageStock"]))
+    {//add item to stock:
+        //storeName, itemID, name, price, description, category, quantity
+        <h5>Add New Item To Store Stock: </h5>
+        <br />
+        <form method="post">
+            <font color="black">Item ID: </font>
+            <input type="number" min="0" required  id="itemID" name="itemID" title="itemID" />
+            <br />
+            <font color="black">Item Name: </font>
+            <input type="text" required id="name" name="name" title="name" />
+            <br />
+            <font color="black">Item Price: </font>
+            <input type="float" required min="0" id="price" name="price" title="price" />
+            <br />
+            <font color="black">Item Description: </font>
+            <input type="text" required id="description" name="description" title="description" />
+            <br />
+            <font color="black">Item Category: </font>
+            <input type="text" required id="category" name="category" title="category" />
+            <br />
+            <font color="black">Item Quantity: </font>
+            <input type="number" required min="0" id="quantity" name="quantity" title="quantity" />
+            <br />
+            <input class="btn btn-info" type="submit" value="Add" asp-area="" asp-controller="Home" 
+                asp-action="AddItemToStoreStock" asp-route-newQuantity="" 
+                asp-route-storeName="@((ViewData["store"] as StoreDTO).StoreName)" />
+        </form>
+    }
 }
 
 
@@ -206,4 +278,22 @@ else
 {
     <p style="font-size:160%;">no one has rated this store yet..</p>
 }
-<!-- add review button-->
+@if (LayoutConfig.IsLoggedIn || LayoutConfig.IsAdmin)
+{ 
+    <!-- add review button-->
+    <h5>Add Your Review: </h5>
+    <form method="post">
+        <div width: 20%;>
+            <p>Please pick a rating:</p>
+            <input type="range" id="rating" name="rating" title="rating"  min="0" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
+            <output>5</output>
+        </div>
+        <br />
+        <font color="black">Comment: </font>
+        <input type="text" id="comment" name="comment" title="comment" />
+    <br />
+        <input class="btn btn-info" type="submit" value="Add" asp-area="" asp-controller="Home" 
+            asp-action="AddStoreReview" asp-route-newQuantity="" 
+            asp-route-storeName="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+}

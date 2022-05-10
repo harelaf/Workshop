@@ -47,3 +47,13 @@
 <br />
 <h3>View Complaints:</h3>
 <input class="btn btn-info" type="submit" value="View Complaints" asp-area="" asp-controller="Home" asp-action="SystemComplaintsPage" />
+<h3>View Store Purchase History:</h3>
+
+<br />
+<h3>Send Messages to Buyers and Sellers:</h3>
+<form method="post">
+    <p>Enter the store name:</p>
+    <input type="text" name="storename" title="storename" id="storename" />
+    <input class="btn btn-info" type="submit" value="View History" asp-area="" asp-controller="Home" asp-action="StorePurchaseHistoryPage" asp-route-storename="" />
+</form>
+<!--String storeName, String UsernameReciever, String title, String message-->

@@ -26,9 +26,9 @@
 <h3>Username:</h3>
 <p>@((ViewData["visitor"] as RegisteredDTO).Username)</p>
 <form method="post">
-    <p>If you wish to change your username, please enter a new one:</p>
-    <input type="text" name="newUsername" title="newUsername" id="newUsername" />
-    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangeUsername" asp-route-newUsername="" />
+    <p>Please enter a new username:</p>
+    <input type="text" required name="newUsername" title="newUsername" id="newUsername" />
+    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangeUsername" asp-route-newUsername=""/>
 </form>
 <br />
 <h3>Date of Birth:</h3>
@@ -37,9 +37,9 @@
 <h3>Update Password:</h3>
 <form method="post">
     <p>Please enter your old password:</p>
-    <input type="text" name="oldPassword" title="oldPassword" id="oldPassword" />
+    <input type="text" required name="oldPassword" title="oldPassword" id="oldPassword" />
     <p>Please enter a new password:</p>
-    <input type="text" name="newPassword" title="newPassword" id="newPassword" />
+    <input type="text" required name="newPassword" title="newPassword" id="newPassword" />
     <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangePassword" asp-route-newPassword="" asp-route-oldPassword="" />
 </form>
 <br />
