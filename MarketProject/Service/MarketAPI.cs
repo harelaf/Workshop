@@ -907,5 +907,19 @@ namespace MarketProject.Service
             }
             return response;
         }
+        public Response IsStoreActive(string userToken, string storeName, string op)
+        {
+            Response response;
+            try
+            {
+                _market.HasPermission(storeName, userToken, op);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
+        }
     }
 }

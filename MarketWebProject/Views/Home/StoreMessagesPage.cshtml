@@ -46,7 +46,7 @@
                 <th> 
                     <form method="post">
                         <font color="black">reply message: </font>
-                        <input type="text" id="replyMessage" name="replyMessage" title="replyMessage" />
+                        <input type="text" required id="replyMessage" name="replyMessage" title="replyMessage" />
                         <input class="btn btn-info" type="submit" value="Reply" asp-area="" asp-controller="Home" asp-action="ReplyMessage" 
                         asp-route-storename="@((ViewData["storeName"]) as string)" asp-route-userName="@msg.SenderUsername" asp-route-title="RE: @msg.Title" asp-route-replyMessage=""  />
                     </form>
