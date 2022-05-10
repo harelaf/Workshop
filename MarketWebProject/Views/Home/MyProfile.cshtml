@@ -39,7 +39,7 @@
     <p>Please enter your old password:</p>
     <input type="text" required name="oldPassword" title="oldPassword" id="oldPassword" />
     <p>Please enter a new password:</p>
-    <input type="text" name="newPassword" title="newPassword" id="newPassword" />
+    <input type="text" required name="newPassword" title="newPassword" id="newPassword" />
     <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangePassword" asp-route-newPassword="" asp-route-oldPassword="" />
 </form>
 <br />
