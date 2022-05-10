@@ -145,6 +145,17 @@ else if(Model.Message!=null && Model.Message.Length>0)
 }<br />
 <br />
 
+@if (LayoutConfig.IsLoggedIn || LayoutConfig.IsAdmin)
+{
+    <h4>Send Question\Query to Store:</h4>
+    <form method="post">
+        <font color="black">Question\Query: </font>
+        <input type="text" required  id="msg" name="msg" title="msg" />
+        <input class="btn btn-info" type="submit" value="Send" asp-area="" asp-controller="Home" 
+            asp-action="SendMsgToStore" asp-route-newQuantity="" 
+            asp-route-storename="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+}
 
 
 <h2>Our Items:</h2>
@@ -267,19 +278,22 @@ else
 {
     <p style="font-size:160%;">no one has rated this store yet..</p>
 }
-<!-- add review button-->
-<h5>Add Your Review: </h5>
-<form method="post">
-    <div width: 20%;>
-        <p>Please pick a rating:</p>
-        <input type="range" id="rating" name="rating" title="rating"  min="0" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
-        <output>5</output>
-    </div>
+@if (LayoutConfig.IsLoggedIn || LayoutConfig.IsAdmin)
+{ 
+    <!-- add review button-->
+    <h5>Add Your Review: </h5>
+    <form method="post">
+        <div width: 20%;>
+            <p>Please pick a rating:</p>
+            <input type="range" id="rating" name="rating" title="rating"  min="0" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
+            <output>5</output>
+        </div>
+        <br />
+        <font color="black">Comment: </font>
+        <input type="text" id="comment" name="comment" title="comment" />
     <br />
-    <font color="black">Comment: </font>
-    <input type="text" id="comment" name="comment" title="comment" />
-<br />
-    <input class="btn btn-info" type="submit" value="Add" asp-area="" asp-controller="Home" 
-        asp-action="AddStoreReview" asp-route-newQuantity="" 
-        asp-route-storeName="@((ViewData["store"] as StoreDTO).StoreName)" />
-</form>
+        <input class="btn btn-info" type="submit" value="Add" asp-area="" asp-controller="Home" 
+            asp-action="AddStoreReview" asp-route-newQuantity="" 
+            asp-route-storeName="@((ViewData["store"] as StoreDTO).StoreName)" />
+    </form>
+}

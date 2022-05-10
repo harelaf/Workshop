@@ -20,10 +20,10 @@ namespace MarketProject.Service.DTO
         public String Message => _message;
 
 
-        public MessageToRegisteredDTO(MessageToRegistered MessageToRegistered)
+        public MessageToRegisteredDTO(AdminMessageToRegistered MessageToRegistered)
         {
             _storeName = MessageToRegistered.StoreName;
-            _username = MessageToRegistered.Username;
+            _username = MessageToRegistered.ReceiverUsername;
             _title = MessageToRegistered.Title;
             _message = MessageToRegistered.Message;
         }

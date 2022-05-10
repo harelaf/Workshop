@@ -593,9 +593,10 @@ namespace MarketProject.Domain
 
         // ===================================== MESSAGE OPERATIONS =====================================
 
-        public void SendMessageToRegistered(String storeName, String UsernameReciever, String title, String message)
+        public void SendMessageToRegistered(String UsernameReciever, String title, String message)
         {
-            MessageToRegistered messageToRegistered = new MessageToRegistered(UsernameReciever, storeName, title, message);
+
+            AdminMessageToRegistered messageToRegistered = new MessageToRegistered(UsernameReciever, storeName, title, message);
             Registered reciever = GetRegisteredVisitor(UsernameReciever);
             reciever.SendMessage(messageToRegistered);
         }
@@ -622,9 +623,9 @@ namespace MarketProject.Domain
             GetRegisteredVisitor(adminUsername).AddRole(new SystemAdmin(adminUsername));
         }
 
-        internal ICollection<MessageToRegistered> getRegisteredMessages(string authToken)
+        internal ICollection<AdminMessageToRegistered> getRegisteredMessages(string authToken)
         {
-            return GetRegisteredByToken(authToken).MessagesToRegistered;
+            return GetRegisteredByToken(authToken).AdminMessages;
         }
 
 

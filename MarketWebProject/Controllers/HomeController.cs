@@ -825,7 +825,7 @@ namespace MarketWebProject.Controllers
             else
             {
                 return RedirectToAction("ItemPage", "Home",
-                    new { storeName = itemId, ErrorOccurred = false, Message = "review added successfully" });
+                    new { storeName = storeName, itemId = itemId, ErrorOccurred = false, Message = "review added successfully" });
             }
         }
 
@@ -842,7 +842,21 @@ namespace MarketWebProject.Controllers
             else
             {
                 return RedirectToAction("ItemPageEditable", "Home",
-                    new { storeName = itemId, ErrorOccurred = false, Message = "review added successfully" });
+                    new { storeName = storeName, itemId = itemId, ErrorOccurred = false, Message = "review added successfully" });
+            }
+        }
+
+        public IActionResult SendMsgToStore(string storename, string msg)
+        {
+            Response res = new Response(new Exception("could'nt send your msg: "+msg+" to store: "+storename));//=service.CloseStore(storeName)
+            if (res.ErrorOccured)
+            {
+                return RedirectToAction("StorePage", "Home", new { storeName = storename, ErrorOccurred = true, Message = res.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("StorePage", "Home",
+                    new { storeName = storename, ErrorOccurred = false, Message = "send msg successfully" });
             }
         }
     }

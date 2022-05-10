@@ -722,9 +722,9 @@ namespace MarketProject.Service
             Response<ICollection<MessageToRegisteredDTO>> response;
             try
             {
-                ICollection<MessageToRegistered> messages = _market.GetRegisteredMessages(authToken);
+                ICollection<AdminMessageToRegistered> messages = _market.GetRegisteredMessages(authToken);
                 ICollection<MessageToRegisteredDTO> messagesDTOs = new List<MessageToRegisteredDTO>();
-                foreach (MessageToRegistered message in messages)
+                foreach (AdminMessageToRegistered message in messages)
                     messagesDTOs.Add(new MessageToRegisteredDTO(message));
                 response = new Response<ICollection<MessageToRegisteredDTO>>(messagesDTOs);
             }
@@ -825,13 +825,13 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response SendMessageToRegisterd(String authToken, String storeName, String UsernameReciever, String title, String message)
+        public Response SendMessageToRegisterd(String authToken, String UsernameReciever, String title, String message)
         {//II.6.3
             Response response;
             try
             {
-                log.Info($"Send Message To Registered called with parameters: authToken={authToken}, storeName={storeName}, UsernameReciever={UsernameReciever}, title={title}, message={message}.");
-                _market.SendMessageToRegisterd(storeName, UsernameReciever, title, message);
+                log.Info($"Send Message To Registered called with parameters: authToken={authToken},  UsernameReciever={UsernameReciever}, title={title}, message={message}.");
+                _market.SendMessageToRegisterd(authToken, UsernameReciever, title, message);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Send Message To Registered.");
             }
