@@ -868,7 +868,6 @@ namespace MarketProject.Domain
             _opNameToOp.Add("PERMENENT_CLOSE_STORE", Operation.PERMENENT_CLOSE_STORE);
             _opNameToOp.Add("CANCEL_SUBSCRIPTION", Operation.CANCEL_SUBSCRIPTION);
             _opNameToOp.Add("RECEIVE_AND_REPLY_ADMIN_MESSAGE", Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE);
-            _opNameToOp.Add("CHANGE_MANAGER_PREMISSIONS", Operation.CHANGE_MANAGER_PREMISSIONS);
             _opNameToOp.Add("SYSTEM_STATISTICS", Operation.SYSTEM_STATISTICS);
             _opNameToOp.Add("APPOINT_SYSTEM_ADMIN", Operation.APPOINT_SYSTEM_ADMIN);
         }

@@ -42,6 +42,7 @@ namespace MarketWebProject.Controllers
             if (modelcs == null)
                 modelcs = new MainModel();
             //USE GetAllActiveStores(authToken);
+            //Response<List<StoreDTO>> response = LayoutConfig.marketAPI.GetAllActiveStores(LayoutConfig.authToken);
             StoreDTO store1 = new StoreDTO();
             StoreDTO store2 = new StoreDTO();
             List<StoreDTO> lst = new List<StoreDTO>();
