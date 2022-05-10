@@ -743,6 +743,41 @@ namespace MarketProject.Domain
             if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(userToken), storeName, op))
                 throw new Exception("Access denied!");
         }
+
+        public List<Store> GetStoresOfUser(String authToken)
+        {
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "GetStoresOfUser");
+            bool isAdmin = true;
+            try
+            {
+                HasPermission(authToken, "", "PERMENENT_CLOSE_STORE");
+            }
+            catch (Exception e)
+            {
+                isAdmin = false;
+            }
+            string username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            return _storeManagement.GetStoresOfUser(username, isAdmin);
+        }
+
+        public List<Store> GetAllActiveStores(String authToken)
+        {
+            String errorMessage = null;
+            CheckIsVisitorLoggedIn(authToken, "GetAllActiveStores");
+            bool isAdmin = true;
+            try
+            {
+                HasPermission(authToken, "", "PERMENENT_CLOSE_STORE");
+            }
+            catch (Exception e)
+            {
+                isAdmin = false;
+            }
+            string username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            return _storeManagement.GetAllActiveStores(username, isAdmin);
+        }
+
         public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
         {
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
