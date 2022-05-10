@@ -1,0 +1,49 @@
+﻿@model MainModel
+@using MarketWebProject.DTO
+@using MarketWebProject.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "Administration";
+}
+<div class="text-center">
+    <h1 class="display-4"><font color="red">Administration Page</font></h1>
+    <br />
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    else if (Model.Message != null && Model.Message.Length > 0)
+    {
+        <p style="background:green">@Model.Message</p>
+    }
+    <br />
+</div>
+<br />
+<h3><font color="red">Permanently Delete a User:</font></h3>
+<form method="post">
+    <p>Enter the username:</p>
+    <input type="text" name="username" title="username" id="username" />
+    <input class="btn btn-info" type="submit" value="Delete User" asp-area="" asp-controller="Home" asp-action="PermanentlyDeleteUser" asp-route-username="" />
+</form>
+<br />
+<h3>View Store Purchase History:</h3>
+<form method="post">
+    <p>Enter the store name:</p>
+    <input type="text" name="storename" title="storename" id="storename" />
+    <input class="btn btn-info" type="submit" value="View History" asp-area="" asp-controller="Home" asp-action="StorePurchaseHistoryPage" asp-route-storename="" />
+</form>
+<br />
+<h3>View Complaints:</h3>
+<input class="btn btn-info" type="submit" value="View Complaints" asp-area="" asp-controller="Home" asp-action="SystemComplaintsPage" />

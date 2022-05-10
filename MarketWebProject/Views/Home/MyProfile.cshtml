@@ -23,22 +23,52 @@
     <br />
 </div>
 <br />
-<h1>Username:</h1>
+<h3>Username:</h3>
 <p>@((ViewData["visitor"] as RegisteredDTO).Username)</p>
 <form method="post">
-    <p>Please enter a new username:</p>
+    <p>If you wish to change your username, please enter a new one:</p>
     <input type="text" name="newUsername" title="newUsername" id="newUsername" />
-    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangeUsername" asp-route-newUsername=""/>
+    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangeUsername" asp-route-newUsername="" />
 </form>
 <br />
-<h1>Date of Birth:</h1>
+<h3>Date of Birth:</h3>
 <p>**GET DOB FROM DTO**</p>
 <br />
-<h1>Update Password:</h1>
+<h3>Update Password:</h3>
 <form method="post">
     <p>Please enter your old password:</p>
     <input type="text" name="oldPassword" title="oldPassword" id="oldPassword" />
     <p>Please enter a new password:</p>
     <input type="text" name="newPassword" title="newPassword" id="newPassword" />
-    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangePassword" asp-route-newPassword="" asp-route-oldPassword=""/>
+    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangePassword" asp-route-newPassword="" asp-route-oldPassword="" />
 </form>
+<br />
+<h2>My Stores:</h2>
+@if ((ViewData["stores"] as List<StoreDTO>).Count == 0)
+{
+    <font><b>You don't have a role in any store in the market.</b></font>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Store Name</th>
+                <th>Founder Name</th>
+                <th>View Store Button</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (StoreDTO item in (ViewData["stores"] as List<StoreDTO>))
+            {
+                <tr>
+                    <td>@item.StoreName</td>
+                    <td>@item.Founder.Username</td>
+                    <td>
+                        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePage" asp-route-storename="@(item.StoreName)">View @item.StoreName Page</a>
+                    </td>
+                </tr>
+            }
+        <tbody />
+    </table>
+}

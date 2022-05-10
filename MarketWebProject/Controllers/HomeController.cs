@@ -41,6 +41,7 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
+            //USE GetAllActiveStores(authToken);
             StoreDTO store1 = new StoreDTO();
             StoreDTO store2 = new StoreDTO();
             List<StoreDTO> lst = new List<StoreDTO>();
@@ -62,6 +63,47 @@ namespace MarketWebProject.Controllers
             return view;
         }
 
+        public IActionResult AdministrationPage(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            //CHECK IF IS ADMIN FIRST
+            //CHECK IF IS ADMIN FIRST
+            //CHECK IF IS ADMIN FIRST
+            Response isAdmin = new Response();
+            if (isAdmin.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = isAdmin.ErrorMessage });
+            }
+            else
+            {
+                return View(modelcs);
+            }
+        }
+
+        public IActionResult OpenNewStorePage(MainModel modelcs)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            return View(modelcs);
+        }
+
+        public IActionResult OpenNewStoreForm(MainModel modelcs, String storename)
+        {
+            if (modelcs == null)
+                modelcs = new MainModel();
+            // OpenNewStore(storename);
+            Response response = new Response();
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("OpenNewStorePage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = false, Message = "Store opened successfully!" });
+            }
+        }
+
         public IActionResult CartPage(MainModel modelcs)
         {
             if (modelcs == null)
@@ -80,7 +122,6 @@ namespace MarketWebProject.Controllers
                 viewResult.ViewData["cart"] = cart.Value;
                 return viewResult;
             }
-
         }
 
         public IActionResult ItemSearchPage(MainModel modelcs)
@@ -155,16 +196,25 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            //Response<RegisteredDTO> response = GetUserInformation(authToken);
-            Response<RegisteredDTO> response = new Response<RegisteredDTO>(new RegisteredDTO());
-            if (response.ErrorOccured)
+            //Response<RegisteredDTO> response1 = GetUserInformation(authToken);
+            //Response<List<StoreDTO>> response2 = GetStoresOfUser(authToken);
+            Response<RegisteredDTO> response1 = new Response<RegisteredDTO>(new RegisteredDTO());
+            List<StoreDTO> storesDTO = new List<StoreDTO>();
+            storesDTO.Add(new StoreDTO());
+            Response<List<StoreDTO>> response2 = new Response<List<StoreDTO>>(storesDTO);
+            if (response1.ErrorOccured)
             {
-                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response1.ErrorMessage });
+            }
+            else if (response2.ErrorOccured)
+            {
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response2.ErrorMessage });
             }
             else
             {
                 ViewResult viewResult = View(modelcs);
-                viewResult.ViewData["visitor"] = response.Value;
+                viewResult.ViewData["visitor"] = response1.Value;
+                viewResult.ViewData["stores"] = response2.Value;
                 return viewResult;
             }
         }
@@ -348,7 +398,8 @@ namespace MarketWebProject.Controllers
             else
             {
                 //TODO: CHECK IF IS ADMIN THEN TurnAdmin();
-                TurnLoggedIn();
+                //TurnLoggedIn();
+                TurnAdmin();
                 return RedirectToAction("Index", "Home", new { });
             }
         }
@@ -483,9 +534,22 @@ namespace MarketWebProject.Controllers
             }
         }
 
+        public IActionResult PermanentlyDeleteUser(String username)
+        {
+            //RemoveRegisteredVisitor(authToken, username);
+            Response response = new Response();
+            if (response.ErrorOccured)
+            {
+                return RedirectToAction("AdministrationPage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+            else
+            {
+                return RedirectToAction("AdministrationPage", "Home", new { ErrorOccurred = false, Message = "User Deleted." });
+            }
+        }
+
         public IActionResult RemoveItemFromStock(String storeName, int itemID)
         {
-            //I_User_ServiceLayer SL = validateConnection();
             Response res;//=service.RemoveItemFromStock(itemID, storeName)
             res = new Response(new Exception("could'nt remove item: " + itemID + " from stock of store: " + storeName));//err
             if (res.ErrorOccured)
@@ -500,7 +564,6 @@ namespace MarketWebProject.Controllers
 
         public IActionResult UpdateItemQuantityInStock(String storeName, int itemID, int newQuantity)
         {
-            //I_User_ServiceLayer SL = validateConnection();
             Response res = new Response(new Exception("could'nt update item: " + itemID + " from store: " + storeName + " to quantity: " + newQuantity));//=service.removeItemFromStock(itemID, storeName, newQuantity)
             if (res.ErrorOccured)
             {
@@ -513,7 +576,6 @@ namespace MarketWebProject.Controllers
         }
         public IActionResult AppointStoreOwner(String storeName, string ownerUsername)
         {
-            //I_User_ServiceLayer SL = validateConnection();
             Response res;//=service.AppointStoreOwner(token,itemID, storeName)
             res = new Response(new Exception("could'nt appoint user: " + ownerUsername + " to be owner of store: " + storeName));//err
             if (res.ErrorOccured)
@@ -546,7 +608,6 @@ namespace MarketWebProject.Controllers
         }
         public IActionResult AppointStoreManager(String storeName, string managerUsername)
         {
-            //I_User_ServiceLayer SL = validateConnection();
             Response res;//=service.AppointStoreManager(itemID, storeName)
             res = new Response(new Exception("could'nt appoint user: " + managerUsername + " to be Manager of store: " + storeName));//err
             if (res.ErrorOccured)
@@ -564,7 +625,6 @@ namespace MarketWebProject.Controllers
 
         public IActionResult FireStoreManager(String storeName, string managerUsername)
         {
-            //I_User_ServiceLayer SL = validateConnection();
             Response res;//=service.FireStoreManager(itemID, storeName)
             res = new Response(new Exception("could'nt Fire user: " + managerUsername + " from being Manager of store: " + storeName));//err
             if (res.ErrorOccured)
@@ -583,7 +643,6 @@ namespace MarketWebProject.Controllers
         {
             string feedback = "";
             //hasPermmission(
-            //I_User_ServiceLayer SL = validateConnection();
             Response res_history= new Response();
             Response res_hasAcces_history = new Response();// service.HasPermission(storeName,managerUsername,"STORE_HISTORY_INFO")
             if((!res_hasAcces_history.ErrorOccured) != ReceiveStorePurchaseHistory)
@@ -630,7 +689,6 @@ namespace MarketWebProject.Controllers
         }
         public IActionResult UpdateItemName(string storename, string itemId, string newName)
         {
-            //I_User_ServiceLayer SL = validateConnection();
             Response res = new Response(new Exception("could'nt update item: " + itemId + " from store: " + storename + " to new name: " + newName));
             //=service.EditItemName(token,itemId, storemame, newName)
             if (res.ErrorOccured)
@@ -646,7 +704,6 @@ namespace MarketWebProject.Controllers
         }
         public IActionResult UpdateItemPrice(string storename, string itemId, string newPrice)
         {
-            //I_User_ServiceLayer SL = validateConnection();
             Response res = new Response(new Exception("could'nt update item: " + itemId + " from store: " + storename + " to new price: " + newPrice));
             //=service.EditItemPrice(token,itemId, storemame, newPrice)
             if (res.ErrorOccured)
@@ -662,7 +719,6 @@ namespace MarketWebProject.Controllers
         }
         public IActionResult UpdateItemDescription(string storename, string itemId, string newDescription)
         {
-            //I_User_ServiceLayer SL = validateConnection();
             Response res = new Response(new Exception("could'nt update item: " + itemId + " from store: " + storename + " to new Description: " + newDescription));
             //=service.EditItemDescription(token,itemId, storemame, newDescription)
             if (res.ErrorOccured)

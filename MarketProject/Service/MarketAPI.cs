@@ -842,6 +842,50 @@ namespace MarketProject.Service
             return response;
         }
 
+        public Response<List<StoreDTO>> GetStoresOfUser(String authToken)
+        {
+            Response<List<StoreDTO>> response;
+            try
+            {
+                log.Info($"Get Stores Of User called with parameters: authToken={authToken}.");
+                List<Store> stores = _market.GetStoresOfUser(authToken);
+                List<StoreDTO> storesDTO = new List<StoreDTO>();
+                foreach(Store store in stores)
+                {
+                    storesDTO.Add(new StoreDTO(store));
+                }
+                response = new Response<List<StoreDTO>>(storesDTO);
+                log.Info($"SUCCESSFULY executed Get Stores Of User.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<StoreDTO>>(e);
+            }
+            return response;
+        }
+
+        public Response<List<StoreDTO>> GetAllActiveStores(String authToken)
+        {
+            Response<List<StoreDTO>> response;
+            try
+            {
+                log.Info($"Get All Active Stores called with parameters: authToken={authToken}.");
+                List<Store> stores = _market.GetAllActiveStores(authToken);
+                List<StoreDTO> storesDTO = new List<StoreDTO>();
+                foreach (Store store in stores)
+                {
+                    storesDTO.Add(new StoreDTO(store));
+                }
+                response = new Response<List<StoreDTO>>(storesDTO);
+                log.Info($"SUCCESSFULY executed Get All Active Stores.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<StoreDTO>>(e);
+            }
+            return response;
+        }
+
         public Response<String> EnterSystem() // Generating token and returning it
         { //II.1.1
             Response<String> response;
