@@ -48,7 +48,7 @@
                         <font color="black">reply message: </font>
                         <input type="text" required id="replyMessage" name="replyMessage" title="replyMessage" />
                         <input class="btn btn-info" type="submit" value="Reply" asp-area="" asp-controller="Home" asp-action="ReplyMessage" 
-                        asp-route-storename="@((ViewData["storeName"]) as string)" asp-route-userName="@msg.SenderUsername" asp-route-title="RE: @msg.Title" asp-route-replyMessage=""  />
+                        asp-route-storename="@((ViewData["storeName"]) as string)" asp-route-receiverUsername="@msg.SenderUsername" asp-route-msgId="@msg.Id" asp-route-replyMessage=""  />
                     </form>
                 </th>
             </tr>

@@ -75,11 +75,11 @@ namespace AcceptanceTest
                 MessageToStoreDTO messageObj = response2.Value.Dequeue();
                 Response response3 = marketAPI.AnswerStoreMesseage(registered_token_founder, storeName, messageObj.SenderUsername, answerTitle, answerBody);
                 Assert.IsFalse(response3.ErrorOccured);
-                Response<ICollection<MessageToRegisteredDTO>> res = marketAPI.GetRegisteredMessages(registered_token_reviewer);
+                Response<ICollection<AdminMessageToRegisteredDTO>> res = marketAPI.GetRegisteredMessages(registered_token_reviewer);
                 if (!res.ErrorOccured)
                 {
-                    ICollection<MessageToRegisteredDTO> messages = res.Value;
-                    MessageToRegisteredDTO message = messages.First();
+                    ICollection<AdminMessageToRegisteredDTO> messages = res.Value;
+                    AdminMessageToRegisteredDTO message = messages.First();
                     Assert.AreEqual(answerTitle, message.Title);
                     Assert.AreEqual(answerBody, message.Message);
 
