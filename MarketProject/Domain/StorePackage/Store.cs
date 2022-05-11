@@ -379,5 +379,18 @@ namespace MarketProject.Domain
                 _discountPolicy.AddDiscount(discount);
             }
         }
+
+        internal MessageToStore AnswerMessage(int msgID)
+        {
+            foreach( MessageToStore msg in _messagesToStore)
+            {
+                if(msg.Id == msgID)
+                {
+                    _messagesToStore.Enqueue(msg);
+                    return msg;
+                }
+            }
+            return null;
+        }
     }
 }

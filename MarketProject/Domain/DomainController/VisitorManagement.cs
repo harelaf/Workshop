@@ -593,10 +593,11 @@ namespace MarketProject.Domain
 
         // ===================================== MESSAGE OPERATIONS =====================================
 
-        public void SendMessageToRegistered(String storeName, String UsernameReciever, String title, String message)
+        public void SendAdminMessageToRegistered(String usernameReciever, string senderUsername, String title, String message)
         {
-            MessageToRegistered messageToRegistered = new MessageToRegistered(UsernameReciever, storeName, title, message);
-            Registered reciever = GetRegisteredVisitor(UsernameReciever);
+
+            AdminMessageToRegistered messageToRegistered = new AdminMessageToRegistered(usernameReciever, senderUsername, title, message);
+            Registered reciever = GetRegisteredVisitor(usernameReciever);
             reciever.SendMessage(messageToRegistered);
         }
 
@@ -622,15 +623,36 @@ namespace MarketProject.Domain
             GetRegisteredVisitor(adminUsername).AddRole(new SystemAdmin(adminUsername));
         }
 
-        internal ICollection<MessageToRegistered> getRegisteredMessages(string authToken)
+        internal ICollection<AdminMessageToRegistered> getRegisteredMessages(string authToken)
         {
-            return GetRegisteredByToken(authToken).MessagesToRegistered;
+            return GetRegisteredByToken(authToken).AdminMessages;
         }
-
+        internal ICollection<MessageToStore> GetRegisteredAnswerdStoreMessages(string authToken)
+        {
+            return GetRegisteredByToken(authToken).messageToStores;
+        }
+        
 
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in VisitorManagement.{functionName}. Cause: {message}.");
+        }
+
+        internal void SendNotificationMessageToRegistered(string usernameReciever, string storeName, string title, string message)
+        {
+            Registered registered = GetRegisteredVisitor(usernameReciever);
+            registered.SendNotificationMsg(storeName, title, message);
+        }
+
+        internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string regUserName, string reply)
+        {
+            Registered registered = GetRegisteredVisitor(regUserName);
+            registered.SendStoreMessageReplyment(msg, replier, reply);
+        }
+
+        internal ICollection<NotifyMessage> GetRegisteredMessagesNotofication(string authToken)
+        {
+            return GetRegisteredByToken(authToken).Notifcations;
         }
     }
 }

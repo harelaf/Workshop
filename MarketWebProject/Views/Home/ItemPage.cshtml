@@ -1,12 +1,20 @@
 ﻿@model MainModel
 @using MarketWebProject.DTO
+@using MarketWebProject.Views.Shared
+
 @{
-    if (Model.IsGuest)
-        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
-    else if (Model.IsLoggedIn)
+    @if (LayoutConfig.IsLoggedIn)
+    {
         Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    else
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
     ViewData["Title"] = "Item Search Result";
 }
 <div class="text-center">
@@ -27,7 +35,7 @@
     <form method="post">
         <h1 style="font-size:200%;">Choose Amount To Add To Your Cart: </h1>
         <font color="black">Amount: </font>
-        <input type="number" name="amount" title="amount" id="amount" />
+        <input type="number" required min="1" name="amount" title="amount" id="amount" />
         <input class="btn btn-info" type="submit" value="Add To Cart" asp-area="" asp-controller="Home" asp-action="AddItemToCart" asp-route-amount="" asp-route-storename="@((ViewData["item"] as ItemDTO).StoreName)" asp-route-itemid="@((ViewData["item"] as ItemDTO).ItemID)" />
     </form>
 </div>
@@ -61,4 +69,22 @@
 else
 {
     <p style="font-size:160%;">no one has rated this item yet..</p>
+}<br />
+@if (LayoutConfig.IsLoggedIn || LayoutConfig.IsAdmin)
+{ 
+    <h5>Add Your Review: </h5>
+    <form method="post"  id="usrform">
+        <div width: 20%;>
+            <p>Please pick a rating:</p>
+            <input type="range" id="rating" name="rating" title="rating"  min="0" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
+            <output>5</output>
+        </div>
+        <br />
+        <textarea rows="2" cols="50"  id="comment" name="comment" form="usrform"> Enter comment here...</textarea>
+    <br />
+        <input class="btn btn-info" type="submit" value="Add" asp-area="" asp-controller="Home" 
+            asp-action="AddItemReview" asp-route-newQuantity="" 
+            asp-route-itemId="@((ViewData["item"] as ItemDTO).ItemID)"
+            asp-route-storeName="@((ViewData["item"] as ItemDTO).StoreName)"/>
+    </form>
 }

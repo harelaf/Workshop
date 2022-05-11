@@ -17,24 +17,26 @@
     {
         Layout = "~/Views/Shared/_LayoutGuest.cshtml";
     }
-    ViewData["Title"] = "Store Purchase History";
+    ViewData["Title"] = "My Purchase History";
 }
 
 <div class="text-center">
-    <h1 class="display-4">@(ViewData["storeName"] as string) Purchases History</h1>
+    <h1 class="display-4">@(ViewData["username"] as string)'s Purchase History</h1>
     <br />
     <br />
 </div>
 <br />
 
-@if ((ViewData["history"] as List<Tuple<DateTime, ShoppingBasketDTO>>).Count>0)
+@if ((ViewData["history"] as ICollection<PurchasedCartDTO>).Count>0)
 {
-    @foreach (Tuple<DateTime, ShoppingBasketDTO> purchase in (ViewData["history"] as List<Tuple<DateTime, ShoppingBasketDTO>>))
+    @foreach (PurchasedCartDTO cartPurchase in ViewData["history"] as ICollection<PurchasedCartDTO>)
     {
-        DateTime date = purchase.Item1;
-        ShoppingBasketDTO basket = purchase.Item2;
+        DateTime date = cartPurchase.Date;
+        ShoppingCartDTO cart = cartPurchase.ShoppingCart;
         <h4>@date</h4>
-        <table style="width:100%" id="@date">
+        @foreach(ShoppingBasketDTO basket in cart.Baskets)
+        {
+           <table style="width:100%" id="@date">
             <tr>
                 <th>Product Name</th>
                 <th>Amount</th>
@@ -49,7 +51,8 @@
                 </tr>
             }
         </table>
-        <br /> 
+        <br />  
+        }
     }
     @if (Model.ErrorOccurred)
     {
@@ -58,5 +61,5 @@
 }
 else
 {
-    <h4> there was no purchase made in store yet!</h4>
+    <h4>This user hasn't purchased anything yet!</h4>
 }

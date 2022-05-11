@@ -2,13 +2,21 @@
 @using MarketWebProject.Models
 @using System.Collections
 @model MainModel
+@using MarketWebProject.Views.Shared
+
 @{
-    if (Model.IsGuest)
-        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
-    else if (Model.IsLoggedIn)
+    @if (LayoutConfig.IsLoggedIn)
+    {
         Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    else
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
     ViewData["Title"] = "My Cart";
 }
 
@@ -40,7 +48,7 @@
                     <th> 
                         <form method="post">
                             <font color="black">new quantity: </font>
-                            <input type="number" id="newQuantity" name="newQuantity" title="newQuantity" />
+                            <input type="number" required min="1" id="newQuantity" name="newQuantity" title="newQuantity" />
                             <input class="btn btn-info" type="submit" value="Update" asp-area="" asp-controller="Home" asp-action="UpdateItemQuantityInCart" asp-route-newQuantity="" asp-route-storename="@storeName" asp-route-itemId="@item_amount.Key.ItemID" />
                         </form>
                     </th>
