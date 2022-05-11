@@ -716,21 +716,21 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response<ICollection<DTO.AdminMessageToRegisteredDTO>> GetRegisteredMessages(String authToken)
+        public Response<ICollection<AdminMessageToRegisteredDTO>> GetRegisteredMessages(String authToken)
         {//II.4.12
             //should return with id
-            Response<ICollection<DTO.AdminMessageToRegisteredDTO>> response;
+            Response<ICollection<AdminMessageToRegisteredDTO>> response;
             try
             {
-                ICollection<Domain.AdminMessageToRegistered> messages = _market.GetRegisteredMessages(authToken);
-                ICollection<DTO.AdminMessageToRegisteredDTO> messagesDTOs = new List<DTO.AdminMessageToRegisteredDTO>();
-                foreach (Domain.AdminMessageToRegistered message in messages)
-                    messagesDTOs.Add(new DTO.AdminMessageToRegistered(message));
-                response = new Response<ICollection<DTO.AdminMessageToRegisteredDTO>>(messagesDTOs);
+                ICollection<AdminMessageToRegistered> messages = _market.GetRegisteredMessages(authToken);
+                ICollection<AdminMessageToRegisteredDTO> messagesDTOs = new List<AdminMessageToRegisteredDTO>();
+                foreach (AdminMessageToRegistered message in messages)
+                    messagesDTOs.Add(new AdminMessageToRegisteredDTO(message));
+                response = new Response<ICollection<AdminMessageToRegisteredDTO>>(messagesDTOs);
             }
             catch (Exception e)
             {
-                response = new Response<ICollection<DTO.AdminMessageToRegisteredDTO>>(e);
+                response = new Response<ICollection<AdminMessageToRegisteredDTO>>(e);
             }
             return response;
         }

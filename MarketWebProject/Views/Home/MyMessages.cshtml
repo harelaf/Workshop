@@ -36,16 +36,16 @@ else
 {
     <table style="width:100%" class="table">
         <tr>
-            <th><h3>Sender Username</h3></th>
-            <th><h3>Title</h3></th>
-            <th><h3>Message</h3></th>
+            <th style="width:20%"><h4>Sender Username</h4></th>
+            <th style="width:20%"><h4>Title</h4></th>
+            <th style="width:60%"><h4>Message</h4></th>
         </tr>
         @foreach (AdminMessageToRegisteredDTO message in (ViewData["visitor"] as RegisteredDTO).AdminMessages)
         {
             <tr>
-                <th>@message.senderUsername</th>
-                <th>@message.Title</th>
-                <th>@message.Message</th>
+                <th style="width:20%">@message.senderUsername</th>
+                <th style="width:20%">@message.Title</th>
+                <th style="width:60%">@message.Message</th>
             </tr>
         }
     </table>
@@ -60,20 +60,20 @@ else
 {
     <table style="width:100%" class="table">
         <tr>
-            <th><h3>Store Name</h3></th>
-            <th><h3>Title</h3></th>
-            <th><h3>Message</h3></th>
-            <th><h3>Replier Username</h3></th>
-            <th><h3>Reply</h3></th>
+            <th style="width:15%"><h4>Store Name</h4></th>
+            <th style="width:15%"><h4>Replier Username</h4></th>
+            <th style="width:10%"><h4>Title</h4></th>
+            <th style="width:30%"><h4>Your Message</h4></th>
+            <th style="width:30%"><h4>Reply</h4></th>
         </tr>
         @foreach (MessageToStoreDTO message in (ViewData["visitor"] as RegisteredDTO).RepliedMessages)
         {
             <tr>
-                <th>@message.StoreName</th>
-                <th>@message.Title</th>
-                <th>@message.Message</th>
-                <th>@message.Replier</th>
-                <th>@message.Reply</th>
+                <th style="width:15%">@message.StoreName</th>
+                <th style="width:15%">@message.Replier</th>
+                <th style="width:10%">@message.Title</th>
+                <th style="width:30%">@message.Message</th>
+                <th style="width:30%">@message.Reply</th>
             </tr>
         }
     </table>
@@ -88,16 +88,16 @@ else
 {
     <table style="width:100%" class="table">
         <tr>
-            <th><h3>Store Name</h3></th>
-            <th><h3>Title</h3></th>
-            <th><h3>Message</h3></th>
+            <th style="width:20%"><h4>Store Name</h4></th>
+            <th style="width:20%"><h4>Title</h4></th>
+            <th style="width:60%"><h4>Message</h4></th>
         </tr>
         @foreach (NotifyMessageDTO message in (ViewData["visitor"] as RegisteredDTO).NotifyMessages)
         {
             <tr>
-                <th>@message.StoreName</th>
-                <th>@message.Title</th>
-                <th>@message.Message</th>
+                <th style="width:20%">@message.StoreName</th>
+                <th style="width:20%">@message.Title</th>
+                <th style="width:60%">@message.Message</th>
             </tr>
         }
     </table>

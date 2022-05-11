@@ -282,15 +282,14 @@ else
 { 
     <!-- add review button-->
     <h5>Add Your Review: </h5>
-    <form method="post">
+    <form method="post" id="usrform">
         <div width: 20%;>
             <p>Please pick a rating:</p>
             <input type="range" id="rating" name="rating" title="rating"  min="0" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
             <output>5</output>
         </div>
         <br />
-        <font color="black">Comment: </font>
-        <input type="text" id="comment" name="comment" title="comment" />
+        <textarea rows="2" cols="50"  id="comment" name="comment" form="usrform"> Enter comment here...</textarea>
     <br />
         <input class="btn btn-info" type="submit" value="Add" asp-area="" asp-controller="Home" 
             asp-action="AddStoreReview" asp-route-newQuantity="" 

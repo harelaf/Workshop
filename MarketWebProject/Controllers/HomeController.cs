@@ -523,7 +523,7 @@ namespace MarketWebProject.Controllers
             }
             else
             {
-                return RedirectToAction("StorePage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage }); ;
+                return RedirectToAction("StorePage", "Home", new {storeName=storeName, ErrorOccurred = true, Message = response.ErrorMessage }); ;
             }
         }
 
@@ -532,11 +532,11 @@ namespace MarketWebProject.Controllers
             Response response = new Response();// service.AnswerStoreMesseage(authToken, receiverUsername, msgId, storeName, replyMessage);
             if (!response.ErrorOccured)
             {
-                return RedirectToAction("StoreMessagesPage", "Home", new { ErrorOccurred = false, Message = "reply sent" });
+                return RedirectToAction("StoreMessagesPage", "Home", new {storeName=storename,  ErrorOccurred = false, Message = "reply sent: "+replyMessage });
             }
             else
             {
-                return RedirectToAction("StoreMessagesPage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+                return RedirectToAction("StoreMessagesPage", "Home", new { storeName = storename, ErrorOccurred = true, Message = response.ErrorMessage });
             }
         }
 
