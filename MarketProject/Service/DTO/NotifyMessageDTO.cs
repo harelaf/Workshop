@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MarketProject.Domain;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain
+namespace MarketProject.Service.DTO
 {
-    public class NotifyMessage
+    public class NotifyMessageDTO
     {
         private String _storeName;
         public String StoreName => _storeName;
@@ -21,12 +22,13 @@ namespace MarketProject.Domain
         private int _id;
         public int Id => _id;
 
-        public NotifyMessage(string storeName, string title, string message, string receiverUsername)
+        public NotifyMessageDTO(NotifyMessage notifyMessage)
         {
-            _storeName = storeName;
-            _title = title;
-            _message = message;
-            _receiverUsername = receiverUsername;
+            _storeName = notifyMessage.StoreName;
+            _title = notifyMessage.Title;
+            _message = notifyMessage.Message;
+            _receiverUsername = notifyMessage.ReceiverUsername;
+            _id = notifyMessage.Id;
         }
     }
 }

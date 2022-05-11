@@ -14,13 +14,16 @@ namespace MarketProject.Domain
 
         private String _title;
         public String Title => _title;
+
         private String _message;
         public String Message => _message;
 
         private string _reply;
         public String Reply => _reply;
+
         private string _replier;
         public String Replier => _replier;
+
         private int _id;
         public int Id => _id;
 

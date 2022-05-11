@@ -34,26 +34,28 @@
 <h3><font color="red">Permanently Delete a User:</font></h3>
 <form method="post">
     <p>Enter the username:</p>
-    <input type="text" name="username" title="username" id="username" />
+    <input type="text" required name="username" title="username" id="username" />
     <input class="btn btn-info" type="submit" value="Delete User" asp-area="" asp-controller="Home" asp-action="PermanentlyDeleteUser" asp-route-username="" />
 </form>
 <br />
 <h3>View Store Purchase History:</h3>
 <form method="post">
     <p>Enter the store name:</p>
-    <input type="text" name="storename" title="storename" id="storename" />
+    <input type="text" required name="storename" title="storename" id="storename" />
     <input class="btn btn-info" type="submit" value="View History" asp-area="" asp-controller="Home" asp-action="StorePurchaseHistoryPage" asp-route-storename="" />
 </form>
 <br />
 <h3>View Complaints:</h3>
 <input class="btn btn-info" type="submit" value="View Complaints" asp-area="" asp-controller="Home" asp-action="SystemComplaintsPage" />
 <h3>View Store Purchase History:</h3>
-
 <br />
 <h3>Send Messages to Buyers and Sellers:</h3>
 <form method="post">
-    <p>Enter the store name:</p>
-    <input type="text" name="storename" title="storename" id="storename" />
-    <input class="btn btn-info" type="submit" value="View History" asp-area="" asp-controller="Home" asp-action="StorePurchaseHistoryPage" asp-route-storename="" />
+    <p>Enter the username of the recipient:</p>
+    <input type="text" required name="receiverUsername" title="receiverUsername" id="receiverUsername" />
+    <p>Enter the title of the message:</p>
+    <input type="text" required name="title" title="title" id="title" />
+    <p>Enter the body of the message:</p>
+    <input type="text" required name="message" title="message" id="message" />
+    <input class="btn btn-info" type="submit" value="Send Message" asp-area="" asp-controller="Home" asp-action="SendAdminMessage" />
 </form>
-<!--String storeName, String UsernameReciever, String title, String message-->

@@ -510,9 +510,9 @@ namespace MarketWebProject.Controllers
             if (modelcs == null)
                 modelcs = new MainModel();
             Queue<MessageToStoreDTO> messages = new Queue<MessageToStoreDTO>();
-            messages.Enqueue(new MessageToStoreDTO(storeName, "afik", "mmm", "shit store"));
-            messages.Enqueue(new MessageToStoreDTO(storeName, "harel", "mmm", "nice store"));
-            messages.Enqueue(new MessageToStoreDTO(storeName, "moshe", "mmm", "nice store, shit people"));
+            messages.Enqueue(new MessageToStoreDTO());
+            messages.Enqueue(new MessageToStoreDTO());
+            messages.Enqueue(new MessageToStoreDTO());
             Response<Queue<MessageToStoreDTO>> response = new Response<Queue<MessageToStoreDTO>>(messages);// service.GetStoreMessages(token, storeName);
             if (!response.ErrorOccured)
             {
@@ -527,9 +527,9 @@ namespace MarketWebProject.Controllers
             }
         }
 
-        public IActionResult ReplyMessage(string storename, string userName, string title, string replyMessage)
+        public IActionResult ReplyMessage(string storename, string receiverUsername, int msgId, string replyMessage)
         {
-            Response response = new Response();// service.AnswerStoreMesseage(token, storename, userName, title,replyMessage );
+            Response response = new Response();// service.AnswerStoreMesseage(authToken, receiverUsername, msgId, storeName, replyMessage);
             if (!response.ErrorOccured)
             {
                 return RedirectToAction("StoreMessagesPage", "Home", new { ErrorOccurred = false, Message = "reply sent" });
@@ -537,6 +537,19 @@ namespace MarketWebProject.Controllers
             else
             {
                 return RedirectToAction("StoreMessagesPage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
+            }
+        }
+
+        public IActionResult SendAdminMessage(String receiverUsername, String title, String message)
+        {
+            Response response = new Response();// service.SendAdminMessage(authToken, receiverUsername, title, message);
+            if (!response.ErrorOccured)
+            {
+                return RedirectToAction("AdministrationPage", "Home", new { ErrorOccurred = false, Message = "Message sent." });
+            }
+            else
+            {
+                return RedirectToAction("AdministrationPage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
             }
         }
 
