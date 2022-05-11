@@ -3,6 +3,7 @@ using Moq;
 using MarketProject.Domain;
 using System.Collections.Generic;
 using System;
+using MarketProject.Domain.PurchasePackage.DiscountPackage;
 
 namespace MarketProject.Domain.Tests
 {
@@ -15,6 +16,8 @@ namespace MarketProject.Domain.Tests
         private Mock<ShoppingCart> cartMoq;
         private Mock<ShoppingBasket> basketMoq1;
         private Mock<ShoppingBasket> basketMoq2;
+        private Mock<DiscountPolicy> discountMoq;
+        private Mock<PurchasePolicy> purchaseMoq;
         private ICollection<ShoppingBasket> shoppingBaskets;
         private ICollection<Item> items1;
         private ICollection<Item> items2;
@@ -27,8 +30,10 @@ namespace MarketProject.Domain.Tests
             shippingProxyMoq = new Mock<ShippingHandlerProxy>();
             purchase = PurchaseProcess.GetInstance();
             cartMoq = new Mock<ShoppingCart>();
-            basketMoq1 = new Mock<ShoppingBasket>((new Mock<Store>("1", null, null, null)).Object);
-            basketMoq2 = new Mock<ShoppingBasket>((new Mock<Store>("2", null, null, null)).Object);
+            discountMoq = new Mock<DiscountPolicy>();
+            purchaseMoq = new Mock<PurchasePolicy>();
+            basketMoq1 = new Mock<ShoppingBasket>((new Mock<Store>("1", null, purchaseMoq, discountMoq)).Object);
+            basketMoq2 = new Mock<ShoppingBasket>((new Mock<Store>("2", null, purchaseMoq, discountMoq)).Object);
             shoppingBaskets = new List<ShoppingBasket>();
             items1 = new List<Item>();
             items2 = new List<Item>();
