@@ -200,7 +200,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _storeManagement.SendMessageToStore(Username, storeName, title, message);
+                _storeManagement.SendMessageToStore(Username, storeName, title, message, 20);
             }
             catch (Exception)
             {
@@ -217,7 +217,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _storeManagement.SendMessageToStore(Username, storeName, title, message);
+                _storeManagement.SendMessageToStore(Username, storeName, title, message, 5);
                 Assert.Fail();
             }
             catch (Exception)

@@ -39,7 +39,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void happy_reviewerSendsMessageAndTheMessageArrivesAsExpected()
         {
-            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody);
+            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 8);
             Response<Queue<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
             if (!response2.ErrorOccured)
             {
@@ -58,7 +58,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void sad_reviewerSendsMessageAndTheRequestsStoreMessages()
         {
-            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody);
+            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 9);
             Response<Queue<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_reviewer, storeName);
             Assert.IsTrue(response2.ErrorOccured);
         }
@@ -66,23 +66,22 @@ namespace AcceptanceTest
         [TestMethod]
         public void happy_reviewerSendMessageAndTheFounderReply()
         {
-            String answerTitle = "thanks for your support";
             String answerBody = "weare here for you 24/5.5";
-            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody);
+            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 80);
             Response<Queue<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
             if (!response2.ErrorOccured)
             {
                 MessageToStoreDTO messageObj = response2.Value.Dequeue();
-                Response response3 = marketAPI.AnswerStoreMesseage(registered_token_founder, storeName, messageObj.SenderUsername, answerTitle, answerBody);
+                Response response3 = marketAPI.AnswerStoreMesseage(registered_token_founder, messageObj.SenderUsername,80, storeName, answerBody);
                 Assert.IsFalse(response3.ErrorOccured);
-                Response<ICollection<AdminMessageToRegisteredDTO>> res = marketAPI.GetRegisteredMessages(registered_token_reviewer);
+                Response<ICollection<MessageToStoreDTO>> res = marketAPI.GetRegisterAnsweredStoreMessages(registered_token_reviewer);
                 if (!res.ErrorOccured)
                 {
-                    ICollection<AdminMessageToRegisteredDTO> messages = res.Value;
-                    AdminMessageToRegisteredDTO message = messages.First();
-                    Assert.AreEqual(answerTitle, message.Title);
-                    Assert.AreEqual(answerBody, message.Message);
-
+                    ICollection<MessageToStoreDTO> messages = res.Value;
+                    MessageToStoreDTO message = messages.First();
+                    Assert.AreEqual(title, message.Title);
+                    Assert.AreEqual(messageBody, message.Message);
+                    Assert.AreEqual(answerBody, message.Reply);
                 }
             }
             else

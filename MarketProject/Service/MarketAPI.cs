@@ -716,13 +716,13 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response<ICollection<AdminMessageToRegisteredDTO>> GetRegisteredMessages(String authToken)
+        public Response<ICollection<AdminMessageToRegisteredDTO>> GetRegisteredMessagesFromAdmin(String authToken)
         {//II.4.12
             //should return with id
             Response<ICollection<AdminMessageToRegisteredDTO>> response;
             try
             {
-                ICollection<AdminMessageToRegistered> messages = _market.GetRegisteredMessages(authToken);
+                ICollection<AdminMessageToRegistered> messages = _market.GetRegisteredMessagesFromAdmin(authToken);
                 ICollection<AdminMessageToRegisteredDTO> messagesDTOs = new List<AdminMessageToRegisteredDTO>();
                 foreach (AdminMessageToRegistered message in messages)
                     messagesDTOs.Add(new AdminMessageToRegisteredDTO(message));
@@ -731,6 +731,42 @@ namespace MarketProject.Service
             catch (Exception e)
             {
                 response = new Response<ICollection<AdminMessageToRegisteredDTO>>(e);
+            }
+            return response;
+        }
+        public Response<ICollection<MessageToStoreDTO>> GetRegisterAnsweredStoreMessages(String authToken)
+        {//II.4.12
+            //should return with id
+            Response<ICollection<MessageToStoreDTO>> response;
+            try
+            {
+                ICollection<MessageToStore> messages = _market.GetRegisteredAnswerdStoreMessages(authToken);
+                ICollection<MessageToStoreDTO> messagesDTOs = new List<MessageToStoreDTO>();
+                foreach (MessageToStore message in messages)
+                    messagesDTOs.Add(new MessageToStoreDTO(message));
+                response = new Response<ICollection<MessageToStoreDTO>>(messagesDTOs);
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<MessageToStoreDTO>>(e);
+            }
+            return response;
+        }
+        public Response<ICollection<NotifyMessageDTO>> GetRegisteredMessagesNotofication(String authToken)
+        {//II.4.12
+            //should return with id
+            Response<ICollection<NotifyMessageDTO>> response;
+            try
+            {
+                ICollection<NotifyMessage> messages = _market.GetRegisteredMessagesNotofication(authToken);
+                ICollection<NotifyMessageDTO> messagesDTOs = new List<NotifyMessageDTO>();
+                foreach (NotifyMessage message in messages)
+                    messagesDTOs.Add(new NotifyMessageDTO(message));
+                response = new Response<ICollection<NotifyMessageDTO>>(messagesDTOs);
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<NotifyMessageDTO>>(e);
             }
             return response;
         }

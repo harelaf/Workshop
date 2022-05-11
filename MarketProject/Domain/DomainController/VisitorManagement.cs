@@ -627,7 +627,11 @@ namespace MarketProject.Domain
         {
             return GetRegisteredByToken(authToken).AdminMessages;
         }
-
+        internal ICollection<MessageToStore> GetRegisteredAnswerdStoreMessages(string authToken)
+        {
+            return GetRegisteredByToken(authToken).messageToStores;
+        }
+        
 
         private void LogErrorMessage(String functionName, String message)
         {
@@ -644,6 +648,11 @@ namespace MarketProject.Domain
         {
             Registered registered = GetRegisteredVisitor(regUserName);
             registered.SendStoreMessageReplyment(msg, replier, reply);
+        }
+
+        internal ICollection<NotifyMessage> GetRegisteredMessagesNotofication(string authToken)
+        {
+            return GetRegisteredByToken(authToken).Notifcations;
         }
     }
 }

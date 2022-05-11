@@ -472,15 +472,13 @@ namespace MarketProject.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "SendMessageToStore");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_VisitorManagement.IsRegistered(appointerUsername))
-                errorMessage = "Visitor " + appointerUsername + " not found in system";
+            string senderUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (errorMessage != null)
             {
                 LogErrorMessage("SendMessageToStore", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _storeManagement.SendMessageToStore(appointerUsername, storeName, title, message, id);
+            _storeManagement.SendMessageToStore(senderUsername, storeName, title, message, id);
         }
 
         public void SendAdminMessageToRegisterd(string userToken, String UsernameReciever, String title, String message)
@@ -567,9 +565,13 @@ namespace MarketProject.Domain
                     _VisitorManagement.AddRole(managerUsername, newManager); }
         }
 
-        internal ICollection<AdminMessageToRegistered> GetRegisteredMessages(string authToken)
+        internal ICollection<AdminMessageToRegistered> GetRegisteredMessagesFromAdmin(string authToken)
         {
             return _VisitorManagement.getRegisteredMessages(authToken);
+        }
+        internal ICollection<MessageToStore> GetRegisteredAnswerdStoreMessages(string authToken)
+        {
+            return _VisitorManagement.GetRegisteredAnswerdStoreMessages(authToken);
         }
 
         public void AddStoreOwner(String authToken, String ownerUsername, String storeName)
@@ -661,6 +663,11 @@ namespace MarketProject.Domain
                 throw new Exception(errorMessage);
             }
             return _storeManagement.getStoreManagers(storeName);
+        }
+
+        public ICollection<NotifyMessage> GetRegisteredMessagesNotofication(string authToken)
+        {
+            return _VisitorManagement.GetRegisteredMessagesNotofication(authToken);
         }
 
         public List<StoreOwner> getStoreOwners(String storeName, String authToken)
