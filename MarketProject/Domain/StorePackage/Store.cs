@@ -329,7 +329,7 @@ namespace MarketProject.Domain
             StoreOwner owner = GetOwner(ownerUsername);
             if (owner == null)
                 errorMessage = $"{ownerUsername} is not a owner in this store.";
-            else if (owner.isAppointer(appointerUsername))
+            else if (!owner.isAppointer(appointerUsername))
                 errorMessage = "this visitor has no permission to remove this owner.";
             else
                 return _owners.Remove(owner);
@@ -344,7 +344,7 @@ namespace MarketProject.Domain
             StoreManager manager = GetManager(managerUsername);
             if (manager == null)
                 errorMessage = $"{managerUsername} is not a manager in this store.";
-            else if (manager.isAppointer(appointerUsername))
+            else if (!manager.isAppointer(appointerUsername))
                 errorMessage = "this visitor has no permission to remove this manager.";
             else
                 return _managers.Remove(manager);

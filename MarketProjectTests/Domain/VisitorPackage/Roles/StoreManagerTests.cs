@@ -59,10 +59,9 @@ namespace MarketProject.Domain.Tests
             //arrange
             Operation op = Operation.APPOINT_OWNER;
             //act
-            bool part1 = sr.grantPermission(op, storeName, appointer);
+            Assert.ThrowsException<Exception>(() => sr.grantPermission(op, storeName, appointer));
             bool part2 = sr.hasAccess(storeName, op);
             //assert
-            Assert.IsFalse(part1);
             Assert.IsFalse(part2);
         }
 
@@ -71,11 +70,18 @@ namespace MarketProject.Domain.Tests
             //arrange
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
             //act
-            bool part1 = sr.grantPermission(op, storeName, appointer) && sr.denyPermission(op, storeName, appointer);
-            bool part2 = sr.hasAccess(storeName, op);
-            //assert
-            Assert.IsTrue(part1);
-            Assert.IsFalse(part2);
+            try
+            {
+                bool part1 = sr.grantPermission(op, storeName, appointer) && sr.denyPermission(op, storeName, appointer);
+                bool part2 = sr.hasAccess(storeName, op);
+                //assert
+                Assert.IsTrue(part1);
+                Assert.IsFalse(part2);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
         
         public void denyPermission_nonGrantedOp_returnstrue()
@@ -83,11 +89,19 @@ namespace MarketProject.Domain.Tests
             //arrange
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
             //act
-            bool part1 = sr.denyPermission(op, storeName, appointer);
-            bool part2 = sr.hasAccess(storeName, op);
-            //assert
-            Assert.IsTrue(part1);
-            Assert.IsFalse(part2);
+            try
+            {
+                bool part1 = sr.denyPermission(op, storeName, appointer);
+                bool part2 = sr.hasAccess(storeName, op);
+                //assert
+                Assert.IsTrue(part1);
+                Assert.IsFalse(part2);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            
         }
 
         [TestMethod]
@@ -96,10 +110,9 @@ namespace MarketProject.Domain.Tests
             //arrange
             Operation op = Operation.APPOINT_OWNER;
             //act
-            bool part1 = sr.denyPermission(op, storeName, appointer);
+            Assert.ThrowsException<Exception>(() => sr.denyPermission(op, storeName, appointer));
             bool part2 = sr.hasAccess(storeName, op);
             //assert
-            Assert.IsFalse(part1);
             Assert.IsFalse(part2);
         }
 
@@ -109,10 +122,8 @@ namespace MarketProject.Domain.Tests
             //arrange
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
             //act
-            bool part1 = sr.grantPermission(op, storeName, appointer + "123");
+            Assert.ThrowsException<Exception>(() => sr.grantPermission(op, storeName, appointer + "123"));
             bool part2 = sr.hasAccess(storeName, op);
-            //assert
-            Assert.IsFalse(part1);
             Assert.IsFalse(part2);
         }
 
@@ -123,11 +134,9 @@ namespace MarketProject.Domain.Tests
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
             //act
             bool part1 = sr.grantPermission(op, storeName, appointer);
-            bool part2 = sr.grantPermission(op, storeName, appointer + "123");
-            bool part3 = sr.hasAccess(storeName, op);
-            //assert
             Assert.IsTrue(part1);
-            Assert.IsFalse(part2);
+            Assert.ThrowsException<Exception>(() => sr.denyPermission(op, storeName, appointer + "123"));
+            bool part3 = sr.hasAccess(storeName, op);
             Assert.IsTrue(part3);
         }
     }

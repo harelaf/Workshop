@@ -369,15 +369,13 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RemoveStoreManager_removeFounder_returnsfalse()
         {
-            bool actual = _store.RemoveStoreManager(storeFounder, null);
-            Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => _store.RemoveStoreManager(storeFounder, null));
         }
 
         [TestMethod()]
         public void RemoveStoreManager_NonWorker_returnsfalse()
         {
-            bool actual = _store.RemoveStoreManager("123", null);
-            Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => _store.RemoveStoreManager("123", null));
         }
 
         [TestMethod()]
@@ -393,16 +391,13 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void RemoveStoreOwner_removeFounder_returnsfalse()
         {
-            bool actual = _store.RemoveStoreOwner(storeFounder, storeFounder);
-            Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => _store.RemoveStoreOwner(storeFounder, storeFounder));
         }
 
         [TestMethod()]
         public void RemoveStoreOwner_NonWorker_returnsfalse()
         {
-            bool actual = _store.RemoveStoreOwner("123", null);
-            Assert.IsFalse(actual);
-           // Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
+            Assert.ThrowsException<Exception>(() => _store.RemoveStoreOwner("123", null));
         }
     }
 }
