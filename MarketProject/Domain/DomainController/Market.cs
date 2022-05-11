@@ -46,7 +46,7 @@ namespace MarketProject.Domain
             String errorMessage = null;
             CheckIsVisitorAVisitor(VisitorToken, "AddItemToCart");
             if (!_storeManagement.CheckStoreNameExists(storeName))
-                errorMessage = "there is no store in system with the given storeid";
+                errorMessage = "there is no store in system with the given store name";
             if (errorMessage != null)
             {
                 LogErrorMessage("AddItemToCart", errorMessage);
@@ -325,7 +325,7 @@ namespace MarketProject.Domain
                 $"{Username}.";
             foreach (String name in names)
             {
-                SendMessageToRegisterd(storeName, name, title, message);
+                SendNotification(storeName, name, title, message);
             }
         }
 
@@ -355,7 +355,7 @@ namespace MarketProject.Domain
                 foreach (String name in names)
                 {
                     _VisitorManagement.RemoveRole(name, storeName);
-                    SendMessageToRegisterd(storeName, name, title, message);
+                    SendNotification(storeName, name, title, message);
                 }
                 _storeManagement.CloseStorePermanently(storeName);
             }
@@ -388,7 +388,7 @@ namespace MarketProject.Domain
                 $"{Username}.";
             foreach (String name in names)
             {
-                SendMessageToRegisterd(storeName, name, title, message);
+                SendNotification(storeName, name, title, message);
             }
         }
 
@@ -468,7 +468,7 @@ namespace MarketProject.Domain
             return _storeManagement.GetItemInformation(itemName, itemCategory, keyWord);
         }
 
-        public void SendMessageToStore(String authToken, String storeName, String title, String message)
+        public void SendMessageToStore(String authToken, String storeName, String title, String message, int id)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "SendMessageToStore");
@@ -480,19 +480,20 @@ namespace MarketProject.Domain
                 LogErrorMessage("SendMessageToStore", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _storeManagement.SendMessageToStore(appointerUsername, storeName, title, message);
+            _storeManagement.SendMessageToStore(appointerUsername, storeName, title, message, id);
         }
 
-        public void SendMessageToRegisterd(string userToken, String UsernameReciever, String title, String message)
+        public void SendAdminMessageToRegisterd(string userToken, String UsernameReciever, String title, String message)
         {
             String errorMessage = null;
+            string senderUsername = null;
             if (!_VisitorManagement.IsVisitorLoggedin(userToken))
                 errorMessage = "user have yo be logged in for this operation.";
             else if (!_VisitorManagement.IsRegistered(UsernameReciever))
                 errorMessage = "Visitor " + UsernameReciever + " not found in system";
             else
             {
-                string senderUsername= _VisitorManagement.GetRegisteredUsernameByToken(userToken);
+                senderUsername= _VisitorManagement.GetRegisteredUsernameByToken(userToken);
                 if (_VisitorManagement.CheckAccess(senderUsername, null, Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE))
                 {
                     errorMessage = "User " + senderUsername + " don't have permission to preform this operation.";
@@ -504,48 +505,47 @@ namespace MarketProject.Domain
                 LogErrorMessage("SendMessageToRegisterd", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendMessageToRegistered(UsernameReciever, title, message);
+            _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever,senderUsername, title, message);
         }
-        public void SendAnswerMessageToRegisterd(string senderUsername, String UsernameReciever, String title, String message)
+        private void SendNotification(string storeName, string usernameReciever, String title, String message)
         {
             String errorMessage = null;
-            if (!_VisitorManagement.IsVisitorLoggedin(userToken))
-                errorMessage = "user have yo be logged in for this operation.";
-            else if (!_VisitorManagement.IsRegistered(UsernameReciever))
-                errorMessage = "Visitor " + UsernameReciever + " not found in system";
-            else
-            {
-                string senderUsername = _VisitorManagement.GetRegisteredUsernameByToken(userToken);
-                if (_VisitorManagement.CheckAccess(senderUsername, null, Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE))
-                {
-                    errorMessage = "User " + senderUsername + " don't have permission to preform this operation.";
-                }
-            }
-
+            if (!_VisitorManagement.IsRegistered(usernameReciever))
+                errorMessage = "Visitor " + usernameReciever + " not found in system";
+            else if (!_storeManagement.CheckStoreNameExists(storeName))
+                errorMessage = "there is no store in system with the given store name";
             if (errorMessage != null)
             {
                 LogErrorMessage("SendMessageToRegisterd", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendMessageToRegistered(UsernameReciever, title, message);
+            _VisitorManagement.SendNotificationMessageToRegistered(usernameReciever, storeName ,title, message);
         }
         //1. admin: sender, reciver, msg, title
-        //2. notify: sender, reciver, msg, title, store,
-        //3. reply: sender, reciver, msg, title, store, msg_id
+        //2. notify:reciver, msg, title, store,
         //4. complaint: send recive
-        public void AnswerStoreMesseage(String authToken, String storeName, String UsernameReciever, String title, String reply)
+        public void AnswerStoreMesseage(string authToken, string receiverUsername, int msgID, string storeName,  string reply)
         {
             String errorMessage = null;
+            MessageToStore msg = null;
             CheckIsVisitorLoggedIn(authToken, "AnswerStoreMesseage");
             string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_VisitorManagement.IsRegistered(UsernameReciever))
-                errorMessage = "Visitor " + UsernameReciever + " not found in system";
+            if (!_storeManagement.CheckStoreNameExists(storeName))
+                errorMessage = "there is no store in system with the given store name";
+            else if (!_VisitorManagement.IsRegistered(receiverUsername))
+                errorMessage = "Visitor " + receiverUsername + " is no longer user in system. replyment faild.";
+            else
+            {
+                msg = _storeManagement.AnswerStoreMessage(storeName, msgID);
+                if (msg == null)
+                    errorMessage = "Coild'nt find message: " + msgID + " in store: " + storeName;
+            }
             if (errorMessage != null)
             {
                 LogErrorMessage("AnswerStoreMesseage", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendMessageToRegistered(storeName, UsernameReciever, title, reply);
+            _VisitorManagement.SendStoreMessageReplyment(msg, appointerUsername,receiverUsername ,reply);
         }
 
         public Queue<MessageToStore> GetStoreMessages(String authToken, String storeName)

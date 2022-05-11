@@ -190,5 +190,16 @@ namespace MarketProject.Domain
         {
             log.Error($"Exception thrown in Registered.{functionName}. Cause: {message}.");
         }
+
+        internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string reply)
+        {
+            msg.AnswerMsg(reply, replier);
+            _repliedMessages.Add(msg);  
+        }
+
+        internal void SendNotificationMsg(string storeName, string title, string message)
+        {
+            _notifications.Add(new NotifyMessage(storeName, title, message, _username));
+        }
     }
 }

@@ -462,13 +462,13 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response SendMessageToStore(String authToken, String storeName, String title, String description)
+        public Response SendMessageToStore(String authToken, String storeName, String title, String description, int id)
         {//II.3.5
             Response response;
             try
             {
                 log.Info($"Send Message To Store called with parameters: authToken={authToken}, storeName={storeName}, title={title}, description={description}.");
-                _market.SendMessageToStore(authToken,storeName, title, description);
+                _market.SendMessageToStore(authToken,storeName, title, description, id);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Send Message To Store.");
             }
@@ -735,13 +735,13 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response AnswerStoreMesseage(String authToken, String storeName, string recieverUsername, String title, String reply)
+        public Response AnswerStoreMesseage(string authToken, string receiverUsername, int msgID, string storeName, string reply)
         {//II.4.12
             Response response;
             try
             {
-                log.Info($"Answer Store Message called with parameters: authToken={authToken}, storeName={storeName}, recieverUsername={recieverUsername}, title={title}, reply={reply}.");
-                _market.AnswerStoreMesseage(authToken, storeName, recieverUsername, title, reply);
+                log.Info($"Answer Store Message called with parameters: authToken={authToken}, msgId={msgID},storeName={storeName} reply={reply}.");
+                _market.AnswerStoreMesseage(authToken, receiverUsername, msgID, storeName, reply);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Answer Store Message.");
             }
@@ -831,7 +831,7 @@ namespace MarketProject.Service
             try
             {
                 log.Info($"Send Message To Registered called with parameters: authToken={authToken},  UsernameReciever={UsernameReciever}, title={title}, message={message}.");
-                _market.SendMessageToRegisterd(authToken, UsernameReciever, title, message);
+                _market.SendAdminMessageToRegisterd(authToken, UsernameReciever, title, message);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Send Message To Registered.");
             }

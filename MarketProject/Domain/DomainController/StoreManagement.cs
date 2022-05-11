@@ -115,10 +115,10 @@ namespace MarketProject.Domain
             return filteredItems;
         }
 
-        public void SendMessageToStore(String Username, String storeName, String title, String message)
+        public void SendMessageToStore(String Username, String storeName, String title, String message, int id)
         {
             Store store = GetStore(storeName);
-            MessageToStore messageToStore = new MessageToStore(storeName, Username, title, message);
+            MessageToStore messageToStore = new MessageToStore(storeName, Username, title, message, id);
             store.AddMessage(messageToStore);
         }
 
@@ -318,6 +318,12 @@ namespace MarketProject.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in StoreManagement.{functionName}. Cause: {message}.");
+        }
+
+        internal MessageToStore AnswerStoreMessage(string storeName, int msgID)
+        {
+            Store store = GetStore(storeName);
+            return store.AnswerMessage(msgID);
         }
     }
 }
