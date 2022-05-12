@@ -18,9 +18,7 @@ namespace MarketProject.Domain
         private Stock _stock;
         public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
-        public PurchasePolicy PurchasePolicy => _purchasePolicy;
         private DiscountPolicy _discountPolicy;
-        public DiscountPolicy DiscountPolicy => _discountPolicy;
         private Queue<MessageToStore> _messagesToStore;
         public Queue<MessageToStore> MessagesToStore => _messagesToStore;
         private Rating _rating;
@@ -94,7 +92,6 @@ namespace MarketProject.Domain
             LogErrorMessage("AddStoreManager", errorMessage);
             throw new Exception(errorMessage);
         }
-
         public bool AddStoreOwner(StoreOwner newOwner)
         {
             String errorMessage;
@@ -113,7 +110,6 @@ namespace MarketProject.Domain
             LogErrorMessage("AddStoreOwner", errorMessage);
             throw new Exception(errorMessage);
         }
-
         private bool hasRoleInStore(string Username)
         {
             return GetOwner(Username) != null || GetManager(Username) != null || _founder.Username.Equals(Username);
@@ -126,7 +122,6 @@ namespace MarketProject.Domain
                     return manager;
             return null;
         }
-
         private StoreOwner GetOwner(string managerUsername)
         {
             foreach (StoreOwner owner in _owners)
@@ -384,6 +379,29 @@ namespace MarketProject.Domain
             {
                 _discountPolicy.AddDiscount(discount);
             }
+        }
+
+        internal MessageToStore AnswerMessage(int msgID)
+        {
+            foreach( MessageToStore msg in _messagesToStore)
+            {
+                if(msg.Id == msgID)
+                {
+                    _messagesToStore.Enqueue(msg);
+                    return msg;
+                }
+            }
+            return null;
+        }
+
+
+        public virtual DiscountPolicy GetDiscountPolicy()
+        {
+            return this._discountPolicy;
+        }
+        public virtual PurchasePolicy GetPurchasePolicy()
+        {
+            return this._purchasePolicy;
         }
     }
 }

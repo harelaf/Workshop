@@ -116,10 +116,10 @@ namespace MarketProject.Domain
             return filteredItems;
         }
 
-        public void SendMessageToStore(String Username, String storeName, String title, String message)
+        public void SendMessageToStore(String Username, String storeName, String title, String message, int id)
         {
             Store store = GetStore(storeName);
-            MessageToStore messageToStore = new MessageToStore(storeName, Username, title, message);
+            MessageToStore messageToStore = new MessageToStore(storeName, Username, title, message, id);
             store.AddMessage(messageToStore);
         }
 
@@ -252,6 +252,35 @@ namespace MarketProject.Domain
             return store.RemoveStoreManager(managerUsername, appointerUsername);
         }
 
+        public List<Store> GetStoresOfUser(String username, bool isAdmin)
+        {
+            List<Store> storeList = new List<Store>();
+            foreach(KeyValuePair<string, Store> pair in _stores)
+            {
+                bool isActive = (pair.Value.State == StoreState.Active);
+                bool isInactiveButOwner = (pair.Value.State != StoreState.Inactive) && ((pair.Value.GetFounder().Username == username) || (pair.Value.GetOwners().Exists(x => x.Username == username)));
+                if (isAdmin || isActive || isInactiveButOwner)
+                {
+                    storeList.Add(pair.Value);
+                }
+            }
+            return storeList;
+        }
+
+        public List<Store> GetAllActiveStores(String username, bool isAdmin)
+        {
+            List<Store> storeList = new List<Store>();
+            foreach (KeyValuePair<string, Store> pair in _stores)
+            {
+                bool isActive = (pair.Value.State == StoreState.Active);
+                if (isAdmin || isActive)
+                {
+                    storeList.Add(pair.Value);
+                }
+            }
+            return storeList;
+        }
+
         internal List<StoreManager> getStoreManagers(string storeName)
         {
             Store store = GetStore(storeName);
@@ -294,6 +323,12 @@ namespace MarketProject.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in StoreManagement.{functionName}. Cause: {message}.");
+        }
+
+        internal MessageToStore AnswerStoreMessage(string storeName, int msgID)
+        {
+            Store store = GetStore(storeName);
+            return store.AnswerMessage(msgID);
         }
     }
 }

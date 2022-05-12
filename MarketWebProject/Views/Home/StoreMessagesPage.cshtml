@@ -2,13 +2,21 @@
 @using MarketWebProject.Models
 @using System.Collections
 @model MainModel
+@using MarketWebProject.Views.Shared
+
 @{
-    if (Model.IsGuest)
-        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
-    else if (Model.IsLoggedIn)
+    @if (LayoutConfig.IsLoggedIn)
+    {
         Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    else
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
     ViewData["Title"] = "Store Messages";
 }
 
@@ -18,15 +26,22 @@
     <br />
 </div>
 <br />
-
+   @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    else if(Model.Message!=null && Model.Message.Length>0)
+    {
+        <p style="background:green">@Model.Message</p>
+    }
 @if ((ViewData["messages"] as Queue<MessageToStoreDTO>).Count>0)
 {
-    <table style="width:100%">
+    <table style="width:100%" class="table">
         <tr>
-            <th>User Name</th>
-            <th>Title</th>
-            <th>Message</th>
-            <th>Reply</th>
+            <th><h4>User Name </h4></th>
+            <th><h4> Title</h4></th>
+            <th><h4> Message</h4></th>
+            <th><h4> Reply</h4></th>
 
         </tr>
         @foreach (MessageToStoreDTO msg in (ViewData["messages"] as Queue<MessageToStoreDTO>))
@@ -37,24 +52,17 @@
                 <th>@msg.Message</th>
                 <th> 
                     <form method="post">
-                        <font color="black">reply message: </font>
-                        <input type="text" id="replyMessage" name="replyMessage" title="replyMessage" />
+                        <textarea required rows="4" cols="50" id="replyMessage" name="replyMessage"> Enter message here...</textarea>
+                        <br />
                         <input class="btn btn-info" type="submit" value="Reply" asp-area="" asp-controller="Home" asp-action="ReplyMessage" 
-                        asp-route-storename="@((ViewData["storeName"]) as string)" asp-route-userName="@msg.SenderUsername" asp-route-title="RE: @msg.Title" asp-route-replyMessage=""  />
+                        asp-route-storename="@((ViewData["storeName"]) as string)" asp-route-receiverUsername="@msg.SenderUsername" asp-route-msgId="@msg.Id" asp-route-replyMessage=""  />
                     </form>
                 </th>
             </tr>
         }
     </table>
     <br /> 
-    @if (Model.ErrorOccurred)
-    {
-        <p style="background:red">@Model.Message</p>
-    }
-    else if(Model.Message!=null && Model.Message.Length>0)
-    {
-        <p style="background:green">@Model.Message</p>
-    }
+ 
 }
 else
 {

@@ -1,51 +1,59 @@
 ﻿@model MainModel
 @using MarketWebProject.DTO
+@using MarketWebProject.Views.Shared
 
 @{
-    if (Model.IsGuest)
-        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
-    else if (Model.IsLoggedIn)
+    @if (LayoutConfig.IsLoggedIn)
+    {
         Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    else
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
         Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome to MarketWebProject!</h1>
     <br />
-        @if (Model.ErrorOccurred)
-        {
-            <p style="background:red">@Model.Message</p>
-        }
-        else if(Model.Message!=null && Model.Message.Length>0)
-        {
-            <p style="background:green">@Model.Message</p>
-        }
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    else if (Model.Message != null && Model.Message.Length > 0)
+    {
+        <p style="background:green">@Model.Message</p>
+    }
     <br />
-    <form action="/Home/ItemSearchPage" method="post" style="border:black; border-width:4px; border-style:solid;">
+    <form method="post" style="border:black; border-width:4px; border-style:solid;">
         <div style="text-align:center;">
             <h1 style="text-decoration-style:double">Item Search Box</h1>
             <p>In order to search for a specific item, fill the following boxes:</p>
             <ul class="nav" style="display:inline-table;">
                 <li style="display:inline;">
                     <font color="black">Name:</font>
-                    <input type="text" name="itemname" title="itemname" />
+                    <input type="text" id="itemname" name="itemname" title="itemname"/>
                 </li>
                 <br />
                 <li style="display:inline;">
                     <font color="black">Category: </font>
-                    <input type="text" name="category" title="category" />
+                    <input type="text" id="category" name="category" title="category"/>
                 </li>
                 <br />
                 <li style="display:inline;">
                     <font color="black">Key Word: </font>
-                    <input type="text" name="keyword" title="keyword" />
+                    <input type="text" id="keyword" name="keyword" title="keyword"/>
                 </li>
             </ul>
         </div>
         <br />
-        <input type="submit" value="Search Items" />
+         <input class="btn btn-info" type="submit" value="Search Items" asp-area="" asp-controller="Home" 
+        asp-action="ItemSearchPage" asp-route-newQuantity="" />
         <p></p>
     </form>
     <br />

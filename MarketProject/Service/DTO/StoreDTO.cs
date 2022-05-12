@@ -41,8 +41,8 @@ namespace MarketProject.Service.DTO
         public StoreDTO(Store store)
         {
             _stock = new StockDTO(store.Stock);
-            _purchasePolicy = store.PurchasePolicy;
-            _discountPolicy = store.DiscountPolicy;
+            _purchasePolicy = store.GetPurchasePolicy();
+            _discountPolicy = store.GetDiscountPolicy();
             _messagesToStore = new Queue<MessageToStoreDTO>();
             foreach(MessageToStore msg in store.MessagesToStore)
             { //Might be in reverse order...

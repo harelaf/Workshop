@@ -69,7 +69,7 @@ namespace MarketProject.Domain
         {
             foreach (ShoppingBasket shoppingBasket in shoppingCart._shoppingBaskets)
             {
-                String storeName = shoppingBasket.Store.GetName();
+                String storeName = shoppingBasket.Store().GetName();
                 if (!_storePurchaseHistory.ContainsKey(storeName))
                     _storePurchaseHistory.Add(storeName, new List<Tuple<DateTime, ShoppingBasket>>());
                 _storePurchaseHistory[storeName].Add(new Tuple<DateTime, ShoppingBasket>(DateTime.Now, shoppingBasket));              
