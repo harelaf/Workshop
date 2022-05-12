@@ -65,11 +65,9 @@ namespace AcceptanceTest
                     found = true;
             
             Assert.IsTrue(found);
-            Console.WriteLine($"{res1} {res2}");
             Assert.IsTrue(res1 || res2);
             Assert.IsFalse(res1 && res2);
             Assert.IsFalse(!res1 && !res2);
-
         }
 
         [TestMethod]
