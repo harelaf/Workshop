@@ -13,19 +13,13 @@ namespace MarketProject.Service.DTO
         private ICollection<MessageToStoreDTO> _repliedMessages;
         private ICollection<NotifyMessageDTO> _notifications;
 
-        public RegisteredDTO(Registered registered)
+        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages)
         {
-            _username = registered.Username;
-            _shoppingCart = new ShoppingCartDTO(registered.ShoppingCart);
-            _adminMessages = new List<AdminMessageToRegisteredDTO>();
-            _repliedMessages = new List<MessageToStoreDTO>();
-            _notifications = new List<NotifyMessageDTO>();
-            foreach (AdminMessageToRegistered msg in registered.AdminMessages)
-                _adminMessages.Add(new AdminMessageToRegisteredDTO(msg));
-            foreach (MessageToStore msg in registered.messageToStores)
-                _repliedMessages.Add(new MessageToStoreDTO(msg));
-            foreach (NotifyMessage msg in registered.Notifcations)
-                _notifications.Add(new NotifyMessageDTO(msg));
+            _username = Username;
+            _shoppingCart = scDTO;
+            _adminMessages = adminMessages;
+            _repliedMessages = repliedMessages;
+            _notifications = notifications;
         }
         public String ToString()
         {

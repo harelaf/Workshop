@@ -14,6 +14,10 @@ namespace MarketProject.Domain
         {
             _ratings = new Dictionary<String, Tuple<int, String>>();
         }
+        public Rating(Dictionary<String, Tuple<int, String>> ratings)
+        {
+            _ratings = ratings;
+        }
 
         public double GetRating()
         {

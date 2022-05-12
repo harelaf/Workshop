@@ -9,6 +9,19 @@ namespace MarketProject.Service
 {
     public class DTOtranslator
     {
+
+        //private static DTOtranslator instance = null;
+        //private DTOtranslator() {}
+        //public static object getInstance()
+        //{
+        //    if(instance == null)
+        //        lock (instance)
+        //        {
+        //            if (instance == null)
+        //                instance = new DTOtranslator();
+        //        }
+        //    return instance;
+        //}
         public DiscountCondition translateCondition(IConditionDTO cond)
         {
             Type type = cond.GetType();
@@ -153,6 +166,155 @@ namespace MarketProject.Service
                 discounts.Add(translateDiscount(discountDTO));
             DiscountCondition condition = translateCondition(discount_dto.Condition);
             return new PlusDiscount(discounts, condition);
+        }
+        public AdminMessageToRegisteredDTO toDTO(AdminMessageToRegistered msg)
+        {
+            return new AdminMessageToRegisteredDTO(msg.ReceiverUsername, msg.SenderUsername, msg.Title, msg.Message);
+        }
+        public ItemDTO toDTO(Item itm)
+        {
+            return new ItemDTO(
+                itm.ItemID,
+                itm.Name,
+                itm._price,
+                itm.Description,
+                itm.Category,
+                toDTO(itm.Rating));
+        }
+        public ItemDTO toDTO(Item itm, String storeName)
+        {
+            return new ItemDTO(
+                itm.ItemID,
+                itm.Name,
+                itm._price,
+                itm.Description,
+                itm.Category,
+                toDTO(itm.Rating),
+                storeName);
+        }
+        public RatingDTO toDTO(Rating rate)
+        {
+            return new RatingDTO(rate.Ratings);
+        }
+        public MessageToStoreDTO toDTO(MessageToStore messageToStore)
+        {
+            return new MessageToStoreDTO(
+                messageToStore.StoreName,
+                messageToStore.SenderUsername,
+                messageToStore.Title,
+                messageToStore.Message,
+                messageToStore.Reply,
+                messageToStore.Replier,
+                messageToStore.Id);
+        }
+        public NotifyMessageDTO toDTO(NotifyMessage notifyMessage)
+        {
+            return new NotifyMessageDTO(
+                notifyMessage.StoreName,
+                notifyMessage.Title,
+                notifyMessage.Message,
+                notifyMessage.ReceiverUsername,
+                notifyMessage.Id);
+        }
+        public PurchasedCartDTO toDTO(DateTime date, ShoppingCart shoppingCart)
+        {
+            return new PurchasedCartDTO(date, toDTO(shoppingCart));
+        }
+        public RegisteredDTO toDTO(Registered registered)
+        {
+            ICollection<AdminMessageToRegisteredDTO> adminMessages = new List<AdminMessageToRegisteredDTO>();
+            ICollection<MessageToStoreDTO> repliedMessages = new List<MessageToStoreDTO>();
+            ICollection<NotifyMessageDTO> notifications = new List<NotifyMessageDTO>();
+            foreach (AdminMessageToRegistered msg in registered.AdminMessages)
+                adminMessages.Add(toDTO(msg));
+            foreach (MessageToStore msg in registered.messageToStores)
+                repliedMessages.Add(toDTO(msg));
+            foreach (NotifyMessage msg in registered.Notifcations)
+                notifications.Add(toDTO(msg));
+            return new RegisteredDTO(
+                registered.Username,
+                toDTO(registered.ShoppingCart),
+                adminMessages,
+                notifications,
+                repliedMessages);
+        }
+        public ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
+        {
+            Dictionary<ItemDTO, int> items = new Dictionary<ItemDTO, int>();
+            foreach (KeyValuePair<Item, int> entry in shoppingBasket.Items)
+            {
+                ItemDTO dto = toDTO(entry.Key);
+                items[dto] = entry.Value;
+            }
+            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items);
+        }
+        public ShoppingCartDTO toDTO(ShoppingCart shoppingCart)
+        {
+            ICollection<ShoppingBasketDTO> _DTObaskets = new List<ShoppingBasketDTO>();
+            foreach (ShoppingBasket basket in shoppingCart._shoppingBaskets)
+                _DTObaskets.Add(toDTO(basket));
+            return new ShoppingCartDTO(_DTObaskets);
+        }
+        public StockDTO toDTO(Stock stock)
+        {
+            Dictionary<ItemDTO, int> itemAndAmount = new Dictionary<ItemDTO, int>();
+            foreach (KeyValuePair<Item, int> entry in stock.Items)
+            {
+                ItemDTO dto = toDTO(entry.Key);
+                itemAndAmount[dto] = entry.Value;
+            }
+            return new StockDTO(itemAndAmount);
+        }
+        public StoreDTO toDTO(Store store)
+        {
+            Queue<MessageToStoreDTO> messagesToStore = new Queue<MessageToStoreDTO>();
+            foreach (MessageToStore msg in store.MessagesToStore) //Might be in reverse order...
+                messagesToStore.Enqueue(toDTO(msg));
+            List<StoreManagerDTO> managers = new List<StoreManagerDTO>();
+            foreach (StoreManager manager in store.GetManagers())
+                managers.Add(toDTO(manager));
+            List<StoreOwnerDTO> owners = new List<StoreOwnerDTO>();
+            foreach (StoreOwner owner in store.GetOwners())
+                owners.Add(toDTO(owner));
+            return new StoreDTO(
+                store.StoreName,
+                toDTO(store.GetFounder()),
+                toDTO(store.GetPurchasePolicy()),
+                toDTO(store.GetDiscountPolicy()),
+                toDTO(store.Stock),
+                messagesToStore,
+                toDTO(store.Rating),
+                managers,
+                owners,
+                store.State);
+        }
+        public StoreFounderDTO toDTO(StoreFounder storeFounder)
+        {
+            return new StoreFounderDTO(storeFounder.StoreName, storeFounder.Username);
+        }
+        public StoreManagerDTO toDTO(StoreManager storeManager)
+        {
+            return new StoreManagerDTO(
+                new HashSet<Operation>(storeManager.operations),
+                storeManager.Username,
+                storeManager.StoreName,
+                storeManager.Appointer);
+        }
+        public StoreOwnerDTO toDTO(StoreOwner storeOwner)
+        {
+            return new StoreOwnerDTO(
+                storeOwner.operations,
+                storeOwner.StoreName,
+                storeOwner.Username,
+                storeOwner.Appointer);
+        }
+        public PurchasePolicyDTO toDTO(PurchasePolicy policy)
+        {
+            return new PurchasePolicyDTO();
+        }
+        public DiscountPolicyDTO toDTO(DiscountPolicy policy)
+        {
+            return new DiscountPolicyDTO();
         }
     }
 }
