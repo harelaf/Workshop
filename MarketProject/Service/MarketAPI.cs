@@ -906,7 +906,7 @@ namespace MarketProject.Service
             {
                 /////////// is log should keep the whole description of the discount??????
                 log.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName} and the actual discount.");
-                Discount discount = new dtoDiscountConverter().convertDiscount(discount_dto);
+                Discount discount = new DTOtranslator().translateDiscount(discount_dto);
                 _market.AddStoreDiscount(authToken, storeName, discount);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Add Store Discount.");
