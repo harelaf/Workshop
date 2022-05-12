@@ -18,7 +18,7 @@ namespace MarketProject.Service.DTO
 
         public ShoppingBasketDTO(ShoppingBasket shoppingBasket)
         {
-            _storeName = shoppingBasket.Store.StoreName;
+            _storeName = shoppingBasket.Store().StoreName;
             _items = new Dictionary<ItemDTO, int>();
 
             foreach (KeyValuePair<Item, int> entry in shoppingBasket.Items)

@@ -18,7 +18,7 @@ namespace MarketProject.Domain
         {
             foreach (ShoppingBasket basket in _shoppingBaskets)
             {
-                if (basket.Store.StoreName == storeName)
+                if (basket.Store().StoreName == storeName)
                     return basket;
             }
             return null;
@@ -50,7 +50,7 @@ namespace MarketProject.Domain
         public virtual void RelaseItemsOfCart()
         {
             foreach (ShoppingBasket basket in _shoppingBaskets)
-                basket.Store.RestockBasket(basket);
+                basket.Store().RestockBasket(basket);
         }
 
         private void LogErrorMessage(String functionName, String message)

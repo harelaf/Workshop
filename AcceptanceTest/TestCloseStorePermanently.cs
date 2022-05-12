@@ -25,9 +25,7 @@ namespace AcceptanceTest
         public void setup()
         {
             admin_token = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(admin_token, "Mr Krabs", "123456789");
-            admin_token = (marketAPI.Login(admin_token, "Mr Krabs", "123456789")).Value;
-            marketAPI.RestartSystem("Mr Krabs", "123456789", "0.0.0.0", "0.0.0.0");
+            admin_token = (marketAPI.Login(admin_token, "admin", "admin")).Value;
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
             marketAPI.Register(registered_token_founder, username_founder, "123456789");
@@ -51,7 +49,6 @@ namespace AcceptanceTest
         }
 
         [TestMethod]
-        //[Ignore]
         public void happy_CloseStorePermanentlySuccess()
         {
             /*

@@ -268,7 +268,8 @@ namespace MarketProject.Domain
                 errorMessage = "Invalid Input: Blank store name.";
             else if (!_storeManagement.CheckStoreNameExists(storeName))
                 errorMessage = $"Store {storeName} does not exist.";
-            else if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_HISTORY_INFO))
+            else if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_HISTORY_INFO) &&
+                !_VisitorManagement.CheckAccess(Username, null, Operation.STORE_HISTORY_INFO))
                 errorMessage = $"This Visitor is not an admin or owner in {storeName}.";
             if (errorMessage != null)
             {
@@ -343,7 +344,7 @@ namespace MarketProject.Domain
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.PERMENENT_CLOSE_STORE))
+                if (!_VisitorManagement.CheckAccess(Username, null, Operation.PERMENENT_CLOSE_STORE))
                     errorMessage = $"Visitor is not an admin.";
                 else if (storeName.Equals(""))
                     errorMessage = "Invalid Input: Blank store name.";
