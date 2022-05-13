@@ -13,7 +13,6 @@ namespace MarketProject.Service.DTO
         private ICollection<MessageToStoreDTO> _repliedMessages;
         private ICollection<NotifyMessageDTO> _notifications;
         private DateTime _birthDate;
-        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
 
         public RegisteredDTO(Registered registered)
         {
