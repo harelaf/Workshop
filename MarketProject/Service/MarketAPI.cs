@@ -99,13 +99,13 @@ namespace MarketProject.Service
         /// <param name="authToken"> The token of the guest currently registering.</param>
         /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
-        public Response Register(String authToken, String Username, String password)
+        public Response Register(String authToken, String Username, String password, DateTime birthDate)
         {//II.1.3
             Response response;
             try
             {
                 log.Info($"Logout called with parameters: authToken={authToken}, username={Username}, password={password}.");
-                _market.Register(authToken, Username, password);
+                _market.Register(authToken, Username, password, birthDate);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Register.");
             }
