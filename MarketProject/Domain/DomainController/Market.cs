@@ -1,4 +1,5 @@
 ﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using MarketProject.Service.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -938,6 +939,20 @@ namespace MarketProject.Domain
             _opNameToOp.Add("RECEIVE_AND_REPLY_ADMIN_MESSAGE", Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE);
             _opNameToOp.Add("SYSTEM_STATISTICS", Operation.SYSTEM_STATISTICS);
             _opNameToOp.Add("APPOINT_SYSTEM_ADMIN", Operation.APPOINT_SYSTEM_ADMIN);
+        }
+
+        public Item GetItem(string token,string storeName, int itemId)
+        {
+            string errorMessage=null;
+            CheckIsVisitorAVisitor(token, "GetItem");
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("GetItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return _storeManagement.GetItem(storeName, itemId);
         }
 
         public void AddStoreDiscount(String authToken, String storeName, Discount discount)

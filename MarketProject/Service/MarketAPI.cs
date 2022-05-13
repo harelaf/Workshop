@@ -1060,5 +1060,20 @@ namespace MarketProject.Service
             }
             return response;
         }
+
+        public Response<ItemDTO> GetItem(string token, string storeName, int itemId)
+        {
+            Response<ItemDTO> response;
+            try
+            {
+                Item item = _market.GetItem(token, storeName, itemId);
+                response = new Response<ItemDTO>(new ItemDTO(item));
+            }
+            catch (Exception e)
+            {
+                response = new Response<ItemDTO>(null, e);
+            }
+            return response;
+        }
     }
 }

@@ -4,12 +4,13 @@ using MarketWebProject.Models;
 using MarketWebProject.Views.Shared;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-
+using MarketWeb.Client.Connect;
 namespace MarketWebProject.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private MarketAPIClient _marketAPIClient;
         //private Service service
 
         private void TurnGuest()
@@ -33,29 +34,33 @@ namespace MarketWebProject.Controllers
             LayoutConfig.IsAdmin = true;
         }
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, MarketAPIClient marketAPIClient)
         {
             _logger = logger;
+            _marketAPIClient = marketAPIClient;
         }
 
         public IActionResult Index(MainModel modelcs)
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            //USE GetAllActiveStores(authToken);
-            //Response<List<StoreDTO>> response = LayoutConfig.marketAPI.GetAllActiveStores(LayoutConfig.authToken);
-            StoreDTO store1 = new StoreDTO();
+            Task<Response<List<StoreDTO>>> task = _marketAPIClient.GetAllActiveStores();
+            /*  for tests:
+             StoreDTO store1 = new StoreDTO();
             StoreDTO store2 = new StoreDTO();
             List<StoreDTO> lst = new List<StoreDTO>();
             lst.Add(store1);
             lst.Add(store2);
             Response<List<StoreDTO>> response = new Response<List<StoreDTO>>(lst);
+            */
+            Response<List<StoreDTO>> response = task.Result;
             ViewResult view;
             if (response.ErrorOccured)
             {
                 view = View(modelcs);
                 view.ViewData["activeStores"] = new List<StoreDTO>();
-                //TODO: SOMEHOW PASS ERROR MESSAGE?
+                modelcs.ErrorOccurred = true;
+                modelcs.Message = response.ErrorMessage;
             }
             else
             {
@@ -69,10 +74,8 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            //CHECK IF IS ADMIN FIRST
-            //CHECK IF IS ADMIN FIRST
-            //CHECK IF IS ADMIN FIRST
-            Response isAdmin = new Response();
+            Task<Response> task = _marketAPIClient.HasPermission(null, "PERMENENT_CLOSE_STORE");
+            Response isAdmin = task.Result;
             if (isAdmin.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = isAdmin.ErrorMessage });
@@ -94,8 +97,8 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            // OpenNewStore(storename);
-            Response response = new Response();
+            Task<Response> task = _marketAPIClient.OpenNewStore(storename);
+            Response response = task.Result;
             if (response.ErrorOccured)
             {
                 return RedirectToAction("OpenNewStorePage", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
@@ -110,10 +113,8 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            //viewMyCart
-            //CALL THE CLIENT-> server-> market api
-            //_CLIENT<- server <-market api
-            Response<ShoppingCartDTO> cart = new Response<ShoppingCartDTO>(new ShoppingCartDTO());
+            Task<Response<ShoppingCartDTO>> task = _marketAPIClient.ViewMyCart();
+            Response<ShoppingCartDTO> cart = task.Result; //new Response<ShoppingCartDTO>(new ShoppingCartDTO());
             if (cart.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = cart.ErrorMessage });
@@ -128,17 +129,16 @@ namespace MarketWebProject.Controllers
 
         public IActionResult ItemSearchPage(MainModel modelcs, string category, string itemname,string keyword)
         {
-            Console.WriteLine("category:"+category+"name:"+itemname+"key:"+keyword+"end");
             if (modelcs == null)
                 modelcs = new MainModel();
             if (category == null && itemname == null && keyword == null)
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = "must enter at least one option of search" });
-            
-            List<ItemDTO> items = new List<ItemDTO>();
+            Task<Response<List<ItemDTO>>> task = _marketAPIClient.GetItemInformation(itemname, category, keyword);
+            /*List<ItemDTO> items = new List<ItemDTO>();
             items.Add(new ItemDTO("item1", 10.5, "store1"));
             items.Add(new ItemDTO("item2", 9.5, "store1"));
-            items.Add(new ItemDTO("item3", 15.5, "store2"));
-            Response<List<ItemDTO>> response = new Response<List<ItemDTO>>(items);
+            items.Add(new ItemDTO("item3", 15.5, "store2"));*/
+            Response<List<ItemDTO>> response = task.Result; //new Response<List<ItemDTO>>(items);
             if (response.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
@@ -154,18 +154,20 @@ namespace MarketWebProject.Controllers
         public IActionResult StoreRolePage(string storeName)
         {
             MainModel modelcs = new MainModel();
-            //Response<ItemDTO> response=  getItem(storeName, itemId)
-            Response<StoreFounderDTO> founder_res =new Response<StoreFounderDTO>(new StoreFounderDTO(storeName, "Yafa"));//service.GetStoreFounder(storeName);
-            List<StoreOwnerDTO> owners_list = new List<StoreOwnerDTO>();
+            Task<Response<StoreFounderDTO>> taskFounder = _marketAPIClient.GetStoreFounder(storeName);
+            Response<StoreFounderDTO> founder_res = taskFounder.Result;//new Response<StoreFounderDTO>(new StoreFounderDTO(storeName, "Yafa"));//service.GetStoreFounder(storeName);
+            /*List<StoreOwnerDTO> owners_list = new List<StoreOwnerDTO>();
             owners_list.Add(new StoreOwnerDTO(storeName, "Afik", "Shlomi"));
             owners_list.Add(new StoreOwnerDTO(storeName, "Shlomi", "Beni"));
-            owners_list.Add(new StoreOwnerDTO(storeName, "Beni", "Yafa"));
-            Response<List<StoreOwnerDTO>> owners_res = new Response<List<StoreOwnerDTO>>(owners_list); //_service.GetStoreOwners(storeName);
-            List<StoreManagerDTO> managers_list = new List<StoreManagerDTO>();
+            owners_list.Add(new StoreOwnerDTO(storeName, "Beni", "Yafa"));*/
+            Task<Response<List<StoreOwnerDTO>>> taskOwners = _marketAPIClient.GetStoreOwners(storeName);
+            Response<List<StoreOwnerDTO>> owners_res = taskOwners.Result;//new Response<List<StoreOwnerDTO>>(owners_list); //_service.GetStoreOwners(storeName);
+            /*List<StoreManagerDTO> managers_list = new List<StoreManagerDTO>();
             managers_list.Add(new StoreManagerDTO(storeName, "Afik", "Shlomi"));
             managers_list.Add(new StoreManagerDTO(storeName, "Shlomi", "Beni"));
-            managers_list.Add(new StoreManagerDTO(storeName, "Beni", "Yafa"));
-            Response<List<StoreManagerDTO>> managers_res = new Response<List<StoreManagerDTO>>(managers_list); //_service.GetStoreManagers(storeName);
+            managers_list.Add(new StoreManagerDTO(storeName, "Beni", "Yafa"));*/
+            Task<Response<List<StoreManagerDTO>>> taskManagers = _marketAPIClient.GetStoreManagers(storeName);
+            Response<List<StoreManagerDTO>> managers_res = taskManagers.Result; //new Response<List<StoreManagerDTO>>(managers_list); //_service.GetStoreManagers(storeName);
             if (owners_res.ErrorOccured || managers_res.ErrorOccured || founder_res.ErrorOccured)
             {
                 string message = "owners: " + owners_res.ErrorMessage + "\nmanagers: " + managers_res.ErrorMessage + "\nfounder: "+founder_res.ErrorMessage;
@@ -184,8 +186,8 @@ namespace MarketWebProject.Controllers
         public IActionResult ItemPage(string storeName, int itemId)
         {
             MainModel modelcs = new MainModel();
-            //Response<ItemDTO> response=  getItem(storeName, itemId)
-            Response<ItemDTO> response = new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
+            Task<Response<ItemDTO>> task = _marketAPIClient.GetItem(storeName, itemId);
+            Response<ItemDTO> response = task.Result; //new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
             if (response.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
@@ -202,12 +204,14 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            //Response<RegisteredDTO> response1 = GetUserInformation(authToken);
-            //Response<List<StoreDTO>> response2 = GetStoresOfUser(authToken);
-            Response<RegisteredDTO> response1 = new Response<RegisteredDTO>(new RegisteredDTO());
+            Task<Response<RegisteredDTO>> task1 = _marketAPIClient.GetVisitorInformation();
+            Response<RegisteredDTO> response1 = task1.Result;
+            Task<Response<List<StoreDTO>>> task2 = _marketAPIClient.GetStoresOfUser();
+            Response<List<StoreDTO>> response2 = task2.Result;
+            /*Response<RegisteredDTO> response1 = new Response<RegisteredDTO>(new RegisteredDTO());
             List<StoreDTO> storesDTO = new List<StoreDTO>();
             storesDTO.Add(new StoreDTO());
-            Response<List<StoreDTO>> response2 = new Response<List<StoreDTO>>(storesDTO);
+            Response<List<StoreDTO>> response2 = new Response<List<StoreDTO>>(storesDTO);*/
             if (response1.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response1.ErrorMessage });
@@ -229,13 +233,15 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            //Response<ICollection<PurchasedCartDTO>> response1 = GetMyPurchasesHistory(authToken);
-            //Response<RegisteredDTO> response2 = GetUserInformation(authToken);
-            List<PurchasedCartDTO> history = new List<PurchasedCartDTO>();
+            Task<Response<ICollection<PurchasedCartDTO>>> task1 = _marketAPIClient.GetMyPurchasesHistory();
+            Response<ICollection<PurchasedCartDTO>> response1 = task1.Result;
+            Task<Response<RegisteredDTO>> task2 = _marketAPIClient.GetVisitorInformation();
+            Response<RegisteredDTO> response2 = task2.Result;
+            /*List<PurchasedCartDTO> history = new List<PurchasedCartDTO>();
             history.Add(new PurchasedCartDTO());
             history.Add(new PurchasedCartDTO());
             Response<ICollection<PurchasedCartDTO>> response1 = new Response<ICollection<PurchasedCartDTO>>(history);
-            Response<RegisteredDTO> response2 = new Response<RegisteredDTO>(new RegisteredDTO());
+            Response<RegisteredDTO> response2 = new Response<RegisteredDTO>(new RegisteredDTO());*/
             if (response1.ErrorOccured || response2.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response1.ErrorMessage });
@@ -257,8 +263,9 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            //Response<RegisteredDTO> response = GetUserInformation(authToken);
-            Response<RegisteredDTO> response = new Response<RegisteredDTO>(new RegisteredDTO());
+            Task<Response<RegisteredDTO>> task = _marketAPIClient.GetVisitorInformation();
+            Response<RegisteredDTO> response = task.Result;
+            //Response<RegisteredDTO> response = new Response<RegisteredDTO>(new RegisteredDTO());
             if (response.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
@@ -271,24 +278,11 @@ namespace MarketWebProject.Controllers
             }
         }
 
-        public IActionResult ChangeUsername(MainModel modelcs, string newUsername)
-        {
-            //Response response = EditVisitorUsername(authToken, newUsername);
-            Response response = new Response();
-            if (response.ErrorOccured)
-            {
-                return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home", new { ErrorOccurred = false, Message = "Operation Successful!" });
-            }
-        }
-
         public IActionResult ChangePassword(MainModel modelcs, string newPassword, string oldPassword)
         {
-            //Response response = EditPassword(authToken, newPassword, oldPassword);
-            Response response = new Response();
+            Task<Response> task = _marketAPIClient.EditVisitorPassword(oldPassword, newPassword);
+            Response response = task.Result;
+            //Response response = new Response();
             if (response.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
@@ -303,8 +297,9 @@ namespace MarketWebProject.Controllers
         {
 
             MainModel modelcs = new MainModel();
-            //Response<ItemDTO> response=  getItem(storeName, itemId)
-            Response<ItemDTO> response = new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
+            Task<Response<ItemDTO>> task = _marketAPIClient.GetItem(storeName, itemId);
+            Response<ItemDTO> response = task.Result;
+            //Response<ItemDTO> response = new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
             if (response.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new {ErrorOccurred = true, Message = response.ErrorMessage });
@@ -323,23 +318,21 @@ namespace MarketWebProject.Controllers
                 modelcs = new MainModel();
             string viewName = "StorePage";
 
-            //GetStore
-            //CALL THE CLIENT-> server-> market api
-            //_CLIENT<- server <-market api
-            Response<StoreDTO> response = new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
+            Task<Response<StoreDTO>> task = _marketAPIClient.GetStoreInformation(storename);
+            Response<StoreDTO> response = task.Result;//new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
             if (response.ErrorOccured)
             {
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = response.ErrorMessage });
             }
             else
             {
-                Response stockPermissions = new Response();// _service.HasPermission(storename, "MANAGE_STOCK");
-                Response rolesPermission = new Response(); // _service.HasPermission(storename, "APPOINT_OWNER"); // if has accsess to appoint owner' he has all roles permissions.
-                Response closePermission = new Response(); // _service.HasPermission(storename, "CLOSE_STORE"); 
-                Response reopenPermission = new Response(); // _service.HasPermission(storename, "REOPEN_STORE"); 
-                Response closePermenantlyPermission = new Response(); // _service.HasPermission(storename, "PERMENENT_CLOSE_STORE"); 
-                Response purchaseHistoryPermission = new Response(); // _service.HasPermission(storename, "STORE_HISTORY_INFO"); 
-                Response storeMsgPermission = new Response(); // _service.HasPermission(storename, "RECEIVE_AND_REPLY_STORE_MESSAGE"); 
+                Response stockPermissions = _marketAPIClient.HasPermission(storename, "MANAGE_STOCK").Result;
+                Response rolesPermission = _marketAPIClient.HasPermission(storename, "APPOINT_OWNER").Result; // if has accsess to appoint owner' he has all roles permissions.
+                Response closePermission = _marketAPIClient.HasPermission(storename, "CLOSE_STORE").Result; 
+                Response reopenPermission = _marketAPIClient.HasPermission(storename, "REOPEN_STORE").Result; 
+                Response closePermenantlyPermission =_marketAPIClient.HasPermission(storename, "PERMENENT_CLOSE_STORE").Result; 
+                Response purchaseHistoryPermission = _marketAPIClient.HasPermission(storename, "STORE_HISTORY_INFO").Result; 
+                Response storeMsgPermission = _marketAPIClient.HasPermission(storename, "RECEIVE_AND_REPLY_STORE_MESSAGE").Result; 
 
                 ViewResult viewResult = View(viewName, modelcs);
                 viewResult.ViewData["store"] = response.Value;
@@ -383,48 +376,50 @@ namespace MarketWebProject.Controllers
 
         public IActionResult RegisterForm(string name, string password, DateTime dob)
         {// register
-            //CALL THE CLIENT-> server-> market api
-            //_CLIENT<- server <-market api
-            String err_msg = "register faild: your pass\\username are not valid";
-            String SuccessMessage = "Successfully registered! You can now log in.";
-            Response response = new Response(new Exception(err_msg));//call register(name, password, dob)
-            return RedirectToAction("RegistrationPage", "Home", new { ErrorOccurred = response.ErrorOccured, Message = response.ErrorMessage });
+            Task<Response> task = _marketAPIClient.Register(name, password, dob);
+            Response response = task.Result;//new Response(new Exception(err_msg));//call register(name, password, dob)
+            String msg = "Successfully registered! You can now log in.";
+            if (response.ErrorOccured)
+            {
+                msg = response.ErrorMessage;
+            }
+            return RedirectToAction("RegistrationPage", "Home", new { ErrorOccurred = response.ErrorOccured, Message = msg });
         }
 
         public IActionResult LoginForm(string name, string password)
         {//login
-            //CALL THE CLIENT-> server-> market api
-            //_CLIENT<- server <-market api
-            String err_msg = "login faild: your username or password are wrong!";
-            Response response = new Response();//call login(name, password)
+            Task<Response<string>> task = _marketAPIClient.Login(name, password);
+            Response response = task.Result;
             if (response.ErrorOccured)
             {
                 TurnGuest();
-                return RedirectToAction("LoginPage", "Home", new { ErrorOccurred = response.ErrorOccured, Message = err_msg });
+                return RedirectToAction("LoginPage", "Home", new { ErrorOccurred = response.ErrorOccured, Message = response.ErrorMessage });
             }
             else
             {
                 //TODO: CHECK IF IS ADMIN THEN TurnAdmin();
-                //TurnLoggedIn();
-                TurnAdmin();
+                TurnLoggedIn();
+                Task<Response> task_admin = _marketAPIClient.HasPermission(null, "PERMENENT_CLOSE_STORE");
+                Response isAdmin = task_admin.Result;
+                if (!isAdmin.ErrorOccured)
+                {
+                    TurnAdmin();
+                }
                 return RedirectToAction("Index", "Home", new { });
             }
         }
 
         public IActionResult Logout()
         {//logout
-            //CALL THE CLIENT-> server-> market api
-            //_CLIENT<- server <-market api
-            String err_msg = "Logout Failed";
-            Response response = new Response(new Exception(err_msg));//call logout()
+            Response response = _marketAPIClient.Logout().Result;//new Response(new Exception(err_msg));//call logout()
             if (response.ErrorOccured)
             {
                 TurnGuest();
-                return RedirectToAction("Index", "Home", new { ErrorOccurred = response.ErrorOccured, Message = err_msg });
+                return RedirectToAction("Index", "Home", new { ErrorOccurred = response.ErrorOccured, Message = response.ErrorMessage });
             }
             else
             {
-                TurnLoggedIn();
+                TurnGuest();
                 return RedirectToAction("Index", "Home", new { });
             }
         }
@@ -432,7 +427,8 @@ namespace MarketWebProject.Controllers
         public IActionResult RemoveItemFromCart(String storeName, int itemID)
         {
             //I_User_ServiceLayer SL = validateConnection();
-            Response res = new Response(new Exception("could'nt remove item: " + itemID + " from store: " + storeName));//=service.removeItemFromCart(token,itemID, storeName)
+            Task<Response> task = _marketAPIClient.RemoveItemFromCart(itemID, storeName);
+            Response res = task.Result;//new Response(new Exception("could'nt remove item: " + itemID + " from store: " + storeName));//=service.removeItemFromCart(token,itemID, storeName)
             if (res.ErrorOccured)
             {
                 return RedirectToAction("CartPage", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
@@ -445,7 +441,8 @@ namespace MarketWebProject.Controllers
         public IActionResult UpdateItemQuantityInCart(String storeName, int itemID, int newQuantity)
         {
             //I_User_ServiceLayer SL = validateConnection();
-            Response res = new Response(new Exception("could'nt update item: "+itemID+" from store: "+storeName+" to quantity: "+newQuantity));//=service.removeItemFromCart(token,itemID, storeName, newQuantity)
+            Task<Response> task = _marketAPIClient.UpdateQuantityOfItemInCart(itemID, storeName, newQuantity);
+            Response res = task.Result;//new Response(new Exception("could'nt update item: "+itemID+" from store: "+storeName+" to quantity: "+newQuantity));//=service.removeItemFromCart(token,itemID, storeName, newQuantity)
             if (res.ErrorOccured)
             {
                 return RedirectToAction("CartPage", "Home", new { ErrorOccurred = true, Message = res.ErrorMessage });
@@ -458,8 +455,8 @@ namespace MarketWebProject.Controllers
         
         public IActionResult AddItemToCart(int amount, string storename, int itemid)
         {
-            Console.WriteLine(amount + storename + itemid);
-            Response res = new Response();//service.AddItemToCart(itemId, store, amount)
+            Task<Response> task = _marketAPIClient.AddItemToCart(itemid, storename, amount);
+            Response res = task.Result;
             if (!res.ErrorOccured)
             {
                 return RedirectToAction("CartPage", "Home", ModelState);
