@@ -2,6 +2,12 @@
 using MarketWeb.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Text.Json;
+//using Newtonsoft.Json;
+//using Newtonsoft.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace MarketWeb.Server.Controllers
@@ -11,35 +17,36 @@ namespace MarketWeb.Server.Controllers
     public class UsersController : ControllerBase
     {
         private MarketAPI _marketApi;
+        private ILogger<UsersController> _logger;
 
-        public UsersController(MarketAPI marketApi)
+        public UsersController(MarketAPI marketApi, ILogger<UsersController> logger)
         {
             _marketApi = marketApi;
+            _logger = logger;
         }
 
-        // PUT: api/TodoItems/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Route("/login")]
-        public async Task<ActionResult<string>> Login(string token, string username, string password)
+
+        [HttpPost("login")]
+        public Response<string> Login( string token,  string username, string password)
         {
+            _logger.LogInformation("Login called.");
             Response<string> response = _marketApi.Login(token, username, password);
-            if (response.ErrorOccured)
-            {
-                return BadRequest(response.ErrorMessage);
-            }
-            return Ok(response.Value);
+            _logger.LogInformation("Returning {%s}.", response.Value);
+            return response;
         }
-        // PUT: api/TodoItems/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Route("/enter")]
-        public async Task<IActionResult> EnterSystem()
+
+        [HttpGet("entersystem")]
+        public Response<string> EnterSystem()
         {
+            _logger.LogInformation("EnterSystem called.");
             Response<string> response = _marketApi.EnterSystem();
-            if (response.ErrorOccured)
-            {
-                return BadRequest(response.ErrorMessage);
-            }
-            return Ok(response.Value);
+            var responseAsJson = JsonConvert.SerializeObject(response);
+            //var responseAsJson = JsonConvert.SerializeObject(response, Formatting.Indented, new JsonSerializerSettings
+            //{
+            //    ContractResolver = new CamelCasePropertyNamesContractResolver()
+            //});
+            _logger.LogInformation("Returning: \n{%s}.", responseAsJson);
+            return response;
         }
     }
 }

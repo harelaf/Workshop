@@ -1,20 +1,25 @@
 ﻿using MarketProject.Domain;
 using MarketProject.Service.DTO;
 using MarketWeb.Shared;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace MarketProject.Service
 {
-    public class MarketAPI 
+    [Route("api/market/")]
+    [ApiController]
+    public class MarketAPI : ControllerBase
     {
         private Market _market;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private int _id;
 
-        public MarketAPI()
+        public MarketAPI(Market market)
         {
-            _market = new Market();
+            _market = market;
         }
 
         /// <summary>
@@ -42,18 +47,24 @@ namespace MarketProject.Service
         /// <para> For Req II.1.4. </para>
         /// <para> If credentials are authenticated, log in Visitor.</para>
         /// </summary>
-        /// <param name="authToken"> The token of the guest attempting to log in (to transfer cart).</param>
+        /// <param name="Authorization"> The token of the guest attempting to log in (to transfer cart).</param>
         /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
         /// <returns> Response with the authentication token the Visitor should use with the system.</returns>
-        public Response<String> Login(String authToken, String Username, String password)
+        [HttpPost("login")]
+        public Response<String> Login([FromHeader] String Authorization, String Username, String password)
         {//II.1.4
             Response<String> response;
             try
             {
-                log.Info($"Login called with parameters: authToken={authToken}, username={Username}, password={password}.");
+                if (!AuthenticationHeaderValue.TryParse(Authorization, out var headerValue))
+                {
+                    throw new Exception("Invalid token!");
+                }
+
+                log.Info($"Login called with parameters: authToken={headerValue.Parameter}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
-                String loginToken = _market.Login(authToken, Username, password);
+                String loginToken = _market.Login(headerValue.Parameter, Username, password);
                 response = new Response<String>(loginToken);
                 log.Info($"SUCCESSFULY executed Login.");
             }
@@ -843,6 +854,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpGet("entersystem")]
         public Response<String> EnterSystem() // Generating token and returning it
         { //II.1.1
             Response<String> response;

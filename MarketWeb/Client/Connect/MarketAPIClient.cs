@@ -6,15 +6,19 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using MarketWeb.Shared.DTO;
+using MarketWeb.Client.Models.Account;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace MarketWeb.Client.Connect
 {
     public interface IMarketAPIClient
     {
-
+        public bool LoggedIn { get; }
         public Task<Response<string>> EnterSystem();
         public Task<Response> ExitSystem();
         public Task<Response<string>> Login(string username, string password);
+        public Task<Response<String>> Login(LoginModel loginModel);
+
         public Task<Response> Logout();
         public Task<Response<List<StoreDTO>>> GetAllActiveStores();
         public Task<Response> Register(string Username, string password, DateTime dob);
@@ -68,8 +72,9 @@ namespace MarketWeb.Client.Connect
     }
     public class MarketAPIClient : IMarketAPIClient
     {
+
         private IHttpService _httpService;
-        public bool LoggedIn;
+        public bool LoggedIn { get; private set; }
 
         private static MarketAPIClient instance = null;
         private MarketAPIClient()
@@ -94,8 +99,8 @@ namespace MarketWeb.Client.Connect
 
         public async Task<Response<string>> EnterSystem()
         {
-            Response<string> token = await _httpService.Get<Response<string>>("api/market/EnterSystem");
-            if (!token.ErrorOccured)
+            Response<String> token = await _httpService.Get<Response<String>>("api/market/entersystem");
+            if (!token.ErrorOccured && !LoggedIn)
             {
                 _httpService.Token = token.Value;
             }
@@ -109,13 +114,23 @@ namespace MarketWeb.Client.Connect
         }
         public async Task<Response<String>> Login(string username, string password)
         {
-            Response<String> token = await _httpService.Post<Response<String>>("api/market/Login", new { username = username, password = password });
+            const string url = "api/market/login";
+            var param = new Dictionary<string, string>() { { "username", username },{ "password", password } };
+
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+
+            Response<String> token = await _httpService.Post<Response<String>>(newUrl, null);
             if (!token.ErrorOccured)
             {
                 _httpService.Token = token.Value;
                 LoggedIn = true;
             }
             return token;
+        }
+
+        public async Task<Response<String>> Login(LoginModel loginModel)
+        {
+            return await Login(loginModel.Username, loginModel.Password);
         }
 
         public async Task<Response> Register(string username, string password, DateTime dob)

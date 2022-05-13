@@ -1,3 +1,4 @@
+using MarketProject.Domain;
 using MarketProject.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,8 +26,9 @@ namespace MarketWeb.Server
         {
 
             services.AddControllersWithViews();
-            services.AddRazorPages();
-            services.AddScoped<MarketAPI>();
+            services.AddRazorPages().AddNewtonsoftJson();
+            services.AddSingleton<MarketAPI>();
+            services.AddSingleton<Market>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

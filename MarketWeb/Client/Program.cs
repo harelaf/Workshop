@@ -1,5 +1,6 @@
 using MarketWeb.Client.Connect;
 using MarketWeb.Client.Helpers;
+using MarketWeb.Client.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,8 @@ namespace MarketWeb.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddScoped<IMarketAPIClient, MarketAPIClient>()
-                            .AddScoped<IHttpService, HttpService>();
+                            .AddScoped<IHttpService, HttpService>()
+                            .AddScoped<IAlertService, AlertService>();
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             await builder.Build().RunAsync();
