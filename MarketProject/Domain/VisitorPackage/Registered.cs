@@ -11,7 +11,7 @@ namespace MarketProject.Domain
         private String _username;
         public String Username=> _username;
         private String _password;
-        private DateTime _birthDate;
+        public DateTime _birthDate;
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
