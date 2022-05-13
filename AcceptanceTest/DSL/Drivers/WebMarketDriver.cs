@@ -47,7 +47,7 @@ namespace AcceptanceTest.DSL.Drivers
             throw new NotImplementedException();
         }
 
-        public void Register(string Username, string password)
+        public void Register(string Username, string password, DateTime birthDate)
         {
             throw new NotImplementedException();
         }

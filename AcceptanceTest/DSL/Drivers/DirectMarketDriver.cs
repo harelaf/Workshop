@@ -24,7 +24,7 @@ namespace AcceptanceTest.DSL.Drivers
         {
             // Register Buyer
             EnterSystem();
-            Register(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword);
+            Register(DefaultValues.BuyerUsername, DefaultValues.BuyerPassword, DefaultValues.BirthDate);
             ExitSystem();
         }
 
@@ -66,9 +66,9 @@ namespace AcceptanceTest.DSL.Drivers
             _errorMessage = null;
         }
 
-        public void Register(string Username, string password)
+        public void Register(string Username, string password, DateTime birthDate)
         {
-            Response response = _marketAPI.Register(_currentGuestToken, Username, password);
+            Response response = _marketAPI.Register(_currentGuestToken, Username, password, birthDate);
             if (response.ErrorOccured)
             {
                 _errorMessage = response.ErrorMessage;
