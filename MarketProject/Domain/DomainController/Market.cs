@@ -572,12 +572,14 @@ namespace MarketProject.Domain
                     _VisitorManagement.AddRole(managerUsername, newManager); }
         }
 
-        internal ICollection<AdminMessageToRegistered> GetRegisteredMessagesFromAdmin(string authToken)
+        public ICollection<AdminMessageToRegistered> GetRegisteredMessagesFromAdmin(string authToken)
         {
+            CheckIsVisitorLoggedIn(authToken, "GetRegisteredMessagesFromAdmin");
             return _VisitorManagement.getRegisteredMessages(authToken);
         }
-        internal ICollection<MessageToStore> GetRegisteredAnswerdStoreMessages(string authToken)
+        public ICollection<MessageToStore> GetRegisteredAnswerdStoreMessages(string authToken)
         {
+            CheckIsVisitorLoggedIn(authToken, "GetRegisteredAnswerdStoreMessages");
             return _VisitorManagement.GetRegisteredAnswerdStoreMessages(authToken);
         }
 
@@ -675,6 +677,7 @@ namespace MarketProject.Domain
 
         public ICollection<NotifyMessage> GetRegisteredMessagesNotofication(string authToken)
         {
+            CheckIsVisitorLoggedIn(authToken, "GetRegisteredMessagesNotofication");
             return _VisitorManagement.GetRegisteredMessagesNotofication(authToken);
         }
 
