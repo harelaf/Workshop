@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace MarketProject.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Rating _rating;
-        private ICollection<IDiscount> _discounts;
+        private ICollection<Discount> _discounts;
         private int _itemID;
         private String _name;
         public virtual double _price { get; set; }
@@ -16,7 +17,7 @@ namespace MarketProject.Domain
         private String _category;
 
         public Rating Rating => _rating;
-        public ICollection<IDiscount> Discounts => _discounts;
+        public ICollection<Discount> Discounts => _discounts;
         public int ItemID => _itemID;
         public String Name => _name;
         public String Description => _description;
@@ -31,7 +32,7 @@ namespace MarketProject.Domain
                 throw new Exception(errorMessage);
             }
             _rating = new Rating();
-            _discounts = new List<IDiscount>();
+            _discounts = new List<Discount>();
             _itemID = id;
             _name = name;
             _price = price;

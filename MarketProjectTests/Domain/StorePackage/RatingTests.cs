@@ -49,7 +49,7 @@ namespace MarketProject.Domain.Tests
             Username = "Mr. Krab";
             _rating.AddRating(Username, rating, review);
 
-            float result = _rating.GetRating();
+            double result = _rating.GetRating();
 
             Assert.AreEqual(result, 5.0);
         }

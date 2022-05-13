@@ -1,4 +1,4 @@
-﻿
+﻿using MarketProject.Domain;
 using System;
 
 namespace MarketWebProject.DTO
@@ -17,12 +17,24 @@ namespace MarketWebProject.DTO
         private String _message;
         public String Message => _message;
 
-        public MessageToStoreDTO(string storeName, string senderUsername, string title, string message)
+        private string _reply;
+        public String Reply => _reply;
+
+        private string _replier;
+        public String Replier => _replier;
+
+        private int _id;
+        public int Id => _id;
+
+        public MessageToStoreDTO()
         {
-            _storeName = storeName;
-            _senderUsername = senderUsername;
-            _title = title;
-            _message = message;
+            _storeName = "testStoreName";
+            _senderUsername = "testSenderUsername";
+            _title = "testTitle";
+            _message = "testMessage";
+            _reply = "testReply";
+            _replier = "testReplier";
+            _id = 1;
         }
     }
 }

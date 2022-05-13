@@ -10,9 +10,8 @@ namespace MarketProject.Domain
         private string _appointer;
         public string Appointer => _appointer;
 
-        public StoreManager(string Username, string storeName, string appointer) : base(getOps(), Username)
+        public StoreManager(string Username, string storeName, string appointer) : base(getOps(), Username, storeName)
         {
-            StoreName = storeName;
             _appointer = appointer;
         }
 
@@ -37,7 +36,10 @@ namespace MarketProject.Domain
             };
             if (!optOps.Contains(op))
                 throw new Exception("the operation you wish to permit is illegal for store manager.");
-            operations.Add(op); 
+            lock (operations)
+            {
+                operations.Add(op);
+            }
             return true;
         }
 
@@ -53,7 +55,10 @@ namespace MarketProject.Domain
                 throw new Exception("the store name is incorrect.");
             if (!_appointer.Equals(denier))
                 throw new Exception("store-manager permissions can be changed by appointer only."); 
-            operations.Remove(op);
+            lock (operations)
+            {
+                operations.Remove(op);
+            }
             return true;
         }
 
@@ -67,6 +72,11 @@ namespace MarketProject.Domain
             roles.Add(Operation.RECEIVE_AND_REPLY_STORE_MESSAGE);
             roles.Add(Operation.STORE_HISTORY_INFO);
             return roles;
+        }
+
+        internal bool isAppointer(string appointerUsername)
+        {
+            return Appointer.Equals(appointerUsername);
         }
     }
 }

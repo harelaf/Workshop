@@ -13,6 +13,12 @@ namespace MarketWebProject.DTO
         public DateTime Date=> _date;
         public ShoppingCartDTO ShoppingCart => _shoppingCart;
 
+        public PurchasedCartDTO()
+        {
+            _date = DateTime.Now;
+            _shoppingCart = new ShoppingCartDTO();
+        }
+
         
         public String ToString()
         {

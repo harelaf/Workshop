@@ -3,6 +3,7 @@ using MarketProject.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketProject.Domain.PurchasePackage.DiscountPackage;
 
 namespace MarketProject.Domain.Tests
 {
@@ -200,7 +201,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _storeManagement.SendMessageToStore(Username, storeName, title, message);
+                _storeManagement.SendMessageToStore(Username, storeName, title, message, 20);
             }
             catch (Exception)
             {
@@ -217,7 +218,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _storeManagement.SendMessageToStore(Username, storeName, title, message);
+                _storeManagement.SendMessageToStore(Username, storeName, title, message, 5);
                 Assert.Fail();
             }
             catch (Exception)
@@ -270,7 +271,7 @@ namespace MarketProject.Domain.Tests
         public void AddStoreOwner_removeAsManagerAddAsOwner_returnsTrue()
         {
             bool arrange = _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName);
-            arrange = arrange & _storeManagement.RemoveStoreManager(Username, storeName);
+            arrange = arrange & _storeManagement.RemoveStoreManager(Username, storeName, founder);
 
             bool act = _storeManagement.AddStoreOwner(new StoreOwner(Username, storeName, founder), storeName);
 
@@ -290,28 +291,26 @@ namespace MarketProject.Domain.Tests
             string storeManager = "tommy shelby";
             bool add = _storeManagement.AddStoreManager(new StoreManager(storeManager, storeName, founder), storeName);
 
-            bool actual = _storeManagement.RemoveStoreManager(storeManager, storeName);
+            bool actual = _storeManagement.RemoveStoreManager(storeManager, storeName, founder);
             Assert.IsTrue(add);
             Assert.IsTrue(actual);
         }
         [TestMethod()]
         public void RemoveStoreManager_removeFounder_returnsfalse()
         {
-            bool actual = _storeManagement.RemoveStoreManager(founder, storeName);
-            Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(founder, storeName, founder));
         }
 
         [TestMethod()]
         public void RemoveStoreManager_NonWorker_returnsfalse()
         {
-            bool actual = _storeManagement.RemoveStoreManager("123", storeName);
-            Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager("123", storeName, founder));
         }
 
         [TestMethod]
         public void RemoveStoreManager_NonStore_returnsfalse()
         {
-            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(Username, storeName + "123"));
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(Username, storeName + "123", founder));
         }
 
         [TestMethod()]
@@ -320,22 +319,20 @@ namespace MarketProject.Domain.Tests
             string storeOwner = "amos";
             bool add = _storeManagement.AddStoreOwner(new StoreOwner(storeOwner, storeName, founder), storeName);
 
-            bool actual = _storeManagement.RemoveStoreOwner(storeOwner, storeName);
+            bool actual = _storeManagement.RemoveStoreOwner(storeOwner, storeName, founder);
             Assert.IsTrue(add);
             Assert.IsTrue(actual);
         }
         [TestMethod()]
         public void RemoveStoreOwner_removeFounder_returnsfalse()
         {
-            bool actual = _storeManagement.RemoveStoreOwner(founder, storeName);
-            Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreOwner(founder, storeName, founder));
         }
 
         [TestMethod()]
         public void RemoveStoreOwner_NonWorker_returnsfalse()
         {
-            bool actual = _storeManagement.RemoveStoreOwner("123", storeName);
-            Assert.IsFalse(actual);
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreOwner("123", storeName, founder));
         }
     }
 }

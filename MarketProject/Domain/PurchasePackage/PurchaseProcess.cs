@@ -55,20 +55,20 @@ namespace MarketProject.Domain
         }
         private double CalculatePrice(ShoppingCart shoppingCart)
         {
-            double price = 0;
-            foreach( ShoppingBasket shoppingBasket in shoppingCart._shoppingBaskets)
-            {
-                foreach(Item item in shoppingBasket.GetItems())
-                {
-                    lock (item)
-                    {
-                        int itemQuantity = shoppingBasket.GetAmountOfItem(item);
-                        price += itemQuantity* item._price;
-                    }
-                    
-                }
-            }
-            return price;
+            //double price = 0;
+            //foreach (ShoppingBasket shoppingBasket in shoppingCart._shoppingBaskets)
+            //{
+            //    foreach (Item item in shoppingBasket.GetItems())
+            //    {
+            //        lock (item)
+            //        {
+            //            int itemQuantity = shoppingBasket.GetAmountOfItem(item);
+            //            price += itemQuantity * item._price;
+            //        }
+            //    }
+            //}
+            //return price;
+            return shoppingCart.getActualPrice();
         }
 
         private void LogErrorMessage(String functionName, String message)

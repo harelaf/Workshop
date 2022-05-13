@@ -18,6 +18,11 @@ namespace MarketWebProject.DTO
         private String _appointer;
         public String Appointer => _appointer;
 
-
+        public StoreOwnerDTO(string storeName, string username, string appointer)
+        {
+            _storeName = storeName;
+            _Username = username;
+            _appointer = appointer;
+        }
     }
 }

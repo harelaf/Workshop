@@ -1,4 +1,5 @@
 ﻿using MarketProject.Domain;
+using MarketProject.Domain.PurchasePackage.DiscountPackage;
 using MarketProject.Service.DTO;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,11 @@ namespace MarketProject.Service
                 response = new Response<String>(null, e);
             }
             return response;
+        }
+
+        public Registered getUser(string store_founder_token)
+        {
+            return _market.getUser(store_founder_token);
         }
 
         /// <summary>
@@ -462,13 +468,13 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response SendMessageToStore(String authToken, String storeName, String title, String description)
+        public Response SendMessageToStore(String authToken, String storeName, String title, String description, int id)
         {//II.3.5
             Response response;
             try
             {
                 log.Info($"Send Message To Store called with parameters: authToken={authToken}, storeName={storeName}, title={title}, description={description}.");
-                _market.SendMessageToStore(authToken,storeName, title, description);
+                _market.SendMessageToStore(authToken,storeName, title, description, id);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Send Message To Store.");
             }
@@ -716,32 +722,68 @@ namespace MarketProject.Service
             }
             return response;
         }
-        public Response<ICollection<MessageToRegisteredDTO>> GetRegisteredMessages(String authToken)
+        public Response<ICollection<AdminMessageToRegisteredDTO>> GetRegisteredMessagesFromAdmin(String authToken)
         {//II.4.12
             //should return with id
-            Response<ICollection<MessageToRegisteredDTO>> response;
+            Response<ICollection<AdminMessageToRegisteredDTO>> response;
             try
             {
-                ICollection<MessageToRegistered> messages = _market.GetRegisteredMessages(authToken);
-                ICollection<MessageToRegisteredDTO> messagesDTOs = new List<MessageToRegisteredDTO>();
-                foreach (MessageToRegistered message in messages)
-                    messagesDTOs.Add(new MessageToRegisteredDTO(message));
-                response = new Response<ICollection<MessageToRegisteredDTO>>(messagesDTOs);
+                ICollection<AdminMessageToRegistered> messages = _market.GetRegisteredMessagesFromAdmin(authToken);
+                ICollection<AdminMessageToRegisteredDTO> messagesDTOs = new List<AdminMessageToRegisteredDTO>();
+                foreach (AdminMessageToRegistered message in messages)
+                    messagesDTOs.Add(new AdminMessageToRegisteredDTO(message));
+                response = new Response<ICollection<AdminMessageToRegisteredDTO>>(messagesDTOs);
             }
             catch (Exception e)
             {
-                response = new Response<ICollection<MessageToRegisteredDTO>>(e);
+                response = new Response<ICollection<AdminMessageToRegisteredDTO>>(e);
+            }
+            return response;
+        }
+        public Response<ICollection<MessageToStoreDTO>> GetRegisterAnsweredStoreMessages(String authToken)
+        {//II.4.12
+            //should return with id
+            Response<ICollection<MessageToStoreDTO>> response;
+            try
+            {
+                ICollection<MessageToStore> messages = _market.GetRegisteredAnswerdStoreMessages(authToken);
+                ICollection<MessageToStoreDTO> messagesDTOs = new List<MessageToStoreDTO>();
+                foreach (MessageToStore message in messages)
+                    messagesDTOs.Add(new MessageToStoreDTO(message));
+                response = new Response<ICollection<MessageToStoreDTO>>(messagesDTOs);
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<MessageToStoreDTO>>(e);
+            }
+            return response;
+        }
+        public Response<ICollection<NotifyMessageDTO>> GetRegisteredMessagesNotofication(String authToken)
+        {//II.4.12
+            //should return with id
+            Response<ICollection<NotifyMessageDTO>> response;
+            try
+            {
+                ICollection<NotifyMessage> messages = _market.GetRegisteredMessagesNotofication(authToken);
+                ICollection<NotifyMessageDTO> messagesDTOs = new List<NotifyMessageDTO>();
+                foreach (NotifyMessage message in messages)
+                    messagesDTOs.Add(new NotifyMessageDTO(message));
+                response = new Response<ICollection<NotifyMessageDTO>>(messagesDTOs);
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<NotifyMessageDTO>>(e);
             }
             return response;
         }
 
-        public Response AnswerStoreMesseage(String authToken, String storeName, string recieverUsername, String title, String reply)
+        public Response AnswerStoreMesseage(string authToken, string receiverUsername, int msgID, string storeName, string reply)
         {//II.4.12
             Response response;
             try
             {
-                log.Info($"Answer Store Message called with parameters: authToken={authToken}, storeName={storeName}, recieverUsername={recieverUsername}, title={title}, reply={reply}.");
-                _market.AnswerStoreMesseage(authToken, storeName, recieverUsername, title, reply);
+                log.Info($"Answer Store Message called with parameters: authToken={authToken}, msgId={msgID},storeName={storeName} reply={reply}.");
+                _market.AnswerStoreMesseage(authToken, receiverUsername, msgID, storeName, reply);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Answer Store Message.");
             }
@@ -825,19 +867,63 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response SendMessageToRegisterd(String authToken, String storeName, String UsernameReciever, String title, String message)
+        public Response SendMessageToRegisterd(String authToken, String UsernameReciever, String title, String message)
         {//II.6.3
             Response response;
             try
             {
-                log.Info($"Send Message To Registered called with parameters: authToken={authToken}, storeName={storeName}, UsernameReciever={UsernameReciever}, title={title}, message={message}.");
-                _market.SendMessageToRegisterd(storeName, UsernameReciever, title, message);
+                log.Info($"Send Message To Registered called with parameters: authToken={authToken},  UsernameReciever={UsernameReciever}, title={title}, message={message}.");
+                _market.SendAdminMessageToRegisterd(authToken, UsernameReciever, title, message);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Send Message To Registered.");
             }
             catch (Exception e)
             {
                 response = new Response(e);
+            }
+            return response;
+        }
+
+        public Response<List<StoreDTO>> GetStoresOfUser(String authToken)
+        {
+            Response<List<StoreDTO>> response;
+            try
+            {
+                log.Info($"Get Stores Of User called with parameters: authToken={authToken}.");
+                List<Store> stores = _market.GetStoresOfUser(authToken);
+                List<StoreDTO> storesDTO = new List<StoreDTO>();
+                foreach(Store store in stores)
+                {
+                    storesDTO.Add(new StoreDTO(store));
+                }
+                response = new Response<List<StoreDTO>>(storesDTO);
+                log.Info($"SUCCESSFULY executed Get Stores Of User.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<StoreDTO>>(e);
+            }
+            return response;
+        }
+
+        public Response<List<StoreDTO>> GetAllActiveStores(String authToken)
+        {
+            Response<List<StoreDTO>> response;
+            try
+            {
+                log.Info($"Get All Active Stores called with parameters: authToken={authToken}.");
+                List<Store> stores = _market.GetAllActiveStores(authToken);
+                List<StoreDTO> storesDTO = new List<StoreDTO>();
+                foreach (Store store in stores)
+                {
+                    storesDTO.Add(new StoreDTO(store));
+                }
+                response = new Response<List<StoreDTO>>(storesDTO);
+                log.Info($"SUCCESSFULY executed Get All Active Stores.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<StoreDTO>>(e);
             }
             return response;
         }
@@ -885,6 +971,88 @@ namespace MarketProject.Service
                 _market.AppointSystemAdmin(authToken, adminUsername);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Appoint System Admin.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
+        }
+
+        public Response AddStoreDiscount(String authToken, String storeName, IDiscountDTO discount_dto)
+        {
+            Response response;
+            try
+            {
+                /////////// is log should keep the whole description of the discount??????
+                log.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName} and the actual discount.");
+                Discount discount = new dtoDiscountConverter().convertDiscount(discount_dto);
+                _market.AddStoreDiscount(authToken, storeName, discount);
+                response = new Response();
+                log.Info($"SUCCESSFULY executed Add Store Discount.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e);
+            }
+            return response;
+        }
+
+        public Response<Double> CalcCartActualPrice(String authToken)
+        {
+            Response<Double> response;
+            try
+            {
+                log.Info($"calculate shopping cart actual price - called with parameters: authToken={authToken}.");
+                Double price = _market.CalcCartActualPrice(authToken);
+                response = new Response<Double>(price);
+                log.Info($"SUCCESSFULY executed Calculate Cart Actual Price.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<Double>(e);
+            }
+            return response;
+        }
+
+        public Response<String> GetCartReceipt(String authToken)
+        {
+            Response<String> response;
+            try
+            {
+                log.Info($"get current cart info - called with parameters: authToken={authToken}.");
+                String receipt = _market.GetCartReceipt(authToken);
+                response = new Response<String>(receipt);
+                log.Info($"SUCCESSFULY executed Get Cart Receipt.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<String>(e);
+            }
+            return response;
+        }
+
+        public Response HasPermission(string userToken, string storeName, string op)
+        {
+            Response response;
+            try
+            {
+                _market.HasPermission(storeName, userToken, op);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response( e);
+            }
+            return response;
+        }
+        public Response IsStoreActive(string userToken, string storeName, string op)
+        {
+            Response response;
+            try
+            {
+                _market.HasPermission(storeName, userToken, op);
+                response = new Response();
             }
             catch (Exception e)
             {

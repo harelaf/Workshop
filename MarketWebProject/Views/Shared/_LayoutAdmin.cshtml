@@ -23,10 +23,16 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AdministrationPage"><font color="red">Administration</font></a>
                         </li>
                     </ul>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="OpenNewStorePage">Open New Store</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="MyMessages">My Messages</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="MyPurchaseHistory">My Purchase History</a>
                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="MyProfile">
+                        <img alt="profile" src="https://icons-for-free.com/iconfiles/png/512/avatar+human+man+profile+icon-1320085876716628234.png" width="40" height="40" />
+                    </a>
                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CartPage">
                         <img alt="cart" src="https://i.pinimg.com/originals/15/4f/df/154fdf2f2759676a96e9aed653082276.png" width="40" height="40">
                     </a>
@@ -42,7 +48,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2022 - MarketWebProject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2022 - MarketWebProject -
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

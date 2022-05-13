@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public class ShoppingCart
+    public class ShoppingCart : ISearchablePriceable
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual ICollection<ShoppingBasket> _shoppingBaskets { get; set; }
@@ -18,7 +18,7 @@ namespace MarketProject.Domain
         {
             foreach (ShoppingBasket basket in _shoppingBaskets)
             {
-                if (basket.Store.StoreName == storeName)
+                if (basket.Store().StoreName == storeName)
                     return basket;
             }
             return null;
@@ -50,12 +50,84 @@ namespace MarketProject.Domain
         public virtual void RelaseItemsOfCart()
         {
             foreach (ShoppingBasket basket in _shoppingBaskets)
-                basket.Store.RestockBasket(basket);
+                basket.Store().RestockBasket(basket);
         }
 
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in ShoppingCart.{functionName}. Cause: {message}.");
+        }
+
+        public int SearchItemAmount(string itemName)
+        {
+            int result = 0;
+            foreach(ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.SearchItemAmount(itemName);
+            }
+            return result;
+        }
+
+        public int SearchCategoryAmount(string category)
+        {
+            int result = 0;
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.SearchCategoryAmount(category);
+            }
+            return result;
+        }
+
+        //before discounts
+        public double GetTotalPrice()
+        {
+            double result = 0;
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.GetTotalPrice();
+            }
+            return result;
+        }
+
+        public double GetItemPrice(string itemName)
+        {
+            double result = 0;
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.GetItemPrice(itemName);
+            }
+            return result;
+        }
+
+        public double GetCategoryPrice(string category)
+        {
+            double result = 0;
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                result += shoppingBasket.GetCategoryPrice(category);
+            }
+            return result;
+        }
+
+        internal double getActualPrice()
+        {
+            double actualPrice = 0;
+            foreach(ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                actualPrice += shoppingBasket.getActualPrice();
+            }
+            return actualPrice;
+        }
+
+        internal string GetCartReceipt()
+        {
+            String cartReceipt = "";
+            ////////////////////////
+            foreach(ShoppingBasket shoppingBasket in _shoppingBaskets)
+            {
+                cartReceipt += shoppingBasket.GetBasketReceipt() + "\n";
+            }
+            return cartReceipt;
         }
     }
 }
