@@ -15,15 +15,13 @@ namespace MarketWeb.Client.Connect
     {
         public bool LoggedIn { get; }
         public Task<Response<string>> EnterSystem();
-
         public Task<Response> ExitSystem();
         public Task<Response<string>> Login(string username, string password);
         public Task<Response<String>> Login(LoginModel loginModel);
 
         public Task<Response> Logout();
-
         public Task<Response> Register(string Username, string password, DateTime dob);
-        public Response RemoveRegisteredVisitor(String usr_toremove);
+        public Task<Response> RemoveRegisteredVisitorAsync(String usr_toremove);
         public Task<Response> AddItemToCart(int itemID, String storeName, int amount);
         public Task<Response> RemoveItemFromCart(int itemID, String storeName);
         public Task<Response> UpdateQuantityOfItemInCart(int itemID, String storeName, int newQuantity);
@@ -92,7 +90,8 @@ namespace MarketWeb.Client.Connect
 
         public async Task<Response> ExitSystem()
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Get<Response>("api/market/ExitSystem");
+            return res;
         }
         public async Task<Response<String>> Login(string username, string password)
         {
@@ -117,231 +116,304 @@ namespace MarketWeb.Client.Connect
 
         public async Task<Response> Register(string Username, string password, DateTime dob)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response<String>>("api/market/Register", new { username = username, password = password, dob = dob });
+            return res;
         }
 
         public async Task<Response> Logout()
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Get<Response>("api/market/Logout");
+            return res;
         }
 
-        public Response RemoveRegisteredVisitor(string usr_toremove)
+        public async Task<Response> RemoveRegisteredVisitorAsync(string usr_toremove)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Get<Response>("api/market/RemoveRegisteredVisitor");
+            return res;
         }
 
-        public Task<Response> AddItemToCart(int itemID, string storeName, int amount)
+        public async Task<Response> AddItemToCart(int itemID, string storeName, int amount)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/AddItemToCart", new { itemID = itemID, storeName = storeName, amount = amount });
+            return res;
         }
 
-        public Task<Response> RemoveItemFromCart(int itemID, string storeName)
+        public async Task<Response> RemoveItemFromCart(int itemID, string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/RemoveItemFromCart", new { itemID = itemID, storeName = storeName});
+            return res;
         }
 
-        public Task<Response> UpdateQuantityOfItemInCart(int itemID, string storeName, int newQuantity)
+        public async Task<Response> UpdateQuantityOfItemInCart(int itemID, string storeName, int newQuantity)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/UpdateQuantityOfItemInCart", new { itemID = itemID, storeName = storeName, newQuantity = newQuantity });
+            return res;
         }
 
-        public Task<Response<ShoppingCartDTO>> ViewMyCart()
+        public async Task<Response<ShoppingCartDTO>> ViewMyCart()
         {
-            throw new NotImplementedException();
+            Response <ShoppingCartDTO> res = await _httpService.Get<Response<ShoppingCartDTO>>("api/market/ViewMyCart");
+            return res;
         }
 
-        public Task<Response> PurchaseMyCart(string address, string city, string country, string zip, string purchaserName, string paymentMethode, string shipmentMethode)
+        public async Task<Response> PurchaseMyCart(string address, string city, string country, string zip, string purchaserName, string paymentMethode, string shipmentMethode)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/PurchaseMyCart", new {
+                address = address,
+                city = city,
+                country = country,
+                zip = zip,
+                purchaserName = purchaserName,
+                paymentMethode = paymentMethode,
+                shipmentMethod = shipmentMethode
+            });
+            return res;
         }
 
-        public Task<Response> OpenNewStore(string storeName)
+        public async Task<Response> OpenNewStore(string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new {storeName = storeName});
+            return res;
         }
 
-        public Task<Response> AddStoreManager(string managerUsername, string storeName)
+        public async Task<Response> AddStoreManager(string managerUsername, string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/AddStoreManager", new { managerUsername = managerUsername, storeName = storeName });
+            return res;
         }
 
-        public Task<Response> AddStoreOwner(string ownerUsername, string storeName)
+        public async Task<Response> AddStoreOwner(string ownerUsername, string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/AddStoreOwner", new { ownerUsername= ownerUsername, storeName = storeName });
+            return res;
         }
 
-        public Task<Response> RemoveStoreOwner(string ownerUsername, string storeName)
+        public async Task<Response> RemoveStoreOwner(string ownerUsername, string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/RemoveStoreOwner", new { ownerUsername= ownerUsername, storeName = storeName });
+            return res;
         }
 
-        public Task<Response> RemoveStoreManager(string managerUsername, string storeName)
+        public async Task<Response> RemoveStoreManager(string managerUsername, string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/RemoveStoreManager", new { managerUsername= managerUsername, storeName = storeName });
+            return res;
         }
 
-        public Task<Response> AddItemToStoreStock(string storeName, int itemID, string name, double price, string description, string category, int quantity)
+        public async Task<Response> AddItemToStoreStock(string storeName, int itemID, string name, double price, string description, string category, int quantity)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/AddItemToStoreStock", new { storeName = storeName,
+                itemID = itemID,
+                name = name,
+                price = price,
+                description = description,
+                category = category,
+                quantit = quantity
+            });
+
+            return res;
         }
 
-        public Task<Response> RemoveItemFromStore(string storeName, int itemID)
+        public async Task<Response> RemoveItemFromStore(string storeName, int itemID)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/RemoveItemFromStore", new { storeName = storeName, itemID = itemID });
+            return res;
         }
 
-        public Task<Response> UpdateStockQuantityOfItem(string storeName, int itemID, int newQuantity)
+        public async Task<Response> UpdateStockQuantityOfItem(string storeName, int itemID, int newQuantity)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/UpdateStockQuantityOfItem", new { storeName = storeName, itemID = itemID, newQuantity = newQuantity});
+            return res;
         }
 
-        public Task<Response> EditItemPrice(string storeName, int itemID, double newPrice)
+        public async Task<Response> EditItemPrice(string storeName, int itemID, double newPrice)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/EditItemPrice", new { storeName = storeName, itemID= itemID, newPrice = newPrice });
+            return res;
         }
 
-        public Task<Response> EditItemName(string storeName, int itemID, string newName)
+        public async Task<Response> EditItemName(string storeName, int itemID, string newName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/EditItemName", 
+                new { storeName = storeName, itemID=itemID, newName=newName });
+            return res;
         }
 
-        public Task<Response> EditItemDescription(string storeName, int itemID, string newDescription)
+        public async Task<Response> EditItemDescription(string storeName, int itemID, string newDescription)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/EditItemDescription",
+                new { storeName = storeName , itemID = itemID, newDescription= newDescription});
+            return res;
         }
 
-        public Task<Response> RateItem(int itemID, string storeName, int rating, string review)
+        public async Task<Response> RateItem(int itemID, string storeName, int rating, string review)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/RateItem",
+                new {itemID = itemID ,storeName = storeName, rating = rating, review = review });
+            return res;
         }
 
-        public Task<Response> RateStore(string storeName, int rating, string review)
+        public async Task<Response> RateStore(string storeName, int rating, string review)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/RateStore", 
+                new { storeName = storeName, rating=rating, review = review });
+            return res;
         }
 
-        public Task<Response<StoreDTO>> GetStoreInformation(string storeName)
+        public async Task<Response<StoreDTO>> GetStoreInformation(string storeName)
         {
-            throw new NotImplementedException();
+            Response<StoreDTO> res = await _httpService.Post<Response<StoreDTO>>("api/market/GetStoreInformation",
+                new { storeName= storeName });
+            return res;
         }
 
-        public Task<Response<List<ItemDTO>>> GetItemInformation(string itemName, string itemCategory, string keyWord)
+        public async Task<Response<List<ItemDTO>>> GetItemInformation(string itemName, string itemCategory, string keyWord)
         {
-            throw new NotImplementedException();
+            Response<List<ItemDTO>> res = await _httpService.Post<Response<List<ItemDTO>>>("api/market/GetItemInformation", 
+                new { itemName = itemName, itemCategory = itemCategory, keyWord=keyWord });
+            return res;
         }
 
-        public Task<Response> SendMessageToStore(string storeName, string title, string description)
+        public async Task<Response> SendMessageToStore(string storeName, string title, string description)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/SendMessageToStore", new { storeName = storeName, title=title, description=description });
+            return res;
         }
 
-        public Task<Response> FileComplaint(int cartID, string message)
+        public async Task<Response> FileComplaint(int cartID, string message)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/FileComplaint", new { cartID = cartID, message=message });
+            return res;
         }
 
-        public Task<Response<ICollection<PurchasedCartDTO>>> GetMyPurchasesHistory()
+        public async Task<Response<ICollection<PurchasedCartDTO>>> GetMyPurchasesHistory()
         {
-            throw new NotImplementedException();
+            Response<ICollection<PurchasedCartDTO>> res = await _httpService.Get<Response<ICollection<PurchasedCartDTO>>>("api/market/GetMyPurchasesHistory");
+            return res;
         }
 
-        public Task<Response<RegisteredDTO>> GetVisitorInformation()
+        public async Task<Response<RegisteredDTO>> GetVisitorInformation()
         {
-            throw new NotImplementedException();
+            Response<RegisteredDTO> res = await _httpService.Get<Response<RegisteredDTO>>("api/market/GetVisitorInformation");
+            return res;
         }
 
-        public Task<Response> EditVisitorPassword(string oldPassword, string newPassword)
+        public async Task<Response> EditVisitorPassword(string oldPassword, string newPassword)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/EditVisitorPassword", new { oldPassword = oldPassword, newPassword= newPassword });
+            return res;
         }
 
-        public Task<Response> RemoveManagerPermission(string managerUsername, string storeName, string op)
+        public async Task<Response> RemoveManagerPermission(string managerUsername, string storeName, string op)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/RemoveManagerPermission", new { managerUsername = managerUsername, storeName = storeName, op = op });
+            return res;
         }
 
-        public Task<Response> AddManagerPermission(string managerUsername, string storeName, string op)
+        public async Task<Response> AddManagerPermission(string managerUsername, string storeName, string op)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/AddManagerPermission", new { managerUsername= managerUsername, storeName = storeName, op=op });
+            return res;
         }
 
-        public Task<Response> CloseStore(string storeName)
+        public async Task<Response> CloseStore(string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/CloseStore", new { storeName = storeName });
+            return res;
         }
 
-        public Task<Response> ReopenStore(string storeName)
+        public async Task<Response> ReopenStore(string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/ReopenStore", new { storeName = storeName });
+            return res;
         }
 
-        public Task<Response<List<StoreOwnerDTO>>> GetStoreOwners(string storeName)
+        public async Task<Response<List<StoreOwnerDTO>>> GetStoreOwners(string storeName)
         {
-            throw new NotImplementedException();
+            Response<List<StoreOwnerDTO>> res = await _httpService.Post<Response<List<StoreOwnerDTO>>>("api/market/GetStoreOwners", new { storeName = storeName });
+            return res;
         }
 
-        public Task<Response<List<StoreManagerDTO>>> GetStoreManagers(string storeName)
+        public async Task<Response<List<StoreManagerDTO>>> GetStoreManagers(string storeName)
         {
-            throw new NotImplementedException();
+            Response<List<StoreManagerDTO>> res = await _httpService.Post<Response<List<StoreManagerDTO>>>("api/market/GetStoreManagers", new { storeName = storeName });
+            return res;
         }
 
-        public Task<Response<StoreFounderDTO>> GetStoreFounder(string storeName)
+        public async Task<Response<StoreFounderDTO>> GetStoreFounder(string storeName)
         {
-            throw new NotImplementedException();
+            Response<StoreFounderDTO> res = await _httpService.Post<Response<StoreFounderDTO>>("api/market/GetStoreFounder",
+                new { storeName = storeName });
+            return res;
         }
 
-        public Task<Response<Queue<MessageToStoreDTO>>> GetStoreMessages(string storeName)
+        public async Task<Response<Queue<MessageToStoreDTO>>> GetStoreMessages(string storeName)
         {
-            throw new NotImplementedException();
+            Response<Queue<MessageToStoreDTO>> res = await _httpService.Post<Response<Queue<MessageToStoreDTO>>>("api/market/GetStoreMessages",
+                new { storeName = storeName } );
+            return res;
         }
 
-        public Task<Response> AnswerStoreMesseage(string storeName, string recieverUsername, string title, string reply)
+        public async Task<Response> AnswerStoreMesseage(string storeName, string recieverUsername, string title, string reply)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/AnswerStoreMesseage", 
+                new { storeName = storeName, recieverUsername = recieverUsername, title = title, reply= reply });
+            return res;
         }
 
-        public Task<Response<List<Tuple<DateTime, ShoppingBasketDTO>>>> GetStorePurchasesHistory(string storeName)
+        public async Task<Response<List<Tuple<DateTime, ShoppingBasketDTO>>>> GetStorePurchasesHistory(string storeName)
         {
-            throw new NotImplementedException();
+            Response<List<Tuple<DateTime, ShoppingBasketDTO>>> res = await _httpService.Post<Response<List<Tuple<DateTime, ShoppingBasketDTO>>>>("api/market/GetStorePurchasesHistory", new { storeName = storeName });
+            return res;
         }
 
-        public Task<Response> CloseStorePermanently(string storeName)
+        public async Task<Response> CloseStorePermanently(string storeName)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/CloseStorePermanently", new { storeName = storeName });
+            return res;
         }
 
-        public Task<Response<ComplaintDTO>> GetRegisterdComplaints()
+        public async Task<Response<ComplaintDTO>> GetRegisterdComplaints()
         {
-            throw new NotImplementedException();
+            Response<ComplaintDTO> res = await _httpService.Get<Response<ComplaintDTO>>("api/market/GetRegisterdComplaints");
+            return res;
         }
 
-        public Task<Response> ReplyToComplaint(int complaintID, string reply)
+        public async Task<Response> ReplyToComplaint(int complaintID, string reply)
         {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/ReplyToComplaint", new { complaintID = complaintID, reply = reply });
+            return res;
         }
 
-        public Task<Response> SendMessageToRegisterd(string storeName, string UsernameReciever, string title, string message)
+        public async Task<Response> SendMessageToRegisterd(string storeName, string UsernameReciever, string title, string message)
         {
-            throw new NotImplementedException();
-        }
-        public Task<Response<ICollection<AdminMessageToRegisteredDTO>>> GetRegisteredMessagesFromAdmin()
-        {
-            throw new NotImplementedException();
+            Response res = await _httpService.Post<Response>("api/market/SendMessageToRegisterd",
+                new { storeName = storeName, UsernameReciever = UsernameReciever, title=title, message=message});
+            return res;
         }
 
-        public Task<Response<ICollection<MessageToStoreDTO>>> GetRegisterAnsweredStoreMessages()
+        public async Task<Response<ICollection<AdminMessageToRegisteredDTO>>> GetRegisteredMessagesFromAdmin()
         {
-            throw new NotImplementedException();
+            Response<ICollection<AdminMessageToRegisteredDTO>> res = await _httpService.Get<Response<ICollection<AdminMessageToRegisteredDTO>>>("api/market/GetRegisteredMessagesFromAdmin");
+            return res;
         }
 
-        public Task<Response<ICollection<NotifyMessageDTO>>> GetRegisteredMessagesNotofication()
+        public async Task<Response<ICollection<MessageToStoreDTO>>> GetRegisterAnsweredStoreMessages()
         {
-            throw new NotImplementedException();
+            Response<ICollection<MessageToStoreDTO>> res = await _httpService.Get<Response<ICollection<MessageToStoreDTO>>>("api/market/GetRegisterAnsweredStoreMessages");
+            return res;
         }
 
-        public Task<Response> AppointSystemAdmin(string adminUsername)
+        public async Task<Response<ICollection<NotifyMessageDTO>>> GetRegisteredMessagesNotofication()
         {
-            throw new NotImplementedException();
+            Response<ICollection<NotifyMessageDTO>> res = await _httpService.Get<Response<ICollection<NotifyMessageDTO>>>("api/market/GetRegisteredMessagesNotofication");
+            return res;
+        }
+
+        public async Task<Response> AppointSystemAdmin(string adminUsername)
+        {
+            Response res = await _httpService.Post<Response>("api/market/AppointSystemAdmin", new { adminUsername = adminUsername});
+            return res;
         }
     }
 }
