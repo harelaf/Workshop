@@ -1,6 +1,7 @@
 using MarketWeb.Client.Connect;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -85,7 +86,7 @@ namespace MarketWeb.Client.Helpers
         {
             var request = new HttpRequestMessage(method, uri);
             if (value != null)
-                request.Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
+                request.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
             return request;
         }
 
@@ -121,11 +122,8 @@ namespace MarketWeb.Client.Helpers
             }
 
             await handleErrors(response);
-
-            var options = new JsonSerializerOptions();
-            options.PropertyNameCaseInsensitive = true;
-            options.Converters.Add(new StringConverter());
-            return await response.Content.ReadFromJsonAsync<T>(options);
+            string jsonString = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(jsonString);
         }
 
         private async Task addJwtHeader(HttpRequestMessage request)

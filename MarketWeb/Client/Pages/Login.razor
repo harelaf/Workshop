@@ -2,6 +2,7 @@
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
 @using MarketWeb.Client.Services
+@using MarketWeb.Shared
 @inject IMarketAPIClient MarketAPIClient
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
@@ -45,7 +46,11 @@
         loading = true;
         try
         {
-            await MarketAPIClient.Login(model);
+            Response<string> response = await MarketAPIClient.Login(model);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
             // var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
             var returnUrl = "";
             NavigationManager.NavigateTo(returnUrl);

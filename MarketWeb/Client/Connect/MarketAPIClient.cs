@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using MarketWeb.Shared.DTO;
 using MarketWeb.Client.Models.Account;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace MarketWeb.Client.Connect
 {
@@ -81,8 +82,8 @@ namespace MarketWeb.Client.Connect
 
         public async Task<Response<string>> EnterSystem()
         {
-            Response<string> token = await _httpService.Get<Response<string>>("api/users/enter");
-            if (!token.ErrorOccured)
+            Response<String> token = await _httpService.Get<Response<String>>("api/market/entersystem");
+            if (!token.ErrorOccured && !LoggedIn)
             {
                 _httpService.Token = token.Value;
             }
@@ -95,7 +96,12 @@ namespace MarketWeb.Client.Connect
         }
         public async Task<Response<String>> Login(string username, string password)
         {
-            Response<String> token = await _httpService.Post<Response<String>>("api/users/login", new { username = username, password = password });
+            const string url = "api/market/login";
+            var param = new Dictionary<string, string>() { { "username", username },{ "password", password } };
+
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+
+            Response<String> token = await _httpService.Post<Response<String>>(newUrl, new { username = username, password = password });
             if (!token.ErrorOccured)
             {
                 _httpService.Token = token.Value;
