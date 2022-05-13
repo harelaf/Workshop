@@ -24,7 +24,7 @@ namespace MarketProject.Domain
         private int _nextComplaintID = 1;
         private static readonly string DEFAULT_ADMIN_USERNAME = "admin";
         private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
-
+        private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
 
 
 
@@ -39,7 +39,7 @@ namespace MarketProject.Domain
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
             _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
@@ -51,7 +51,7 @@ namespace MarketProject.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
             _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
@@ -63,7 +63,7 @@ namespace MarketProject.Domain
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = visitorsGuestsTokens;
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
             _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
@@ -75,7 +75,7 @@ namespace MarketProject.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
             _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
@@ -254,7 +254,7 @@ namespace MarketProject.Domain
         /// </summary>
         /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
-        public void Register(String Username, String password)
+        public void Register(String Username, String password, DateTime birthDate)
         {
             String errorMessage = null;
             if (_registeredVisitors.ContainsKey(Username))
@@ -269,7 +269,7 @@ namespace MarketProject.Domain
                 throw new Exception(errorMessage);
             }
 
-            Registered newRegistered = new Registered(Username, password);
+            Registered newRegistered = new Registered(Username, password, birthDate);
 
             _registeredVisitors.Add(Username, newRegistered); ;
         }

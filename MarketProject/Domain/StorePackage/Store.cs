@@ -77,35 +77,39 @@ namespace MarketProject.Domain
         public bool AddStoreManager(StoreManager newManager)
         {
             String errorMessage;
-            if (!hasRoleInStore(newManager.Username))
+            lock (_managers)
             {
-                lock (_managers)
+                lock (_owners)
                 {
-                    _managers.Add(newManager);
+                    if (!hasRoleInStore(newManager.Username))
+                    {
+                        _managers.Add(newManager);
+                        return true;
+                    }
                 }
-                return true;
             }
             errorMessage = "already has a role in this store.";
             LogErrorMessage("AddStoreManager", errorMessage);
             throw new Exception(errorMessage);
         }
-
         public bool AddStoreOwner(StoreOwner newOwner)
         {
             String errorMessage;
-            if (!hasRoleInStore(newOwner.Username))
+            lock (_managers)
             {
                 lock (_owners)
                 {
-                    _owners.Add(newOwner);
+                    if (!hasRoleInStore(newOwner.Username))
+                    {
+                        _owners.Add(newOwner);
+                        return true;
+                    }
                 }
-                return true;
             }
             errorMessage = "already has a role in this store.";
             LogErrorMessage("AddStoreOwner", errorMessage);
             throw new Exception(errorMessage);
         }
-
         private bool hasRoleInStore(string Username)
         {
             return GetOwner(Username) != null || GetManager(Username) != null || _founder.Username.Equals(Username);
@@ -118,7 +122,6 @@ namespace MarketProject.Domain
                     return manager;
             return null;
         }
-
         private StoreOwner GetOwner(string managerUsername)
         {
             foreach (StoreOwner owner in _owners)

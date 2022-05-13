@@ -572,12 +572,14 @@ namespace MarketProject.Domain
                     _VisitorManagement.AddRole(managerUsername, newManager); }
         }
 
-        internal ICollection<AdminMessageToRegistered> GetRegisteredMessagesFromAdmin(string authToken)
+        public ICollection<AdminMessageToRegistered> GetRegisteredMessagesFromAdmin(string authToken)
         {
+            CheckIsVisitorLoggedIn(authToken, "GetRegisteredMessagesFromAdmin");
             return _VisitorManagement.getRegisteredMessages(authToken);
         }
-        internal ICollection<MessageToStore> GetRegisteredAnswerdStoreMessages(string authToken)
+        public ICollection<MessageToStore> GetRegisteredAnswerdStoreMessages(string authToken)
         {
+            CheckIsVisitorLoggedIn(authToken, "GetRegisteredAnswerdStoreMessages");
             return _VisitorManagement.GetRegisteredAnswerdStoreMessages(authToken);
         }
 
@@ -675,6 +677,7 @@ namespace MarketProject.Domain
 
         public ICollection<NotifyMessage> GetRegisteredMessagesNotofication(string authToken)
         {
+            CheckIsVisitorLoggedIn(authToken, "GetRegisteredMessagesNotofication");
             return _VisitorManagement.GetRegisteredMessagesNotofication(authToken);
         }
 
@@ -841,10 +844,10 @@ namespace MarketProject.Domain
         /// <param name="authToken"> The token of the guest currently registering.</param>
         /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
-        public void Register(String authToken, String Username, String password)
+        public void Register(String authToken, String Username, String password, DateTime birthDate)
         {//II.1.3
          // TODO: Transfer cart? (Same dillema as login)
-            _VisitorManagement.Register(Username, password);
+            _VisitorManagement.Register(Username, password, birthDate);
         }
 
         /// <summary>

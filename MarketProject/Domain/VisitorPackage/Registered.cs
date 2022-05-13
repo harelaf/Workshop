@@ -25,9 +25,11 @@ namespace MarketProject.Domain
         private String _salt;
         public String Salt => _salt;
 
+        public DateTime _birthDate;
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
+
         public bool IsAdmin 
         { 
             get 
@@ -74,13 +76,13 @@ namespace MarketProject.Domain
             } 
         }
 
-        public Registered(string Username, string password)
+        public Registered(string Username, string password, DateTime birthDate)
         {
             _adminMessages = new List<AdminMessageToRegistered>();
             _notifications = new List<NotifyMessage>();
             _repliedMessages = new List<MessageToStore>();  
             _username = Username;
-            SetPassword(password);
+            _password = password;
             _roles = new List<SystemRole>();
         }
         public void SendMessage(AdminMessageToRegistered message)
