@@ -27,7 +27,7 @@ namespace AcceptanceTest.DSL
 
         public void EnterSystem() { _driver.EnterSystem(); }
         public void ExitSystem() { _driver.ExitSystem(); }
-        public void Register(string Username, string password) { _driver.Register(Username, password); }
+        public void Register(string Username, string password , DateTime birthDate) { _driver.Register(Username, password, birthDate); }
 
         public void Login(string Username, string password) { _driver.Login(Username, password); }
 
