@@ -114,7 +114,7 @@ namespace MarketWeb.Client.Connect
             return await Login(loginModel.Username, loginModel.Password);
         }
 
-        public async Task<Response> Register(string Username, string password, DateTime dob)
+        public async Task<Response> Register(string username, string password, DateTime dob)
         {
             Response res = await _httpService.Post<Response<String>>("api/market/Register", new { username = username, password = password, dob = dob });
             return res;
