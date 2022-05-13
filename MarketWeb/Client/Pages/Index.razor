@@ -3,6 +3,7 @@
 @using MarketWeb.Client.Helpers
 @inject IMarketAPIClient marketAPIClient
 @inject IHttpService httpService
+@layout MainLayout
 
 <h1>Hello, world!</h1>
 
@@ -15,7 +16,7 @@ Welcome to your new app.
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine("Test");
-        marketAPIClient.EnterSystem();
+        await marketAPIClient.EnterSystem();
     }
 
 }

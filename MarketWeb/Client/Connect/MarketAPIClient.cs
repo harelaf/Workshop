@@ -6,16 +6,18 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 using MarketWeb.Shared.DTO;
+using MarketWeb.Client.Models.Account;
 
 namespace MarketWeb.Client.Connect
 {
     public interface IMarketAPIClient
     {
-
+        public bool LoggedIn { get; }
         public Task<Response<string>> EnterSystem();
 
         public Task<Response> ExitSystem();
         public Task<Response<string>> Login(string username, string password);
+        public Task<Response<String>> Login(LoginModel loginModel);
 
         public Task<Response> Logout();
 
@@ -67,8 +69,9 @@ namespace MarketWeb.Client.Connect
     }
     public class MarketAPIClient : IMarketAPIClient
     {
+
         private IHttpService _httpService;
-        public bool LoggedIn;
+        public bool LoggedIn { get; private set; }
 
         public MarketAPIClient(IHttpService httpService)
         {
@@ -99,6 +102,11 @@ namespace MarketWeb.Client.Connect
                 LoggedIn = true;
             }
             return token;
+        }
+
+        public async Task<Response<String>> Login(LoginModel loginModel)
+        {
+            return await Login(loginModel.Username, loginModel.Password);
         }
 
         public async Task<Response> Register(string Username, string password, DateTime dob)
