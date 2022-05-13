@@ -75,7 +75,7 @@ namespace MarketWeb.Client.Connect
 
         public async Task<Response<string>> EnterSystem()
         {
-            Response<string> token = await _httpService.Get<Response<string>>("api/market/enter");
+            Response<string> token = await _httpService.Get<Response<string>>("api/market/EnterSystem");
             if (!token.ErrorOccured)
             {
                 _httpService.Token = token.Value;
@@ -85,12 +85,12 @@ namespace MarketWeb.Client.Connect
 
         public async Task<Response> ExitSystem()
         {
-            Response res = await _httpService.Get<Response>("api/market/exit");
+            Response res = await _httpService.Get<Response>("api/market/ExitSystem");
             return res;
         }
         public async Task<Response<String>> Login(string username, string password)
         {
-            Response<String> token = await _httpService.Post<Response<String>>("api/market/login", new { username = username, password = password });
+            Response<String> token = await _httpService.Post<Response<String>>("api/market/Login", new { username = username, password = password });
             if (!token.ErrorOccured)
             {
                 _httpService.Token = token.Value;
@@ -101,13 +101,13 @@ namespace MarketWeb.Client.Connect
 
         public async Task<Response> Register(string username, string password, DateTime dob)
         {
-            Response res = await _httpService.Post<Response<String>>("api/market/register", new { username = username, password = password, dob = dob });
+            Response res = await _httpService.Post<Response<String>>("api/market/Register", new { username = username, password = password, dob = dob });
             return res;
         }
 
         public async Task<Response> Logout()
         {
-            Response res = await _httpService.Get<Response>("api/market/logout");
+            Response res = await _httpService.Get<Response>("api/market/Logout");
             return res;
         }
 
@@ -217,83 +217,93 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public Task<Response> EditItemName(string storeName, int itemID, string newName)
+        public async Task<Response> EditItemName(string storeName, int itemID, string newName)
         {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response res = await _httpService.Post<Response>("api/market/EditItemName", 
+                new { storeName = storeName, itemID=itemID, newName=newName });
             return res;
         }
 
-        public Task<Response> EditItemDescription(string storeName, int itemID, string newDescription)
+        public async Task<Response> EditItemDescription(string storeName, int itemID, string newDescription)
         {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response res = await _httpService.Post<Response>("api/market/EditItemDescription",
+                new { storeName = storeName , itemID = itemID, newDescription= newDescription});
             return res;
         }
 
-        public Task<Response> RateItem(int itemID, string storeName, int rating, string review)
+        public async Task<Response> RateItem(int itemID, string storeName, int rating, string review)
         {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response res = await _httpService.Post<Response>("api/market/RateItem",
+                new {itemID = itemID ,storeName = storeName, rating = rating, review = review });
             return res;
         }
 
-        public Task<Response> RateStore(string storeName, int rating, string review)
+        public async Task<Response> RateStore(string storeName, int rating, string review)
         {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response res = await _httpService.Post<Response>("api/market/RateStore", 
+                new { storeName = storeName, rating=rating, review = review });
             return res;
         }
 
-        public Task<Response<StoreDTO>> GetStoreInformation(string storeName)
+        public async Task<Response<StoreDTO>> GetStoreInformation(string storeName)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Response<List<ItemDTO>>> GetItemInformation(string itemName, string itemCategory, string keyWord)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Response> SendMessageToStore(string storeName, string title, string description)
-        {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response<StoreDTO> res = await _httpService.Post<Response<StoreDTO>>("api/market/GetStoreInformation",
+                new { storeName= storeName });
             return res;
         }
 
-        public Task<Response> FileComplaint(int cartID, string message)
+        public async Task<Response<List<ItemDTO>>> GetItemInformation(string itemName, string itemCategory, string keyWord)
         {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response<List<ItemDTO>> res = await _httpService.Post<Response<List<ItemDTO>>>("api/market/GetItemInformation", 
+                new { itemName = itemName, itemCategory = itemCategory, keyWord=keyWord });
             return res;
         }
 
-        public Task<Response<ICollection<PurchasedCartDTO>>> GetMyPurchasesHistory()
+        public async Task<Response> SendMessageToStore(string storeName, string title, string description)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Response<RegisteredDTO>> GetVisitorInformation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Response> EditVisitorPassword(string oldPassword, string newPassword)
-        {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response res = await _httpService.Post<Response>("api/market/SendMessageToStore", new { storeName = storeName, title=title, description=description });
             return res;
         }
 
-        public Task<Response> RemoveManagerPermission(string managerUsername, string storeName, string op)
+        public async Task<Response> FileComplaint(int cartID, string message)
         {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response res = await _httpService.Post<Response>("api/market/FileComplaint", new { cartID = cartID, message=message });
             return res;
         }
 
-        public Task<Response> AddManagerPermission(string managerUsername, string storeName, string op)
+        public async Task<Response<ICollection<PurchasedCartDTO>>> GetMyPurchasesHistory()
         {
-            Response res = await _httpService.Post<Response>("api/market/OpenNewStore", new { storeName = storeName });
+            Response<ICollection<PurchasedCartDTO>> res = await _httpService.Get<Response<ICollection<PurchasedCartDTO>>>("api/market/GetMyPurchasesHistory");
             return res;
         }
 
-        public Task<Response> CloseStore(string storeName)
+        public async Task<Response<RegisteredDTO>> GetVisitorInformation()
         {
-            Response res = await _httpService.Post<Response>("api/market/RemoveItemFromStore", new { storeName = storeName, itemID = itemID });
+            Response<RegisteredDTO> res = await _httpService.Get<Response<RegisteredDTO>>("api/market/GetVisitorInformation");
+            return res;
+        }
+
+        public async Task<Response> EditVisitorPassword(string oldPassword, string newPassword)
+        {
+            Response res = await _httpService.Post<Response>("api/market/EditVisitorPassword", new { oldPassword = oldPassword, newPassword= newPassword });
+            return res;
+        }
+
+        public async Task<Response> RemoveManagerPermission(string managerUsername, string storeName, string op)
+        {
+            Response res = await _httpService.Post<Response>("api/market/RemoveManagerPermission", new { managerUsername = managerUsername, storeName = storeName, op = op });
+            return res;
+        }
+
+        public async Task<Response> AddManagerPermission(string managerUsername, string storeName, string op)
+        {
+            Response res = await _httpService.Post<Response>("api/market/AddManagerPermission", new { managerUsername= managerUsername, storeName = storeName, op=op });
+            return res;
+        }
+
+        public async Task<Response> CloseStore(string storeName)
+        {
+            Response res = await _httpService.Post<Response>("api/market/CloseStore", new { storeName = storeName });
             return res;
         }
 
@@ -367,21 +377,21 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response<IAsyncEnumerable<AdminMessageToRegisteredDTO>>> GetRegisteredMessagesFromAdmin()
+        public async Task<Response<ICollection<AdminMessageToRegisteredDTO>>> GetRegisteredMessagesFromAdmin()
         {
-            Response<IAsyncEnumerable<AdminMessageToRegisteredDTO>> res = await _httpService.Get<Response<IAsyncEnumerable<AdminMessageToRegisteredDTO>>>("api/market/GetRegisteredMessagesFromAdmin");
+            Response<ICollection<AdminMessageToRegisteredDTO>> res = await _httpService.Get<Response<ICollection<AdminMessageToRegisteredDTO>>>("api/market/GetRegisteredMessagesFromAdmin");
             return res;
         }
 
-        public async Task<Response<IAsyncEnumerable<MessageToStoreDTO>>> GetRegisterAnsweredStoreMessages()
+        public async Task<Response<ICollection<MessageToStoreDTO>>> GetRegisterAnsweredStoreMessages()
         {
-            Response<IAsyncEnumerable<MessageToStoreDTO>> res = await _httpService.Get<Response<IAsyncEnumerable<MessageToStoreDTO>>>("api/market/GetRegisterAnsweredStoreMessages");
+            Response<ICollection<MessageToStoreDTO>> res = await _httpService.Get<Response<ICollection<MessageToStoreDTO>>>("api/market/GetRegisterAnsweredStoreMessages");
             return res;
         }
 
-        public async Task<Response<IAsyncEnumerable<NotifyMessageDTO>>> GetRegisteredMessagesNotofication()
+        public async Task<Response<ICollection<NotifyMessageDTO>>> GetRegisteredMessagesNotofication()
         {
-            Response<IAsyncEnumerable<NotifyMessageDTO>> res = await _httpService.Get<Response<IAsyncEnumerable<NotifyMessageDTO>>>("api/market/GetRegisteredMessagesNotofication");
+            Response<ICollection<NotifyMessageDTO>> res = await _httpService.Get<Response<ICollection<NotifyMessageDTO>>>("api/market/GetRegisteredMessagesNotofication");
             return res;
         }
 
