@@ -16,6 +16,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response> ExitSystem();
         public Task<Response<string>> Login(string username, string password);
         public Task<Response> Logout();
+        public Task<Response<List<StoreDTO>>> GetAllActiveStores();
         public Task<Response> Register(string Username, string password, DateTime dob);
         public Task<Response> RemoveRegisteredVisitorAsync(String usr_toremove);
         public Task<Response> AddItemToCart(int itemID, String storeName, int amount);
@@ -61,16 +62,34 @@ namespace MarketWeb.Client.Connect
         public Task<Response<ICollection<MessageToStoreDTO>>> GetRegisterAnsweredStoreMessages();
         public Task<Response<ICollection<NotifyMessageDTO>>> GetRegisteredMessagesNotofication();
         public Task<Response> AppointSystemAdmin(String adminUsername);
+        public Task<Response> HasPermission(string storeName, string op);
+        public Task<Response<ItemDTO>> GetItem(string storeName, int itemId);
+        public Task<Response<List<StoreDTO>>> GetStoresOfUser();
     }
     public class MarketAPIClient : IMarketAPIClient
     {
         private IHttpService _httpService;
         public bool LoggedIn;
 
-        public MarketAPIClient(IHttpService httpService)
+        private static MarketAPIClient instance = null;
+        private MarketAPIClient()
+        {
+            LoggedIn= false;
+            _httpService = null;
+        }
+
+        public static MarketAPIClient GetInstance()
+        {
+            if(instance == null)
+            {
+                instance = new MarketAPIClient();
+            }
+            return instance;
+        }
+
+        public void setHtppServer(IHttpService httpService)
         {
             _httpService = httpService;
-            LoggedIn = false;
         }
 
         public async Task<Response<string>> EnterSystem()
@@ -108,6 +127,10 @@ namespace MarketWeb.Client.Connect
         public async Task<Response> Logout()
         {
             Response res = await _httpService.Get<Response>("api/market/Logout");
+            if (!res.ErrorOccured)
+            {
+                LoggedIn = false;
+            }
             return res;
         }
 
@@ -398,6 +421,31 @@ namespace MarketWeb.Client.Connect
         public async Task<Response> AppointSystemAdmin(string adminUsername)
         {
             Response res = await _httpService.Post<Response>("api/market/AppointSystemAdmin", new { adminUsername = adminUsername});
+            return res;
+        }
+
+        public async Task<Response<List<StoreDTO>>> GetAllActiveStores()
+        {
+            Response<List<StoreDTO>> res = await _httpService.Get<Response<List<StoreDTO>>>("api/market/GetAllActiveStores");
+            return res;
+        }
+
+        public async Task<Response> HasPermission(string storeName, string op)
+        {
+            Response res = await _httpService.Post<Response>("api/market/HasPermission", 
+                new { storeName = storeName, op=op});
+            return res;
+        }
+
+        public async Task<Response<ItemDTO>> GetItem(string storeName, int itemId)
+        {
+            Response<ItemDTO> res = await _httpService.Post<Response<ItemDTO>>("api/market/GetItem",new { storeName = storeName,itemId=itemId });
+            return res;
+        }
+
+        public async Task<Response<List<StoreDTO>>> GetStoresOfUser()
+        {
+            Response<List<StoreDTO>> res = await _httpService.Get<Response<List<StoreDTO>>>("api/market/GetStoresOfUser");
             return res;
         }
     }
