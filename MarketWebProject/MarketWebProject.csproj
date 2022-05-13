@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MarketProject\MarketProject.csproj" />
-    <ProjectReference Include="..\MarketWeb\Client\MarketWeb.Client.csproj" />
     <ProjectReference Include="..\MarketWeb\Shared\MarketWeb.Shared.csproj" />
   </ItemGroup>
 

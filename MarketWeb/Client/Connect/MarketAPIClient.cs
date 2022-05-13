@@ -100,7 +100,7 @@ namespace MarketWeb.Client.Connect
 
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
-            Response<String> token = await _httpService.Post<Response<String>>(newUrl, new { username = username, password = password });
+            Response<String> token = await _httpService.Post<Response<String>>(newUrl, null);
             if (!token.ErrorOccured)
             {
                 _httpService.Token = token.Value;
