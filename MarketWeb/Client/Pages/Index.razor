@@ -2,24 +2,115 @@
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
 @using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
 @inject IMarketAPIClient marketAPIClient
 @inject IHttpService httpService
 @inject IAlertService AlertService
+@inject NavigationManager NavigationManager
 
 @layout MainLayout
+<style>
+h1{
+    text-align:center;
+}
+</style>
 
-<h1>Hello, world!</h1>
+<h1 >Welcome to the Market!</h1>
+<br />
+<div class="card">
+    <h4 class="card-header">Item Search Box</h4>
+    <div class="card-body">
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Name</label>
+                <InputText @bind-Value="model.ItemName" class="form-control" />
+                <ValidationMessage For="@(() => model.ItemName)" />
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <InputText @bind-Value="model.Category" class="form-control" />
+                <ValidationMessage For="@(() => model.Category)" />
+            </div>
+            <div class="form-group">
+                <label>Keyword</label>
+                <InputText @bind-Value="model.Keyword" class="form-control" />
+                <ValidationMessage For="@(() => model.Keyword)" />
+            </div>
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading) 
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Search Items
+            </button>
+        </EditForm>
+    </div>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Store Name</th>
+            <th>Founder Name</th>
+            <th>View Store Button</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (StoreDTO item in activeStores)
+        {
+            <tr>
+                <td>@item.StoreName</td>
+                <td>@item.Founder.Username</td>
+                <td>
+                    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePage" asp-route-storename="@(item.StoreName)">View @item.StoreName Page</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
-Welcome to your new app.
-<p>@httpService.Token</p>
-
-<SurveyPrompt Title="How is Blazor working for you?" />
 @code {
+    private Models.SearchItemModel model = new Models.SearchItemModel();
+    private bool loading;
+    private ICollection<StoreDTO> activeStores = new List<StoreDTO>();
+
+    private async void OnValidSubmit()
+    {
+        // TODO
+    }
 
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine("Test");
         await marketAPIClient.EnterSystem();
+
+        // Copied and edited from MarketWebProject.Controllers.HomeController - Index
+        // ======================
+        //if (modelcs == null)
+        //    modelcs = new MainModel();
+        //USE GetAllActiveStores(authToken);
+        //Response<List<StoreDTO>> response = LayoutConfig.marketAPI.GetAllActiveStores(LayoutConfig.authToken);
+        StoreDTO store1 = new StoreDTO();
+        StoreDTO store2 = new StoreDTO();
+        List<StoreDTO> lst = new List<StoreDTO>();
+        lst.Add(store1);
+        lst.Add(store2);
+        try
+        {
+            //Response<string> response = await MarketAPIClient.GetAllActiveStores();
+            //if (response.ErrorOccured)
+            //{
+            //    throw new Exception(response.ErrorMessage);
+            //}
+            activeStores = lst;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        //return view;
     }
 
 }
