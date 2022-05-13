@@ -3,6 +3,7 @@ using System.Threading;
 using MarketProject.Service;
 using MarketProject.Service.DTO;
 using System.Collections.Generic;
+using System;
 
 namespace AcceptanceTest
 {
@@ -21,13 +22,14 @@ namespace AcceptanceTest
         int itemId_inGuestCart;
         int itemAmount_inRegCart = 10;
         int itemAmount_inGuestCart = 10;
+        DateTime dob = new DateTime(2001, 7, 30);
 
         [TestInitialize()]
         public void setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(registered_VisitorToken, "afik", "123456789");
+            marketAPI.Register(registered_VisitorToken, "afik", "123456789", dob);
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
             itemID_inStock_1 = 1; itemAmount_inSttock_1 = 20;

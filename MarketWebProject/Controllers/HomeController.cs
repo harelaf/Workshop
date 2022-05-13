@@ -1,4 +1,4 @@
-﻿using MarketWebProject.DTO;
+﻿using MarketWeb.Shared.DTO;
 using MarketWebProject.Models;
 using MarketWebProject.Views.Shared;
 using Microsoft.AspNetCore.Mvc;

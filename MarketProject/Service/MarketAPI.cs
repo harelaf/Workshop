@@ -578,7 +578,7 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)//permission param is Enum
+        public Response RemoveManagerPermission(String authToken, String managerUsername, String storeName, string op)//permission param is Enum
         {//II.4.7
 
             Response response;

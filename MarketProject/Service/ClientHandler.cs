@@ -87,7 +87,7 @@ namespace MarketProject.Service
                 var bodyJson = await request.Content.ReadAsStringAsync();
                 var body = JsonSerializer.Deserialize<LoginModel>(bodyJson);
 
-                Response response = _marketAPI.Register(request.Headers.Authorization.Parameter, body.Username, body.Password);
+                Response response = _marketAPI.Register(request.Headers.Authorization.Parameter, body.Username, body.Password, body.DOB);
 
                 if (response.ErrorOccured)
                     return await error(response.ErrorMessage);

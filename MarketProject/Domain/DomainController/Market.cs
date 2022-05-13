@@ -831,9 +831,12 @@ namespace MarketProject.Domain
             return _storeManagement.GetAllActiveStores(username, isAdmin);
         }
 
-        public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
+        public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, string opName)
         {
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_opNameToOp.ContainsKey(opName))
+                throw new Exception("the input op_name is'nt exists!!!!");
+            Operation op = _opNameToOp[opName];
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
         }

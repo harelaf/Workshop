@@ -15,6 +15,7 @@ namespace AcceptanceTest
     public class TestRemoveItemFromStock
     {
         MarketAPI marketAPI = new MarketAPI();
+        DateTime dob = new DateTime(2001, 7, 30);
         string storeName_inSystem = "Krusty Krab";
         string storeName_outSystem = "Chum Bucket";
         string username_founder = "SpongeBob SquarePants";
@@ -33,7 +34,7 @@ namespace AcceptanceTest
         {
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(registered_token_founder, username_founder, "123456789");
+            marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
             itemId = 100;

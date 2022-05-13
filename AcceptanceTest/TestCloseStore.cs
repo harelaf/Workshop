@@ -18,6 +18,7 @@ namespace AcceptanceTest
         string storeName_outSystem = "Chum Bucket";
         string username_founder = "SpongeBob SquarePants";
         string guest_token;
+        DateTime dob = new DateTime(2001, 7, 30);
         string registered_token_founder;
 
 
@@ -26,7 +27,7 @@ namespace AcceptanceTest
         {
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(registered_token_founder, username_founder, "123456789");
+            marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
             marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 100);
