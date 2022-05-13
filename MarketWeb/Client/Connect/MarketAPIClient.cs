@@ -76,25 +76,10 @@ namespace MarketWeb.Client.Connect
         private IHttpService _httpService;
         public bool LoggedIn { get; private set; }
 
-        private static MarketAPIClient instance = null;
-        private MarketAPIClient()
-        {
-            LoggedIn= false;
-            _httpService = null;
-        }
-
-        public static MarketAPIClient GetInstance()
-        {
-            if(instance == null)
-            {
-                instance = new MarketAPIClient();
-            }
-            return instance;
-        }
-
-        public void setHtppServer(IHttpService httpService)
+        public MarketAPIClient(IHttpService httpService)
         {
             _httpService = httpService;
+            LoggedIn = false;
         }
 
         public async Task<Response<string>> EnterSystem()

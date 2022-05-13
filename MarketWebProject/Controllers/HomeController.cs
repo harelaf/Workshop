@@ -10,6 +10,7 @@ namespace MarketWebProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private MarketAPIClient _marketAPIClient;
         //private Service service
 
         private void TurnGuest()
@@ -33,16 +34,17 @@ namespace MarketWebProject.Controllers
             LayoutConfig.IsAdmin = true;
         }
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, MarketAPIClient marketAPIClient)
         {
             _logger = logger;
+            _marketAPIClient = marketAPIClient;
         }
 
         public IActionResult Index(MainModel modelcs)
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            Task<Response<List<StoreDTO>>> task = MarketAPIClient.GetInstance().GetAllActiveStores();
+            Task<Response<List<StoreDTO>>> task = _marketAPIClient.GetAllActiveStores();
             /*  for tests:
              StoreDTO store1 = new StoreDTO();
             StoreDTO store2 = new StoreDTO();
@@ -72,7 +74,7 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            Task<Response> task = MarketAPIClient.GetInstance().HasPermission(null, "PERMENENT_CLOSE_STORE");
+            Task<Response> task = _marketAPIClient.HasPermission(null, "PERMENENT_CLOSE_STORE");
             Response isAdmin = task.Result;
             if (isAdmin.ErrorOccured)
             {
@@ -95,7 +97,7 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            Task<Response> task = MarketAPIClient.GetInstance().OpenNewStore(storename);
+            Task<Response> task = _marketAPIClient.OpenNewStore(storename);
             Response response = task.Result;
             if (response.ErrorOccured)
             {
@@ -111,7 +113,7 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            Task<Response<ShoppingCartDTO>> task = MarketAPIClient.GetInstance().ViewMyCart();
+            Task<Response<ShoppingCartDTO>> task = _marketAPIClient.ViewMyCart();
             Response<ShoppingCartDTO> cart = task.Result; //new Response<ShoppingCartDTO>(new ShoppingCartDTO());
             if (cart.ErrorOccured)
             {
@@ -131,7 +133,7 @@ namespace MarketWebProject.Controllers
                 modelcs = new MainModel();
             if (category == null && itemname == null && keyword == null)
                 return RedirectToAction("Index", "Home", new { ErrorOccurred = true, Message = "must enter at least one option of search" });
-            Task<Response<List<ItemDTO>>> task = MarketAPIClient.GetInstance().GetItemInformation(itemname, category, keyword);
+            Task<Response<List<ItemDTO>>> task = _marketAPIClient.GetItemInformation(itemname, category, keyword);
             /*List<ItemDTO> items = new List<ItemDTO>();
             items.Add(new ItemDTO("item1", 10.5, "store1"));
             items.Add(new ItemDTO("item2", 9.5, "store1"));
@@ -152,19 +154,19 @@ namespace MarketWebProject.Controllers
         public IActionResult StoreRolePage(string storeName)
         {
             MainModel modelcs = new MainModel();
-            Task<Response<StoreFounderDTO>> taskFounder = MarketAPIClient.GetInstance().GetStoreFounder(storeName);
+            Task<Response<StoreFounderDTO>> taskFounder = _marketAPIClient.GetStoreFounder(storeName);
             Response<StoreFounderDTO> founder_res = taskFounder.Result;//new Response<StoreFounderDTO>(new StoreFounderDTO(storeName, "Yafa"));//service.GetStoreFounder(storeName);
             /*List<StoreOwnerDTO> owners_list = new List<StoreOwnerDTO>();
             owners_list.Add(new StoreOwnerDTO(storeName, "Afik", "Shlomi"));
             owners_list.Add(new StoreOwnerDTO(storeName, "Shlomi", "Beni"));
             owners_list.Add(new StoreOwnerDTO(storeName, "Beni", "Yafa"));*/
-            Task<Response<List<StoreOwnerDTO>>> taskOwners = MarketAPIClient.GetInstance().GetStoreOwners(storeName);
+            Task<Response<List<StoreOwnerDTO>>> taskOwners = _marketAPIClient.GetStoreOwners(storeName);
             Response<List<StoreOwnerDTO>> owners_res = taskOwners.Result;//new Response<List<StoreOwnerDTO>>(owners_list); //_service.GetStoreOwners(storeName);
             /*List<StoreManagerDTO> managers_list = new List<StoreManagerDTO>();
             managers_list.Add(new StoreManagerDTO(storeName, "Afik", "Shlomi"));
             managers_list.Add(new StoreManagerDTO(storeName, "Shlomi", "Beni"));
             managers_list.Add(new StoreManagerDTO(storeName, "Beni", "Yafa"));*/
-            Task<Response<List<StoreManagerDTO>>> taskManagers = MarketAPIClient.GetInstance().GetStoreManagers(storeName);
+            Task<Response<List<StoreManagerDTO>>> taskManagers = _marketAPIClient.GetStoreManagers(storeName);
             Response<List<StoreManagerDTO>> managers_res = taskManagers.Result; //new Response<List<StoreManagerDTO>>(managers_list); //_service.GetStoreManagers(storeName);
             if (owners_res.ErrorOccured || managers_res.ErrorOccured || founder_res.ErrorOccured)
             {
@@ -184,7 +186,7 @@ namespace MarketWebProject.Controllers
         public IActionResult ItemPage(string storeName, int itemId)
         {
             MainModel modelcs = new MainModel();
-            Task<Response<ItemDTO>> task = MarketAPIClient.GetInstance().GetItem(storeName, itemId);
+            Task<Response<ItemDTO>> task = _marketAPIClient.GetItem(storeName, itemId);
             Response<ItemDTO> response = task.Result; //new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
             if (response.ErrorOccured)
             {
@@ -202,9 +204,9 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            Task<Response<RegisteredDTO>> task1 = MarketAPIClient.GetInstance().GetVisitorInformation();
+            Task<Response<RegisteredDTO>> task1 = _marketAPIClient.GetVisitorInformation();
             Response<RegisteredDTO> response1 = task1.Result;
-            Task<Response<List<StoreDTO>>> task2 = MarketAPIClient.GetInstance().GetStoresOfUser();
+            Task<Response<List<StoreDTO>>> task2 = _marketAPIClient.GetStoresOfUser();
             Response<List<StoreDTO>> response2 = task2.Result;
             /*Response<RegisteredDTO> response1 = new Response<RegisteredDTO>(new RegisteredDTO());
             List<StoreDTO> storesDTO = new List<StoreDTO>();
@@ -231,9 +233,9 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            Task<Response<ICollection<PurchasedCartDTO>>> task1 = MarketAPIClient.GetInstance().GetMyPurchasesHistory();
+            Task<Response<ICollection<PurchasedCartDTO>>> task1 = _marketAPIClient.GetMyPurchasesHistory();
             Response<ICollection<PurchasedCartDTO>> response1 = task1.Result;
-            Task<Response<RegisteredDTO>> task2 = MarketAPIClient.GetInstance().GetVisitorInformation();
+            Task<Response<RegisteredDTO>> task2 = _marketAPIClient.GetVisitorInformation();
             Response<RegisteredDTO> response2 = task2.Result;
             /*List<PurchasedCartDTO> history = new List<PurchasedCartDTO>();
             history.Add(new PurchasedCartDTO());
@@ -261,7 +263,7 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            Task<Response<RegisteredDTO>> task = MarketAPIClient.GetInstance().GetVisitorInformation();
+            Task<Response<RegisteredDTO>> task = _marketAPIClient.GetVisitorInformation();
             Response<RegisteredDTO> response = task.Result;
             //Response<RegisteredDTO> response = new Response<RegisteredDTO>(new RegisteredDTO());
             if (response.ErrorOccured)
@@ -278,7 +280,7 @@ namespace MarketWebProject.Controllers
 
         public IActionResult ChangePassword(MainModel modelcs, string newPassword, string oldPassword)
         {
-            Task<Response> task = MarketAPIClient.GetInstance().EditVisitorPassword(oldPassword, newPassword);
+            Task<Response> task = _marketAPIClient.EditVisitorPassword(oldPassword, newPassword);
             Response response = task.Result;
             //Response response = new Response();
             if (response.ErrorOccured)
@@ -295,7 +297,7 @@ namespace MarketWebProject.Controllers
         {
 
             MainModel modelcs = new MainModel();
-            Task<Response<ItemDTO>> task = MarketAPIClient.GetInstance().GetItem(storeName, itemId);
+            Task<Response<ItemDTO>> task = _marketAPIClient.GetItem(storeName, itemId);
             Response<ItemDTO> response = task.Result;
             //Response<ItemDTO> response = new Response<ItemDTO>(new ItemDTO("banana", 20.5, "store1"));
             if (response.ErrorOccured)
@@ -316,7 +318,7 @@ namespace MarketWebProject.Controllers
                 modelcs = new MainModel();
             string viewName = "StorePage";
 
-            Task<Response<StoreDTO>> task = MarketAPIClient.GetInstance().GetStoreInformation(storename);
+            Task<Response<StoreDTO>> task = _marketAPIClient.GetStoreInformation(storename);
             Response<StoreDTO> response = task.Result;//new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
             if (response.ErrorOccured)
             {
@@ -324,13 +326,13 @@ namespace MarketWebProject.Controllers
             }
             else
             {
-                Response stockPermissions = MarketAPIClient.GetInstance().HasPermission(storename, "MANAGE_STOCK").Result;
-                Response rolesPermission = MarketAPIClient.GetInstance().HasPermission(storename, "APPOINT_OWNER").Result; // if has accsess to appoint owner' he has all roles permissions.
-                Response closePermission = MarketAPIClient.GetInstance().HasPermission(storename, "CLOSE_STORE").Result; 
-                Response reopenPermission = MarketAPIClient.GetInstance().HasPermission(storename, "REOPEN_STORE").Result; 
-                Response closePermenantlyPermission =MarketAPIClient.GetInstance().HasPermission(storename, "PERMENENT_CLOSE_STORE").Result; 
-                Response purchaseHistoryPermission = MarketAPIClient.GetInstance().HasPermission(storename, "STORE_HISTORY_INFO").Result; 
-                Response storeMsgPermission = MarketAPIClient.GetInstance().HasPermission(storename, "RECEIVE_AND_REPLY_STORE_MESSAGE").Result; 
+                Response stockPermissions = _marketAPIClient.HasPermission(storename, "MANAGE_STOCK").Result;
+                Response rolesPermission = _marketAPIClient.HasPermission(storename, "APPOINT_OWNER").Result; // if has accsess to appoint owner' he has all roles permissions.
+                Response closePermission = _marketAPIClient.HasPermission(storename, "CLOSE_STORE").Result; 
+                Response reopenPermission = _marketAPIClient.HasPermission(storename, "REOPEN_STORE").Result; 
+                Response closePermenantlyPermission =_marketAPIClient.HasPermission(storename, "PERMENENT_CLOSE_STORE").Result; 
+                Response purchaseHistoryPermission = _marketAPIClient.HasPermission(storename, "STORE_HISTORY_INFO").Result; 
+                Response storeMsgPermission = _marketAPIClient.HasPermission(storename, "RECEIVE_AND_REPLY_STORE_MESSAGE").Result; 
 
                 ViewResult viewResult = View(viewName, modelcs);
                 viewResult.ViewData["store"] = response.Value;
@@ -374,7 +376,7 @@ namespace MarketWebProject.Controllers
 
         public IActionResult RegisterForm(string name, string password, DateTime dob)
         {// register
-            Task<Response> task = MarketAPIClient.GetInstance().Register(name, password, dob);
+            Task<Response> task = _marketAPIClient.Register(name, password, dob);
             Response response = task.Result;//new Response(new Exception(err_msg));//call register(name, password, dob)
             String msg = "Successfully registered! You can now log in.";
             if (response.ErrorOccured)
@@ -386,7 +388,7 @@ namespace MarketWebProject.Controllers
 
         public IActionResult LoginForm(string name, string password)
         {//login
-            Task<Response<string>> task = MarketAPIClient.GetInstance().Login(name, password);
+            Task<Response<string>> task = _marketAPIClient.Login(name, password);
             Response response = task.Result;
             if (response.ErrorOccured)
             {
@@ -397,7 +399,7 @@ namespace MarketWebProject.Controllers
             {
                 //TODO: CHECK IF IS ADMIN THEN TurnAdmin();
                 TurnLoggedIn();
-                Task<Response> task_admin = MarketAPIClient.GetInstance().HasPermission(null, "PERMENENT_CLOSE_STORE");
+                Task<Response> task_admin = _marketAPIClient.HasPermission(null, "PERMENENT_CLOSE_STORE");
                 Response isAdmin = task_admin.Result;
                 if (!isAdmin.ErrorOccured)
                 {
@@ -409,7 +411,7 @@ namespace MarketWebProject.Controllers
 
         public IActionResult Logout()
         {//logout
-            Response response = MarketAPIClient.GetInstance().Logout().Result;//new Response(new Exception(err_msg));//call logout()
+            Response response = _marketAPIClient.Logout().Result;//new Response(new Exception(err_msg));//call logout()
             if (response.ErrorOccured)
             {
                 TurnGuest();
@@ -425,7 +427,7 @@ namespace MarketWebProject.Controllers
         public IActionResult RemoveItemFromCart(String storeName, int itemID)
         {
             //I_User_ServiceLayer SL = validateConnection();
-            Task<Response> task = MarketAPIClient.GetInstance().RemoveItemFromCart(itemID, storeName);
+            Task<Response> task = _marketAPIClient.RemoveItemFromCart(itemID, storeName);
             Response res = task.Result;//new Response(new Exception("could'nt remove item: " + itemID + " from store: " + storeName));//=service.removeItemFromCart(token,itemID, storeName)
             if (res.ErrorOccured)
             {
@@ -439,7 +441,7 @@ namespace MarketWebProject.Controllers
         public IActionResult UpdateItemQuantityInCart(String storeName, int itemID, int newQuantity)
         {
             //I_User_ServiceLayer SL = validateConnection();
-            Task<Response> task = MarketAPIClient.GetInstance().UpdateQuantityOfItemInCart(itemID, storeName, newQuantity);
+            Task<Response> task = _marketAPIClient.UpdateQuantityOfItemInCart(itemID, storeName, newQuantity);
             Response res = task.Result;//new Response(new Exception("could'nt update item: "+itemID+" from store: "+storeName+" to quantity: "+newQuantity));//=service.removeItemFromCart(token,itemID, storeName, newQuantity)
             if (res.ErrorOccured)
             {
@@ -453,7 +455,7 @@ namespace MarketWebProject.Controllers
         
         public IActionResult AddItemToCart(int amount, string storename, int itemid)
         {
-            Task<Response> task = MarketAPIClient.GetInstance().AddItemToCart(itemid, storename, amount);
+            Task<Response> task = _marketAPIClient.AddItemToCart(itemid, storename, amount);
             Response res = task.Result;
             if (!res.ErrorOccured)
             {
