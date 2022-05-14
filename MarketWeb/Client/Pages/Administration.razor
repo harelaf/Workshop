@@ -1,0 +1,111 @@
+﻿@page "/Administration"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+    h1 {
+        text-align: center;
+    }
+</style>
+
+<h1 class="display-4"><font color="red">Administration Page</font></h1>
+<br />
+
+<div>
+    <h3><font color="red">Permanently Delete a User:</font></h3>
+    <EditForm Model="@DeleteUserModel" OnSubmit="DeleteUserForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Username</label>
+            <InputText @bind-value="DeleteUserModel.UserName" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Review</button>
+    </EditForm>
+</div>
+<br />
+<div>
+    <h3>View Store Purchase History:</h3>
+    <EditForm Model="@ViewStorePurchaseHistoryModel" OnSubmit="ViewStorePurchaseHistoryForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Store Name</label>
+            <InputText @bind-value="ViewStorePurchaseHistoryModel.StoreName" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Review</button>
+    </EditForm>
+</div>
+<br />
+<div>
+    <h3>View Complaints:</h3>
+    <input class="btn btn-primary" value="View Complaints" @onclick="ViewComplaintsButton" />
+</div>
+<div>
+    <h3>View Store Purchase History:</h3>
+    <p>THIS FEATURE IS NOT DONE YET</p>
+</div>
+<br />
+<div>
+    <h3>Send Messages to Buyers and Sellers:</h3>
+    <EditForm Model="@SendAdminMessageModel" OnSubmit="SendAdminMessageForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Username of The Recipient</label>
+            <InputText @bind-value="SendAdminMessageModel.ReceiverUsername" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Message Title</label>
+            <InputText @bind-value="SendAdminMessageModel.Ttile" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Message Body</label>
+            <InputText @bind-value="SendAdminMessageModel.Message" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Send Message</button>
+    </EditForm>
+</div>
+
+@code {
+    private Models.DeleteUserModel DeleteUserModel = new Models.DeleteUserModel();
+    private Models.ViewStorePurchaseHistoryModel ViewStorePurchaseHistoryModel = new Models.ViewStorePurchaseHistoryModel();
+    private Models.SendAdminMessageModel SendAdminMessageModel = new Models.SendAdminMessageModel();
+
+    private async void DeleteUserForm()
+    {
+        //TODO
+    }
+
+    private async void ViewStorePurchaseHistoryForm()
+    {
+        //TODO
+    }
+
+    private async void ViewComplaintsButton()
+    {
+        //TODO
+    }
+
+    private async void SendAdminMessageForm()
+    {
+        //TODO
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        if (!marketAPIClient.Admin)
+        {
+            AlertService.Error("Only system admins can access the administration page.");
+            NavigationManager.NavigateTo("");
+        }
+    }
+}

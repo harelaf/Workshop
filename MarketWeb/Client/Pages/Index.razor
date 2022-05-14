@@ -11,35 +11,32 @@
 
 @layout MainLayout
 <style>
-h1{
-    text-align:center;
-}
+    h1 {
+        text-align: center;
+    }
 </style>
 
-<h1 >Welcome to the Market!</h1>
+<h1>Welcome to the Market!</h1>
 <br />
 <div class="card">
     <h4 class="card-header">Item Search Box</h4>
     <div class="card-body">
-        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+        <EditForm Model="@model" OnSubmit="ItemSearchForm">
             <DataAnnotationsValidator />
             <div class="form-group">
                 <label>Name</label>
                 <InputText @bind-Value="model.ItemName" class="form-control" />
-                <ValidationMessage For="@(() => model.ItemName)" />
             </div>
             <div class="form-group">
                 <label>Category</label>
                 <InputText @bind-Value="model.Category" class="form-control" />
-                <ValidationMessage For="@(() => model.Category)" />
             </div>
             <div class="form-group">
                 <label>Keyword</label>
                 <InputText @bind-Value="model.Keyword" class="form-control" />
-                <ValidationMessage For="@(() => model.Keyword)" />
             </div>
-            <button disabled="@loading" class="btn btn-primary">
-                @if (loading) 
+            <button type="submit" disabled="@loading" class="btn btn-primary">
+                @if (loading)
                 {
                     <span class="spinner-border spinner-border-sm mr-1"></span>
                 }
@@ -48,6 +45,7 @@ h1{
         </EditForm>
     </div>
 </div>
+<br />
 <table class="table">
     <thead>
         <tr>
@@ -63,7 +61,7 @@ h1{
                 <td>@item.StoreName</td>
                 <td>@item.Founder.Username</td>
                 <td>
-                    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePage" asp-route-storename="@(item.StoreName)">View @item.StoreName Page</a>
+                    <button class="btn btn-primary" @onclick="() => ViewStoreButton(item.StoreName)">View Store</button>
                 </td>
             </tr>
         }
@@ -75,22 +73,42 @@ h1{
     private bool loading;
     private ICollection<StoreDTO> activeStores = new List<StoreDTO>();
 
-    private async void OnValidSubmit()
+    private async void ViewStoreButton(string StoreName)
     {
-        // TODO
+        // reset alerts on submit
+        AlertService.Clear();
+
+        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+    }
+
+    private async void ItemSearchForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+
+        if (model.Category == null && model.ItemName == null && model.Keyword == null)
+        {
+            loading = false;
+            AlertService.Error("Please enter a value before trying to search for an item.");
+            StateHasChanged();
+        }
+        else
+        {
+            //Task<Response<List<ItemDTO>>> task = _marketAPIClient.GetItemInformation(itemname, category, keyword);
+            /*List<ItemDTO> items = new List<ItemDTO>();
+            items.Add(new ItemDTO("item1", 10.5, "store1"));
+            items.Add(new ItemDTO("item2", 9.5, "store1"));
+            items.Add(new ItemDTO("item3", 15.5, "store2"));*/
+            //Response<List<ItemDTO>> response = task.Result; //new Response<List<ItemDTO>>(items);
+            loading = false;
+            NavigationManager.NavigateTo($"ItemSearch/{model.ItemName}");
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        //Console.WriteLine("Test");
-        //await marketAPIClient.EnterSystem();
-
-        // Copied and edited from MarketWebProject.Controllers.HomeController - Index
-        // ======================
-        //if (modelcs == null)
-        //    modelcs = new MainModel();
-        //USE GetAllActiveStores(authToken);
-        //Response<List<StoreDTO>> response = LayoutConfig.marketAPI.GetAllActiveStores(LayoutConfig.authToken);
         StoreDTO store1 = new StoreDTO();
         StoreDTO store2 = new StoreDTO();
         List<StoreDTO> lst = new List<StoreDTO>();
@@ -98,11 +116,11 @@ h1{
         lst.Add(store2);
         try
         {
-            //Response<string> response = await MarketAPIClient.GetAllActiveStores();
-            //if (response.ErrorOccured)
-            //{
-            //    throw new Exception(response.ErrorMessage);
-            //}
+            Response<List<StoreDTO>> response = await marketAPIClient.GetAllActiveStores();
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
             activeStores = lst;
         }
         catch (Exception ex)
@@ -110,7 +128,5 @@ h1{
             AlertService.Error(ex.Message);
             StateHasChanged();
         }
-        //return view;
     }
-
 }
