@@ -3,6 +3,7 @@ using MarketProject.Domain.PurchasePackage.DiscountPackage;
 using MarketProject.Service.DTO;
 using MarketWeb.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
@@ -15,12 +16,13 @@ namespace MarketProject.Service
     public class MarketAPI : ControllerBase
     {
         private Market _market;
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private ILogger<MarketAPI> _logger;
         private int _id;
 
-        public MarketAPI(Market market)
+        public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             _market = market;
+            _logger = logger;
         }
 
         /// <summary>
@@ -32,10 +34,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Restart System called with parameters: adminUsername={adminUsername}, adminUsername={adminPassword}, ipShippingService={ipShippingService}, ipPaymentService={ipPaymentService}.");
+                _logger.LogInformation($"Restart System called with parameters: adminUsername={adminUsername}, adminUsername={adminPassword}, ipShippingService={ipShippingService}, ipPaymentService={ipPaymentService}.");
                 _market.RestartSystem(adminUsername, adminPassword, ipShippingService, ipPaymentService);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Restart System.");
+                _logger.LogInformation($"SUCCESSFULY executed Restart System.");
             }
             catch (Exception e)
             {
@@ -63,11 +65,11 @@ namespace MarketProject.Service
                     throw new Exception("Invalid token!");
                 }
 
-                log.Info($"Login called with parameters: authToken={headerValue.Parameter}, username={Username}, password={password}.");
+                _logger.LogInformation($"Login called with parameters: authToken={headerValue.Parameter}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(headerValue.Parameter, Username, password);
                 response = new Response<String>(loginToken);
-                log.Info($"SUCCESSFULY executed Login.");
+                _logger.LogInformation($"SUCCESSFULY executed Login.");
             }
             catch (Exception e)
             {
@@ -88,10 +90,10 @@ namespace MarketProject.Service
             Response<String> response;
             try
             {
-                log.Info($"Logout called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"Logout called with parameters: authToken={authToken}.");
                 String guestToken  = _market.Logout(authToken);
                 response = new Response<String>(guestToken);
-                log.Info($"SUCCESSFULY executed Logout.");
+                _logger.LogInformation($"SUCCESSFULY executed Logout.");
             }
             catch (Exception e)
             {
@@ -112,10 +114,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Register called with parameters: authToken={authToken}, username={Username}, password={password}.");
+                _logger.LogInformation($"Register called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 _market.Register(authToken, Username, password, birthDate);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Register.");
+                _logger.LogInformation($"SUCCESSFULY executed Register.");
             }
             catch (Exception e)
             {
@@ -136,10 +138,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Remove Registered Visitor called with parameters: authToken={authToken}, username={usr_toremove}.");
+                _logger.LogInformation($"Remove Registered Visitor called with parameters: authToken={authToken}, username={usr_toremove}.");
                 _market.RemoveRegisteredVisitor(authToken, usr_toremove);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Remove Registered Vistor.");
+                _logger.LogInformation($"SUCCESSFULY executed Remove Registered Vistor.");
             }
             catch (Exception e)
             {
@@ -152,10 +154,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Add Item To Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}, amount={amount}.");
+                _logger.LogInformation($"Add Item To Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}, amount={amount}.");
                 _market.AddItemToCart(authToken, itemID, storeName, amount);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Add Item To Cart.");
+                _logger.LogInformation($"SUCCESSFULY executed Add Item To Cart.");
             }
             catch (Exception e)
             {
@@ -168,10 +170,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Remove Item From Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}.");
+                _logger.LogInformation($"Remove Item From Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}.");
                 _market.RemoveItemFromCart(authToken, itemID, storeName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Remove Item From Cart.");
+                _logger.LogInformation($"SUCCESSFULY executed Remove Item From Cart.");
             }
             catch (Exception e)
             {
@@ -184,10 +186,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Update Quantity Of Item In Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}, newQuantity={newQuantity}.");
+                _logger.LogInformation($"Update Quantity Of Item In Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}, newQuantity={newQuantity}.");
                 _market.UpdateQuantityOfItemInCart(authToken, itemID, storeName, newQuantity);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Update Quantity Of Item In Cart.");
+                _logger.LogInformation($"SUCCESSFULY executed Update Quantity Of Item In Cart.");
             }
             catch (Exception e)
             {
@@ -201,10 +203,10 @@ namespace MarketProject.Service
             Response<ShoppingCartDTO> response;
             try
             {
-                log.Info($"View My Cart called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"View My Cart called with parameters: authToken={authToken}.");
                 ShoppingCart shoppingCart= _market.ViewMyCart(authToken);
                 response = new Response<ShoppingCartDTO>(new ShoppingCartDTO(shoppingCart));
-                log.Info($"SUCCESSFULY executed View My Cart.");
+                _logger.LogInformation($"SUCCESSFULY executed View My Cart.");
             }
             catch (Exception e)
             {
@@ -217,10 +219,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Purchase My Cart called with parameters: authToken={authToken}, address={address}, city={city}, country={country}, zip={zip}, purchaserName={purchaserName}.");
+                _logger.LogInformation($"Purchase My Cart called with parameters: authToken={authToken}, address={address}, city={city}, country={country}, zip={zip}, purchaserName={purchaserName}.");
                 _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode); 
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Purchase My Cart.");
+                _logger.LogInformation($"SUCCESSFULY executed Purchase My Cart.");
             }
             catch (Exception e)
             {
@@ -233,10 +235,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Open New Store called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Open New Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 _market.OpenNewStore(authToken, storeName, new PurchasePolicy(), new DiscountPolicy());
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Open New Store.");
+                _logger.LogInformation($"SUCCESSFULY executed Open New Store.");
             }
             catch (Exception e)
             {
@@ -249,10 +251,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Add Store Manager called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}.");
+                _logger.LogInformation($"Add Store Manager called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}.");
                 _market.AddStoreManager(authToken, managerUsername, storeName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Add Store Manager.");
+                _logger.LogInformation($"SUCCESSFULY executed Add Store Manager.");
             }
             catch (Exception e)
             {
@@ -265,10 +267,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Add Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
+                _logger.LogInformation($"Add Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
                 _market.AddStoreOwner(authToken, ownerUsername, storeName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Add Store Owner.");
+                _logger.LogInformation($"SUCCESSFULY executed Add Store Owner.");
             }
             catch (Exception e)
             {
@@ -281,10 +283,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Remove Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
+                _logger.LogInformation($"Remove Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
                 _market.RemoveStoreOwner(authToken, ownerUsername, storeName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Remove Store Owner.");
+                _logger.LogInformation($"SUCCESSFULY executed Remove Store Owner.");
             }
             catch (Exception e)
             {
@@ -297,10 +299,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Remove Store Manager called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}.");
+                _logger.LogInformation($"Remove Store Manager called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}.");
                 _market.RemoveStoreManager(authToken, managerUsername, storeName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Remove Store Manager.");
+                _logger.LogInformation($"SUCCESSFULY executed Remove Store Manager.");
             }
             catch (Exception e)
             {
@@ -313,10 +315,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Add Item To Stock called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, name={name}, price={price}, description={description}, category={category}, quantity={quantity}.");
+                _logger.LogInformation($"Add Item To Stock called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, name={name}, price={price}, description={description}, category={category}, quantity={quantity}.");
                 _market.AddItemToStoreStock(authToken, storeName, itemID, name, price, description, category, quantity);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Add Item To Stock.");
+                _logger.LogInformation($"SUCCESSFULY executed Add Item To Stock.");
             }
             catch (Exception e)
             {
@@ -329,10 +331,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Remove Item From Stock called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}.");
+                _logger.LogInformation($"Remove Item From Stock called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}.");
                 _market.RemoveItemFromStore(authToken, storeName, itemID);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Remove Item From Stock.");
+                _logger.LogInformation($"SUCCESSFULY executed Remove Item From Stock.");
             }
             catch (Exception e)
             {
@@ -345,10 +347,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Update Stock Quantity Of Item called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newQuantity={newQuantity}.");
+                _logger.LogInformation($"Update Stock Quantity Of Item called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newQuantity={newQuantity}.");
                 _market.UpdateStockQuantityOfItem(authToken, storeName, itemID, newQuantity);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Update Stock Quantity Of Item.");
+                _logger.LogInformation($"SUCCESSFULY executed Update Stock Quantity Of Item.");
             }
             catch (Exception e)
             {
@@ -361,10 +363,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Edit Item Price called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newPrice={newPrice}.");
+                _logger.LogInformation($"Edit Item Price called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newPrice={newPrice}.");
                 _market.EditItemPrice(authToken, storeName, itemID, newPrice);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Edit Item Price.");
+                _logger.LogInformation($"SUCCESSFULY executed Edit Item Price.");
             }
             catch (Exception e)
             {
@@ -377,10 +379,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Edit Item Name called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newName={newName}.");
+                _logger.LogInformation($"Edit Item Name called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newName={newName}.");
                 _market.EditItemName(authToken, storeName, itemID, newName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Edit Item Name.");
+                _logger.LogInformation($"SUCCESSFULY executed Edit Item Name.");
             }
             catch (Exception e)
             {
@@ -393,10 +395,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Edit Item Description called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newDescription={newDescription}.");
+                _logger.LogInformation($"Edit Item Description called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newDescription={newDescription}.");
                 _market.EditItemDescription(authToken, storeName, itemID, newDescription);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Edit Item Description.");
+                _logger.LogInformation($"SUCCESSFULY executed Edit Item Description.");
             }
             catch (Exception e)
             {
@@ -409,10 +411,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Rate Item called with parameters: authToken={authToken}, itemID={itemID}, storeName={storeName}, rating={rating}, review={review}.");
+                _logger.LogInformation($"Rate Item called with parameters: authToken={authToken}, itemID={itemID}, storeName={storeName}, rating={rating}, review={review}.");
                 _market.RateItem(authToken, itemID, storeName, rating, review);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Rate Item.");
+                _logger.LogInformation($"SUCCESSFULY executed Rate Item.");
             }
             catch (Exception e)
             {
@@ -425,10 +427,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Rate Store called with parameters: authToken={authToken}, storeName={storeName}, rating={rating}, review={review}.");
+                _logger.LogInformation($"Rate Store called with parameters: authToken={authToken}, storeName={storeName}, rating={rating}, review={review}.");
                 _market.RateStore(authToken, storeName, rating, review);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Rate Store.");
+                _logger.LogInformation($"SUCCESSFULY executed Rate Store.");
             } 
             catch (Exception e)
             {
@@ -441,11 +443,11 @@ namespace MarketProject.Service
             Response<StoreDTO> response;
             try
             {
-                log.Info($"Get Store Information called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Get Store Information called with parameters: authToken={authToken}, storeName={storeName}.");
                 Store result = _market.GetStoreInformation(authToken, storeName);
                 StoreDTO dto = new StoreDTO(result);
                 response = new Response<StoreDTO>(dto);
-                log.Info($"SUCCESSFULY executed Get Store Information.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Store Information.");
             }
             catch (Exception e)
             {
@@ -459,7 +461,7 @@ namespace MarketProject.Service
             Response<List<ItemDTO>> response;
             try
             {
-                log.Info($"Get Item Information called with parameters: authToken={authToken}, itemName={itemName}, itemCategory={itemCategory}, keyWord={keyWord}.");
+                _logger.LogInformation($"Get Item Information called with parameters: authToken={authToken}, itemName={itemName}, itemCategory={itemCategory}, keyWord={keyWord}.");
                 IDictionary<string, List<Item>> result = _market.GetItemInformation(authToken, itemName, itemCategory, keyWord);
                 List<ItemDTO> resultDTO = new List<ItemDTO>();
                 foreach(KeyValuePair<string, List<Item>> storeNItems in result)
@@ -470,7 +472,7 @@ namespace MarketProject.Service
                     }   
                 }
                 response = new Response<List<ItemDTO>>(resultDTO);
-                log.Info($"SUCCESSFULY executed Get Item Information.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Item Information.");
             }
             catch (Exception e)
             {
@@ -483,10 +485,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Send Message To Store called with parameters: authToken={authToken}, storeName={storeName}, title={title}, description={description}.");
+                _logger.LogInformation($"Send Message To Store called with parameters: authToken={authToken}, storeName={storeName}, title={title}, description={description}.");
                 _market.SendMessageToStore(authToken,storeName, title, description, id);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Send Message To Store.");
+                _logger.LogInformation($"SUCCESSFULY executed Send Message To Store.");
             }
             catch (Exception e)
             {
@@ -507,10 +509,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Send Message To Store called with parameters: authToken={authToken}, cartID={cartID}, message={message}.");
+                _logger.LogInformation($"Send Message To Store called with parameters: authToken={authToken}, cartID={cartID}, message={message}.");
                 _market.FileComplaint(authToken, cartID, message);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed File Complaint.");
+                _logger.LogInformation($"SUCCESSFULY executed File Complaint.");
             }
             catch (Exception e)
             {
@@ -524,7 +526,7 @@ namespace MarketProject.Service
             Response<ICollection<PurchasedCartDTO>> response;
             try
             {
-                log.Info($"Get My Purchases History called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"Get My Purchases History called with parameters: authToken={authToken}.");
                 ICollection<Tuple<DateTime ,ShoppingCart>> purchasedCarts = _market.GetMyPurchases(authToken);
                 ICollection<PurchasedCartDTO> purchasedCartsDTO = new List<PurchasedCartDTO>();
                 foreach (Tuple<DateTime ,ShoppingCart> purchase in purchasedCarts)
@@ -533,7 +535,7 @@ namespace MarketProject.Service
                 }
 
                 response = new Response<ICollection<PurchasedCartDTO>>(purchasedCartsDTO);
-                log.Info($"SUCCESSFULY executed Get My Purchases History.");
+                _logger.LogInformation($"SUCCESSFULY executed Get My Purchases History.");
             }
             catch (Exception e)
             {
@@ -548,10 +550,10 @@ namespace MarketProject.Service
             Response<RegisteredDTO> response;
             try
             {
-                log.Info($"Get Visitor Information called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"Get Visitor Information called with parameters: authToken={authToken}.");
                 Registered registered= _market.GetVisitorInformation(authToken);
                 response = new Response<RegisteredDTO>(new RegisteredDTO(registered));
-                log.Info($"SUCCESSFULY executed Get Visitor Information.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Visitor Information.");
             }
             catch (Exception e)
             {
@@ -577,10 +579,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Edit Visitor Password called with parameters: authToken={authToken}, oldPassword={oldPassword}, newPassword={newPassword}.");
+                _logger.LogInformation($"Edit Visitor Password called with parameters: authToken={authToken}, oldPassword={oldPassword}, newPassword={newPassword}.");
                 _market.EditVisitorPassword(authToken, oldPassword, newPassword);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Edit Visitor Password.");
+                _logger.LogInformation($"SUCCESSFULY executed Edit Visitor Password.");
             }
             catch (Exception e)
             {
@@ -595,10 +597,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Remove Manager Permission called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}, op={op}.");
+                _logger.LogInformation($"Remove Manager Permission called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}, op={op}.");
                 _market.RemoveManagerPermission(authToken, managerUsername, storeName, op);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Remove Manager Permission.");
+                _logger.LogInformation($"SUCCESSFULY executed Remove Manager Permission.");
             }
             catch (Exception e)
             {
@@ -612,10 +614,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Add Manager Permission called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}, op={op}.");
+                _logger.LogInformation($"Add Manager Permission called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}, op={op}.");
                 _market.AddManagerPermission(authToken, managerUsername, storeName, op);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Add Manager Permission.");
+                _logger.LogInformation($"SUCCESSFULY executed Add Manager Permission.");
             }
             catch (Exception e)
             {
@@ -629,10 +631,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Close Store called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Close Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 _market.CloseStore(authToken, storeName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Close Store.");
+                _logger.LogInformation($"SUCCESSFULY executed Close Store.");
             }
             catch (Exception e)
             {
@@ -646,10 +648,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Reopen Store called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Reopen Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 _market.ReopenStore(authToken, storeName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Reopen Store.");
+                _logger.LogInformation($"SUCCESSFULY executed Reopen Store.");
             }
             catch (Exception e)
             {
@@ -663,13 +665,13 @@ namespace MarketProject.Service
             Response<List<StoreOwnerDTO>> response;
             try
             {
-                log.Info($"Get Store Owners called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Get Store Owners called with parameters: authToken={authToken}, storeName={storeName}.");
                 List<StoreOwner> ownerList = _market.getStoreOwners(storeName, authToken);
                 List<StoreOwnerDTO> ownerDTOlist = new List<StoreOwnerDTO>();
                 foreach (StoreOwner owner in ownerList)
                     ownerDTOlist.Add(new StoreOwnerDTO(owner));
                 response = new Response<List<StoreOwnerDTO>>(ownerDTOlist);
-                log.Info($"SUCCESSFULY executed Get Store Owners.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Store Owners.");
             }
             catch (Exception e)
             {
@@ -683,13 +685,13 @@ namespace MarketProject.Service
             Response<List<StoreManagerDTO>> response;
             try
             {
-                log.Info($"Get Store Managers called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Get Store Managers called with parameters: authToken={authToken}, storeName={storeName}.");
                 List<StoreManager> managerList = _market.getStoreManagers(storeName, authToken);
                 List<StoreManagerDTO> managerDTOlist = new List<StoreManagerDTO>();
                 foreach (StoreManager manager in managerList)
                     managerDTOlist.Add(new StoreManagerDTO(manager));
                 response = new Response<List<StoreManagerDTO>>(managerDTOlist);
-                log.Info($"SUCCESSFULY executed Get Store Managers.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Store Managers.");
             }
             catch (Exception e)
             {
@@ -703,10 +705,10 @@ namespace MarketProject.Service
             Response<StoreFounderDTO> response;
             try
             {
-                log.Info($"Get Store Founder called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Get Store Founder called with parameters: authToken={authToken}, storeName={storeName}.");
                 StoreFounder founder = _market.getStoreFounder(storeName, authToken);
                 response = new Response<StoreFounderDTO>(new StoreFounderDTO(founder));
-                log.Info($"SUCCESSFULY executed Get Store Founder.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Store Founder.");
             }
             catch (Exception e)
             {
@@ -797,10 +799,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Answer Store Message called with parameters: authToken={authToken}, msgId={msgID},storeName={storeName} reply={reply}.");
+                _logger.LogInformation($"Answer Store Message called with parameters: authToken={authToken}, msgId={msgID},storeName={storeName} reply={reply}.");
                 _market.AnswerStoreMesseage(authToken, receiverUsername, msgID, storeName, reply);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Answer Store Message.");
+                _logger.LogInformation($"SUCCESSFULY executed Answer Store Message.");
             }
             catch (Exception e)
             {
@@ -814,7 +816,7 @@ namespace MarketProject.Service
             Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response;
             try
             {
-                log.Info($"Get Store Purchases History called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Get Store Purchases History called with parameters: authToken={authToken}, storeName={storeName}.");
                 List<Tuple<DateTime, ShoppingBasket>> result = _market.GetStorePurchasesHistory(authToken, storeName);
                 List<Tuple<DateTime, ShoppingBasketDTO>> dtos = new List<Tuple<DateTime, ShoppingBasketDTO>>();
 
@@ -826,7 +828,7 @@ namespace MarketProject.Service
                 }
 
                 response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(dtos);
-                log.Info($"SUCCESSFULY executed Get Store Purchases History.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Store Purchases History.");
             }
             catch (Exception e)
             {
@@ -840,10 +842,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Close Store Permanently called with parameters: authToken={authToken}, storeName={storeName}.");
+                _logger.LogInformation($"Close Store Permanently called with parameters: authToken={authToken}, storeName={storeName}.");
                 _market.CloseStorePermanently(authToken, storeName);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Close Store Permanently.");
+                _logger.LogInformation($"SUCCESSFULY executed Close Store Permanently.");
             }
             catch (Exception e)
             {
@@ -870,10 +872,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Reply To Complaint called with parameters: authToken={authToken}, complaintID={complaintID}, reply={reply}.");
+                _logger.LogInformation($"Reply To Complaint called with parameters: authToken={authToken}, complaintID={complaintID}, reply={reply}.");
                 _market.ReplyToComplaint(authToken, complaintID, reply);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Reply To Complaint.");
+                _logger.LogInformation($"SUCCESSFULY executed Reply To Complaint.");
             }
             catch (Exception e)
             {
@@ -887,10 +889,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Send Message To Registered called with parameters: authToken={authToken},  UsernameReciever={UsernameReciever}, title={title}, message={message}.");
+                _logger.LogInformation($"Send Message To Registered called with parameters: authToken={authToken},  UsernameReciever={UsernameReciever}, title={title}, message={message}.");
                 _market.SendAdminMessageToRegisterd(authToken, UsernameReciever, title, message);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Send Message To Registered.");
+                _logger.LogInformation($"SUCCESSFULY executed Send Message To Registered.");
             }
             catch (Exception e)
             {
@@ -905,7 +907,7 @@ namespace MarketProject.Service
             Response<List<StoreDTO>> response;
             try
             {
-                log.Info($"Get Stores Of User called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"Get Stores Of User called with parameters: authToken={authToken}.");
                 List<Store> stores = _market.GetStoresOfUser(authToken);
                 List<StoreDTO> storesDTO = new List<StoreDTO>();
                 foreach (Store store in stores)
@@ -913,7 +915,7 @@ namespace MarketProject.Service
                     storesDTO.Add(new StoreDTO(store));
                 }
                 response = new Response<List<StoreDTO>>(storesDTO);
-                log.Info($"SUCCESSFULY executed Get Stores Of User.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Stores Of User.");
             }
             catch (Exception e)
             {
@@ -927,7 +929,7 @@ namespace MarketProject.Service
             Response<List<StoreDTO>> response;
             try
             {
-                log.Info($"Get All Active Stores called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"Get All Active Stores called with parameters: authToken={authToken}.");
                 List<Store> stores = _market.GetAllActiveStores(authToken);
                 List<StoreDTO> storesDTO = new List<StoreDTO>();
                 foreach (Store store in stores)
@@ -935,7 +937,7 @@ namespace MarketProject.Service
                     storesDTO.Add(new StoreDTO(store));
                 }
                 response = new Response<List<StoreDTO>>(storesDTO);
-                log.Info($"SUCCESSFULY executed Get All Active Stores.");
+                _logger.LogInformation($"SUCCESSFULY executed Get All Active Stores.");
             }
             catch (Exception e)
             {
@@ -951,10 +953,10 @@ namespace MarketProject.Service
             Response<String> response;
             try
             {
-                log.Info($"Enter System To Registered called.");
+                _logger.LogInformation($"Enter System To Registered called.");
                 String token = _market.EnterSystem();   
                 response = new Response<String>(token);
-                log.Info($"SUCCESSFULY executed Enter System.");
+                _logger.LogInformation($"SUCCESSFULY executed Enter System.");
             }
             catch (Exception e) 
             { 
@@ -968,10 +970,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Exit System called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"Exit System called with parameters: authToken={authToken}.");
                 _market.ExitSystem(authToken);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Exit System.");
+                _logger.LogInformation($"SUCCESSFULY executed Exit System.");
             }
             catch (Exception e)
             {
@@ -985,10 +987,10 @@ namespace MarketProject.Service
             Response response;
             try
             {
-                log.Info($"Appoint System Admin called with parameters: authToken={authToken}, adminUsername={adminUsername}.");
+                _logger.LogInformation($"Appoint System Admin called with parameters: authToken={authToken}, adminUsername={adminUsername}.");
                 _market.AppointSystemAdmin(authToken, adminUsername);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Appoint System Admin.");
+                _logger.LogInformation($"SUCCESSFULY executed Appoint System Admin.");
             }
             catch (Exception e)
             {
@@ -1003,11 +1005,11 @@ namespace MarketProject.Service
             try
             {
                 /////////// is log should keep the whole description of the discount??????
-                log.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName} and the actual discount.");
+                _logger.LogInformation($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName} and the actual discount.");
                 Discount discount = new dtoDiscountConverter().convertDiscount(discount_dto);
                 _market.AddStoreDiscount(authToken, storeName, discount);
                 response = new Response();
-                log.Info($"SUCCESSFULY executed Add Store Discount.");
+                _logger.LogInformation($"SUCCESSFULY executed Add Store Discount.");
             }
             catch (Exception e)
             {
@@ -1021,10 +1023,10 @@ namespace MarketProject.Service
             Response<Double> response;
             try
             {
-                log.Info($"calculate shopping cart actual price - called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"calculate shopping cart actual price - called with parameters: authToken={authToken}.");
                 Double price = _market.CalcCartActualPrice(authToken);
                 response = new Response<Double>(price);
-                log.Info($"SUCCESSFULY executed Calculate Cart Actual Price.");
+                _logger.LogInformation($"SUCCESSFULY executed Calculate Cart Actual Price.");
             }
             catch (Exception e)
             {
@@ -1038,10 +1040,10 @@ namespace MarketProject.Service
             Response<String> response;
             try
             {
-                log.Info($"get current cart info - called with parameters: authToken={authToken}.");
+                _logger.LogInformation($"get current cart info - called with parameters: authToken={authToken}.");
                 String receipt = _market.GetCartReceipt(authToken);
                 response = new Response<String>(receipt);
-                log.Info($"SUCCESSFULY executed Get Cart Receipt.");
+                _logger.LogInformation($"SUCCESSFULY executed Get Cart Receipt.");
             }
             catch (Exception e)
             {
