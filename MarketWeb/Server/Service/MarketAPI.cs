@@ -1209,6 +1209,17 @@ namespace MarketProject.Service
             }
             return response;
         }
+        public void LoadData()
+        {
+            String username1 = "username1";
+            String password1 = "password1";
+            String storeName1 = "storeName1";
+            String auth1 = EnterSystem().Value;
+
+            Register(auth1, username1, password1, new DateTime(1992, 8, 4));
+            auth1 = Login(auth1, username1, password1).Value;
+            OpenNewStore(auth1, storeName1);
+        }
     }
 }
 
