@@ -25,8 +25,7 @@
 }
 @if (CanViewPurchaseHistory)
 {
-    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePurchaseHistoryPage"
-        asp-route-storename="@(StoreInfo.StoreName)" > 
+    <a class="btn btn-info"  href="StorePage/@(StoreInfo.StoreName)/purchases" >
         View @(StoreInfo.StoreName) Purchase History
     </a>
 }
