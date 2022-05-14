@@ -2,15 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Shared;
 
 namespace MarketProject.Domain
 {
-    public enum StoreState
-    {
-        Active,
-        Inactive,
-        Closed
-    }
 
     public class Store
     {

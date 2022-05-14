@@ -13,13 +13,11 @@ namespace MarketWeb.Shared.DTO
         public DateTime Date=> _date;
         public ShoppingCartDTO ShoppingCart => _shoppingCart;
 
-        public PurchasedCartDTO()
+        public PurchasedCartDTO(DateTime date, ShoppingCartDTO cartDTO)
         {
-            _date = DateTime.Now;
-            _shoppingCart = new ShoppingCartDTO();
+            _date = date;
+            _shoppingCart = cartDTO;
         }
-
-        
         public String ToString()
         {
             String result = $"Purchase of: {_date.ToString("MM / dd / yyyy hh: mm tt")}\n";

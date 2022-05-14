@@ -25,16 +25,15 @@ namespace MarketWeb.Shared.DTO
 
         private int _id;
         public int Id => _id;
-
-        public MessageToStoreDTO()
+        public MessageToStoreDTO(String storeName, String senderUsername, string title, string message, String reply, String replier, int id)
         {
-            _storeName = "testStoreName";
-            _senderUsername = "testSenderUsername";
-            _title = "testTitle";
-            _message = "testMessage";
-            _reply = "testReply";
-            _replier = "testReplier";
-            _id = 1;
+            _storeName = storeName;
+            _senderUsername = senderUsername;
+            _title = title;
+            _message = message;
+            _reply = reply;
+            _replier = replier;
+            _id = id;
         }
     }
 }

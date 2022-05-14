@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,22 +9,13 @@ namespace MarketWeb.Shared.DTO
     {
         private String _storeName;
         private IDictionary<ItemDTO, int> _items;
-
-
         public String StoreName => _storeName;
         public IDictionary<ItemDTO, int> Items => _items;
-
-        public String GetStoreName => _storeName;
-
-        public ShoppingBasketDTO()
+        public ShoppingBasketDTO(String storeName, Dictionary<ItemDTO, int> items)
         {
-            _storeName = "storeeeee";
-            _items = new Dictionary<ItemDTO, int>();
-            _items.Add(new ItemDTO("item1", 0.5), 10);
-            _items.Add(new ItemDTO("item2", 10.5), 15);
-            _items.Add(new ItemDTO("item3", 6.2), 32);
+            _storeName = storeName;
+            _items = items;
         }
-
         public string ToString()
         {
             //_name;

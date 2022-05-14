@@ -3,6 +3,7 @@ using MarketProject.Service.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Shared;
 
 namespace MarketProject.Domain
 {

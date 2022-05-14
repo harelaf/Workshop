@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MarketProject.Domain;
+using MarketWeb.Shared;
 
 namespace MarketProject.Domain
 {

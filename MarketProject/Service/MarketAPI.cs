@@ -10,6 +10,7 @@ namespace MarketProject.Service
     public class MarketAPI
     {
         private Market _market;
+        private DTOtranslator translator = new DTOtranslator();
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public MarketAPI()
@@ -193,7 +194,7 @@ namespace MarketProject.Service
             {
                 log.Info($"View My Cart called with parameters: authToken={authToken}.");
                 ShoppingCart shoppingCart= _market.ViewMyCart(authToken);
-                response = new Response<ShoppingCartDTO>(new ShoppingCartDTO(shoppingCart));
+                response = new Response<ShoppingCartDTO>(translator.toDTO(shoppingCart));
                 log.Info($"SUCCESSFULY executed View My Cart.");
             }
             catch (Exception e)
@@ -433,7 +434,7 @@ namespace MarketProject.Service
             {
                 log.Info($"Get Store Information called with parameters: authToken={authToken}, storeName={storeName}.");
                 Store result = _market.GetStoreInformation(authToken, storeName);
-                StoreDTO dto = new StoreDTO(result);
+                StoreDTO dto = translator.toDTO(result);
                 response = new Response<StoreDTO>(dto);
                 log.Info($"SUCCESSFULY executed Get Store Information.");
             }
@@ -456,7 +457,7 @@ namespace MarketProject.Service
                 {
                     foreach(Item item in storeNItems.Value)
                     {
-                        resultDTO.Add(new ItemDTO(item, storeNItems.Key));
+                        resultDTO.Add(translator.toDTO(item, storeNItems.Key));
                     }   
                 }
                 response = new Response<List<ItemDTO>>(resultDTO);
@@ -519,7 +520,7 @@ namespace MarketProject.Service
                 ICollection<PurchasedCartDTO> purchasedCartsDTO = new List<PurchasedCartDTO>();
                 foreach (Tuple<DateTime ,ShoppingCart> purchase in purchasedCarts)
                 {
-                    purchasedCartsDTO.Add(new PurchasedCartDTO(purchase.Item1, purchase.Item2));
+                    purchasedCartsDTO.Add(translator.toDTO(purchase.Item1, purchase.Item2));
                 }
 
                 response = new Response<ICollection<PurchasedCartDTO>>(purchasedCartsDTO);
@@ -539,7 +540,7 @@ namespace MarketProject.Service
             {
                 log.Info($"Get Visitor Information called with parameters: authToken={authToken}.");
                 Registered registered= _market.GetVisitorInformation(authToken);
-                response = new Response<RegisteredDTO>(new RegisteredDTO(registered));
+                response = new Response<RegisteredDTO>(translator.toDTO(registered));
                 log.Info($"SUCCESSFULY executed Get Visitor Information.");
             }
             catch (Exception e)
@@ -656,7 +657,7 @@ namespace MarketProject.Service
                 List<StoreOwner> ownerList = _market.getStoreOwners(storeName, authToken);
                 List<StoreOwnerDTO> ownerDTOlist = new List<StoreOwnerDTO>();
                 foreach (StoreOwner owner in ownerList)
-                    ownerDTOlist.Add(new StoreOwnerDTO(owner));
+                    ownerDTOlist.Add(translator.toDTO(owner));
                 response = new Response<List<StoreOwnerDTO>>(ownerDTOlist);
                 log.Info($"SUCCESSFULY executed Get Store Owners.");
             }
@@ -676,7 +677,7 @@ namespace MarketProject.Service
                 List<StoreManager> managerList = _market.getStoreManagers(storeName, authToken);
                 List<StoreManagerDTO> managerDTOlist = new List<StoreManagerDTO>();
                 foreach (StoreManager manager in managerList)
-                    managerDTOlist.Add(new StoreManagerDTO(manager));
+                    managerDTOlist.Add(translator.toDTO(manager));
                 response = new Response<List<StoreManagerDTO>>(managerDTOlist);
                 log.Info($"SUCCESSFULY executed Get Store Managers.");
             }
@@ -694,7 +695,7 @@ namespace MarketProject.Service
             {
                 log.Info($"Get Store Founder called with parameters: authToken={authToken}, storeName={storeName}.");
                 StoreFounder founder = _market.getStoreFounder(storeName, authToken);
-                response = new Response<StoreFounderDTO>(new StoreFounderDTO(founder));
+                response = new Response<StoreFounderDTO>(translator.toDTO(founder));
                 log.Info($"SUCCESSFULY executed Get Store Founder.");
             }
             catch (Exception e)
@@ -713,7 +714,7 @@ namespace MarketProject.Service
                 Queue<MessageToStore> messages = _market.GetStoreMessages(authToken, storeName);
                 Queue<MessageToStoreDTO> messagesDTOs = new Queue<MessageToStoreDTO>();
                 foreach(MessageToStore messageToStore in messages)
-                    messagesDTOs.Enqueue(new MessageToStoreDTO(messageToStore));
+                    messagesDTOs.Enqueue(translator.toDTO(messageToStore));
                 response = new Response<Queue<MessageToStoreDTO>>(messagesDTOs);
             }
             catch (Exception e)
@@ -731,7 +732,7 @@ namespace MarketProject.Service
                 ICollection<AdminMessageToRegistered> messages = _market.GetRegisteredMessagesFromAdmin(authToken);
                 ICollection<AdminMessageToRegisteredDTO> messagesDTOs = new List<AdminMessageToRegisteredDTO>();
                 foreach (AdminMessageToRegistered message in messages)
-                    messagesDTOs.Add(new AdminMessageToRegisteredDTO(message));
+                    messagesDTOs.Add(translator.toDTO(message));
                 response = new Response<ICollection<AdminMessageToRegisteredDTO>>(messagesDTOs);
             }
             catch (Exception e)
@@ -749,7 +750,7 @@ namespace MarketProject.Service
                 ICollection<MessageToStore> messages = _market.GetRegisteredAnswerdStoreMessages(authToken);
                 ICollection<MessageToStoreDTO> messagesDTOs = new List<MessageToStoreDTO>();
                 foreach (MessageToStore message in messages)
-                    messagesDTOs.Add(new MessageToStoreDTO(message));
+                    messagesDTOs.Add(translator.toDTO(message));
                 response = new Response<ICollection<MessageToStoreDTO>>(messagesDTOs);
             }
             catch (Exception e)
@@ -767,7 +768,7 @@ namespace MarketProject.Service
                 ICollection<NotifyMessage> messages = _market.GetRegisteredMessagesNotofication(authToken);
                 ICollection<NotifyMessageDTO> messagesDTOs = new List<NotifyMessageDTO>();
                 foreach (NotifyMessage message in messages)
-                    messagesDTOs.Add(new NotifyMessageDTO(message));
+                    messagesDTOs.Add(translator.toDTO(message));
                 response = new Response<ICollection<NotifyMessageDTO>>(messagesDTOs);
             }
             catch (Exception e)
@@ -805,7 +806,7 @@ namespace MarketProject.Service
 
                 foreach(Tuple<DateTime, ShoppingBasket> tuple in result)
                 {
-                    ShoppingBasketDTO dto = new ShoppingBasketDTO(tuple.Item2);
+                    ShoppingBasketDTO dto = translator.toDTO(tuple.Item2);
                     Tuple<DateTime, ShoppingBasketDTO> toAdd = new Tuple<DateTime, ShoppingBasketDTO>(tuple.Item1, dto);
                     dtos.Add(toAdd);
                 }
@@ -893,9 +894,7 @@ namespace MarketProject.Service
                 List<Store> stores = _market.GetStoresOfUser(authToken);
                 List<StoreDTO> storesDTO = new List<StoreDTO>();
                 foreach(Store store in stores)
-                {
-                    storesDTO.Add(new StoreDTO(store));
-                }
+                    storesDTO.Add(translator.toDTO(store));
                 response = new Response<List<StoreDTO>>(storesDTO);
                 log.Info($"SUCCESSFULY executed Get Stores Of User.");
             }
@@ -915,9 +914,7 @@ namespace MarketProject.Service
                 List<Store> stores = _market.GetAllActiveStores(authToken);
                 List<StoreDTO> storesDTO = new List<StoreDTO>();
                 foreach (Store store in stores)
-                {
-                    storesDTO.Add(new StoreDTO(store));
-                }
+                    storesDTO.Add(translator.toDTO(store));
                 response = new Response<List<StoreDTO>>(storesDTO);
                 log.Info($"SUCCESSFULY executed Get All Active Stores.");
             }
@@ -986,7 +983,7 @@ namespace MarketProject.Service
             {
                 /////////// is log should keep the whole description of the discount??????
                 log.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName} and the actual discount.");
-                Discount discount = new dtoDiscountConverter().convertDiscount(discount_dto);
+                Discount discount = translator.translateDiscount(discount_dto);
                 _market.AddStoreDiscount(authToken, storeName, discount);
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Add Store Discount.");
@@ -1067,7 +1064,7 @@ namespace MarketProject.Service
             try
             {
                 Item item = _market.GetItem(token, storeName, itemId);
-                response = new Response<ItemDTO>(new ItemDTO(item));
+                response = new Response<ItemDTO>(translator.toDTO(item));
             }
             catch (Exception e)
             {

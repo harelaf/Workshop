@@ -11,14 +11,14 @@ namespace MarketWeb.Shared.DTO
 
         public Dictionary<String, Tuple<int, String>> Ratings => _ratings;
 
-        public RatingDTO()
+        public RatingDTO(Dictionary<String, Tuple<int, String>> ratings)
         {
-            _ratings = new Dictionary<String, Tuple<int, String>>();
+            _ratings = ratings;
         }
 
-        public float GetRating()
+        public double GetRating()
         {
-            float rating = 0;
+            double rating = 0;
             foreach (KeyValuePair<String, Tuple<int, String>> entry in _ratings)
             {
                 rating += entry.Value.Item1;
