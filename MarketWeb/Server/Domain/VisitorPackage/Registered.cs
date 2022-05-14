@@ -6,8 +6,16 @@ namespace MarketProject.Domain
     public class Registered : Visitor
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private ICollection<MessageToRegistered> _messagesToRegistered;
-        public ICollection<MessageToRegistered> MessagesToRegistered => _messagesToRegistered;
+        private ICollection<AdminMessageToRegistered> _adminMessages;
+        public ICollection<AdminMessageToRegistered> AdminMessages => _adminMessages;
+
+        private ICollection<NotifyMessage> _notifications;
+        public ICollection<NotifyMessage> Notifcations => _notifications;
+
+        private ICollection<MessageToStore> _repliedMessages;
+        public ICollection<MessageToStore> messageToStores => _repliedMessages;
+
+
         private String _username;
         public String Username=> _username;
         /// <summary>
@@ -17,9 +25,11 @@ namespace MarketProject.Domain
         private String _salt;
         public String Salt => _salt;
 
+        public DateTime _birthDate;
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
+
         public bool IsAdmin 
         { 
             get 
@@ -66,26 +76,31 @@ namespace MarketProject.Domain
             } 
         }
 
-        public Registered(string Username, string password)
+        public Registered(string Username, string password, DateTime birthDate)
         {
-            _messagesToRegistered = new List<MessageToRegistered>();
+            _adminMessages = new List<AdminMessageToRegistered>();
+            _notifications = new List<NotifyMessage>();
+            _repliedMessages = new List<MessageToStore>();  
             _username = Username;
             SetPassword(password);
             _roles = new List<SystemRole>();
         }
-        public void SendMessage(MessageToRegistered message)
+        public void SendMessage(AdminMessageToRegistered message)
         {
-            _messagesToRegistered.Add(message);
+            _adminMessages.Add(message);
         }
 
         internal bool hasAccess(String storeName, Operation op)
         {
+            String errorMessage;
             foreach (SystemRole role in _roles)
             {
                 if (role.hasAccess(storeName, op))
                     return true;
             }
-            return false;
+            errorMessage = "no permission for this operation.";
+            LogErrorMessage("hasAccess", errorMessage);
+            throw new Exception(errorMessage);
         }
 
         public void AddRole(SystemRole role)
@@ -179,6 +194,17 @@ namespace MarketProject.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in Registered.{functionName}. Cause: {message}.");
+        }
+
+        internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string reply)
+        {
+            msg.AnswerMsg(reply, replier);
+            _repliedMessages.Add(msg);  
+        }
+
+        internal void SendNotificationMsg(string storeName, string title, string message)
+        {
+            _notifications.Add(new NotifyMessage(storeName, title, message, _username));
         }
     }
 }

@@ -4,12 +4,11 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public class ShoppingBasket
+    public class ShoppingBasket : ISearchablePriceable
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual Store _store { get; set; }
         public virtual IDictionary<Item, int> _items { get; set; }
-        public Store Store => _store;
         public IDictionary<Item, int> Items => _items;
 
         public ShoppingBasket(Store store)
@@ -80,6 +79,82 @@ namespace MarketProject.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in ShoppingBasket.{functionName}. Cause: {message}.");
+        }
+
+
+        public int SearchItemAmount(string itemName)
+        {
+            int result = 0;
+            foreach(Item item in _items.Keys)
+            {
+                if(itemName == item.Name)
+                {
+                    result += _items[item];
+                }
+            }
+            return result;
+        }
+
+        public int SearchCategoryAmount(string category)
+        {
+            int result = 0;
+            foreach (Item item in _items.Keys)
+            {
+                if (category == item.Category)
+                {
+                    result += _items[item];
+                }
+            }
+            return result;
+        }
+
+        public double GetTotalPrice()
+        {
+            double sum = 0;
+            foreach(Item i in GetItems())
+                sum += i._price * GetAmountOfItem(i);
+            return sum;
+        }
+
+        internal double getActualPrice()
+        {
+            double totalDiscount = Store().GetDiscountPolicy().calculateDiscounts(this);
+            double totalPrice = GetTotalPrice();
+            return totalPrice - totalDiscount;
+        }
+
+        public double GetItemPrice(String itemName)
+        {
+            double sum = 0;
+            foreach (Item item in _items.Keys)
+                if (itemName == item.Name)
+                    sum += item._price * _items[item];
+            return sum;
+        }
+
+        public double GetCategoryPrice(String category)
+        {
+            double sum = 0;
+            foreach(Item item in _items.Keys)
+                if (category == item.Category)
+                    sum += item._price * _items[item];
+            return sum;
+        }
+
+        internal string GetBasketReceipt()
+        {
+            String receipt = "";
+            foreach(Item item in Items.Keys)
+            {
+                receipt += $"{Items[item]} {item._price} -> {Items[item] * item._price}\n";
+                receipt += _store.GetDiscountPolicy().GetActualDiscountString(this);
+            }
+            return receipt;
+        }
+
+        public virtual Store Store()
+        {
+            return _store;
         }
     }
 }

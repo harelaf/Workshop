@@ -15,9 +15,9 @@ namespace MarketProject.Domain
             _ratings = new Dictionary<String, Tuple<int, String>>();
         }
 
-        public float GetRating()
+        public double GetRating()
         {
-            float rating = 0;
+            double rating = 0;
             foreach (KeyValuePair<String, Tuple<int, String>> entry in _ratings)
             {
                 rating += entry.Value.Item1;

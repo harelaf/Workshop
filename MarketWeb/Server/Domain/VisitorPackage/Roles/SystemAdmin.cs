@@ -9,7 +9,7 @@ namespace MarketProject.Domain
     {
         private IDictionary<int, Complaint> _receivedComplaints = new Dictionary<int, Complaint>();
 
-        public SystemAdmin(string Username) : base(getOps(), Username) {}
+        public SystemAdmin(string Username) : base(getOps(), Username, null) {}
 
         private static ISet<Operation> getOps()
         {

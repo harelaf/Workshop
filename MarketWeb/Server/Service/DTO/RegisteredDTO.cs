@@ -9,25 +9,36 @@ namespace MarketProject.Service.DTO
     {
         private String _username;
         private ShoppingCartDTO _shoppingCart;
-        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
+        private ICollection<AdminMessageToRegisteredDTO> _adminMessages;
+        private ICollection<MessageToStoreDTO> _repliedMessages;
+        private ICollection<NotifyMessageDTO> _notifications;
+        private DateTime _birthDate;
 
         public RegisteredDTO(Registered registered)
         {
             _username = registered.Username;
+            _birthDate = registered._birthDate;
             _shoppingCart = new ShoppingCartDTO(registered.ShoppingCart);
-            _messagesToUsers = new List<MessageToRegisteredDTO>();
-            foreach (MessageToRegistered msg in registered.MessagesToRegistered)
-                _messagesToUsers.Add(new MessageToRegisteredDTO(msg));
+            _adminMessages = new List<AdminMessageToRegisteredDTO>();
+            _repliedMessages = new List<MessageToStoreDTO>();
+            _notifications = new List<NotifyMessageDTO>();
+            foreach (AdminMessageToRegistered msg in registered.AdminMessages)
+                _adminMessages.Add(new AdminMessageToRegisteredDTO(msg));
+            foreach (MessageToStore msg in registered.messageToStores)
+                _repliedMessages.Add(new MessageToStoreDTO(msg));
+            foreach (NotifyMessage msg in registered.Notifcations)
+                _notifications.Add(new NotifyMessageDTO(msg));
         }
         public String ToString()
         {
             String result = $"Visitor Name: {_username}\n";
+            result += "Birth Date:" + _birthDate.ToString() + "\n";
             result += "Current Cart State:\n" + _shoppingCart.ToString();
             return result;
         }
-        public int MessagesCount()
+        public int NotificationsCount()
         {
-            return _messagesToUsers.Count;
+            return _notifications.Count;
         }
     }
 }
