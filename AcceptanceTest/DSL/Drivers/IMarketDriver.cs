@@ -18,7 +18,7 @@ namespace AcceptanceTest.DSL.Drivers
     {
         void EnterSystem();
         void ExitSystem();
-        void Register(string Username, string password);
+        void Register(string Username, string password, DateTime birthDate);
 
         void Login(string Username, string password);
         void Logout();

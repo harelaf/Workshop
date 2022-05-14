@@ -30,7 +30,7 @@ namespace AcceptanceTest
         {
             guest_userToken = (marketAPI.EnterSystem()).Value;
             registered_userToken = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(registered_userToken, username, "123456789");
+            marketAPI.Register(registered_userToken, username, "123456789", new DateTime(1992, 8, 4));
             registered_userToken = (marketAPI.Login(registered_userToken, username, "123456789")).Value;
             marketAPI.OpenNewStore(registered_userToken, storeName_inSystem);
             marketAPI.AddItemToStoreStock(registered_userToken, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 5);

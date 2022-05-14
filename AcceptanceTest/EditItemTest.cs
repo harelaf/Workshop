@@ -28,7 +28,7 @@ namespace AcceptanceTest
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(registered_VisitorToken, "Issachar Shkedi", "123456");
+            marketAPI.Register(registered_VisitorToken, "Issachar Shkedi", "123456", new DateTime(1963, 3, 12));
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "Issachar Shkedi", "123456")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
             itemID_inStock_1 = 111; itemAmount_inSttock_1 = 150;

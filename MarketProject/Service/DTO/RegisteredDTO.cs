@@ -12,6 +12,7 @@ namespace MarketProject.Service.DTO
         private ICollection<AdminMessageToRegisteredDTO> _adminMessages;
         private ICollection<MessageToStoreDTO> _repliedMessages;
         private ICollection<NotifyMessageDTO> _notifications;
+        private DateTime _birthDate;
 
         public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages)
         {
@@ -24,6 +25,7 @@ namespace MarketProject.Service.DTO
         public String ToString()
         {
             String result = $"Visitor Name: {_username}\n";
+            result += "Birth Date:" + _birthDate.ToString() + "\n";
             result += "Current Cart State:\n" + _shoppingCart.ToString();
             return result;
         }
