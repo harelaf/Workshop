@@ -22,13 +22,13 @@ namespace MarketProject.Service.DTO
         private int _id;
         public int Id => _id;
 
-        public NotifyMessageDTO(NotifyMessage notifyMessage)
+        public NotifyMessageDTO(string storeName, string title, string message, string receiverUsername, int id)
         {
-            _storeName = notifyMessage.StoreName;
-            _title = notifyMessage.Title;
-            _message = notifyMessage.Message;
-            _receiverUsername = notifyMessage.ReceiverUsername;
-            _id = notifyMessage.Id;
+            _storeName = storeName;
+            _title = title;
+            _message = message;
+            _receiverUsername = receiverUsername;
+            _id = id;
         }
     }
 }

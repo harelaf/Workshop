@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Shared
 {
     public enum Operation
     {

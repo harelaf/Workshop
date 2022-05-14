@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,35 +8,36 @@ namespace MarketWeb.Shared.DTO
     public class RegisteredDTO
     {
         private String _username;
-        public String Username => _username;
-
         private ShoppingCartDTO _shoppingCart;
-        public ShoppingCartDTO ShoppingCart => _shoppingCart;
-
         private ICollection<AdminMessageToRegisteredDTO> _adminMessages;
-        public ICollection<AdminMessageToRegisteredDTO> AdminMessages => _adminMessages;
-
         private ICollection<MessageToStoreDTO> _repliedMessages;
-        public ICollection<MessageToStoreDTO> RepliedMessages => _repliedMessages;
-
         private ICollection<NotifyMessageDTO> _notifications;
-        public ICollection<NotifyMessageDTO> NotifyMessages => _notifications;
+        private DateTime _birthDate;
+        public String Username { get { return _username; } set { _username = value; } }
+        public ShoppingCartDTO ShoppingCart { get { return _shoppingCart; } set { _shoppingCart = value; } }
+        public ICollection<AdminMessageToRegisteredDTO> AdminMessages { get { return _adminMessages; } set { _adminMessages = value; } }
+        public ICollection <MessageToStoreDTO> RepliedMessages { get { return _repliedMessages; } set { _repliedMessages = value; } }
+        public ICollection<NotifyMessageDTO > NotifyMessages { get { return _notifications; } set { _notifications = value; } }
+        public DateTime BirthDate { get { return _birthDate; } set { _birthDate = value; } }
 
-        public RegisteredDTO()
+        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages)
         {
-            _username = "user1";
-            _shoppingCart = new ShoppingCartDTO();
-
-            _adminMessages = new List<AdminMessageToRegisteredDTO>();
-            _repliedMessages = new List<MessageToStoreDTO>();
-            _notifications = new List<NotifyMessageDTO>();
-            AdminMessageToRegisteredDTO adminMessage = new AdminMessageToRegisteredDTO();
-            MessageToStoreDTO storeMessage = new MessageToStoreDTO();
-            MessageToStoreDTO message = new MessageToStoreDTO();
-            NotifyMessageDTO notify = new NotifyMessageDTO();
-            _adminMessages.Add(adminMessage);
-            _repliedMessages.Add(message);
-            _notifications.Add(notify);
+            _username = Username;
+            _shoppingCart = scDTO;
+            _adminMessages = adminMessages;
+            _repliedMessages = repliedMessages;
+            _notifications = notifications;
+        }
+        public String ToString()
+        {
+            String result = $"Visitor Name: {_username}\n";
+            result += "Birth Date:" + _birthDate.ToString() + "\n";
+            result += "Current Cart State:\n" + _shoppingCart.ToString();
+            return result;
+        }
+        public int NotificationsCount()
+        {
+            return _notifications.Count;
         }
     }
 }

@@ -91,23 +91,27 @@ h1{
         //    modelcs = new MainModel();
         //USE GetAllActiveStores(authToken);
         //Response<List<StoreDTO>> response = LayoutConfig.marketAPI.GetAllActiveStores(LayoutConfig.authToken);
-        StoreDTO store1 = new StoreDTO();
+        /*StoreDTO store1 = new StoreDTO();
         StoreDTO store2 = new StoreDTO();
         List<StoreDTO> lst = new List<StoreDTO>();
         lst.Add(store1);
-        lst.Add(store2);
+        lst.Add(store2);*/
         try
         {
-            //Response<string> response = await MarketAPIClient.GetAllActiveStores();
-            //if (response.ErrorOccured)
-            //{
-            //    throw new Exception(response.ErrorMessage);
-            //}
-            activeStores = lst;
+            Response<List<StoreDTO>> response = await marketAPIClient.GetAllActiveStores();
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            activeStores = response.Value;
+            //activeStores = lst;
         }
         catch (Exception ex)
         {
             AlertService.Error(ex.Message);
+        }
+        finally
+        {
             StateHasChanged();
         }
         //return view;

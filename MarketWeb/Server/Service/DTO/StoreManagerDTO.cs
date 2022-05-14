@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Shared;
 
 namespace MarketProject.Service.DTO
 {
@@ -19,12 +20,12 @@ namespace MarketProject.Service.DTO
         private String _appointer;
         public String Appointer => _appointer;
 
-        public StoreManagerDTO(StoreManager storeManager)
+        public StoreManagerDTO(ISet<Operation> operations, string username, string storeName, string appointer)
         {
-            _operations = new HashSet<Operation>(storeManager.operations);
-            _storeName = storeManager.StoreName;
-            _Username = storeManager.Username;
-            _appointer = storeManager.Appointer;
+            _operations = operations;
+            _storeName = storeName;
+            _Username = username;
+            _appointer = appointer;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Shared;
 
 namespace MarketProject.Service.DTO
 {
@@ -13,18 +14,18 @@ namespace MarketProject.Service.DTO
         private String _storeName;
         public String StoreName => _storeName;
 
-        private String _Username;
-        public String Username => _Username;
+        private String _username;
+        public String Username => _username;
 
         private String _appointer;
         public String Appointer => _appointer;
 
-        public StoreOwnerDTO(StoreOwner storeOwner)
+        public StoreOwnerDTO(ISet<Operation> operations, string username, string storeName, string appointer)
         {
-            _operations = new HashSet<Operation>(storeOwner.operations);
-            _storeName = storeOwner.StoreName;
-            _Username = storeOwner.Username;
-            _appointer = storeOwner.Appointer;
+            _operations = operations;
+            _storeName = storeName;
+            _username = username;
+            _appointer = appointer;
         }
     }
 }

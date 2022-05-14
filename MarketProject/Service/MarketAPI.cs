@@ -1064,7 +1064,7 @@ namespace MarketProject.Service
             try
             {
                 Item item = _market.GetItem(token, storeName, itemId);
-                response = new Response<ItemDTO>(new ItemDTO(item));
+                response = new Response<ItemDTO>(translator.toDTO(item));
             }
             catch (Exception e)
             {
