@@ -22,7 +22,7 @@
                 {
                     <span class="spinner-border spinner-border-sm mr-1"></span>
                 }
-                Login
+                Add
             </button>
         </EditForm>
     </div>
@@ -54,7 +54,6 @@
             AlertService.Error(ex.Message);
             loading = false;
             StateHasChanged();
-            NavigationManager.NavigateTo("/OpenNewStore");//would like to stay in the same page with err msg
         }
     }
 }

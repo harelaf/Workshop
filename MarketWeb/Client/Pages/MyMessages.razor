@@ -133,9 +133,10 @@ else
         }
         catch(Exception e)
         {
-            AlertService.Error(e.Message);
-            //var returnUrl = "/";//index
-            //NavigationManager.NavigateTo(returnUrl);
+             AlertService.Error(e.Message);
+             StateHasChanged();
+             var returnUrl = "/";//index
+             NavigationManager.NavigateTo(returnUrl);
         }
         finally
         {
