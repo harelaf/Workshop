@@ -19,6 +19,7 @@ namespace AcceptanceTest
         string username_founder = "SpongeBob SquarePants";
         string guest_token;
         string registered_token_founder;
+        DateTime bDay = new DateTime(1992, 8, 4);
 
 
         [TestInitialize]
@@ -26,7 +27,7 @@ namespace AcceptanceTest
         {
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(registered_token_founder, username_founder, "123456789");
+            marketAPI.Register(registered_token_founder, username_founder, "123456789", bDay);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
             marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 100);

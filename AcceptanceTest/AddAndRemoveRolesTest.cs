@@ -25,6 +25,7 @@ namespace AcceptanceTest
         int itemID_inStock_2;
         int itemAmount_inSttock_2;
         int itemID_outStock = 1111111;
+        DateTime bDay = new DateTime(1992, 8, 4);
 
         [TestInitialize()]
         public void setup()
@@ -32,7 +33,7 @@ namespace AcceptanceTest
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             store_founder_token = (marketAPI.EnterSystem()).Value;// guest
             store_founder_name = "afik";
-            marketAPI.Register(store_founder_token, store_founder_name, "123456789");
+            marketAPI.Register(store_founder_token, store_founder_name, "123456789", bDay);
             store_founder_token = (marketAPI.Login(store_founder_token, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(store_founder_token, storeName);
         }
@@ -43,7 +44,7 @@ namespace AcceptanceTest
             String managerUsername = "new manager";
             String ownerUsername = "new owner";
             String store_owner_token = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token, ownerUsername, "123456789"); 
+            marketAPI.Register(store_owner_token, ownerUsername, "123456789", bDay); 
             marketAPI.AddStoreOwner(store_founder_token, ownerUsername, storeName);
             Boolean res1 = false, res2 = false;
             Thread thread1 = new Thread(() => {
@@ -80,11 +81,11 @@ namespace AcceptanceTest
             String password = "123456789";
             bool doubleCheck = false;
             String store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token1, ownerUsername1, password);
+            marketAPI.Register(store_owner_token1, ownerUsername1, password, bDay);
             String store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token2, ownerUsername2, password);
+            marketAPI.Register(store_owner_token2, ownerUsername2, password, bDay);
             String store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_manager_token3, managerUsername3, password);
+            marketAPI.Register(store_manager_token3, managerUsername3, password, bDay);
 
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;

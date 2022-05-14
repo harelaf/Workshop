@@ -33,7 +33,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
 			AllProductsDiscount dis = new AllProductsDiscount(percentage_to_subtract, expiration);
 			//store.AddDiscount(dis);
 			basket.AddItem(new Item(1, itemName, 10, "desc", "category"), 1);
-
+			
 			//act
 			double expected = 1.0;
 			double actual = dis.GetTotalDiscount(basket);
