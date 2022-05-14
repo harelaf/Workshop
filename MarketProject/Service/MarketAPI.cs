@@ -579,7 +579,7 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response RemoveManagerPermission(String authToken, String managerUsername, String storeName, string op)//permission param is Enum
+        public Response RemoveManagerPermission(String authToken, String managerUsername, String storeName, String op)//permission param is Enum
         {//II.4.7
 
             Response response;
@@ -1054,21 +1054,6 @@ namespace MarketProject.Service
             catch (Exception e)
             {
                 response = new Response(e);
-            }
-            return response;
-        }
-
-        public Response<ItemDTO> GetItem(string token, string storeName, int itemId)
-        {
-            Response<ItemDTO> response;
-            try
-            {
-                Item item = _market.GetItem(token, storeName, itemId);
-                response = new Response<ItemDTO>(translator.toDTO(item));
-            }
-            catch (Exception e)
-            {
-                response = new Response<ItemDTO>(null, e);
             }
             return response;
         }

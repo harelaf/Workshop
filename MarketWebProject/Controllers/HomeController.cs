@@ -47,8 +47,10 @@ namespace MarketWebProject.Controllers
                 modelcs = new MainModel();
             //Task<Response<List<StoreDTO>>> task = _marketAPIClient.GetAllActiveStores();
 
-             StoreDTO store1 = new StoreDTO();
-            StoreDTO store2 = new StoreDTO();
+             StoreDTO store1 = new StoreDTO("Store1", new StoreFounderDTO("admin", "Store1"), null, null, new StockDTO(new Dictionary<ItemDTO, int>()), 
+                 new Queue<MessageToStoreDTO>(), new RatingDTO(new Dictionary<string, Tuple<int, string>>()), new List<StoreManagerDTO>(), new List<StoreOwnerDTO>(), StoreState.Active);
+            StoreDTO store2 = new StoreDTO("Store2", new StoreFounderDTO("admin", "Store2"), null, null, new StockDTO(new Dictionary<ItemDTO, int>()),
+                 new Queue<MessageToStoreDTO>(), new RatingDTO(new Dictionary<string, Tuple<int, string>>()), new List<StoreManagerDTO>(), new List<StoreOwnerDTO>(), StoreState.Active);
             List<StoreDTO> lst = new List<StoreDTO>();
             lst.Add(store1);
             lst.Add(store2);
@@ -344,7 +346,7 @@ namespace MarketWebProject.Controllers
                 viewResult.ViewData["closeStorePermenantly"] = !closePermenantlyPermission.ErrorOccured;
                 viewResult.ViewData["purchaseHistory"] = !purchaseHistoryPermission.ErrorOccured;
                 viewResult.ViewData["storeMsg"] = !storeMsgPermission.ErrorOccured;
-                viewResult.ViewData["ActiveStore"] = response.Value.isActive();
+                viewResult.ViewData["ActiveStore"] = response.Value.State== StoreState.Active;
                 return viewResult;
             }
         }
@@ -487,9 +489,9 @@ namespace MarketWebProject.Controllers
             if (modelcs == null)
                 modelcs = new MainModel();
             List<Tuple<DateTime, ShoppingBasketDTO>> tuples = new List<Tuple<DateTime, ShoppingBasketDTO>>();
-            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 30, 14, 30, 0), new ShoppingBasketDTO()));
-            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 18, 10, 14, 0), new ShoppingBasketDTO()));
-            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 1, 22, 55, 0), new ShoppingBasketDTO()));
+            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 30, 14, 30, 0), new ShoppingBasketDTO("store1",new Dictionary<ItemDTO, int>())));
+            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 18, 10, 14, 0), new ShoppingBasketDTO("store2",new Dictionary<ItemDTO, int>())));
+            tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 1, 22, 55, 0),  new ShoppingBasketDTO("store3",new Dictionary<ItemDTO, int>())));
             Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(tuples);// service.GetStorePurchaseHistory(token storeName);
             if (!response.ErrorOccured)
             {
@@ -509,9 +511,9 @@ namespace MarketWebProject.Controllers
             if (modelcs == null)
                 modelcs = new MainModel();
             Queue<MessageToStoreDTO> messages = new Queue<MessageToStoreDTO>();
-            messages.Enqueue(new MessageToStoreDTO());
-            messages.Enqueue(new MessageToStoreDTO());
-            messages.Enqueue(new MessageToStoreDTO());
+            messages.Enqueue(new MessageToStoreDTO("Store1", "afik", "goog store", "good!!","happy 4 u", "admin", 1));
+            messages.Enqueue(new MessageToStoreDTO("Store1", "afik", "goog store", "good!!","happy 4 u", "admin", 2));
+            messages.Enqueue(new MessageToStoreDTO("Store1", "afik", "goog store", "good!!","happy 4 u", "admin", 3));
             Response<Queue<MessageToStoreDTO>> response = new Response<Queue<MessageToStoreDTO>>(messages);// service.GetStoreMessages(token, storeName);
             if (!response.ErrorOccured)
             {

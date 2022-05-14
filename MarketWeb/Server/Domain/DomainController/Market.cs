@@ -819,7 +819,7 @@ namespace MarketProject.Domain
         public List<Store> GetAllActiveStores(String authToken)
         {
             String errorMessage = null;
-            CheckIsVisitorLoggedIn(authToken, "GetAllActiveStores");
+            CheckIsVisitorAVisitor(authToken, "GetAllActiveStores");
             bool isAdmin = true;
             try
             {
@@ -829,8 +829,7 @@ namespace MarketProject.Domain
             {
                 isAdmin = false;
             }
-            string username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            return _storeManagement.GetAllActiveStores(username, isAdmin);
+            return _storeManagement.GetAllActiveStores(isAdmin);
         }
 
         public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, string opName)

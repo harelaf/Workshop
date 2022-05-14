@@ -1,0 +1,97 @@
+﻿@page "/MyPurchaseHistory"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@using System
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+h1{
+    text-align:center;
+}
+</style>
+
+<div class="text-center">
+    <h1 class="display-4">@(username)'s Purchase History</h1>
+    <br />
+    <br />
+</div>
+<br />
+@if (purchasedCartDTOs.Count > 0)
+{
+    @foreach (PurchasedCartDTO cartPurchase in purchasedCartDTOs)
+    {
+        DateTime date = cartPurchase.Date;
+        ShoppingCartDTO cart = cartPurchase.ShoppingCart;
+        <h4>@date</h4>
+        @foreach (ShoppingBasketDTO basket in cart.Baskets)
+        {
+            <table style="width:100%" id="@date">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Amount</th>
+                    <th>price per unit</th>
+                </tr>
+                @foreach (KeyValuePair<ItemDTO, int> item_amount in basket.Items)
+                {
+                    <tr id="@(item_amount.Key.Name + date.ToString())">
+                        <th>@item_amount.Key.Name</th>
+                        <th>@item_amount.Value</th>
+                        <th>$@item_amount.Key.Price</th>
+                    </tr>
+                }
+            </table>
+            <br />
+        }
+    }
+
+}
+else
+{
+    <h4>This user hasn't purchased anything yet!</h4>
+}
+
+@code {
+    private Models.MyPurchaseHistoryModel model = new Models.MyPurchaseHistoryModel();
+    private bool loading;
+    private ICollection<PurchasedCartDTO> purchasedCartDTOs = new List<PurchasedCartDTO>();
+    private string username = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //AlertService.Clear(); // ?????
+        try
+        {
+            Response<RegisteredDTO> response_user = await marketAPIClient.GetVisitorInformation();
+            Response<ICollection<PurchasedCartDTO>> res_history = await marketAPIClient.GetMyPurchasesHistory();
+            if (response_user.ErrorOccured)
+            {
+                throw new Exception(response_user.ErrorMessage);
+            }
+            username = response_user.Value.Username;
+            if (res_history.ErrorOccured)
+            {
+                throw new Exception(res_history.ErrorMessage);
+            }
+            purchasedCartDTOs = res_history.Value; 
+        }
+        catch(Exception e)
+        {
+             AlertService.Error(e.Message, true, true);
+             StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+
+    }
+
+}

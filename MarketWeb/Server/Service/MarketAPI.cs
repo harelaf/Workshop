@@ -23,6 +23,7 @@ namespace MarketProject.Service
         {
             _market = market;
             _logger = logger;
+            LoadData();
         }
 
         private String parseAutherization(String Authorization)
@@ -39,6 +40,7 @@ namespace MarketProject.Service
         /// <para> For Req I.1. </para>
         /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
         /// </summary>
+        [HttpPost("")]
         public Response RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
             Response response;
@@ -160,6 +162,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("AddItemToCart")]
         public Response AddItemToCart([FromHeader] String Authorization, int itemID, String storeName, int amount)
         {//II.2.3
             Response response;
@@ -178,6 +181,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("RemoveItemFromCart")]
         public Response RemoveItemFromCart([FromHeader] String Authorization, int itemID, String storeName)
         {//II.2.4
             Response response;
@@ -196,6 +200,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("UpdateQuantityOfItemInCart")]
         public Response UpdateQuantityOfItemInCart([FromHeader] String Authorization, int itemID, String storeName, int newQuantity)
         {//II.2.4
             Response response;
@@ -233,6 +238,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("PurchaseMyCart")]
         public Response PurchaseMyCart([FromHeader] String Authorization, String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
         {//II.2.5
             Response response;
@@ -251,6 +257,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("OpenNewStore")]
         public Response OpenNewStore([FromHeader] String Authorization, String storeName)
         {//II.3.2
             Response response;
@@ -269,6 +276,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("AddStoreManager")]
         public Response AddStoreManager([FromHeader] String Authorization, String managerUsername, String storeName)
         {//II.4.6
             Response response;
@@ -287,6 +295,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("AddStoreOwner")]
         public Response AddStoreOwner([FromHeader] String Authorization, String ownerUsername, String storeName)
         {//II.4.4
             Response response;
@@ -305,6 +314,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("RemoveStoreOwner")]
         public Response RemoveStoreOwner([FromHeader] String Authorization, String ownerUsername, String storeName)
         {//II.4.5
             Response response;
@@ -323,6 +333,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("RemoveStoreManager")]
         public Response RemoveStoreManager([FromHeader] String Authorization, String managerUsername, String storeName)
         {//II.4.8
             Response response;
@@ -341,6 +352,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("AddItemToStoreStock")]
         public Response AddItemToStoreStock([FromHeader] String Authorization, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {//II.4.1
             Response response;
@@ -359,6 +371,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("RemoveItemFromStore")]
         public Response RemoveItemFromStore([FromHeader] String Authorization, String storeName, int itemID)
         {//II.4.1
             Response response;
@@ -377,6 +390,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("UpdateStockQuantityOfItem")]
         public Response UpdateStockQuantityOfItem([FromHeader] String Authorization, String storeName, int itemID, int newQuantity)
         {//II.4.1
             Response response;
@@ -395,6 +409,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("EditItemPrice")]
         public Response EditItemPrice([FromHeader] String Authorization, String storeName, int itemID, double newPrice)
         {//II.4.1
             Response response;
@@ -413,6 +428,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("EditItemName")]
         public Response EditItemName([FromHeader] String Authorization, String storeName, int itemID, String newName)
         {//II.4.1
             Response response;
@@ -431,6 +447,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("EditItemDescription")]
         public Response EditItemDescription([FromHeader] String Authorization, String storeName, int itemID, String newDescription)
         {//II.4.1
             Response response;
@@ -449,6 +466,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("RateItem")]
         public Response RateItem([FromHeader] String Authorization, int itemID, String storeName, int rating, String review)
         {//II.3.3,  II.3.4
             Response response;
@@ -467,6 +485,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("RateStore")]
         public Response RateStore([FromHeader] String Authorization, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
             Response response;
@@ -485,6 +504,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("GetStoreInformation")]
         public Response<StoreDTO> GetStoreInformation([FromHeader] String Authorization, String storeName)
         {//II.2.1
             Response<StoreDTO> response;
@@ -504,6 +524,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("GetItemInformation")]
         public Response<List<ItemDTO>> GetItemInformation([FromHeader] String Authorization, String itemName, String itemCategory, String keyWord)
         {//II.2.2
             //filters!!!!!!!!!!!
@@ -531,6 +552,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("SendMessageToStore")]
         public Response SendMessageToStore([FromHeader] String Authorization, String storeName, String title, String description, int id)
         {//II.3.5
             Response response;
@@ -557,7 +579,8 @@ namespace MarketProject.Service
         /// <param name="authToken"> The token of the Visitor filing the complaint. </param>
         /// <param name="cartID"> The cart ID relevant to the complaint. </param>
         /// <param name="message"> The message detailing the complaint. </param>
-        public Response FileComplaint([FromHeader] String Authorization, int cartID, String message)
+        [HttpPost("FileComplaint")]
+        public Response FileComplaint([FromHeader] String Authorization, int cartID,  String message)
         {//II.3.6
             Response response;
             try
@@ -632,6 +655,7 @@ namespace MarketProject.Service
         /// <param name="authToken"> The authenticating token of the Visitor changing the password.</param>
         /// <param name="oldPassword"> The Visitor's current password. </param>
         /// <param name="newPassword"> The new updated password. </param>
+        [HttpPost("EditVisitorPassword")]
         public Response EditVisitorPassword([FromHeader] String Authorization, String oldPassword, String newPassword)
         {//II.3.8
             Response response;
@@ -651,6 +675,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("RemoveManagerPermission")]
         public Response RemoveManagerPermission([FromHeader] String Authorization, String managerUsername, String storeName, string op)//permission param is Enum
         {//II.4.7
 
@@ -671,6 +696,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("AddManagerPermission")]
         public Response AddManagerPermission([FromHeader] String Authorization, String managerUsername, String storeName, String op)//permission param is Enum
         {//II.4.7
             Response response;
@@ -690,6 +716,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("CloseStore")]
         public Response CloseStore([FromHeader] String Authorization, String storeName)
         {//II.4.9
             Response response;
@@ -709,6 +736,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("ReopenStore")]
         public Response ReopenStore([FromHeader] String Authorization, String storeName)
         {//II.4.10
             Response response;
@@ -728,6 +756,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetStoreOwners")]
         public Response<List<StoreOwnerDTO>> GetStoreOwners([FromHeader] String Authorization, String storeName)
         {//II.4.11
             Response<List<StoreOwnerDTO>> response;
@@ -750,6 +779,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetStoreManagers")]
         public Response<List<StoreManagerDTO>> GetStoreManagers([FromHeader] String Authorization, String storeName)
         {//II.4.11
             Response<List<StoreManagerDTO>> response;
@@ -772,6 +802,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetStoreFounder")]
         public Response<StoreFounderDTO> GetStoreFounder([FromHeader] String Authorization, String storeName)
         {//II.4.11
             Response<StoreFounderDTO> response;
@@ -791,6 +822,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetStoreMessages")]
         public Response<Queue<MessageToStoreDTO>> GetStoreMessages([FromHeader] String Authorization, String storeName)
         {//II.4.12
             //should return with id
@@ -876,6 +908,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("AnswerStoreMesseage")]
         public Response AnswerStoreMesseage([FromHeader] String Authorization, string receiverUsername, int msgID, string storeName, string reply)
         {//II.4.12
             Response response;
@@ -895,6 +928,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetStorePurchasesHistory")]
         public Response<List<Tuple<DateTime, ShoppingBasketDTO>>> GetStorePurchasesHistory([FromHeader] String Authorization, String storeName)
         {//II.4.13
             Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response;
@@ -923,6 +957,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("CloseStorePermanently")]
         public Response CloseStorePermanently([FromHeader] String Authorization, String storeName)
         {//II.6.1
             Response response;
@@ -955,6 +990,7 @@ namespace MarketProject.Service
         /// <param name="authToken"> The authorisation token of the system admin.</param>
         /// <param name="complaintID"> The ID of the complaint. </param>
         /// <param name="reply"> The response to the complaint. </param>
+        [HttpPost("ReplyToComplaint")]
         public Response ReplyToComplaint([FromHeader] String Authorization, int complaintID, String reply)
         {//II.6.3
             Response response;
@@ -974,6 +1010,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("SendMessageToRegisterd")]
         public Response SendMessageToRegisterd([FromHeader] String Authorization, String UsernameReciever, String title, String message)
         {//II.6.3
             Response response;
@@ -1081,6 +1118,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("AppointSystemAdmin")]
         public Response AppointSystemAdmin([FromHeader] String Authorization, String adminUsername)
         { //II.1.2
             Response response;
@@ -1100,6 +1138,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("AddStoreDiscount")]
         public Response AddStoreDiscount([FromHeader] String Authorization, String storeName, IDiscountDTO discount_dto)
         {
             Response response;
@@ -1121,6 +1160,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("CalcCartActualPrice")]
         public Response<Double> CalcCartActualPrice([FromHeader] String Authorization)
         {
             Response<Double> response;
@@ -1140,6 +1180,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetCartReceipt")]
         public Response<String> GetCartReceipt([FromHeader] String Authorization)
         {
             Response<String> response;
@@ -1159,6 +1200,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("HasPermission")]
         public Response HasPermission([FromHeader] String Authorization, string storeName, string op)
         {
             Response response;
@@ -1175,6 +1217,7 @@ namespace MarketProject.Service
             }
             return response;
         }
+        [HttpPost("IsStoreActive")]
         public Response IsStoreActive([FromHeader] String Authorization, string storeName, string op)
         {
             Response response;
@@ -1192,6 +1235,7 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetItem")]
         public Response<ItemDTO> GetItem([FromHeader] String Authorization, string storeName, int itemId)
         {
             Response<ItemDTO> response;
@@ -1207,6 +1251,17 @@ namespace MarketProject.Service
                 response = new Response<ItemDTO>(null, e); _logger.LogError(e.Message);
             }
             return response;
+        }
+        public void LoadData()
+        {
+            String username1 = "username1";
+            String password1 = "password1";
+            String storeName1 = "storeName1";
+            String auth1 = "Bearer " + EnterSystem().Value;
+
+            Register(auth1, username1, password1, new DateTime(1992, 8, 4));
+            auth1 = "Bearer " +Login(auth1, username1, password1).Value;
+            OpenNewStore(auth1, storeName1);
         }
     }
 }
