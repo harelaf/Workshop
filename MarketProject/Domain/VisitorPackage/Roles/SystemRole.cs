@@ -22,10 +22,10 @@ namespace MarketProject.Domain
                 _storeName = value; 
             }
         }
-        private string _Username;
+        private string _username;
         public string Username
         {
-            get { return _Username; }
+            get { return _username; }
             protected set
             {
                 if (value == null || value.Equals(""))
@@ -34,7 +34,7 @@ namespace MarketProject.Domain
                     LogErrorMessage("Username", errorMessage);
                     throw new ArgumentNullException(errorMessage);
                 }
-                _Username = value;
+                _username = value;
             }
         }
 

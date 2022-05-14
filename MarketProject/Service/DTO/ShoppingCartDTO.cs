@@ -9,21 +9,16 @@ namespace MarketProject.Service.DTO
     {
         private ICollection<ShoppingBasketDTO> _DTObaskets; 
         public ICollection<ShoppingBasketDTO> Baskets => _DTObaskets;
-        public ShoppingCartDTO(ShoppingCart shoppingCart)
+        public ShoppingCartDTO(ICollection<ShoppingBasketDTO> basketDTOs)
         {
-            _DTObaskets = new List<ShoppingBasketDTO>();
-            foreach (ShoppingBasket basket in shoppingCart._shoppingBaskets)
-            {
-                _DTObaskets.Add(new ShoppingBasketDTO(basket));
-            }
+            _DTObaskets = basketDTOs;
         }
-
         public ShoppingBasketDTO GetBasket(String StoreName)
         {
             ShoppingBasketDTO basket = null;
             foreach(ShoppingBasketDTO b in _DTObaskets)
             {
-                if(basket.GetStoreName == StoreName)
+                if(basket.StoreName == StoreName)
                 {
                     basket = b;
                 }

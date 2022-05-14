@@ -1,0 +1,64 @@
+﻿@using MarketWebProject.DTO
+@using MarketWebProject.Models
+@using System.Collections
+@model MainModel
+@using MarketWebProject.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "Purchase My Cart";
+}
+
+
+<div class="text-center">
+    <h1 class="display-4">Purchase process:</h1>
+    <br />
+    <br />
+
+    <form action="/Home/PurchaseUserCart" method="post">
+        <font color="black">Address- street and house number: </font>
+        <input type="text" required name="address" title="address" />
+        <br />
+        <br />
+        <font color="black">City: </font>
+        <input type="text" required name="city" title="city" />
+        <br />
+        <br />
+        <font color="black">Country: </font>
+        <input type="text" required name="country" title="country" />
+        <br />
+        <br />
+        <font color="black">Zip code: </font>
+        <input type="text" required name="zip" title="zip" />
+        <br />
+        <br />
+        <font color="black">Full Name: </font>
+        <input type="text" required name="purchaserName" title="purchaserName" />
+        <br />
+        <br />
+        <font color="black">Payment Methode: </font>
+        <input type="text" required name="paymentMethode" title="paymentMethode" />
+        <br />
+        <br />
+        <font color="black">Shipment Methode: </font>
+        <input type="text" required name="shipmentMethode" title="shipmentMethode" />
+        <br />
+        <br />
+        <input type="submit" value="Make Payment" />
+        <br />
+        <br />
+        <br />
+       
+    </form>
+</div>

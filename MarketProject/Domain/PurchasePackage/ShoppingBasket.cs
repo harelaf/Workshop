@@ -9,7 +9,6 @@ namespace MarketProject.Domain
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual Store _store { get; set; }
         public virtual IDictionary<Item, int> _items { get; set; }
-        public Store Store => _store;
         public IDictionary<Item, int> Items => _items;
 
         public ShoppingBasket(Store store)
@@ -112,14 +111,14 @@ namespace MarketProject.Domain
         public double GetTotalPrice()
         {
             double sum = 0;
-            foreach(Item i in _items.Keys)
-                sum += i._price * _items[i];
+            foreach(Item i in GetItems())
+                sum += i._price * GetAmountOfItem(i);
             return sum;
         }
 
         internal double getActualPrice()
         {
-            double totalDiscount = _store.DiscountPolicy.calculateDiscounts(this);
+            double totalDiscount = Store().GetDiscountPolicy().calculateDiscounts(this);
             double totalPrice = GetTotalPrice();
             return totalPrice - totalDiscount;
         }
@@ -148,9 +147,14 @@ namespace MarketProject.Domain
             foreach(Item item in Items.Keys)
             {
                 receipt += $"{Items[item]} {item._price} -> {Items[item] * item._price}\n";
-                receipt += _store.DiscountPolicy.GetActualDiscountString(this);
+                receipt += _store.GetDiscountPolicy().GetActualDiscountString(this);
             }
             return receipt;
+        }
+
+        public virtual Store Store()
+        {
+            return _store;
         }
     }
 }

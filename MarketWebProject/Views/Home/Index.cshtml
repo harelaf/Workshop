@@ -1,0 +1,90 @@
+﻿@model MainModel
+@using MarketWebProject.DTO
+@using MarketWebProject.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to MarketWebProject!</h1>
+    <br />
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    else if (Model.Message != null && Model.Message.Length > 0)
+    {
+        <p style="background:green">@Model.Message</p>
+    }
+    <br />
+    <form method="post" style="border:black; border-width:4px; border-style:solid;">
+        <div style="text-align:center;">
+            <h1 style="text-decoration-style:double">Item Search Box</h1>
+            <p>In order to search for a specific item, fill the following boxes:</p>
+            <ul class="nav" style="display:inline-table;">
+                <li style="display:inline;">
+                    <font color="black">Name:</font>
+                    <input type="text" id="itemname" name="itemname" title="itemname"/>
+                </li>
+                <br />
+                <li style="display:inline;">
+                    <font color="black">Category: </font>
+                    <input type="text" id="category" name="category" title="category"/>
+                </li>
+                <br />
+                <li style="display:inline;">
+                    <font color="black">Key Word: </font>
+                    <input type="text" id="keyword" name="keyword" title="keyword"/>
+                </li>
+            </ul>
+        </div>
+        <br />
+         <input class="btn btn-info" type="submit" value="Search Items" asp-area="" asp-controller="Home" 
+        asp-action="ItemSearchPage" asp-route-newQuantity="" />
+        <p></p>
+    </form>
+    <br />
+    <br />
+    <h2>Active Stores</h2>
+    @if ((ViewData["activeStores"] as List<StoreDTO>).Count == 0)
+    {
+        <font><b>There are no active stores in the market.</b></font>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Store Name</th>
+                    <th>Founder Name</th>
+                    <th>View Store Button</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (StoreDTO item in (ViewData["activeStores"] as List<StoreDTO>))
+                {
+                    <tr>
+                        <td>@item.StoreName</td>
+                        <td>@item.Founder.Username</td>
+                        <td>
+                            <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePage" asp-route-storename="@(item.StoreName)">View @item.StoreName Page</a>
+                        </td>
+                    </tr>
+                }
+            <tbody />
+        </table>
+    }
+</div>

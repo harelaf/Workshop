@@ -1,0 +1,65 @@
+﻿@using MarketWebProject.DTO
+@using MarketWebProject.Models
+@using System.Collections
+@model MainModel
+@using MarketWebProject.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "My Purchase History";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@(ViewData["username"] as string)'s Purchase History</h1>
+    <br />
+    <br />
+</div>
+<br />
+
+@if ((ViewData["history"] as ICollection<PurchasedCartDTO>).Count>0)
+{
+    @foreach (PurchasedCartDTO cartPurchase in ViewData["history"] as ICollection<PurchasedCartDTO>)
+    {
+        DateTime date = cartPurchase.Date;
+        ShoppingCartDTO cart = cartPurchase.ShoppingCart;
+        <h4>@date</h4>
+        @foreach(ShoppingBasketDTO basket in cart.Baskets)
+        {
+           <table style="width:100%" id="@date">
+            <tr>
+                <th>Product Name</th>
+                <th>Amount</th>
+                <th>price per unit</th>
+            </tr>
+            @foreach (KeyValuePair<ItemDTO, int> item_amount in basket.Items)
+            {
+                <tr id="@(item_amount.Key.Name + date.ToString())">
+                    <th>@item_amount.Key.Name</th>
+                    <th>@item_amount.Value</th>
+                    <th>$@item_amount.Key.Price</th>
+                </tr>
+            }
+        </table>
+        <br />  
+        }
+    }
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+}
+else
+{
+    <h4>This user hasn't purchased anything yet!</h4>
+}

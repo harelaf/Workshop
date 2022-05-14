@@ -1,0 +1,70 @@
+﻿@using MarketWebProject.DTO
+@using MarketWebProject.Models
+@using System.Collections
+@model MainModel
+@using MarketWebProject.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "Store Messages";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@(ViewData["storeName"] as string)  Messages</h1>
+    <br />
+    <br />
+</div>
+<br />
+   @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    else if(Model.Message!=null && Model.Message.Length>0)
+    {
+        <p style="background:green">@Model.Message</p>
+    }
+@if ((ViewData["messages"] as Queue<MessageToStoreDTO>).Count>0)
+{
+    <table style="width:100%" class="table">
+        <tr>
+            <th><h4>User Name </h4></th>
+            <th><h4> Title</h4></th>
+            <th><h4> Message</h4></th>
+            <th><h4> Reply</h4></th>
+
+        </tr>
+        @foreach (MessageToStoreDTO msg in (ViewData["messages"] as Queue<MessageToStoreDTO>))
+        {
+            <tr >
+                <th>@msg.SenderUsername</th>
+                <th>@msg.Title</th>
+                <th>@msg.Message</th>
+                <th> 
+                    <form method="post">
+                        <textarea required rows="4" cols="50" id="replyMessage" name="replyMessage"> Enter message here...</textarea>
+                        <br />
+                        <input class="btn btn-info" type="submit" value="Reply" asp-area="" asp-controller="Home" asp-action="ReplyMessage" 
+                        asp-route-storename="@((ViewData["storeName"]) as string)" asp-route-receiverUsername="@msg.SenderUsername" asp-route-msgId="@msg.Id" asp-route-replyMessage=""  />
+                    </form>
+                </th>
+            </tr>
+        }
+    </table>
+    <br /> 
+ 
+}
+else
+{
+    <h4> there was no messages sent to store yet!</h4>
+}

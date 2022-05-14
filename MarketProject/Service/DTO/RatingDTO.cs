@@ -11,9 +11,9 @@ namespace MarketProject.Service.DTO
 
         public Dictionary<String, Tuple<int, String>> Ratings => _ratings;
 
-        public RatingDTO(Rating rating)
+        public RatingDTO(Dictionary<String, Tuple<int, String>> ratings)
         {
-            _ratings = rating.Ratings;
+            _ratings = ratings;
         }
 
         public double GetRating()

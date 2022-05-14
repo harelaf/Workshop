@@ -56,7 +56,7 @@ namespace MarketProject.Domain
         private double CalculatePrice(ShoppingCart shoppingCart)
         {
             //double price = 0;
-            //foreach(ShoppingBasket shoppingBasket in shoppingCart._shoppingBaskets)
+            //foreach (ShoppingBasket shoppingBasket in shoppingCart._shoppingBaskets)
             //{
             //    foreach (Item item in shoppingBasket.GetItems())
             //    {

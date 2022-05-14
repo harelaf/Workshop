@@ -73,5 +73,10 @@ namespace MarketProject.Domain
             roles.Add(Operation.STORE_HISTORY_INFO);
             return roles;
         }
+
+        internal bool isAppointer(string appointerUsername)
+        {
+            return Appointer.Equals(appointerUsername);
+        }
     }
 }

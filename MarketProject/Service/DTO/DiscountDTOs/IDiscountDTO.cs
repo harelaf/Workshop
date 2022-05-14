@@ -7,6 +7,5 @@ namespace MarketProject.Service.DTO
 {
     public interface IDiscountDTO
     {
-        public Discount ConvertMe(dtoDiscountConverter converter);
     }
 }

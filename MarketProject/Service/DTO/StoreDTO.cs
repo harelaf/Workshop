@@ -11,11 +11,11 @@ namespace MarketProject.Service.DTO
         private StockDTO _stock;
         public StockDTO Stock => _stock;
 
-        private PurchasePolicy _purchasePolicy;
-        public PurchasePolicy PurchasePolicy => _purchasePolicy;
+        private PurchasePolicyDTO _purchasePolicy;
+        public PurchasePolicyDTO PurchasePolicy => _purchasePolicy;
 
-        private DiscountPolicy _discountPolicy;
-        public DiscountPolicy DiscountPolicy => _discountPolicy;
+        private DiscountPolicyDTO _discountPolicy;
+        public DiscountPolicyDTO DiscountPolicy => _discountPolicy;
 
         private Queue<MessageToStoreDTO> _messagesToStore;
         public Queue<MessageToStoreDTO> MessagesToStore => _messagesToStore;
@@ -38,33 +38,46 @@ namespace MarketProject.Service.DTO
         private StoreState _state;
         public StoreState State => _state;
 
-        public StoreDTO(Store store)
+        public StoreDTO(String storeName, StoreFounderDTO founder, PurchasePolicyDTO purchasePolicy, DiscountPolicyDTO discountPolicy, StockDTO stock, Queue<MessageToStoreDTO> messages, RatingDTO rating, List<StoreManagerDTO> managers, List<StoreOwnerDTO> owners, StoreState state)
         {
-            _stock = new StockDTO(store.Stock);
-            _purchasePolicy = store.PurchasePolicy;
-            _discountPolicy = store.DiscountPolicy;
-            _messagesToStore = new Queue<MessageToStoreDTO>();
-            foreach(MessageToStore msg in store.MessagesToStore)
-            { //Might be in reverse order...
-                MessageToStoreDTO dto = new MessageToStoreDTO(msg);
-                _messagesToStore.Enqueue(dto);
-            }
-            _rating = new RatingDTO(store.Rating);
-            _managers = new List<StoreManagerDTO>();
-            foreach (StoreManager manager in store.GetManagers())
-            {
-                StoreManagerDTO dto = new StoreManagerDTO(manager);
-                _managers.Add(dto);
-            }
-            _owners = new List<StoreOwnerDTO>();
-            foreach (StoreOwner owner in store.GetOwners())
-            {
-                StoreOwnerDTO dto = new StoreOwnerDTO(owner);
-                _owners.Add(dto);
-            }
-            _founder = new StoreFounderDTO(store.GetFounder());
-            _storeName = store.GetName();
-            _state = store.State;
+            _storeName = storeName;
+            _stock = stock;
+            _purchasePolicy = purchasePolicy;
+            _discountPolicy = discountPolicy;
+            _messagesToStore = messages;
+            _rating = rating;
+            _managers = managers;
+            _owners = owners;
+            _founder = founder;
+            _state = state; 
         }
+        //public StoreDTO(Store store)
+        //{
+        //    _stock = new StockDTO(store.Stock);
+        //    _purchasePolicy = store.GetPurchasePolicy();
+        //    _discountPolicy = store.GetDiscountPolicy();
+        //    _messagesToStore = new Queue<MessageToStoreDTO>();
+        //    foreach (MessageToStore msg in store.MessagesToStore)
+        //    { //Might be in reverse order...
+        //        MessageToStoreDTO dto = new MessageToStoreDTO(msg);
+        //        _messagesToStore.Enqueue(dto);
+        //    }
+        //    _rating = new RatingDTO(store.Rating);
+        //    _managers = new List<StoreManagerDTO>();
+        //    foreach (StoreManager manager in store.GetManagers())
+        //    {
+        //        StoreManagerDTO dto = new StoreManagerDTO(manager);
+        //        _managers.Add(dto);
+        //    }
+        //    _owners = new List<StoreOwnerDTO>();
+        //    foreach (StoreOwner owner in store.GetOwners())
+        //    {
+        //        StoreOwnerDTO dto = new StoreOwnerDTO(owner);
+        //        _owners.Add(dto);
+        //    }
+        //    _founder = new StoreFounderDTO(store.GetFounder());
+        //    _storeName = store.GetName();
+        //    _state = store.State;
+        //}
     }
 }

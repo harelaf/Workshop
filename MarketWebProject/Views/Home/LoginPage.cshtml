@@ -1,0 +1,50 @@
+﻿@using MarketWebProject.Models
+@using MarketWebProject.Views.Shared
+@model MainModel
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "Login Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Login To Your Account:</h1>
+    <br />
+    <br />
+    <form action="/Home/LoginForm" method="post">
+        <font color="black">Username: </font>
+        <input type="text" required name="name" title="user name" />
+        <br />
+        <br />
+        <font color="black">Password: </font>
+        <input type="password" required name="password" title="password" />
+        <br />
+        <br />
+        <input type="submit" value="Login" />
+        <br />
+        <br />
+        <br />
+
+        @if (!Model.ErrorOccurred)
+        {
+            <p style="background:green">@Model.Message</p>
+        }
+        else
+        {
+            <p style="background:red">@Model.Message</p>
+            Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+        }
+
+    </form>
+</div>

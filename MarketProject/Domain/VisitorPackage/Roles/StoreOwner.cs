@@ -30,5 +30,10 @@ namespace MarketProject.Domain
             roles.Add(Operation.STOCK_EDITOR);
             return roles;
         }
+
+        internal bool isAppointer(string appointerUsername)
+        {
+            return Appointer.Equals(appointerUsername);
+        }
     }
 }

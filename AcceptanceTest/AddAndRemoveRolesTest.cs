@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace AcceptanceTest
 {
     [TestClass]
-    public class AddRolesTest
+    public class AddAndRemoveRolesTest
     {
         MarketAPI marketAPI = new MarketAPI();
         String storeName = "test's Shop";
@@ -58,8 +58,16 @@ namespace AcceptanceTest
             thread1.Join();
             thread2.Join();
 
+            List<StoreManagerDTO> lst = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
+            bool found = false;
+            foreach(StoreManagerDTO s in lst)
+                if(s.Username == managerUsername)
+                    found = true;
+            
+            Assert.IsTrue(found);
             Assert.IsTrue(res1 || res2);
-
+            Assert.IsFalse(res1 && res2);
+            Assert.IsFalse(!res1 && !res2);
         }
 
         [TestMethod]

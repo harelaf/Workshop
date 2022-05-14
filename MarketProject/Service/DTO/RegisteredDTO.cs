@@ -9,28 +9,27 @@ namespace MarketProject.Service.DTO
     {
         private String _username;
         private ShoppingCartDTO _shoppingCart;
-        private DateTime _birthDate;
-        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
+        private ICollection<AdminMessageToRegisteredDTO> _adminMessages;
+        private ICollection<MessageToStoreDTO> _repliedMessages;
+        private ICollection<NotifyMessageDTO> _notifications;
 
-        public RegisteredDTO(Registered registered)
+        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages)
         {
-            _username = registered.Username;
-            _birthDate = registered._birthDate;
-            _shoppingCart = new ShoppingCartDTO(registered.ShoppingCart);
-            _messagesToUsers = new List<MessageToRegisteredDTO>();
-            foreach (MessageToRegistered msg in registered.MessagesToRegistered)
-                _messagesToUsers.Add(new MessageToRegisteredDTO(msg));
+            _username = Username;
+            _shoppingCart = scDTO;
+            _adminMessages = adminMessages;
+            _repliedMessages = repliedMessages;
+            _notifications = notifications;
         }
         public String ToString()
         {
             String result = $"Visitor Name: {_username}\n";
-            result += "Birth Date:" + _birthDate.ToString() + "\n";
             result += "Current Cart State:\n" + _shoppingCart.ToString();
             return result;
         }
-        public int MessagesCount()
+        public int NotificationsCount()
         {
-            return _messagesToUsers.Count;
+            return _notifications.Count;
         }
     }
 }

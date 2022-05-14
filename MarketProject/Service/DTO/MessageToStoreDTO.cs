@@ -15,14 +15,25 @@ namespace MarketProject.Service.DTO
         public String Title => _title;
 
         private String _message;
-        public String Messages => _message;
+        public String Message => _message;
 
-        public MessageToStoreDTO(MessageToStore messageToStore)
+        private string _reply;
+        public String Reply => _reply;
+
+        private string _replier;
+        public String Replier => _replier;
+
+        private int _id;
+        public int Id => _id;
+        public MessageToStoreDTO(String storeName, String senderUsername, string title, string message, String reply, String replier, int id)
         {
-            _storeName = messageToStore.StoreName;
-            _senderUsername = messageToStore.SenderUsername;
-            _title = messageToStore.Title;
-            _message = messageToStore.Message;
+            _storeName = storeName;
+            _senderUsername = senderUsername;
+            _title = title;
+            _message = message;
+            _reply = reply;
+            _replier = replier;
+            _id = id;
         }
     }
 }

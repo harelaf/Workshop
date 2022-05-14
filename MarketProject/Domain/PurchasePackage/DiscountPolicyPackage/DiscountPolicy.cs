@@ -23,12 +23,12 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             _discounts.AddDiscount(discount);
         }
 
-        internal double calculateDiscounts(ISearchablePriceable searchablePriceable)
+        public virtual double calculateDiscounts(ISearchablePriceable searchablePriceable)
         {
             return _discounts.GetTotalDiscount(searchablePriceable);
         }
 
-        internal string GetActualDiscountString(ISearchablePriceable searchablePriceable)
+        public string GetActualDiscountString(ISearchablePriceable searchablePriceable)
         {
             return _discounts.GetActualDiscountString(searchablePriceable, 0);
         }

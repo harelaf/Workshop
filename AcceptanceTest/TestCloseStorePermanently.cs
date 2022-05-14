@@ -25,9 +25,7 @@ namespace AcceptanceTest
         public void setup()
         {
             admin_token = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(admin_token, "Mr Krabs", "123456789");
-            admin_token = (marketAPI.Login(admin_token, "Mr Krabs", "123456789")).Value;
-            marketAPI.RestartSystem("Mr Krabs", "123456789", "0.0.0.0", "0.0.0.0");
+            admin_token = (marketAPI.Login(admin_token, "admin", "admin")).Value;
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
             marketAPI.Register(registered_token_founder, username_founder, "123456789");
@@ -65,7 +63,7 @@ namespace AcceptanceTest
 
             Response<RegisteredDTO> response2 = marketAPI.GetVisitorInformation(registered_token_founder);
             Assert.IsFalse(response2.ErrorOccured);
-            Assert.AreEqual(response2.Value.MessagesCount(), 1);
+            Assert.AreEqual(response2.Value.NotificationsCount(), 1);
 
             Response response3 = marketAPI.AddItemToCart(registered_token_founder, 1, storeName_inSystem, 2);
             Assert.IsTrue(response3.ErrorOccured);

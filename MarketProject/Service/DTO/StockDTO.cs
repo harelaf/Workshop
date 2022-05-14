@@ -10,14 +10,9 @@ namespace MarketProject.Service.DTO
         private Dictionary<ItemDTO, int> _itemAndAmount;
         public Dictionary<ItemDTO, int> Items => _itemAndAmount;
 
-        public StockDTO(Stock stock)
+        public StockDTO(Dictionary<ItemDTO, int> itemAndAmount)
         {
-            _itemAndAmount = new Dictionary<ItemDTO, int>();
-            foreach (KeyValuePair<Item, int> entry in stock.Items)
-            {
-                ItemDTO dto = new ItemDTO(entry.Key);
-                _itemAndAmount[dto] = entry.Value;
-            }
+            _itemAndAmount = itemAndAmount;
         }
     }
 }

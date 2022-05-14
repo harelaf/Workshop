@@ -1,0 +1,68 @@
+﻿@using MarketWebProject.DTO
+@using MarketWebProject.Models
+@using System.Collections
+@model MainModel
+@using MarketWebProject.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "My Cart";
+}
+
+
+@if ((ViewData["cart"] as ShoppingCartDTO).Baskets.Count>0)
+{
+    @foreach (ShoppingBasketDTO shoppingBasketDTO in (ViewData["cart"] as ShoppingCartDTO).Baskets)
+    {
+        string storeName = shoppingBasketDTO.StoreName;
+        double total = 0;
+        IDictionary<ItemDTO, int> items = shoppingBasketDTO.Items;
+        <h4>@storeName</h4>
+        <table style="width:100%" id="@storeName">
+            <tr>
+                <th>Product Name</th>
+                <th>Amount</th>
+                <th>price per unit</th>
+            </tr>
+            @foreach (KeyValuePair<ItemDTO, int> item_amount in items)
+            {
+                <tr id="@(item_amount.Key.Name + storeName)">
+                    <th>@item_amount.Key.Name</th>
+                    <th>@item_amount.Value</th>
+                    <th>$@item_amount.Key.Price</th>
+
+                    <th>
+                        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="RemoveItemFromCart" asp-route-storename="@storeName" asp-route-itemId="@item_amount.Key.ItemID">Remove</a> 
+                    </th>
+                    <th> 
+                        <form method="post">
+                            <font color="black">new quantity: </font>
+                            <input type="number" required min="1" id="newQuantity" name="newQuantity" title="newQuantity" />
+                            <input class="btn btn-info" type="submit" value="Update" asp-area="" asp-controller="Home" asp-action="UpdateItemQuantityInCart" asp-route-newQuantity="" asp-route-storename="@storeName" asp-route-itemId="@item_amount.Key.ItemID" />
+                        </form>
+                    </th>
+                </tr>
+            }
+        </table>
+    }
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="PurchasePage">Purchase</a> 
+}
+else
+{
+    <h4>your cart is empty</h4>
+}
