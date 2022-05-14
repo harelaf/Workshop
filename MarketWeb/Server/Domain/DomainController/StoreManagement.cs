@@ -268,7 +268,7 @@ namespace MarketProject.Domain
             return storeList;
         }
 
-        public List<Store> GetAllActiveStores(String username, bool isAdmin)
+        public List<Store> GetAllActiveStores(bool isAdmin)
         {
             List<Store> storeList = new List<Store>();
             foreach (KeyValuePair<string, Store> pair in _stores)

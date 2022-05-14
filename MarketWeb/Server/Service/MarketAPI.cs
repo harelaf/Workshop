@@ -23,6 +23,7 @@ namespace MarketProject.Service
         {
             _market = market;
             _logger = logger;
+            LoadData();
         }
 
         private String parseAutherization(String Authorization)
@@ -1214,10 +1215,10 @@ namespace MarketProject.Service
             String username1 = "username1";
             String password1 = "password1";
             String storeName1 = "storeName1";
-            String auth1 = EnterSystem().Value;
+            String auth1 = "Bearer " + EnterSystem().Value;
 
             Register(auth1, username1, password1, new DateTime(1992, 8, 4));
-            auth1 = Login(auth1, username1, password1).Value;
+            auth1 = "Bearer " +Login(auth1, username1, password1).Value;
             OpenNewStore(auth1, storeName1);
         }
     }
