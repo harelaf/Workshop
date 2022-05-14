@@ -314,8 +314,10 @@ namespace MarketProject.Domain
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.CLOSE_STORE))
-                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
+                if (!_storeManagement.isStoreActive(storeName))
+                    errorMessage = $"Store {storeName} is currently inactive.";
+                if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.CLOSE_STORE))
+                    errorMessage = $"Visitor is not the owner.";
                 else if (storeName.Equals(""))
                     errorMessage = "Invalid Input: Blank store name.";
                 if (errorMessage != null)
