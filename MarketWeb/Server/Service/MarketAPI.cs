@@ -41,7 +41,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -73,7 +73,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<String>(null, e);
+                response = new Response<String>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -97,7 +97,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<String>(null, e);
+                response = new Response<String>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -121,7 +121,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -145,7 +145,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -161,7 +161,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -177,7 +177,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -193,7 +193,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -210,7 +210,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<ShoppingCartDTO>(null, e);
+                response = new Response<ShoppingCartDTO>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -226,7 +226,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -242,7 +242,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -258,7 +258,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -274,7 +274,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -290,7 +290,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -306,7 +306,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -322,7 +322,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -338,7 +338,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -354,7 +354,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -370,7 +370,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -386,7 +386,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -402,7 +402,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -418,7 +418,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -434,7 +434,7 @@ namespace MarketProject.Service
             } 
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -451,7 +451,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<StoreDTO>(null, e);
+                response = new Response<StoreDTO>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -476,7 +476,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<ItemDTO>> (null, e);
+                response = new Response<List<ItemDTO>> (null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -492,7 +492,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -516,7 +516,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -539,7 +539,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<ICollection<PurchasedCartDTO>>(null, e);
+                response = new Response<ICollection<PurchasedCartDTO>>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -557,7 +557,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<RegisteredDTO>(null, e);
+                response = new Response<RegisteredDTO>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -586,7 +586,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -604,7 +604,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -621,7 +621,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -638,7 +638,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -655,7 +655,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -675,7 +675,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<StoreOwnerDTO>>(null, e);
+                response = new Response<List<StoreOwnerDTO>>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -695,7 +695,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<StoreManagerDTO>>(null, e);
+                response = new Response<List<StoreManagerDTO>>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -712,7 +712,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<StoreFounderDTO>(null, e);
+                response = new Response<StoreFounderDTO>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -731,7 +731,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<Queue<MessageToStoreDTO>>(e);
+                response = new Response<Queue<MessageToStoreDTO>>(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -751,7 +751,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<ICollection<AdminMessageToRegisteredDTO>>(e);
+                response = new Response<ICollection<AdminMessageToRegisteredDTO>>(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -770,7 +770,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<ICollection<MessageToStoreDTO>>(e);
+                response = new Response<ICollection<MessageToStoreDTO>>(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -789,7 +789,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<ICollection<NotifyMessageDTO>>(e);
+                response = new Response<ICollection<NotifyMessageDTO>>(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -806,7 +806,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -832,7 +832,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(null, e);
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -849,7 +849,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -879,7 +879,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -896,7 +896,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -919,7 +919,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<StoreDTO>>(e);
+                response = new Response<List<StoreDTO>>(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -941,7 +941,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<StoreDTO>>(e);
+                response = new Response<List<StoreDTO>>(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -960,7 +960,7 @@ namespace MarketProject.Service
             }
             catch (Exception e) 
             { 
-                response = new Response<String>(null, e); 
+                response = new Response<String>(null, e);_logger.LogError(e.Message); 
             }
             return response;
         }
@@ -977,7 +977,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -994,7 +994,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -1013,7 +1013,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -1047,7 +1047,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<String>(e);
+                response = new Response<String>(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -1062,7 +1062,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -1076,7 +1076,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);
+                response = new Response(e);_logger.LogError(e.Message);
             }
             return response;
         }
@@ -1091,7 +1091,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<ItemDTO>(null, e);
+                response = new Response<ItemDTO>(null, e);_logger.LogError(e.Message);
             }
             return response;
         }
