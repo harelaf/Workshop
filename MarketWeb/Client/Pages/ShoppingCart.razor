@@ -1,0 +1,142 @@
+﻿@page "/ShoppingCart"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+    h1 {
+        text-align: center;
+    }
+</style>
+
+@if (cart.Baskets.Count > 0)
+{
+    @foreach (ShoppingBasketDTO shoppingBasketDTO in cart.Baskets)
+    {
+        string storeName = shoppingBasketDTO.StoreName;
+        double total = 0;
+        IDictionary<ItemDTO, int> items = shoppingBasketDTO.Items;
+        <h4>@storeName</h4>
+        <table style="width:100%" id="@storeName">
+            <tr>
+                <th>Product Name</th>
+                <th>Amount</th>
+                <th>price per unit</th>
+            </tr>
+            @foreach (KeyValuePair<ItemDTO, int> item_amount in items)
+            {
+                <tr id="@(item_amount.Key.Name + storeName)">
+                    <th>@item_amount.Key.Name</th>
+                    <th>@item_amount.Value</th>
+                    <th>$@item_amount.Key.Price</th>
+                    <th>
+                        <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(item_amount.Key.ItemID, item_amount.Key.StoreName)">Remove Item</button>
+                    </th>
+                    <th>
+                        <EditForm Model="@UpdateItemQuantityInCartModel" OnSubmit="UpdateItemQuantityInCartForm">
+                            <DataAnnotationsValidator />
+                            @{
+                                UpdateItemQuantityInCartModel.StoreName = item_amount.Key.StoreName;
+                                UpdateItemQuantityInCartModel.ItemID = item_amount.Key.ItemID;
+                            }
+                            <div class="form-group">
+                                <label>Review</label>
+                                <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Review</button>
+                        </EditForm>
+                    </th>
+                </tr>
+            }
+        </table>
+    }
+    <button class="btn btn-primary" @onclick="PurchaseCartButton">Purchase Cart</button>
+}
+else
+{
+    <h4>Your shopping cart is empty.</h4>
+}
+
+@code {
+    private ShoppingCartDTO cart;
+    private Models.UpdateItemQuantityInCartModel UpdateItemQuantityInCartModel = new Models.UpdateItemQuantityInCartModel();
+
+    private async void UpdateItemQuantityInCartForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.UpdateQuantityOfItemInCart(UpdateItemQuantityInCartModel.ItemID, UpdateItemQuantityInCartModel.StoreName, UpdateItemQuantityInCartModel.NewQuantity);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            AlertService.Info("Item quantity updated.");
+            NavigationManager.NavigateTo("/ShoppingCart");
+        }
+    }
+
+    private async void PurchaseCartButton()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        NavigationManager.NavigateTo("/Purchase");
+    }
+
+    private async void RemoveItemFromCartButton(int ItemID, string StoreName)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.RemoveItemFromCart(ItemID, StoreName);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            NavigationManager.NavigateTo("/ShoppingCart");
+        }
+        else
+        {
+            AlertService.Info("Successfully removed item.");
+            NavigationManager.NavigateTo("/ShoppingCart");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response<ShoppingCartDTO> response = await marketAPIClient.ViewMyCart();
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            else
+            {
+                cart = response.Value;
+            }
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            NavigationManager.NavigateTo("");
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}

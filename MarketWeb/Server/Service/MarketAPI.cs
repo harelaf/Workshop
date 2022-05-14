@@ -40,10 +40,11 @@ namespace MarketProject.Service
         /// <para> For Req I.1. </para>
         /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
         /// </summary>
+        [HttpPost("")]
         public Response RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
             Response response;
-             try
+            try
             {
                 _logger.LogInformation($"Restart System called with parameters: adminUsername={adminUsername}, adminUsername={adminPassword}, ipShippingService={ipShippingService}, ipPaymentService={ipPaymentService}.");
                 _market.RestartSystem(adminUsername, adminPassword, ipShippingService, ipPaymentService);
@@ -52,7 +53,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -80,7 +81,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<String>(null, e);_logger.LogError(e.Message);
+                response = new Response<String>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -98,13 +99,13 @@ namespace MarketProject.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
-                String guestToken  = _market.Logout(authToken);
+                String guestToken = _market.Logout(authToken);
                 response = new Response<String>(guestToken);
                 _logger.LogInformation($"SUCCESSFULY executed Logout.");
             }
             catch (Exception e)
             {
-                response = new Response<String>(null, e);_logger.LogError(e.Message);
+                response = new Response<String>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -120,9 +121,9 @@ namespace MarketProject.Service
         public Response Register([FromHeader] String Authorization, String Username, String password, DateTime birthDate)
         {//II.1.3
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Register called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 _market.Register(authToken, Username, password, birthDate);
@@ -131,7 +132,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -143,12 +144,12 @@ namespace MarketProject.Service
         /// <param name="authToken"> The token authenticating the Visitor making the request.</param>
         /// <param name="usr_toremove"> The Visitor to remove and revoke the roles of.</param>
         [HttpGet("RemoveRegisteredVisitor")]
-        public Response RemoveRegisteredVisitor([FromHeader] String Authorization, String usr_toremove )
+        public Response RemoveRegisteredVisitor([FromHeader] String Authorization, String usr_toremove)
         {//II.6.2
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Remove Registered Visitor called with parameters: authToken={authToken}, username={usr_toremove}.");
                 _market.RemoveRegisteredVisitor(authToken, usr_toremove);
@@ -157,16 +158,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("AddItemToCart")]
         public Response AddItemToCart([FromHeader] String Authorization, int itemID, String storeName, int amount)
         {//II.2.3
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Add Item To Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}, amount={amount}.");
                 _market.AddItemToCart(authToken, itemID, storeName, amount);
@@ -175,16 +177,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("RemoveItemFromCart")]
         public Response RemoveItemFromCart([FromHeader] String Authorization, int itemID, String storeName)
         {//II.2.4
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Remove Item From Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}.");
                 _market.RemoveItemFromCart(authToken, itemID, storeName);
@@ -193,16 +196,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("UpdateQuantityOfItemInCart")]
         public Response UpdateQuantityOfItemInCart([FromHeader] String Authorization, int itemID, String storeName, int newQuantity)
         {//II.2.4
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Update Quantity Of Item In Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}, newQuantity={newQuantity}.");
                 _market.UpdateQuantityOfItemInCart(authToken, itemID, storeName, newQuantity);
@@ -211,7 +215,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -219,45 +223,47 @@ namespace MarketProject.Service
         public Response<ShoppingCartDTO> ViewMyCart([FromHeader] String Authorization) /*Add data object of cart*/
         {//II.2.4
             Response<ShoppingCartDTO> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"View My Cart called with parameters: authToken={authToken}.");
-                ShoppingCart shoppingCart= _market.ViewMyCart(authToken);
+                ShoppingCart shoppingCart = _market.ViewMyCart(authToken);
                 response = new Response<ShoppingCartDTO>(DTOtranslator.toDTO(shoppingCart));
                 _logger.LogInformation($"SUCCESSFULY executed View My Cart.");
             }
             catch (Exception e)
             {
-                response = new Response<ShoppingCartDTO>(null, e);_logger.LogError(e.Message);
+                response = new Response<ShoppingCartDTO>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("PurchaseMyCart")]
         public Response PurchaseMyCart([FromHeader] String Authorization, String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
         {//II.2.5
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Purchase My Cart called with parameters: authToken={authToken}, address={address}, city={city}, country={country}, zip={zip}, purchaserName={purchaserName}.");
-                _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode); 
+                _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
                 response = new Response();
                 _logger.LogInformation($"SUCCESSFULY executed Purchase My Cart.");
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("OpenNewStore")]
         public Response OpenNewStore([FromHeader] String Authorization, String storeName)
         {//II.3.2
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Open New Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 _market.OpenNewStore(authToken, storeName, new PurchasePolicy(), new DiscountPolicy());
@@ -266,16 +272,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("AddStoreManager")]
         public Response AddStoreManager([FromHeader] String Authorization, String managerUsername, String storeName)
         {//II.4.6
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Add Store Manager called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}.");
                 _market.AddStoreManager(authToken, managerUsername, storeName);
@@ -284,16 +291,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("AddStoreOwner")]
         public Response AddStoreOwner([FromHeader] String Authorization, String ownerUsername, String storeName)
         {//II.4.4
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Add Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
                 _market.AddStoreOwner(authToken, ownerUsername, storeName);
@@ -302,16 +310,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("RemoveStoreOwner")]
         public Response RemoveStoreOwner([FromHeader] String Authorization, String ownerUsername, String storeName)
         {//II.4.5
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Remove Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
                 _market.RemoveStoreOwner(authToken, ownerUsername, storeName);
@@ -320,16 +329,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("RemoveStoreManager")]
         public Response RemoveStoreManager([FromHeader] String Authorization, String managerUsername, String storeName)
         {//II.4.8
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Remove Store Manager called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}.");
                 _market.RemoveStoreManager(authToken, managerUsername, storeName);
@@ -338,16 +348,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("AddItemToStoreStock")]
         public Response AddItemToStoreStock([FromHeader] String Authorization, String storeName, int itemID, String name, double price, String description, String category, int quantity)
         {//II.4.1
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Add Item To Stock called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, name={name}, price={price}, description={description}, category={category}, quantity={quantity}.");
                 _market.AddItemToStoreStock(authToken, storeName, itemID, name, price, description, category, quantity);
@@ -356,16 +367,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("RemoveItemFromStore")]
         public Response RemoveItemFromStore([FromHeader] String Authorization, String storeName, int itemID)
         {//II.4.1
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Remove Item From Stock called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}.");
                 _market.RemoveItemFromStore(authToken, storeName, itemID);
@@ -374,16 +386,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("UpdateStockQuantityOfItem")]
         public Response UpdateStockQuantityOfItem([FromHeader] String Authorization, String storeName, int itemID, int newQuantity)
         {//II.4.1
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Update Stock Quantity Of Item called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newQuantity={newQuantity}.");
                 _market.UpdateStockQuantityOfItem(authToken, storeName, itemID, newQuantity);
@@ -392,16 +405,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("EditItemPrice")]
         public Response EditItemPrice([FromHeader] String Authorization, String storeName, int itemID, double newPrice)
         {//II.4.1
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Edit Item Price called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newPrice={newPrice}.");
                 _market.EditItemPrice(authToken, storeName, itemID, newPrice);
@@ -410,16 +424,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("EditItemName")]
         public Response EditItemName([FromHeader] String Authorization, String storeName, int itemID, String newName)
         {//II.4.1
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Edit Item Name called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newName={newName}.");
                 _market.EditItemName(authToken, storeName, itemID, newName);
@@ -428,16 +443,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("EditItemDescription")]
         public Response EditItemDescription([FromHeader] String Authorization, String storeName, int itemID, String newDescription)
         {//II.4.1
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Edit Item Description called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, newDescription={newDescription}.");
                 _market.EditItemDescription(authToken, storeName, itemID, newDescription);
@@ -446,16 +462,17 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("RateItem")]
         public Response RateItem([FromHeader] String Authorization, int itemID, String storeName, int rating, String review)
         {//II.3.3,  II.3.4
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Rate Item called with parameters: authToken={authToken}, itemID={itemID}, storeName={storeName}, rating={rating}, review={review}.");
                 _market.RateItem(authToken, itemID, storeName, rating, review);
@@ -464,34 +481,36 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("RateStore")]
         public Response RateStore([FromHeader] String Authorization, String storeName, int rating, String review) // 0 < rating < 10
         {//II.3.4
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Rate Store called with parameters: authToken={authToken}, storeName={storeName}, rating={rating}, review={review}.");
                 _market.RateStore(authToken, storeName, rating, review);
                 response = new Response();
                 _logger.LogInformation($"SUCCESSFULY executed Rate Store.");
-            } 
+            }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("GetStoreInformation")]
         public Response<StoreDTO> GetStoreInformation([FromHeader] String Authorization, String storeName)
         {//II.2.1
             Response<StoreDTO> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get Store Information called with parameters: authToken={authToken}, storeName={storeName}.");
                 Store result = _market.GetStoreInformation(authToken, storeName);
@@ -501,52 +520,54 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<StoreDTO>(null, e);_logger.LogError(e.Message);
+                response = new Response<StoreDTO>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("GetItemInformation")]
         public Response<List<ItemDTO>> GetItemInformation([FromHeader] String Authorization, String itemName, String itemCategory, String keyWord)
         {//II.2.2
             //filters!!!!!!!!!!!
             Response<List<ItemDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get Item Information called with parameters: authToken={authToken}, itemName={itemName}, itemCategory={itemCategory}, keyWord={keyWord}.");
                 IDictionary<string, List<Item>> result = _market.GetItemInformation(authToken, itemName, itemCategory, keyWord);
                 List<ItemDTO> resultDTO = new List<ItemDTO>();
-                foreach(KeyValuePair<string, List<Item>> storeNItems in result)
+                foreach (KeyValuePair<string, List<Item>> storeNItems in result)
                 {
-                    foreach(Item item in storeNItems.Value)
+                    foreach (Item item in storeNItems.Value)
                     {
-                        resultDTO.Add(DTOtranslator.toDTO(item, storeNItems.Key)); 
-                    }   
+                        resultDTO.Add(DTOtranslator.toDTO(item, storeNItems.Key));
+                    }
                 }
                 response = new Response<List<ItemDTO>>(resultDTO);
                 _logger.LogInformation($"SUCCESSFULY executed Get Item Information.");
             }
             catch (Exception e)
             {
-                response = new Response<List<ItemDTO>> (null, e);_logger.LogError(e.Message);
+                response = new Response<List<ItemDTO>>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("SendMessageToStore")]
         public Response SendMessageToStore([FromHeader] String Authorization, String storeName, String title, String description, int id)
         {//II.3.5
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Send Message To Store called with parameters: authToken={authToken}, storeName={storeName}, title={title}, description={description}.");
-                _market.SendMessageToStore(authToken,storeName, title, description, id);
+                _market.SendMessageToStore(authToken, storeName, title, description, id);
                 response = new Response();
                 _logger.LogInformation($"SUCCESSFULY executed Send Message To Store.");
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -558,12 +579,12 @@ namespace MarketProject.Service
         /// <param name="authToken"> The token of the Visitor filing the complaint. </param>
         /// <param name="cartID"> The cart ID relevant to the complaint. </param>
         /// <param name="message"> The message detailing the complaint. </param>
+        [HttpPost("FileComplaint")]
         public Response FileComplaint([FromHeader] String Authorization, int cartID,  String message)
         {//II.3.6
             Response response;
-             try
+            try
             {
-                
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Send Message To Store called with parameters: authToken={authToken}, cartID={cartID}, message={message}.");
                 _market.FileComplaint(authToken, cartID, message);
@@ -572,7 +593,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -580,16 +601,16 @@ namespace MarketProject.Service
         public Response<ICollection<PurchasedCartDTO>> GetMyPurchasesHistory([FromHeader] String Authorization)
         {//II.3.7
             Response<ICollection<PurchasedCartDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get My Purchases History called with parameters: authToken={authToken}.");
-                ICollection<Tuple<DateTime ,ShoppingCart>> purchasedCarts = _market.GetMyPurchases(authToken);
+                ICollection<Tuple<DateTime, ShoppingCart>> purchasedCarts = _market.GetMyPurchases(authToken);
                 ICollection<PurchasedCartDTO> purchasedCartsDTO = new List<PurchasedCartDTO>();
-                foreach (Tuple<DateTime ,ShoppingCart> purchase in purchasedCarts)
+                foreach (Tuple<DateTime, ShoppingCart> purchase in purchasedCarts)
                 {
-                    purchasedCartsDTO.Add(DTOtranslator.toDTO(purchase.Item1, purchase.Item2)); 
+                    purchasedCartsDTO.Add(DTOtranslator.toDTO(purchase.Item1, purchase.Item2));
                 }
 
                 response = new Response<ICollection<PurchasedCartDTO>>(purchasedCartsDTO);
@@ -597,7 +618,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<ICollection<PurchasedCartDTO>>(null, e);_logger.LogError(e.Message);
+                response = new Response<ICollection<PurchasedCartDTO>>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -606,23 +627,23 @@ namespace MarketProject.Service
         public Response<RegisteredDTO> GetVisitorInformation([FromHeader] String Authorization)
         {//II.3.8
             Response<RegisteredDTO> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get Visitor Information called with parameters: authToken={authToken}.");
-                Registered registered= _market.GetVisitorInformation(authToken);
+                Registered registered = _market.GetVisitorInformation(authToken);
                 response = new Response<RegisteredDTO>(DTOtranslator.toDTO(registered));
                 _logger.LogInformation($"SUCCESSFULY executed Get Visitor Information.");
             }
             catch (Exception e)
             {
-                response = new Response<RegisteredDTO>(null, e);_logger.LogError(e.Message);
+                response = new Response<RegisteredDTO>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
 
-        public Boolean EditUsername([FromHeader] String Authorization, String newUsername )
+        public Boolean EditUsername([FromHeader] String Authorization, String newUsername)
         {//II.3.8
             throw new NotImplementedException();
         }
@@ -634,12 +655,13 @@ namespace MarketProject.Service
         /// <param name="authToken"> The authenticating token of the Visitor changing the password.</param>
         /// <param name="oldPassword"> The Visitor's current password. </param>
         /// <param name="newPassword"> The new updated password. </param>
+        [HttpPost("EditVisitorPassword")]
         public Response EditVisitorPassword([FromHeader] String Authorization, String oldPassword, String newPassword)
         {//II.3.8
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Edit Visitor Password called with parameters: authToken={authToken}, oldPassword={oldPassword}, newPassword={newPassword}.");
                 _market.EditVisitorPassword(authToken, oldPassword, newPassword);
@@ -648,18 +670,19 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("RemoveManagerPermission")]
         public Response RemoveManagerPermission([FromHeader] String Authorization, String managerUsername, String storeName, string op)//permission param is Enum
         {//II.4.7
 
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Remove Manager Permission called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}, op={op}.");
                 _market.RemoveManagerPermission(authToken, managerUsername, storeName, op);
@@ -668,17 +691,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("AddManagerPermission")]
         public Response AddManagerPermission([FromHeader] String Authorization, String managerUsername, String storeName, String op)//permission param is Enum
         {//II.4.7
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Add Manager Permission called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}, op={op}.");
                 _market.AddManagerPermission(authToken, managerUsername, storeName, op);
@@ -687,17 +711,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("CloseStore")]
         public Response CloseStore([FromHeader] String Authorization, String storeName)
         {//II.4.9
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Close Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 _market.CloseStore(authToken, storeName);
@@ -706,17 +731,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("ReopenStore")]
         public Response ReopenStore([FromHeader] String Authorization, String storeName)
         {//II.4.10
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Reopen Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 _market.ReopenStore(authToken, storeName);
@@ -725,17 +751,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("GetStoreOwners")]
         public Response<List<StoreOwnerDTO>> GetStoreOwners([FromHeader] String Authorization, String storeName)
         {//II.4.11
             Response<List<StoreOwnerDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get Store Owners called with parameters: authToken={authToken}, storeName={storeName}.");
                 List<StoreOwner> ownerList = _market.getStoreOwners(storeName, authToken);
@@ -747,17 +774,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<StoreOwnerDTO>>(null, e);_logger.LogError(e.Message);
+                response = new Response<List<StoreOwnerDTO>>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("GetStoreManagers")]
         public Response<List<StoreManagerDTO>> GetStoreManagers([FromHeader] String Authorization, String storeName)
         {//II.4.11
             Response<List<StoreManagerDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get Store Managers called with parameters: authToken={authToken}, storeName={storeName}.");
                 List<StoreManager> managerList = _market.getStoreManagers(storeName, authToken);
@@ -769,17 +797,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<StoreManagerDTO>>(null, e);_logger.LogError(e.Message);
+                response = new Response<List<StoreManagerDTO>>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("GetStoreFounder")]
         public Response<StoreFounderDTO> GetStoreFounder([FromHeader] String Authorization, String storeName)
         {//II.4.11
             Response<StoreFounderDTO> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get Store Founder called with parameters: authToken={authToken}, storeName={storeName}.");
                 StoreFounder founder = _market.getStoreFounder(storeName, authToken);
@@ -788,22 +817,23 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<StoreFounderDTO>(null, e);_logger.LogError(e.Message);
+                response = new Response<StoreFounderDTO>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("GetStoreMessages")]
         public Response<Queue<MessageToStoreDTO>> GetStoreMessages([FromHeader] String Authorization, String storeName)
         {//II.4.12
             //should return with id
             Response<Queue<MessageToStoreDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 Queue<MessageToStore> messages = _market.GetStoreMessages(authToken, storeName);
                 Queue<MessageToStoreDTO> messagesDTOs = new Queue<MessageToStoreDTO>();
-                foreach(MessageToStore messageToStore in messages)
+                foreach (MessageToStore messageToStore in messages)
                     messagesDTOs.Enqueue(DTOtranslator.toDTO(messageToStore));
                 response = new Response<Queue<MessageToStoreDTO>>(messagesDTOs);
             }
@@ -819,9 +849,9 @@ namespace MarketProject.Service
         {//II.4.12
             //should return with id
             Response<ICollection<AdminMessageToRegisteredDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 ICollection<AdminMessageToRegistered> messages = _market.GetRegisteredMessagesFromAdmin(authToken);
                 ICollection<AdminMessageToRegisteredDTO> messagesDTOs = new List<AdminMessageToRegisteredDTO>();
@@ -840,9 +870,9 @@ namespace MarketProject.Service
         {//II.4.12
             //should return with id
             Response<ICollection<MessageToStoreDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 ICollection<MessageToStore> messages = _market.GetRegisteredAnswerdStoreMessages(authToken);
                 ICollection<MessageToStoreDTO> messagesDTOs = new List<MessageToStoreDTO>();
@@ -861,9 +891,9 @@ namespace MarketProject.Service
         {//II.4.12
             //should return with id
             Response<ICollection<NotifyMessageDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 ICollection<NotifyMessage> messages = _market.GetRegisteredMessagesNotofication(authToken);
                 ICollection<NotifyMessageDTO> messagesDTOs = new List<NotifyMessageDTO>();
@@ -878,12 +908,13 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("AnswerStoreMesseage")]
         public Response AnswerStoreMesseage([FromHeader] String Authorization, string receiverUsername, int msgID, string storeName, string reply)
         {//II.4.12
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Answer Store Message called with parameters: authToken={authToken}, msgId={msgID},storeName={storeName} reply={reply}.");
                 _market.AnswerStoreMesseage(authToken, receiverUsername, msgID, storeName, reply);
@@ -892,23 +923,24 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("GetStorePurchasesHistory")]
         public Response<List<Tuple<DateTime, ShoppingBasketDTO>>> GetStorePurchasesHistory([FromHeader] String Authorization, String storeName)
         {//II.4.13
             Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get Store Purchases History called with parameters: authToken={authToken}, storeName={storeName}.");
                 List<Tuple<DateTime, ShoppingBasket>> result = _market.GetStorePurchasesHistory(authToken, storeName);
                 List<Tuple<DateTime, ShoppingBasketDTO>> dtos = new List<Tuple<DateTime, ShoppingBasketDTO>>();
 
-                foreach(Tuple<DateTime, ShoppingBasket> tuple in result)
+                foreach (Tuple<DateTime, ShoppingBasket> tuple in result)
                 {
                     ShoppingBasketDTO dto = DTOtranslator.toDTO(tuple.Item2);
                     Tuple<DateTime, ShoppingBasketDTO> toAdd = new Tuple<DateTime, ShoppingBasketDTO>(tuple.Item1, dto);
@@ -920,17 +952,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(null, e);_logger.LogError(e.Message);
+                response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("CloseStorePermanently")]
         public Response CloseStorePermanently([FromHeader] String Authorization, String storeName)
         {//II.6.1
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Close Store Permanently called with parameters: authToken={authToken}, storeName={storeName}.");
                 _market.CloseStorePermanently(authToken, storeName);
@@ -939,12 +972,12 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
-        public Boolean GetRegisterdComplaints([FromHeader] String Authorization)
+        public Response<ICollection<ComplaintDTO>> GetRegisterdComplaints([FromHeader] String Authorization)
         {//II.6.3
             //return each complaint id in addition to its information
             throw new NotImplementedException();
@@ -957,12 +990,13 @@ namespace MarketProject.Service
         /// <param name="authToken"> The authorisation token of the system admin.</param>
         /// <param name="complaintID"> The ID of the complaint. </param>
         /// <param name="reply"> The response to the complaint. </param>
+        [HttpPost("ReplyToComplaint")]
         public Response ReplyToComplaint([FromHeader] String Authorization, int complaintID, String reply)
         {//II.6.3
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Reply To Complaint called with parameters: authToken={authToken}, complaintID={complaintID}, reply={reply}.");
                 _market.ReplyToComplaint(authToken, complaintID, reply);
@@ -971,17 +1005,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("SendMessageToRegisterd")]
         public Response SendMessageToRegisterd([FromHeader] String Authorization, String UsernameReciever, String title, String message)
         {//II.6.3
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Send Message To Registered called with parameters: authToken={authToken},  UsernameReciever={UsernameReciever}, title={title}, message={message}.");
                 _market.SendAdminMessageToRegisterd(authToken, UsernameReciever, title, message);
@@ -990,7 +1025,7 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -999,9 +1034,9 @@ namespace MarketProject.Service
         public Response<List<StoreDTO>> GetStoresOfUser([FromHeader] String Authorization)
         {
             Response<List<StoreDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get Stores Of User called with parameters: authToken={authToken}.");
                 List<Store> stores = _market.GetStoresOfUser(authToken);
@@ -1023,9 +1058,9 @@ namespace MarketProject.Service
         public Response<List<StoreDTO>> GetAllActiveStores([FromHeader] String Authorization)
         {
             Response<List<StoreDTO>> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Get All Active Stores called with parameters: authToken={authToken}.");
                 List<Store> stores = _market.GetAllActiveStores(authToken);
@@ -1049,17 +1084,17 @@ namespace MarketProject.Service
         public Response<String> EnterSystem() // Generating token and returning it
         { //II.1.1
             Response<String> response;
-             try
+            try
             {
-                
+
                 _logger.LogInformation($"Enter System To Registered called.");
-                String token = _market.EnterSystem();   
+                String token = _market.EnterSystem();
                 response = new Response<String>(token);
                 _logger.LogInformation($"SUCCESSFULY executed Enter System.");
             }
-            catch (Exception e) 
-            { 
-                response = new Response<String>(null, e);_logger.LogError(e.Message); 
+            catch (Exception e)
+            {
+                response = new Response<String>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -1067,9 +1102,9 @@ namespace MarketProject.Service
         public Response ExitSystem([FromHeader] String Authorization) // Removing cart and token assigned to guest
         { //II.1.2
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Exit System called with parameters: authToken={authToken}.");
                 _market.ExitSystem(authToken);
@@ -1078,17 +1113,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("AppointSystemAdmin")]
         public Response AppointSystemAdmin([FromHeader] String Authorization, String adminUsername)
         { //II.1.2
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"Appoint System Admin called with parameters: authToken={authToken}, adminUsername={adminUsername}.");
                 _market.AppointSystemAdmin(authToken, adminUsername);
@@ -1097,17 +1133,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("AddStoreDiscount")]
         public Response AddStoreDiscount([FromHeader] String Authorization, String storeName, IDiscountDTO discount_dto)
         {
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 /////////// is log should keep the whole description of the discount??????
                 _logger.LogInformation($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName} and the actual discount.");
@@ -1118,17 +1155,18 @@ namespace MarketProject.Service
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("CalcCartActualPrice")]
         public Response<Double> CalcCartActualPrice([FromHeader] String Authorization)
         {
             Response<Double> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"calculate shopping cart actual price - called with parameters: authToken={authToken}.");
                 Double price = _market.CalcCartActualPrice(authToken);
@@ -1142,12 +1180,13 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetCartReceipt")]
         public Response<String> GetCartReceipt([FromHeader] String Authorization)
         {
             Response<String> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _logger.LogInformation($"get current cart info - called with parameters: authToken={authToken}.");
                 String receipt = _market.GetCartReceipt(authToken);
@@ -1161,52 +1200,55 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("HasPermission")]
         public Response HasPermission([FromHeader] String Authorization, string storeName, string op)
         {
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _market.HasPermission(storeName, authToken, op);
                 response = new Response();
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
+        [HttpPost("IsStoreActive")]
         public Response IsStoreActive([FromHeader] String Authorization, string storeName, string op)
         {
             Response response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 _market.HasPermission(storeName, authToken, op);
                 response = new Response();
             }
             catch (Exception e)
             {
-                response = new Response(e);_logger.LogError(e.Message);
+                response = new Response(e); _logger.LogError(e.Message);
             }
             return response;
         }
 
+        [HttpPost("GetItem")]
         public Response<ItemDTO> GetItem([FromHeader] String Authorization, string storeName, int itemId)
         {
             Response<ItemDTO> response;
-             try
+            try
             {
-                
+
                 String authToken = parseAutherization(Authorization);
                 Item item = _market.GetItem(authToken, storeName, itemId);
                 response = new Response<ItemDTO>(DTOtranslator.toDTO(item));
             }
             catch (Exception e)
             {
-                response = new Response<ItemDTO>(null, e);_logger.LogError(e.Message);
+                response = new Response<ItemDTO>(null, e); _logger.LogError(e.Message);
             }
             return response;
         }
@@ -1215,7 +1257,7 @@ namespace MarketProject.Service
             String username1 = "username1";
             String password1 = "password1";
             String storeName1 = "storeName1";
-            String auth1 = EnterSystem().Value;
+            String auth1 = "Bearer " + EnterSystem().Value;
 
             String username2 = "username2";
             String password2 = "password2";
@@ -1223,7 +1265,7 @@ namespace MarketProject.Service
             String auth2 = EnterSystem().Value;
 
             Register(auth1, username1, password1, new DateTime(1992, 8, 4));
-            auth1 = Login(auth1, username1, password1).Value;
+            auth1 = "Bearer " +Login(auth1, username1, password1).Value;
             OpenNewStore(auth1, storeName1);
 
             Register(auth2, username2, password2, new DateTime(1992, 8, 4));

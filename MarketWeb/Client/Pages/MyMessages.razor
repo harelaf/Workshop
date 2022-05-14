@@ -100,10 +100,10 @@ else
 }
 @code {
     private Models.MyMessagesModel model = new Models.MyMessagesModel();
-    private ICollection<AdminMessageToRegisteredDTO> adminMSG;
-    private ICollection<MessageToStoreDTO> storeMSG;
-    private ICollection<NotifyMessageDTO>  notifyMSG;
-    private string username;
+    private ICollection<AdminMessageToRegisteredDTO> adminMSG = new List<AdminMessageToRegisteredDTO>();
+    private ICollection<MessageToStoreDTO> storeMSG = new List<MessageToStoreDTO>();
+    private ICollection<NotifyMessageDTO>  notifyMSG = new List<NotifyMessageDTO>();
+    private string username = "";
 
 
     protected override async Task OnInitializedAsync()
@@ -128,15 +128,19 @@ else
             storeMSG = res_storeMSG.Value;
             notifyMSG= res_notifyMSG.Value;
 
-            
-            
+
+
         }
         catch(Exception e)
         {
              AlertService.Error(e.Message);
              StateHasChanged();
-             //var returnUrl = "/";//index
-             //NavigationManager.NavigateTo(returnUrl);
+             var returnUrl = "/";//index
+             NavigationManager.NavigateTo(returnUrl);
+        }
+        finally
+        {
+            StateHasChanged();
         }
 
         

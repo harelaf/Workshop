@@ -62,23 +62,38 @@ else
         // reset alerts on submit
         AlertService.Clear();
 
-        NavigationManager.NavigateTo($"ItemPage/{StoreName}/{itemID}");
+        Response HasAccess = await marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK");
+        if (HasAccess.ErrorOccured)
+        {
+            NavigationManager.NavigateTo($"Item/{StoreName}/{itemID}");
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"ItemEditable/{StoreName}/{itemID}");
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
         // reset alerts on submit
         AlertService.Clear();
-
-        Response<List<ItemDTO>> response = await marketAPIClient.GetItemInformation(ItemName, Category, KeyWord);
-        if (response.ErrorOccured)
+        
+        try
         {
-            AlertService.Error(response.ErrorMessage);
-            NavigationManager.NavigateTo("");
+            Response<List<ItemDTO>> response = await marketAPIClient.GetItemInformation(ItemName, Category, KeyWord);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            else
+            {
+                searchedItems = response.Value;
+            }
         }
-        else
+        catch (Exception e)
         {
-            searchedItems = response.Value;
+            AlertService.Error(e.Message);
+            NavigationManager.NavigateTo("");
         }
     }
 }

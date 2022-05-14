@@ -79,22 +79,80 @@
 
     private async void DeleteUserForm()
     {
-        //TODO
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.RemoveRegisteredVisitorAsync(DeleteUserModel.UserName);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            AlertService.Info("User deleted successfully.");
+            StateHasChanged();
+        }
     }
 
     private async void ViewStorePurchaseHistoryForm()
     {
-        //TODO
+        // reset alerts on submit
+        AlertService.Clear();
+
+        /*
+        List<Tuple<DateTime, ShoppingBasketDTO>> tuples = new List<Tuple<DateTime, ShoppingBasketDTO>>();
+        tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 30, 14, 30, 0), new ShoppingBasketDTO()));
+        tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 18, 10, 14, 0), new ShoppingBasketDTO()));
+        tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 1, 22, 55, 0), new ShoppingBasketDTO()));
+        Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(tuples);// service.GetStorePurchaseHistory(token storeName);
+        */
+        Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response = await marketAPIClient.GetStorePurchasesHistory(ViewStorePurchaseHistoryModel.StoreName);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            NavigationManager.NavigateTo($"/Store/{ViewStorePurchaseHistoryModel.StoreName}");
+        }
+        else
+        {
+            //TODO WHAT IS THE URL?
+            NavigationManager.NavigateTo($"/StorePurchaseHistory/{ViewStorePurchaseHistoryModel.StoreName}");
+        }
     }
 
     private async void ViewComplaintsButton()
     {
-        //TODO
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.GetRegisterdComplaints();
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/Complaints");
+        }
     }
 
     private async void SendAdminMessageForm()
     {
-        //TODO
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.SendAdminMessage(SendAdminMessageModel.ReceiverUsername, SendAdminMessageModel.Ttile, SendAdminMessageModel.Message);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            AlertService.Info("Message sent.");
+            StateHasChanged();
+        }
     }
 
     protected override async Task OnInitializedAsync()

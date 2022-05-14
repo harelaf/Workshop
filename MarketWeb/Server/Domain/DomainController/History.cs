@@ -88,7 +88,7 @@ namespace MarketProject.Domain
             {
                 String errorMessage = $"Purchase History of Visitor: {Username} is Empty. Visitor has'nt purchased yet.";
                 LogErrorMessage("GetRegistreredPurchaseHistory", errorMessage);
-                throw new Exception(errorMessage);
+                return new List<Tuple<DateTime, ShoppingCart>>();
             }
             return _registeredPurchaseHistory[Username];
         }
