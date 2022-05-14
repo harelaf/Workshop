@@ -13,10 +13,10 @@ namespace MarketProject.Service.DTO
         public DateTime Date=> _date;
         public ShoppingCartDTO ShoppingCart => _shoppingCart;
 
-        public PurchasedCartDTO(DateTime date, ShoppingCart shoppingCart)
+        public PurchasedCartDTO(DateTime date, ShoppingCartDTO cartDTO)
         {
             _date = date;
-            _shoppingCart = new ShoppingCartDTO(shoppingCart);
+            _shoppingCart = cartDTO;
         }
         public String ToString()
         {
