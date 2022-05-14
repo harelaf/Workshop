@@ -44,16 +44,16 @@ namespace MarketWebProject.Controllers
         {
             if (modelcs == null)
                 modelcs = new MainModel();
-            Task<Response<List<StoreDTO>>> task = _marketAPIClient.GetAllActiveStores();
-            /*  for tests:
+            //Task<Response<List<StoreDTO>>> task = _marketAPIClient.GetAllActiveStores();
+
              StoreDTO store1 = new StoreDTO();
             StoreDTO store2 = new StoreDTO();
             List<StoreDTO> lst = new List<StoreDTO>();
             lst.Add(store1);
             lst.Add(store2);
             Response<List<StoreDTO>> response = new Response<List<StoreDTO>>(lst);
-            */
-            Response<List<StoreDTO>> response = task.Result;
+
+            //Response<List<StoreDTO>> response = task.Result;
             ViewResult view;
             if (response.ErrorOccured)
             {
