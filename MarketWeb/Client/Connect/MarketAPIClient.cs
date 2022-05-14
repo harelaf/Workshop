@@ -70,7 +70,9 @@ namespace MarketWeb.Client.Connect
         public Task<Response> HasPermission(string storeName, string op);
         public Task<Response<ItemDTO>> GetItem(string storeName, int itemId);
         public Task<Response<List<StoreDTO>>> GetStoresOfUser();
+        public Task<Response> SendAdminMessage(String receiverUsername, String title, String message);
     }
+
     public class MarketAPIClient : IMarketAPIClient
     {
 
@@ -123,7 +125,7 @@ namespace MarketWeb.Client.Connect
         public async Task<Response<String>> Login(string username, string password)
         {
             const string url = "api/market/login";
-            var param = new Dictionary<string, string>() { { "username", username },{ "password", password } };
+            var param = new Dictionary<string, string>() { { "username", username }, { "password", password } };
 
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
@@ -131,8 +133,19 @@ namespace MarketWeb.Client.Connect
             if (!token.ErrorOccured)
             {
                 _httpService.Token = token.Value;
-                // TODO: CHECK IF IS ADMIN AND THEN call TurnAdmin();
-                TurnLoggedIn();
+                try
+                {
+                    Response HasAccess = await HasPermission("", "PERMENENT_CLOSE_STORE");
+                    if (HasAccess.ErrorOccured)
+                    {
+                        TurnLoggedIn();
+                    }
+                    else
+                    {
+                        TurnAdmin();
+                    }
+                }
+                catch (Exception) { }
             }
             return token;
         }
@@ -145,7 +158,7 @@ namespace MarketWeb.Client.Connect
         public async Task<Response> Register(string username, string password, DateTime dob)
         {
             const string url = "api/market/Register";
-            var param = new Dictionary<string, string>() { { "username", username }, { "password", password }, { "dob",  dob.ToString() } };
+            var param = new Dictionary<string, string>() { { "username", username }, { "password", password }, { "dob", dob.ToString() } };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response<String>>(newUrl, null);
@@ -165,7 +178,7 @@ namespace MarketWeb.Client.Connect
         public async Task<Response> RemoveRegisteredVisitorAsync(string usr_toremove)
         {
             const string url = "api/market/RemoveRegisteredVisitor";
-            var param = new Dictionary<string, string>() { { "usr_toremove", usr_toremove }};
+            var param = new Dictionary<string, string>() { { "usr_toremove", usr_toremove } };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response res = await _httpService.Post<Response>(newUrl, null);
             return res;
@@ -194,7 +207,7 @@ namespace MarketWeb.Client.Connect
         public async Task<Response> UpdateQuantityOfItemInCart(int itemID, string storeName, int newQuantity)
         {
             const string url = "api/market/UpdateQuantityOfItemInCart";
-            var param = new Dictionary<string, string>() { { "itemID", itemID.ToString() }, { "storeName", storeName } , { "newQuantity", newQuantity.ToString() } };
+            var param = new Dictionary<string, string>() { { "itemID", itemID.ToString() }, { "storeName", storeName }, { "newQuantity", newQuantity.ToString() } };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);
@@ -203,7 +216,7 @@ namespace MarketWeb.Client.Connect
 
         public async Task<Response<ShoppingCartDTO>> ViewMyCart()
         {
-            Response <ShoppingCartDTO> res = await _httpService.Get<Response<ShoppingCartDTO>>("api/market/ViewMyCart");
+            Response<ShoppingCartDTO> res = await _httpService.Get<Response<ShoppingCartDTO>>("api/market/ViewMyCart");
             return res;
         }
 
@@ -227,7 +240,7 @@ namespace MarketWeb.Client.Connect
         public async Task<Response> OpenNewStore(string storeName)
         {
             const string url = "api/market/OpenNewStore";
-            var param = new Dictionary<string, string>() {{ "storeName", storeName } };
+            var param = new Dictionary<string, string>() { { "storeName", storeName } };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);
@@ -237,7 +250,7 @@ namespace MarketWeb.Client.Connect
         public async Task<Response> AddStoreManager(string managerUsername, string storeName)
         {
             const string url = "api/market/AddStoreManager";
-            var param = new Dictionary<string, string>() { { "storeName", storeName } ,{ "managerUsername", managerUsername } };
+            var param = new Dictionary<string, string>() { { "storeName", storeName }, { "managerUsername", managerUsername } };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);
@@ -580,7 +593,7 @@ namespace MarketWeb.Client.Connect
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);
-             return res;
+            return res;
         }
 
         public async Task<Response<List<Tuple<DateTime, ShoppingBasketDTO>>>> GetStorePurchasesHistory(string storeName)
@@ -703,6 +716,19 @@ namespace MarketWeb.Client.Connect
         public async Task<Response<List<StoreDTO>>> GetStoresOfUser()
         {
             Response<List<StoreDTO>> res = await _httpService.Get<Response<List<StoreDTO>>>("api/market/GetStoresOfUser");
+            return res;
+        }
+
+        public async Task<Response> SendAdminMessage(String receiverUsername, String title, String message)
+        {
+            const string url = "api/market/SendMessageToRegisterd";
+            var param = new Dictionary<string, string>() {
+                { "receiverUsername", receiverUsername },
+                { "title", title },
+                { "message", message }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+            Response res = await _httpService.Post<Response>(newUrl, null);
             return res;
         }
     }

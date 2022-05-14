@@ -253,17 +253,30 @@ else
         // reset alerts on submit
         AlertService.Clear();
 
-        // TODO: SHOULD CHECK IF USER HAS ACCESS TO BE HERE
-
-        Response<ItemDTO> response = await marketAPIClient.GetItem(StoreName, ItemID);
-        if (response.ErrorOccured)
+        Response HasAccess = await marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK");
+        if (HasAccess.ErrorOccured)
         {
-            AlertService.Error(response.ErrorMessage);
+            AlertService.Error(HasAccess.ErrorMessage);
             NavigationManager.NavigateTo("");
         }
-        else
+
+        try
         {
-            item = response.Value;
+            Response<ItemDTO> response = await marketAPIClient.GetItem(StoreName, ItemID);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            else
+            {
+                item = response.Value;
+            }
         }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+            NavigationManager.NavigateTo("");
+        }
+    }
     }
 }

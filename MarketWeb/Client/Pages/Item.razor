@@ -138,15 +138,22 @@ else
         // reset alerts on submit
         AlertService.Clear();
 
-        Response<ItemDTO> response = await marketAPIClient.GetItem(StoreName, ItemID);
-        if (response.ErrorOccured)
+        try
         {
-            AlertService.Error(response.ErrorMessage);
-            NavigationManager.NavigateTo("");
+            Response<ItemDTO> response = await marketAPIClient.GetItem(StoreName, ItemID);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            else
+            {
+                item = response.Value;
+            }
         }
-        else
+        catch (Exception e)
         {
-            item = response.Value;
+            AlertService.Error(e.Message);
+            NavigationManager.NavigateTo("");
         }
     }
 }
