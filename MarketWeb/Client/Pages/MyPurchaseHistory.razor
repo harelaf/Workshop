@@ -84,11 +84,8 @@ else
         }
         catch(Exception e)
         {
-             AlertService.Error(e.Message);
+             AlertService.Error(e.Message, true, true);
              StateHasChanged();
-
-             var returnUrl = "/";//index
-             NavigationManager.NavigateTo(returnUrl);
         }
         finally
         {
