@@ -10,7 +10,7 @@ namespace MarketWebProject.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private MarketAPIClient _marketAPIClient;
+        private IMarketAPIClient _marketAPIClient;
         //private Service service
 
         private void TurnGuest()
@@ -34,7 +34,7 @@ namespace MarketWebProject.Controllers
             LayoutConfig.IsAdmin = true;
         }
 
-        public HomeController(ILogger<HomeController> logger, MarketAPIClient marketAPIClient)
+        public HomeController(ILogger<HomeController> logger, IMarketAPIClient marketAPIClient)
         {
             _logger = logger;
             _marketAPIClient = marketAPIClient;
