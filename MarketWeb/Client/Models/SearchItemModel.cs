@@ -1,4 +1,6 @@
-﻿namespace MarketWeb.Client.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MarketWeb.Client.Models
 {
     public class SearchItemModel
     {
