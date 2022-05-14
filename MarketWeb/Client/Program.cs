@@ -25,7 +25,13 @@ namespace MarketWeb.Client
                             .AddScoped<IAlertService, AlertService>();
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            await builder.Build().RunAsync();
+
+            var host = builder.Build();
+
+            var marketAPIClient = host.Services.GetRequiredService<IMarketAPIClient>();
+            await marketAPIClient.EnterSystem();
+
+            await host.RunAsync();
         }
     }
 }
