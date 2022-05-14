@@ -109,6 +109,7 @@ namespace MarketProject.Service
         /// <param name="authToken"> The token of the guest currently registering.</param>
         /// <param name="Username"> The Username of the Visitor to log in.</param>
         /// <param name="password"> The password to check.</param>
+        [HttpPost("Register")]
         public Response Register(String authToken, String Username, String password, DateTime birthDate)
         {//II.1.3
             Response response;
