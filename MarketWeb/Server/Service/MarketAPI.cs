@@ -1257,7 +1257,7 @@ namespace MarketProject.Service
             String username1 = "username1";
             String password1 = "password1";
             String storeName1 = "storeName1";
-            String auth1 = "Bearer " + EnterSystem().Value;
+            String auth1 = EnterSystem().Value;
 
             String username2 = "username2";
             String password2 = "password2";
@@ -1265,7 +1265,7 @@ namespace MarketProject.Service
             String auth2 = EnterSystem().Value;
 
             Register(auth1, username1, password1, new DateTime(1992, 8, 4));
-            auth1 = "Bearer " +Login(auth1, username1, password1).Value;
+            auth1 = Login(auth1, username1, password1).Value;
             OpenNewStore(auth1, storeName1);
 
             Register(auth2, username2, password2, new DateTime(1992, 8, 4));
@@ -1333,7 +1333,6 @@ namespace MarketProject.Service
             OrCompositionDTO orCond = new OrCompositionDTO(false, condLst2);
             CategoryDiscountDTO categoryDis = new CategoryDiscountDTO(percentageToSubtract, dairyCategory, orCond, expiration);
             AddStoreDiscount(auth2, storeName2, categoryDis);
-
         }
     }
 }
