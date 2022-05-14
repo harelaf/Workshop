@@ -10,12 +10,9 @@ namespace MarketWeb.Shared.DTO
         private Dictionary<ItemDTO, int> _itemAndAmount;
         public Dictionary<ItemDTO, int> Items => _itemAndAmount;
 
-        public StockDTO()
+        public StockDTO(Dictionary<ItemDTO, int> itemAndAmount)
         {
-            _itemAndAmount = new Dictionary<ItemDTO, int>();
-            _itemAndAmount.Add(new ItemDTO("item1", 10.5, "store1"), 20);
-            _itemAndAmount.Add(new ItemDTO("item2", 9.5, "store1"), 30);
-            _itemAndAmount.Add(new ItemDTO("item3", 15.5, "store1"), 25);
+            _itemAndAmount = itemAndAmount;
         }
     }
 }

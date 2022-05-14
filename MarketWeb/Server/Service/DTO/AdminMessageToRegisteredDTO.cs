@@ -19,12 +19,12 @@ namespace MarketProject.Service.DTO
         private String _message;
         public String Message => _message;
 
-        public AdminMessageToRegisteredDTO(AdminMessageToRegistered adminMessageToRegistered)
+        public AdminMessageToRegisteredDTO(String Username, String senderUsername, String title, String message)
         {
-            _receiverUsername = adminMessageToRegistered.ReceiverUsername;
-            _senderUsername = adminMessageToRegistered.SenderUsername;
-            _title = adminMessageToRegistered.Title;
-            _message = adminMessageToRegistered.Message;
+            _receiverUsername = Username;
+            _senderUsername = senderUsername;
+            _title = title;
+            _message = message;
         }
     }
 }

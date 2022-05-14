@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,13 +22,13 @@ namespace MarketWeb.Shared.DTO
         private int _id;
         public int Id => _id;
 
-        public NotifyMessageDTO()
+        public NotifyMessageDTO(string storeName, string title, string message, string receiverUsername, int id)
         {
-            _storeName = "testStoreName";
-            _title = "testTitle";
-            _message = "TestMessage";
-            _receiverUsername = "testReceiverUsername";
-            _id = 1;
+            _storeName = storeName;
+            _title = title;
+            _message = message;
+            _receiverUsername = receiverUsername;
+            _id = id;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -16,10 +15,6 @@ namespace MarketProject.Service.DTO
         {
             _negative = negative;
             _conditions = conditions;
-        }
-        public DiscountCondition ConvertMe(dtoConditionConverter converter)
-        {
-            return converter.convertConcrete(this);
         }
     }
 }

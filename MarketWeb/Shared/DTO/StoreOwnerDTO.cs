@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,22 +7,23 @@ namespace MarketWeb.Shared.DTO
 {
     public class StoreOwnerDTO
     {
-        //private ISet<Operation> _operations;
-        //public ISet<Operation> Operations => _operations;
+        private ISet<Operation> _operations;
+        public ISet<Operation> Operations => _operations;
 
         private String _storeName;
         public String StoreName => _storeName;
 
-        private String _Username;
-        public String Username => _Username;
+        private String _username;
+        public String Username => _username;
 
         private String _appointer;
         public String Appointer => _appointer;
 
-        public StoreOwnerDTO(string storeName, string username, string appointer)
+        public StoreOwnerDTO(ISet<Operation> operations, string username, string storeName, string appointer)
         {
+            _operations = operations;
             _storeName = storeName;
-            _Username = username;
+            _username = username;
             _appointer = appointer;
         }
     }

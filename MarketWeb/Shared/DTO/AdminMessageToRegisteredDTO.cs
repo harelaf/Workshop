@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,12 +19,12 @@ namespace MarketWeb.Shared.DTO
         private String _message;
         public String Message => _message;
 
-        public AdminMessageToRegisteredDTO()
+        public AdminMessageToRegisteredDTO(String Username, String senderUsername, String title, String message)
         {
-            _receiverUsername = "testReceiverUsername";
-            _senderUsername = "testSenderUsername";
-            _title = "testTitle";
-            _message = "testMessage";
+            _receiverUsername = Username;
+            _senderUsername = senderUsername;
+            _title = title;
+            _message = message;
         }
     }
 }

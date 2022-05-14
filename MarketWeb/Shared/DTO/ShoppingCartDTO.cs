@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,20 +9,16 @@ namespace MarketWeb.Shared.DTO
     {
         private ICollection<ShoppingBasketDTO> _DTObaskets; 
         public ICollection<ShoppingBasketDTO> Baskets => _DTObaskets;
-
-        public ShoppingCartDTO()
+        public ShoppingCartDTO(ICollection<ShoppingBasketDTO> basketDTOs)
         {
-            _DTObaskets = new List<ShoppingBasketDTO>();
-            _DTObaskets.Add(new ShoppingBasketDTO());
-            _DTObaskets.Add(new ShoppingBasketDTO());
+            _DTObaskets = basketDTOs;
         }
-
         public ShoppingBasketDTO GetBasket(String StoreName)
         {
             ShoppingBasketDTO basket = null;
             foreach(ShoppingBasketDTO b in _DTObaskets)
             {
-                if(basket.GetStoreName == StoreName)
+                if(basket.StoreName == StoreName)
                 {
                     basket = b;
                 }
