@@ -71,9 +71,7 @@
 {
     <h2> Manage Store Roles: </h2>
 
-    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StoreRolePage" 
-        asp-route-storeName="@(StoreInfo.StoreName)"> View Store Roles
-    </a>
+    <NavLink href="StorePage/@(StoreInfo.StoreName)/roles" class="btn btn-info"> View Store Roles</NavLink>
     <br />
     <h5>Appoint Store Owner: </h5>
     <form method="post">
