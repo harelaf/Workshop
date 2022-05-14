@@ -1,0 +1,89 @@
+﻿@page "/StorePage/{StoreName}/messages"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+<div class="text-center">
+    <h1 class="display-4">@(StoreName)  Messages</h1>
+    <br />
+    <br />
+</div>
+<br />
+@if (Messages.Count>0)
+{
+    <table style="width:100%" class="table">
+        <tr>
+            <th><h4>User Name </h4></th>
+            <th><h4> Title</h4></th>
+            <th><h4> Message</h4></th>
+            <th><h4> Reply</h4></th>
+
+        </tr>
+        @foreach (MessageToStoreDTO msg in Messages)
+        {
+            <tr >
+                <th>@msg.SenderUsername</th>
+                <th>@msg.Title</th>
+                <th>@msg.Message</th>
+                <th> 
+                    <form method="post">
+                        <textarea required rows="4" cols="50" id="replyMessage" name="replyMessage"> Enter message here...</textarea>
+                        <br />
+                        <input class="btn btn-info" type="submit" value="Reply" asp-area="" asp-controller="Home" asp-action="ReplyMessage" 
+                        asp-route-storename="@(StoreName)" asp-route-receiverUsername="@msg.SenderUsername" asp-route-msgId="@msg.Id" asp-route-replyMessage=""  />
+                    </form>
+                </th>
+            </tr>
+        }
+    </table>
+    <br /> 
+ 
+}
+else
+{
+    <h4> There were no messages sent to this store yet.</h4>
+}
+
+@code {
+    [Parameter] public string StoreName{ get; set; }
+    Queue<MessageToStoreDTO> Messages = new Queue<MessageToStoreDTO>();
+
+
+
+
+    private async void OnValidSubmit()
+    {
+        // TODO
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Response<Queue<MessageToStoreDTO>> response = await _marketAPIClient.GetStoreMessages(StoreName);
+            if (!!response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            Messages = response.Value;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    
+    }
+
+}
