@@ -9,7 +9,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         public SearchCategoryCondition(string keyWord, int minAmount, int maxAmount, bool negative) : base(keyWord, minAmount, maxAmount, negative) { }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
-            return IsInRange(searchablePriceable.SearchCategoryAmount(_keyWord), _minValue, _maxValue);
+            return checkNegative(IsInRange(searchablePriceable.SearchCategoryAmount(_keyWord), _minValue, _maxValue));
         }
         public override String GetConditionString(int indent)
         {

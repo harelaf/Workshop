@@ -24,6 +24,12 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
                 str += '\t';
             return str;
         }
+        protected bool checkNegative(bool cond)
+        {
+            if (ToNegative)
+                return !cond;
+            else return cond;
+        }
 
         public abstract bool Check(ISearchablePriceable searchablePriceable);
         public abstract string GetConditionString(int indent);

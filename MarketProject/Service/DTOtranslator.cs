@@ -22,8 +22,12 @@ namespace MarketProject.Service
         //        }
         //    return instance;
         //}
+
+        // ====================== from DTO translation for Conditions ======================
         public DiscountCondition translateCondition(IConditionDTO cond)
         {
+            if(cond == null)
+                return null;
             Type type = cond.GetType();
             if(type.Equals(typeof(AndCompositionDTO)))
                 return translate((AndCompositionDTO)cond);
@@ -42,23 +46,6 @@ namespace MarketProject.Service
             if (type.Equals(typeof(XorCompositionDTO)))
                 return translate((XorCompositionDTO)cond);
             else throw new NotImplementedException();
-        }
-        public Discount translateDiscount(IDiscountDTO dis)
-        {
-            Type type = dis.GetType();
-            if (type.Equals(typeof(AllProductsDiscountDTO)))
-                return translate((AllProductsDiscountDTO)dis);
-            if (type.Equals(typeof(CategoryDiscountDTO)))
-                return translate((CategoryDiscountDTO)dis);
-            if (type.Equals(typeof(ItemDiscountDTO)))
-                return translate((ItemDiscountDTO)dis);
-            if (type.Equals(typeof(MaxDiscountDTO)))
-                return translate((MaxDiscountDTO)dis);
-            if (type.Equals(typeof(NumericDiscountDTO)))
-                return translate((NumericDiscountDTO)dis);
-            if (type.Equals(typeof(PlusDiscountDTO)))
-                return translate((PlusDiscountDTO)dis);
-            else throw new NotImplementedException($"need an implementation for {type} discount type.");
         }
         public AndComposition translate(AndCompositionDTO condition_dto)
         {
@@ -121,6 +108,27 @@ namespace MarketProject.Service
                 conditions.Add(translateCondition(cond));
             return new XorComposition(negative, conditions);
         }
+
+        // ====================== from DTO translation for Discounts ======================
+        public Discount translateDiscount(IDiscountDTO dis)
+        {
+            if (dis == null)
+                return null;
+            Type type = dis.GetType();
+            if (type.Equals(typeof(AllProductsDiscountDTO)))
+                return translate((AllProductsDiscountDTO)dis);
+            if (type.Equals(typeof(CategoryDiscountDTO)))
+                return translate((CategoryDiscountDTO)dis);
+            if (type.Equals(typeof(ItemDiscountDTO)))
+                return translate((ItemDiscountDTO)dis);
+            if (type.Equals(typeof(MaxDiscountDTO)))
+                return translate((MaxDiscountDTO)dis);
+            if (type.Equals(typeof(NumericDiscountDTO)))
+                return translate((NumericDiscountDTO)dis);
+            if (type.Equals(typeof(PlusDiscountDTO)))
+                return translate((PlusDiscountDTO)dis);
+            else throw new NotImplementedException($"need an implementation for {type} discount type.");
+        }
         public Discount translate(AllProductsDiscountDTO discount_dto)
         {
             double percentage = discount_dto.Percentage;
@@ -167,6 +175,8 @@ namespace MarketProject.Service
             DiscountCondition condition = translateCondition(discount_dto.Condition);
             return new PlusDiscount(discounts, condition);
         }
+
+        // ====================== to DTO convertion for all dto's ======================
         public AdminMessageToRegisteredDTO toDTO(AdminMessageToRegistered msg)
         {
             return new AdminMessageToRegisteredDTO(msg.ReceiverUsername, msg.SenderUsername, msg.Title, msg.Message);
@@ -314,7 +324,16 @@ namespace MarketProject.Service
         }
         public DiscountPolicyDTO toDTO(DiscountPolicy policy)
         {
-            return new DiscountPolicyDTO();
+            return new DiscountPolicyDTO(toDTO(policy.Discounts));
+        }
+        // to be implemented when needed
+        private PlusDiscountDTO toDTO(PlusDiscount discounts)
+        {
+            //List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
+            //List<IConditionDTO> conditionDTOs = new List<IConditionDTO>();
+            //foreach (Discount dis in discounts.DiscountList)
+            //    discountDTOs.Add(toDTO(dis));
+            return null;
         }
     }
 }

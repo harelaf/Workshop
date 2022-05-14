@@ -27,8 +27,9 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
 
-            VisitorManagement.Register(Username, password);
+            VisitorManagement.Register(Username, password, bDay);
             Registered registered = VisitorManagement.GetRegisteredVisitor(Username);
 
 
@@ -41,8 +42,9 @@ namespace MarketProject.Domain.Tests
         {
             String Username = ""; // Username obviously cannot be empty string
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
 
-            Assert.ThrowsException<Exception>(() => VisitorManagement.Register(Username, password));
+            Assert.ThrowsException<Exception>(() => VisitorManagement.Register(Username, password, bDay));
         }
 
         [TestMethod()]
@@ -51,8 +53,9 @@ namespace MarketProject.Domain.Tests
             VisitorManagement VisitorManagement = new VisitorManagement();
             String Username = "Test";
             String password = ""; // Password obviously cannot be empty string
+            DateTime bDay = new DateTime(1992, 8, 4);
 
-            Assert.ThrowsException<Exception>(() => VisitorManagement.Register(Username, password));
+            Assert.ThrowsException<Exception>(() => VisitorManagement.Register(Username, password, bDay));
         }
 
 
@@ -65,8 +68,9 @@ namespace MarketProject.Domain.Tests
             String guestToken = "abcd";
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
-            registeredVisitors.Add(Username, new Registered(Username, password));
+            registeredVisitors.Add(Username, new Registered(Username, password, bDay));
             Guest guest = new Guest(guestToken);
             Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
             visitorsGuestsTokens.Add(guestToken, guest);
@@ -85,9 +89,10 @@ namespace MarketProject.Domain.Tests
             String guestToken = "abcd";
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String triedUsername = "";
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
-            registeredVisitors.Add(Username, new Registered(Username, password));
+            registeredVisitors.Add(Username, new Registered(Username, password, bDay));
             Guest guest = new Guest(guestToken);
             Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
             visitorsGuestsTokens.Add(guestToken, guest);
@@ -103,9 +108,10 @@ namespace MarketProject.Domain.Tests
             String guestToken = "abcd";
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String triedPassword = "";
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
-            registeredVisitors.Add(Username, new Registered(Username, password));
+            registeredVisitors.Add(Username, new Registered(Username, password, bDay));
             Guest guest = new Guest(guestToken);
             Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
             visitorsGuestsTokens.Add(guestToken, guest);
@@ -125,7 +131,8 @@ namespace MarketProject.Domain.Tests
             String Username = "Test";
             String password = "123";
             String authToken = "abcd";
-            Registered registered = new Registered(Username, password);
+            DateTime bDay = new DateTime(1992, 8, 4);
+            Registered registered = new Registered(Username, password, bDay);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
@@ -147,9 +154,10 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String authToken = "abcd";
             String triedToken = "a";
-            Registered registered = new Registered(Username, password);
+            Registered registered = new Registered(Username, password, bDay);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
@@ -175,7 +183,8 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
-            Registered registered = new Registered(Username, password);
+            DateTime bDay = new DateTime(1992, 8, 4);
+            Registered registered = new Registered(Username, password, bDay);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors);
@@ -192,6 +201,7 @@ namespace MarketProject.Domain.Tests
         public void RemoveRegisteredVisitor_InvalidUsername_ThrowsException()
         {
             String Username = "Test";
+            DateTime bDay = new DateTime(1992, 8, 4);
             VisitorManagement VisitorManagement = new VisitorManagement();
 
 
@@ -203,8 +213,9 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String authToken = "abcd";
-            Registered registered = new Registered(Username, password);
+            Registered registered = new Registered(Username, password, bDay);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
@@ -231,7 +242,8 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
-            Registered registered = new Registered(Username, password);
+            DateTime bDay = new DateTime(1992, 8, 4);
+            Registered registered = new Registered(Username, password, bDay);
             SystemAdmin systemAdmin = new SystemAdmin(Username);
             registered.AddRole(systemAdmin);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
@@ -248,7 +260,8 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
-            Registered registered = new Registered(Username, password);
+            DateTime bDay = new DateTime(1992, 8, 4);
+            Registered registered = new Registered(Username, password, bDay);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors);
@@ -267,9 +280,10 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String newPassword = "1";
             String authToken = "abcd";
-            Registered registered = new Registered(Username, password);
+            Registered registered = new Registered(Username, password, bDay);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
@@ -292,10 +306,11 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String triedPassword = "12";
             String newPassword = "1";
             String authToken = "abcd";
-            Registered registered = new Registered(Username, password);
+            Registered registered = new Registered(Username, password, bDay);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
@@ -318,9 +333,10 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String newPassword = "";
             String authToken = "abcd";
-            Registered registered = new Registered(Username, password);
+            Registered registered = new Registered(Username, password, bDay);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
@@ -348,15 +364,16 @@ namespace MarketProject.Domain.Tests
             // Complainer
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String authToken = "abcd";
             int cartId = 1;
             String message = "Test message";
-            Registered registered = new Registered(Username, password);
+            Registered registered = new Registered(Username, password, bDay);
 
             // Admin
             String adminUsername = "Admin";
             String adminPassword = "123";
-            Registered admin = new Registered(adminUsername, adminPassword);
+            Registered admin = new Registered(adminUsername, adminPassword, bDay);
             SystemAdmin adminRole = new SystemAdmin(adminUsername);
             admin.AddRole(adminRole);
 
@@ -384,16 +401,17 @@ namespace MarketProject.Domain.Tests
             // Complainer
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             int cartId = 1;
             String message = "Test message";
-            Registered registered = new Registered(Username, password);
+            Registered registered = new Registered(Username, password, bDay);
 
             // Admin
             String adminUsername = "Admin";
             String adminPassword = "123";
             String authToken = "abcd";
             String response = "Test response";
-            Registered admin = new Registered(adminUsername, adminPassword);
+            Registered admin = new Registered(adminUsername, adminPassword, bDay);
             SystemAdmin adminRole = new SystemAdmin(adminUsername);
             admin.AddRole(adminRole);
 
@@ -424,16 +442,17 @@ namespace MarketProject.Domain.Tests
             // Complainer
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             int cartId = 1;
             String message = "Test message";
-            Registered registered = new Registered(Username, password);
+            Registered registered = new Registered(Username, password, bDay);
 
             // Admin
             String adminUsername = "Admin";
             String adminPassword = "123";
             String authToken = "abcd";
             String response = "Test response";
-            Registered admin = new Registered(adminUsername, adminPassword);
+            Registered admin = new Registered(adminUsername, adminPassword, bDay);
             //SystemAdmin adminRole = new SystemAdmin(adminUsername); Removed admin priviliges
             //admin.AddRole(adminRole);
 
@@ -461,12 +480,13 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.STORE_HISTORY_INFO;
 
             try
             {
-                VisitorManagement.Register(managerUsername, password);
+                VisitorManagement.Register(managerUsername, password, bDay);
                 VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
                 VisitorManagement.RemoveManagerPermission(appointer, managerUsername, storeName, op);
             }
@@ -482,10 +502,11 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.STORE_HISTORY_INFO;
 
-            VisitorManagement.Register(managerUsername, password);
+            VisitorManagement.Register(managerUsername, password, bDay);
             VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => VisitorManagement.RemoveManagerPermission("other name", managerUsername, storeName, op));
         }
@@ -496,10 +517,11 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.STORE_HISTORY_INFO;
 
-            VisitorManagement.Register(managerUsername, password);
+            VisitorManagement.Register(managerUsername, password, bDay);
             VisitorManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => VisitorManagement.RemoveManagerPermission(appointer, managerUsername, storeName, op));
         }
@@ -510,12 +532,13 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
             try
             {
-                VisitorManagement.Register(managerUsername, password);
+                VisitorManagement.Register(managerUsername, password, bDay);
                 VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
                 VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op);
             }
@@ -531,10 +554,11 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
-            VisitorManagement.Register(managerUsername, password);
+            VisitorManagement.Register(managerUsername, password, bDay);
             VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => VisitorManagement.AddManagerPermission("other name", managerUsername, storeName, op));
         }
@@ -545,10 +569,11 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
-            VisitorManagement.Register(managerUsername, password);
+            VisitorManagement.Register(managerUsername, password, bDay);
             VisitorManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op));
         }
@@ -559,10 +584,11 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.CANCEL_SUBSCRIPTION;
 
-            VisitorManagement.Register(managerUsername, password);
+            VisitorManagement.Register(managerUsername, password, bDay);
             VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op));
         }

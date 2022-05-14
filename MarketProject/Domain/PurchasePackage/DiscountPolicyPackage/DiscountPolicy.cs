@@ -7,6 +7,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
     public class DiscountPolicy
     {
         private PlusDiscount _discounts;
+        public PlusDiscount Discounts => _discounts;
 
         public DiscountPolicy()
         {

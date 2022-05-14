@@ -12,7 +12,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
-            return IsInRange(searchablePriceable.GetTotalPrice(), _minValue, _maxValue);
+            return checkNegative(IsInRange(searchablePriceable.GetTotalPrice(), _minValue, _maxValue));
         }
 
         public override String GetConditionString(int indent)
