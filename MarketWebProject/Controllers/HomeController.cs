@@ -38,6 +38,7 @@ namespace MarketWebProject.Controllers
         {
             _logger = logger;
             _marketAPIClient = marketAPIClient;
+            marketAPIClient.EnterSystem();
         }
 
         public IActionResult Index(MainModel modelcs)
