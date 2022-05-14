@@ -25,15 +25,13 @@
 }
 @if (CanViewPurchaseHistory)
 {
-    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePurchaseHistoryPage"
-        asp-route-storename="@(StoreInfo.StoreName)" > 
+    <a class="btn btn-info"  href="StorePage/@(StoreInfo.StoreName)/purchases" >
         View @(StoreInfo.StoreName) Purchase History
     </a>
 }
 @if (CanViewStoreMessages)
 {
-    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StoreMessagesPage" 
-        asp-route-storename="@(StoreInfo.StoreName)" >
+    <a class="btn btn-info"  href="StorePage/@(StoreInfo.StoreName)/messages" >
         View @(StoreInfo.StoreName) Messages
    </a>
 
@@ -71,9 +69,7 @@
 {
     <h2> Manage Store Roles: </h2>
 
-    <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StoreRolePage" 
-        asp-route-storeName="@(StoreInfo.StoreName)"> View Store Roles
-    </a>
+    <a href="StorePage/@(StoreInfo.StoreName)/roles" class="btn btn-info"> View Store Roles</a>
     <br />
     <h5>Appoint Store Owner: </h5>
     <form method="post">
