@@ -60,8 +60,8 @@ else
 @code {
     private Models.MyPurchaseHistoryModel model = new Models.MyPurchaseHistoryModel();
     private bool loading;
-    private ICollection<PurchasedCartDTO> purchasedCartDTOs;
-    private string username;
+    private ICollection<PurchasedCartDTO> purchasedCartDTOs = new List<PurchasedCartDTO>();
+    private string username = "";
 
 
     protected override async Task OnInitializedAsync()
@@ -75,24 +75,25 @@ else
             {
                 throw new Exception(response_user.ErrorMessage);
             }
-            else if (res_history.ErrorOccured)
+            username = response_user.Value.Username;
+            if (res_history.ErrorOccured)
             {
                 throw new Exception(res_history.ErrorMessage);
             }
-           
-            username = response_user.Value.Username;
             purchasedCartDTOs = res_history.Value; 
-            
         }
         catch(Exception e)
         {
-             AlertService.Error(e.Message);
-             StateHasChanged();
-             //var returnUrl = "/";//index
-             //NavigationManager.NavigateTo(returnUrl);
+            AlertService.Error(e.Message);
+            
+            //var returnUrl = "/";//index
+            //NavigationManager.NavigateTo(returnUrl);
+        }
+        finally
+        {
+            StateHasChanged();
         }
 
-        
     }
 
 }
