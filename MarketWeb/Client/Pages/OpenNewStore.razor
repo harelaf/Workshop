@@ -1,0 +1,60 @@
+﻿@page "/openNewStore"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@inject IMarketAPIClient MarketAPIClient
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+<div class="card">
+    <h4 class="card-header">Open a New Store</h4>
+    <div class="card-body">
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Please enter the name of your new store:</label>
+                <InputText @bind-Value="model.storeName" class="form-control" />
+                <ValidationMessage For="@(() => model.storeName)" />
+            </div>
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading) 
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Login
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Models.OpenNewStoreModel model = new Models.OpenNewStoreModel();
+    private bool loading;
+
+    private async void OnValidSubmit()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+        try
+        {
+            Response response = await MarketAPIClient.OpenNewStore(model.storeName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            // var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
+            var returnUrl = "/";//index
+            NavigationManager.NavigateTo(returnUrl);
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            loading = false;
+            StateHasChanged();
+            NavigationManager.NavigateTo("/OpenNewStore");//would like to stay in the same page with err msg
+        }
+    }
+}

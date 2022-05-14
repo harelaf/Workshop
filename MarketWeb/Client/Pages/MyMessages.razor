@@ -1,0 +1,144 @@
+﻿@page "/MyMessages"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@using System
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+h1{
+    text-align:center;
+}
+</style>
+<div class="text-center">
+    <h1 class="display-4">@(username)'s Messages</h1>
+    <br />
+    <br />
+</div>
+<br />
+
+<h2>Messages From Market Admins:</h2>
+@if (adminMSG.Count == 0)
+{
+    <p>No admin messages to display.</p>
+}
+else
+{
+    <table style="width:100%" class="table">
+        <tr>
+            <th style="width:20%"><h4>Sender Username</h4></th>
+            <th style="width:20%"><h4>Title</h4></th>
+            <th style="width:60%"><h4>Message</h4></th>
+        </tr>
+        @foreach (AdminMessageToRegisteredDTO message in adminMSG)
+        {
+            <tr>
+                <th style="width:20%">@message.senderUsername</th>
+                <th style="width:20%">@message.Title</th>
+                <th style="width:60%">@message.Message</th>
+            </tr>
+        }
+    </table>
+}
+<br />
+<h2>Replies From Store:</h2>
+@if (storeMSG.Count == 0)
+{
+    <p>No store replies to display.</p>
+}
+else
+{
+    <table style="width:100%" class="table">
+        <tr>
+            <th style="width:15%"><h4>Store Name</h4></th>
+            <th style="width:15%"><h4>Replier Username</h4></th>
+            <th style="width:10%"><h4>Title</h4></th>
+            <th style="width:30%"><h4>Your Message</h4></th>
+            <th style="width:30%"><h4>Reply</h4></th>
+        </tr>
+        @foreach (MessageToStoreDTO message in storeMSG)
+        {
+            <tr>
+                <th style="width:15%">@message.StoreName</th>
+                <th style="width:15%">@message.Replier</th>
+                <th style="width:10%">@message.Title</th>
+                <th style="width:30%">@message.Message</th>
+                <th style="width:30%">@message.Reply</th>
+            </tr>
+        }
+    </table>
+}
+<br />
+<h2>Notifications From Store:</h2>
+@if (notifyMSG.Count == 0)
+{
+    <p>No store notifications to display.</p>
+}
+else
+{
+    <table style="width:100%" class="table">
+        <tr>
+            <th style="width:20%"><h4>Store Name</h4></th>
+            <th style="width:20%"><h4>Title</h4></th>
+            <th style="width:60%"><h4>Message</h4></th>
+        </tr>
+        @foreach (NotifyMessageDTO message in notifyMSG)
+        {
+            <tr>
+                <th style="width:20%">@message.StoreName</th>
+                <th style="width:20%">@message.Title</th>
+                <th style="width:60%">@message.Message</th>
+            </tr>
+        }
+    </table>
+}
+@code {
+    private Models.MyMessagesModel model = new Models.MyMessagesModel();
+    private ICollection<AdminMessageToRegisteredDTO> adminMSG;
+    private ICollection<MessageToStoreDTO> storeMSG;
+    private ICollection<NotifyMessageDTO>  notifyMSG;
+    private string username;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //AlertService.Clear(); // ?????
+        try
+        {
+            Response<RegisteredDTO> response_user = await marketAPIClient.GetVisitorInformation();
+            Response<ICollection<AdminMessageToRegisteredDTO>> res_adminMSG = await marketAPIClient.GetRegisteredMessagesFromAdmin();
+            Response<ICollection<MessageToStoreDTO>> res_storeMSG = await marketAPIClient.GetRegisterAnsweredStoreMessages();
+            Response<ICollection<NotifyMessageDTO>> res_notifyMSG = await marketAPIClient.GetRegisteredMessagesNotofication();
+            if (response_user.ErrorOccured)
+                throw new Exception(response_user.ErrorMessage);
+            if (res_adminMSG.ErrorOccured)
+                throw new Exception(res_adminMSG.ErrorMessage);
+            if (res_storeMSG.ErrorOccured)
+                throw new Exception(res_storeMSG.ErrorMessage);
+            if (res_notifyMSG.ErrorOccured)
+                throw new Exception(res_notifyMSG.ErrorMessage);
+            username = response_user.Value.Username;
+            adminMSG = res_adminMSG.Value;
+            storeMSG = res_storeMSG.Value;
+            notifyMSG= res_notifyMSG.Value;
+
+            
+            
+        }
+        catch(Exception e)
+        {
+             AlertService.Error(e.Message);
+             StateHasChanged();
+             //var returnUrl = "/";//index
+             //NavigationManager.NavigateTo(returnUrl);
+        }
+
+        
+    }
+}

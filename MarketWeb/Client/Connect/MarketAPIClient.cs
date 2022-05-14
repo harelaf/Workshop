@@ -14,11 +14,12 @@ namespace MarketWeb.Client.Connect
     public interface IMarketAPIClient
     {
         public bool LoggedIn { get; }
+        public bool Admin { get; }
+        public bool Guest { get; }
         public Task<Response<string>> EnterSystem();
         public Task<Response> ExitSystem();
         public Task<Response<string>> Login(string username, string password);
         public Task<Response<String>> Login(LoginModel loginModel);
-
         public Task<Response> Logout();
         public Task<Response<List<StoreDTO>>> GetAllActiveStores();
         public Task<Response> Register(string Username, string password, DateTime dob);
@@ -74,12 +75,34 @@ namespace MarketWeb.Client.Connect
     {
 
         private IHttpService _httpService;
-        public bool LoggedIn { get; private set; }
+        public bool LoggedIn { get; private set; } = false;
+        public bool Admin { get; private set; } = false;
+        public bool Guest { get; private set; } = true;
+
+        private void TurnLoggedIn()
+        {
+            LoggedIn = true;
+            Admin = false;
+            Guest = false;
+        }
+
+        private void TurnAdmin()
+        {
+            LoggedIn = false;
+            Admin = true;
+            Guest = false;
+        }
+
+        private void TurnGuest()
+        {
+            LoggedIn = false;
+            Admin = false;
+            Guest = true;
+        }
 
         public MarketAPIClient(IHttpService httpService)
         {
             _httpService = httpService;
-            LoggedIn = false;
         }
 
         public async Task<Response<string>> EnterSystem()
@@ -108,7 +131,8 @@ namespace MarketWeb.Client.Connect
             if (!token.ErrorOccured)
             {
                 _httpService.Token = token.Value;
-                LoggedIn = true;
+                // TODO: CHECK IF IS ADMIN AND THEN call TurnAdmin();
+                TurnLoggedIn();
             }
             return token;
         }
@@ -133,7 +157,7 @@ namespace MarketWeb.Client.Connect
             Response res = await _httpService.Get<Response>("api/market/Logout");
             if (!res.ErrorOccured)
             {
-                LoggedIn = false;
+                TurnGuest();
             }
             return res;
         }
