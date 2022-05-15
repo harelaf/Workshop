@@ -1257,19 +1257,21 @@ namespace MarketProject.Service
             String username1 = "username1";
             String password1 = "password1";
             String storeName1 = "storeName1";
-            String auth1 = EnterSystem().Value;
+            String auth1 = "Bearer " + EnterSystem().Value;
 
             String username2 = "username2";
             String password2 = "password2";
             String storeName2 = "storeName2";
-            String auth2 = EnterSystem().Value;
+            String auth2 = "Bearer " + EnterSystem().Value;
 
-            Register(auth1, username1, password1, new DateTime(1992, 8, 4));
-            auth1 = Login(auth1, username1, password1).Value;
+            if (Register(auth1, username1, password1, new DateTime(1992, 8, 4)).ErrorOccured)
+                return;
+            auth1 = "Bearer " + Login(auth1, username1, password1).Value;
             OpenNewStore(auth1, storeName1);
 
-            Register(auth2, username2, password2, new DateTime(1992, 8, 4));
-            auth2 = Login(auth2, username2, password2).Value;
+            if(Register(auth2, username2, password2, new DateTime(1992, 8, 4)).ErrorOccured)
+                return; 
+            auth2 = "Bearer " + Login(auth2, username2, password2).Value;
             OpenNewStore(auth2, storeName2);
 
             int itemID1 = 1;
