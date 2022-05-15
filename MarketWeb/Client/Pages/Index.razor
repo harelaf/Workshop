@@ -103,7 +103,10 @@
             items.Add(new ItemDTO("item3", 15.5, "store2"));*/
             //Response<List<ItemDTO>> response = task.Result; //new Response<List<ItemDTO>>(items);
             loading = false;
-            NavigationManager.NavigateTo($"ItemSearch/{model.ItemName}");
+            model.Category = model.Category == null ? "BLANK.VALUE" : model.Category;
+            model.ItemName = model.ItemName == null ? "BLANK.VALUE" : model.ItemName;
+            model.Keyword = model.Keyword == null ? "BLANK.VALUE" : model.Keyword;
+            NavigationManager.NavigateTo($"ItemSearch/{model.ItemName}/{model.Category}/{model.Keyword}");
         }
     }
 

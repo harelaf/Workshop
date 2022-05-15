@@ -90,7 +90,7 @@ else
 @code {
     [Parameter] public string StoreName { get; set; }
     [Parameter] public int ItemID { get; set; }
-    ItemDTO item;
+    ItemDTO item = new ItemDTO(0, "", 0, "", "", new RatingDTO(new Dictionary<string, Tuple<int, string>>()));
     private Models.AddToCartModel AddToCartModel = new Models.AddToCartModel();
     private Models.AddReviewModel AddReviewModel = new Models.AddReviewModel();
 
@@ -153,7 +153,6 @@ else
         catch (Exception e)
         {
             AlertService.Error(e.Message);
-            NavigationManager.NavigateTo("");
         }
     }
 }
