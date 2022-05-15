@@ -4,146 +4,96 @@
 @inject IMarketAPIClient marketAPIClient
 @inject NavigationManager NavigationManager
 
-@if (marketAPIClient.LoggedIn)
-{
-    <div class="main">
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="">MarketWebProject</a>
-                    <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-                        <NavLink class="nav-link text-dark" href="/ShoppingCart" Match="NavLinkMatch.All">
-                            <img alt="cart" src="https://i.pinimg.com/originals/15/4f/df/154fdf2f2759676a96e9aed653082276.png" width="40" height="40">
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/account/profile" Match="NavLinkMatch.All">
-                            <img alt="profile" src="https://icons-for-free.com/iconfiles/png/512/avatar+human+man+profile+icon-1320085876716628234.png" width="40" height="40" />
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/Logout" Match="NavLinkMatch.All">
-                            Logout
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/MyPurchaseHistory" Match="NavLinkMatch.All">
-                            Purchase History
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/MyMessages" Match="NavLinkMatch.All">
-                            Messages
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/openNewStore" Match="NavLinkMatch.All">
-                            Open New Store
-                        </NavLink>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <div class="container">
-            <main role="main" class="pb-3">
-                <Alert />
-                @Body
-            </main>
-        </div>
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                &copy; 2022 - Market Project - Afik | Avishay | Harel | Oren | Ron
-            </div>
-        </footer>
-    </div>
-}
-else if (marketAPIClient.Admin)
-{
-    <div class="main">
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="">MarketWebProject</a>
-                    <NavLink class="nav-link text-dark" href="/Administration" Match="NavLinkMatch.All">
-                        Administration
-                    </NavLink>
-                    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-                        <NavLink class="nav-link text-dark" href="/ShoppingCart" Match="NavLinkMatch.All">
-                            <img alt="cart" src="https://i.pinimg.com/originals/15/4f/df/154fdf2f2759676a96e9aed653082276.png" width="40" height="40">
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/account/profile" Match="NavLinkMatch.All">
-                            <img alt="profile" src="https://icons-for-free.com/iconfiles/png/512/avatar+human+man+profile+icon-1320085876716628234.png" width="40" height="40" />
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/Logout" Match="NavLinkMatch.All">
-                            Logout
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/MyPurchaseHistory" Match="NavLinkMatch.All">
-                            Purchase History
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/MyMessages" Match="NavLinkMatch.All">
-                            Messages
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="/openNewStore" Match="NavLinkMatch.All">
-                            Open New Store
-                        </NavLink>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <div class="container">
-            <main role="main" class="pb-3">
-                <Alert />
-                @Body
-            </main>
-        </div>
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                &copy; 2022 - Market Project - Afik | Avishay | Harel | Oren | Ron
-            </div>
-        </footer>
-    </div>
-}
-else
-{
-    <div class="main">
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="">MarketWebProject</a>
-                    <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-                        <NavLink class="nav-link text-dark" href="/ShoppingCart" Match="NavLinkMatch.All">
-                            <img alt="cart" src="https://i.pinimg.com/originals/15/4f/df/154fdf2f2759676a96e9aed653082276.png" width="40" height="40">
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="account/register">
-                            Register
-                        </NavLink>
-                        <NavLink class="nav-link text-dark" href="account/login">
-                            Login
-                        </NavLink>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <div class="container">
-            <main role="main" class="pb-3">
-                <Alert />
-                @Body
-            </main>
-        </div>
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                &copy; 2022 - Market Project - Afik | Avishay | Harel | Oren | Ron
-            </div>
-        </footer>
-    </div>
-}
+<style>
+	body, h1, h2, h3, h4, h5, h6 {
+		font-family: "Lato", sans-serif
+	}
+
+	.w3-bar, h1, button {
+		font-family: "Montserrat", sans-serif
+	}
+
+	.fa-anchor, .fa-coffee {
+		font-size: 200px
+	}
+</style>
+
+<!-- Navbar -->
+<div class="w3-top">
+	<div class="w3-bar w3-blue w3-card w3-left-align w3-large">
+		<a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-blue" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+		<a href="" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
+		<a href="/ShoppingCart" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"><img alt="cart" src="https://i.pinimg.com/originals/15/4f/df/154fdf2f2759676a96e9aed653082276.png" width="25" height="25"></a>
+		@if (!marketAPIClient.LoggedIn && !marketAPIClient.Admin)
+		{
+			<a href="/account/register" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"> Register</a>
+			<a href="/account/login" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"> Login</a>
+		}
+		@if (marketAPIClient.LoggedIn || marketAPIClient.Admin)
+		{
+			<a href="/account/profile" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white"><img alt="profile" src="https://icons-for-free.com/iconfiles/png/512/avatar+human+man+profile+icon-1320085876716628234.png" width="25" height="25" /></a>
+			<a href="/Logout" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Logout</a>
+			<a href="/MyPurchaseHistory" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Purchase History</a>
+			<a href="/MyMessages" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Messages</a>
+			<a href="/openNewStore" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Open New Store</a>
+		}
+		@if (marketAPIClient.Admin)
+		{
+			<a href="/Administration" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Administration</a>
+		}
+	</div>
+
+	<!-- Navbar on small screens -->
+	<div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+		@if (!marketAPIClient.LoggedIn)
+		{
+			<a href="/account/register" class="w3-bar-item w3-button w3-padding-large"> Register</a>
+			<a href="/account/login" class="w3-bar-item w3-button w3-padding-large"> Login</a>
+		}
+		@if (marketAPIClient.LoggedIn || marketAPIClient.Admin)
+		{
+			<a href="/account/profile" class="w3-bar-item w3-button w3-padding-large"><img alt="profile" src="https://icons-for-free.com/iconfiles/png/512/avatar+human+man+profile+icon-1320085876716628234.png" width="40" height="40" /></a>
+			<a href="/Logout" class="w3-bar-item w3-button w3-padding-large">Logout</a>
+			<a href="/MyPurchaseHistory" class="w3-bar-item w3-button w3-padding-large">Purchase History</a>
+			<a href="/MyMessages" class="w3-bar-item w3-button w3-padding-large">Messages</a>
+			<a href="/openNewStore" class="w3-bar-item w3-button w3-padding-large">Open New Store</a>
+		}
+		@if (marketAPIClient.Admin)
+		{
+			<a href="/Administration" class="w3-bar-item w3-button w3-padding-large">Administration</a>
+		}
+	</div>
+	<Alert />
+</div>
+<div class="main">
+	<div >
+		<br />
+		<br />
+		<br />
+
+
+		<main role="main" class="pb-3">
+			
+			@Body
+		</main>
+	</div>
+	<footer class="border-top footer text-muted">
+		<div class="container">
+			&copy; 2022 - Market Project - Afik | Avishay | Harel | Oren | Ron
+		</div>
+	</footer>
+</div>
 
 
 @code {
-    bool collapseNavMenu = true;
+	bool collapseNavMenu = true;
 
-    string baseMenuClass = "navbar-collapse d-sm-inline-flex flex-sm-row-reverse";
+	string baseMenuClass = "navbar-collapse d-sm-inline-flex flex-sm-row-reverse";
 
-    string NavMenuCssClass => baseMenuClass + (collapseNavMenu ? " collapse" : "");
+	string NavMenuCssClass => baseMenuClass + (collapseNavMenu ? " collapse" : "");
 
-    void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+	void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
 }
