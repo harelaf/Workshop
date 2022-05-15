@@ -148,7 +148,7 @@
 	}
 	else
 	{
-		IDictionary<ItemDTO, int> stock_dictionary = StoreInfo.Stock.Items;
+		IDictionary<int, Tuple<ItemDTO, int>> stock_dictionary = StoreInfo.Stock.Items;
 		<table class="table">
 			<thead>
 				<tr>
@@ -164,8 +164,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				@foreach (ItemDTO item in stock_dictionary.Keys)
+				@foreach (int itemID in stock_dictionary.Keys)
 				{
+					ItemDTO item = stock_dictionary[itemID].Item1;
 					<tr>
 						<th>@item.Name</th>
 						<th>@item.Price</th>
@@ -174,7 +175,7 @@
 							<th>
 								<a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="ItemPageEditable" asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID">View @item.Name Page</a>
 							</th>
-							<th> @stock_dictionary[item]</th>
+							<th> @stock_dictionary[itemID].Item2</th>
 							<th>
 								<a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="RemoveItemFromStock" asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID">Remove</a>
 							</th>

@@ -31,12 +31,12 @@
                 <th>Amount</th>
                 <th>price per unit</th>
             </tr>
-            @foreach (KeyValuePair<ItemDTO, int> item_amount in basket.Items)
+            @foreach (int itemId in basket.Items.Keys)
             {
-                <tr id="@(item_amount.Key.Name + date.ToString())">
-                    <th>@item_amount.Key.Name</th>
-                    <th>@item_amount.Value</th>
-                    <th>$@item_amount.Key.Price</th>
+                <tr id="@(basket.Items[itemId].Item1.Name + date.ToString())">
+                    <th>@basket.Items[itemId].Item1.Name</th>
+                    <th>@basket.Items[itemId].Item2</th>
+                    <th>$@basket.Items[itemId].Item1.Price</th>
                 </tr>
             }
         </table>

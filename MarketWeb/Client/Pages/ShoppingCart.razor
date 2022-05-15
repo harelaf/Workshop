@@ -22,7 +22,7 @@
     {
         string storeName = shoppingBasketDTO.StoreName;
         double total = 0;
-        IDictionary<ItemDTO, int> items = shoppingBasketDTO.Items;
+        IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
         <h4>@storeName</h4>
         <table style="width:100%" id="@storeName">
             <tr>
@@ -30,21 +30,21 @@
                 <th>Amount</th>
                 <th>price per unit</th>
             </tr>
-            @foreach (KeyValuePair<ItemDTO, int> item_amount in items)
+            @foreach (int itemID in items.Keys)
             {
-                <tr id="@(item_amount.Key.Name + storeName)">
-                    <th>@item_amount.Key.Name</th>
-                    <th>@item_amount.Value</th>
-                    <th>$@item_amount.Key.Price</th>
+                <tr id="@(items[itemID].Item1.Name + storeName)">
+                    <th>@items[itemID].Item1.Name</th>
+                    <th>@items[itemID].Item2</th>
+                    <th>$@items[itemID].Item1.Price</th>
                     <th>
-                        <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(item_amount.Key.ItemID, item_amount.Key.StoreName)">Remove Item</button>
+                        <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
                     </th>
                     <th>
                         <EditForm Model="@UpdateItemQuantityInCartModel" OnSubmit="UpdateItemQuantityInCartForm">
                             <DataAnnotationsValidator />
                             @{
-                                UpdateItemQuantityInCartModel.StoreName = item_amount.Key.StoreName;
-                                UpdateItemQuantityInCartModel.ItemID = item_amount.Key.ItemID;
+                                UpdateItemQuantityInCartModel.StoreName = items[itemID].Item1.StoreName;
+                                UpdateItemQuantityInCartModel.ItemID = itemID;
                             }
                             <div class="form-group">
                                 <label>Review</label>

@@ -7,7 +7,7 @@ namespace MarketWeb.Shared.DTO
 {
     public class ShoppingCartDTO
     {
-        private ICollection<ShoppingBasketDTO> _DTObaskets; 
+        private ICollection<ShoppingBasketDTO> _DTObaskets;
         public ICollection<ShoppingBasketDTO> Baskets => _DTObaskets;
         public ShoppingCartDTO(ICollection<ShoppingBasketDTO> basketDTOs)
         {
@@ -16,9 +16,9 @@ namespace MarketWeb.Shared.DTO
         public ShoppingBasketDTO GetBasket(String StoreName)
         {
             ShoppingBasketDTO basket = null;
-            foreach(ShoppingBasketDTO b in _DTObaskets)
+            foreach (ShoppingBasketDTO b in _DTObaskets)
             {
-                if(basket.StoreName == StoreName)
+                if (basket.StoreName == StoreName)
                 {
                     basket = b;
                 }
@@ -32,31 +32,9 @@ namespace MarketWeb.Shared.DTO
             string toString = "Shopping Cart Details:\n";
             foreach (ShoppingBasketDTO basket in _DTObaskets)
             {
-                toString+= basket.ToString() + "\n";
+                toString += basket.ToString() + "\n";
             }
             return toString;
-        }
-        public int getAmountOfItemInCart(string storeName, int itemID)
-        {
-            int totalAmountInCart = 0;
-            foreach (ShoppingBasketDTO shoppingBasketDTO in _DTObaskets)
-            {
-                if (shoppingBasketDTO.StoreName == storeName)
-                {
-                    foreach (ItemDTO item in shoppingBasketDTO.Items.Keys)
-                    {
-                        if (item.ItemID == itemID)
-                        {
-                            totalAmountInCart += shoppingBasketDTO.Items[item];
-                            break;
-                        }
-
-                    }
-                    break;
-                }
-
-            }
-            return totalAmountInCart;
         }
     }
 }

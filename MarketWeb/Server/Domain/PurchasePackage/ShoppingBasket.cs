@@ -11,6 +11,7 @@ namespace MarketProject.Domain
         public virtual IDictionary<Item, int> _items { get; set; }
         public IDictionary<Item, int> Items => _items;
 
+
         public ShoppingBasket(Store store)
         {
             _store = store;

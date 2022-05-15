@@ -43,7 +43,7 @@ namespace MarketWebProject.Controllers
 
         public IActionResult Index(MainModel modelcs)
         {
-            if (modelcs == null)
+            /*if (modelcs == null)
                 modelcs = new MainModel();
             //Task<Response<List<StoreDTO>>> task = _marketAPIClient.GetAllActiveStores();
 
@@ -70,7 +70,7 @@ namespace MarketWebProject.Controllers
                 view = View(modelcs);
                 view.ViewData["activeStores"] = response.Value;
             }
-            return view;
+            return view;*/
         }
 
         public IActionResult AdministrationPage(MainModel modelcs)

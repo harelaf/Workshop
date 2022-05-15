@@ -23,16 +23,7 @@ namespace MarketWeb.Shared.DTO
         public String Category => _category;
         public String StoreName => _storeName;
 
-        public ItemDTO(int id, String name, double price, String description, String category, RatingDTO rating)
-        {
-            _rating = rating;
-            _itemID = id;
-            _name = name;
-            _price = price;
-            _description = description;
-            _category = category;
-            _storeName = null;
-        }
+
         public ItemDTO(int id, String name, double price, String description, String category, RatingDTO rating, String storeName)
         {
             _rating = rating;

@@ -176,16 +176,7 @@ namespace MarketProject.Service
         {
             return new AdminMessageToRegisteredDTO(msg.ReceiverUsername, msg.SenderUsername, msg.Title, msg.Message);
         }
-        public static ItemDTO toDTO(Item itm)
-        {
-            return new ItemDTO(
-                itm.ItemID,
-                itm.Name,
-                itm._price,
-                itm.Description,
-                itm.Category,
-                toDTO(itm.Rating));
-        }
+
         public static ItemDTO toDTO(Item itm, String storeName)
         {
             return new ItemDTO(
@@ -245,14 +236,13 @@ namespace MarketProject.Service
         }
         public static ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {
-            Dictionary<ItemDTO, int> items = new Dictionary<ItemDTO, int>();
+            Dictionary<int, Tuple<ItemDTO, int>> items = new Dictionary<int, Tuple<ItemDTO, int>>();
             foreach (Item key in shoppingBasket.Items.Keys)
             {
-                if(key == null)
-                    continue;
-                ItemDTO dto = toDTO(key);
-                items[dto] = shoppingBasket.Items[key];
+                ItemDTO dto = toDTO(key, shoppingBasket._store.StoreName);
+                items[dto.ItemID] = new Tuple<ItemDTO, int>(dto, shoppingBasket.Items[key]);
             }
+           
             return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items);
         }
         public static ShoppingCartDTO toDTO(ShoppingCart shoppingCart)
@@ -262,15 +252,13 @@ namespace MarketProject.Service
                 _DTObaskets.Add(toDTO(basket));
             return new ShoppingCartDTO(_DTObaskets);
         }
-        public static StockDTO toDTO(Stock stock)
+        public static StockDTO toDTO(Stock stock, string storeName)
         {
-            Dictionary<ItemDTO, int> itemAndAmount = new Dictionary<ItemDTO, int>();
+            Dictionary<int, Tuple<ItemDTO, int>> itemAndAmount = new Dictionary<int, Tuple<ItemDTO, int>>();
             foreach (Item key in stock.Items.Keys)
             {
-                if (key == null)
-                    continue;
-                ItemDTO dto = toDTO(key);
-                itemAndAmount[dto] = stock.Items[key];
+                ItemDTO dto = toDTO(key, storeName);
+                itemAndAmount[dto.ItemID] = new Tuple<ItemDTO, int>(dto, stock.Items[key]);
             }
             return new StockDTO(itemAndAmount);
         }
@@ -290,7 +278,7 @@ namespace MarketProject.Service
                 toDTO(store.GetFounder()),
                 toDTO(store.GetPurchasePolicy()),
                 toDTO(store.GetDiscountPolicy()),
-                toDTO(store.Stock),
+                toDTO(store.Stock, store.StoreName),
                 messagesToStore,
                 toDTO(store.Rating),
                 managers,

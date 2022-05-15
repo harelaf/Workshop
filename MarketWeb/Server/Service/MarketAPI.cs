@@ -1244,7 +1244,7 @@ namespace MarketProject.Service
 
                 String authToken = parseAutherization(Authorization);
                 Item item = _market.GetItem(authToken, storeName, itemId);
-                response = new Response<ItemDTO>(DTOtranslator.toDTO(item));
+                response = new Response<ItemDTO>(DTOtranslator.toDTO(item, storeName));
             }
             catch (Exception e)
             {
@@ -1293,7 +1293,6 @@ namespace MarketProject.Service
             String desc3 = "some other other item description goes here.";
             int quantity3 = 3;
             
-            /*
             AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
             
             AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
@@ -1334,7 +1333,7 @@ namespace MarketProject.Service
             condLst.Add(itemCond);
             OrCompositionDTO orCond = new OrCompositionDTO(false, condLst2);
             CategoryDiscountDTO categoryDis = new CategoryDiscountDTO(percentageToSubtract, dairyCategory, orCond, expiration);
-            AddStoreDiscount(auth2, storeName2, categoryDis);*/
+            AddStoreDiscount(auth2, storeName2, categoryDis);
         }
     }
 }
