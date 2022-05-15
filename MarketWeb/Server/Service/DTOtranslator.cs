@@ -25,8 +25,10 @@ namespace MarketProject.Service
         //}
         public static DiscountCondition translateCondition(IConditionDTO cond)
         {
-            if(cond == null)
+            if (cond == null)
+			{
                 return null;
+			}
             Type type = cond.GetType();
             if(type.Equals(typeof(AndCompositionDTO)))
                 return translate((AndCompositionDTO)cond);
