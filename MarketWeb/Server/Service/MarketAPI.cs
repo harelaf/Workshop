@@ -822,7 +822,7 @@ namespace MarketProject.Service
             return response;
         }
 
-        [HttpPost("GetStoreMessages")]
+        [HttpGet("GetStoreMessages")]
         public Response<Queue<MessageToStoreDTO>> GetStoreMessages([FromHeader] String Authorization, String storeName)
         {//II.4.12
             //should return with id
@@ -1264,7 +1264,8 @@ namespace MarketProject.Service
             String storeName2 = "storeName2";
             String auth2 = "Bearer " + EnterSystem().Value;
 
-            Register(auth1, username1, password1, new DateTime(1992, 8, 4));
+            if (Register(auth1, username1, password1, new DateTime(1992, 8, 4)).ErrorOccured)
+                return;
             auth1 = "Bearer " + Login(auth1, username1, password1).Value;
             OpenNewStore(auth1, storeName1);
 

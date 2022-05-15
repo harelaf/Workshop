@@ -440,7 +440,7 @@ namespace MarketWeb.Client.Connect
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
-            Response res = await _httpService.Get<Response>(newUrl);
+            Response res = await _httpService.Post<Response>(newUrl,null);
             return res;
         }
 

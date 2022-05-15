@@ -134,13 +134,20 @@
     @if (_marketAPIClient.LoggedIn || _marketAPIClient.Admin)
     {
         <h4>Send Question\Query to Store:</h4>
-        <form method="post">
-            <font color="black">Question\Query: </font>
-            <input type="text" required id="msg" name="msg" title="msg" />
-            <input class="btn btn-info" type="submit" value="Send" asp-area="" asp-controller="Home"
-           asp-action="SendMsgToStore" asp-route-newQuantity=""
-           asp-route-storename="@(StoreInfo.StoreName)" />
-        </form>
+        <EditForm Model="@SendQuestionModel" OnSubmit="SendQuestionForm">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Title</label>
+                <InputText @bind-Value="SendQuestionModel.Title" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Question</label>
+                <InputTextArea @bind-Value="SendQuestionModel.Question" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">
+                Send
+            </button>
+        </EditForm>
     }
 
 
@@ -284,6 +291,9 @@
         </form>
     }
 }
+else{
+    <span class="spinner-border spinner-border-sm mr-1"></span>
+}
 
 
 @code {
@@ -291,6 +301,7 @@
     private Models.AppointRoleModel AppointRoleModel = new Models.AppointRoleModel();
     private Models.FireRoleModel FireRoleModel = new Models.FireRoleModel();
     private Models.ModifyStoreManagerPermissionsModel ModifyStoreManagerPermissionsModel = new Models.ModifyStoreManagerPermissionsModel();
+    private Models.SendQuestionModel SendQuestionModel = new Models.SendQuestionModel();
     private bool loading;
     private ICollection<StoreDTO> activeStores = new List<StoreDTO>();
 
@@ -401,35 +412,35 @@
             NavigationManager.NavigateTo($"/StorePage/{StoreName}");
         }
     }
-	protected override async Task OnInitializedAsync()
-	{
-		try
-		{
-			Response<StoreDTO> response = await _marketAPIClient.GetStoreInformation(StoreName);//new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
-			if (response.ErrorOccured)
-			{
-				throw new Exception(response.ErrorMessage);
-			}
-			StoreInfo = response.Value;
-			StoreIsActive = response.Value.State == StoreState.Active;
-			CanManageRoles = !(await _marketAPIClient.HasPermission(StoreName, "APPOINT_OWNER")).ErrorOccured;
-			CanManageStock =!(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;
-			CanCloseStore =!(await _marketAPIClient.HasPermission(StoreName, "CLOSE_STORE")).ErrorOccured;
-			CanReopenStore =!(await _marketAPIClient.HasPermission(StoreName, "REOPEN_STORE")).ErrorOccured;
-			CanCloseStorePermenantly =!(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
-			CanViewPurchaseHistory =!(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
-			CanViewStoreMessages =!(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
-		}
-		catch (Exception ex)
-		{
-			AlertService.Error(ex.Message);
-		}
-		finally
-		{
-			StateHasChanged();
-		}
-		//return view;
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Response<StoreDTO> response = await _marketAPIClient.GetStoreInformation(StoreName);//new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            StoreInfo = response.Value;
+            StoreIsActive = response.Value.State == StoreState.Active;
+            CanManageRoles = !(await _marketAPIClient.HasPermission(StoreName, "APPOINT_OWNER")).ErrorOccured;
+            CanManageStock =!(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;
+            CanCloseStore =!(await _marketAPIClient.HasPermission(StoreName, "CLOSE_STORE")).ErrorOccured;
+            CanReopenStore =!(await _marketAPIClient.HasPermission(StoreName, "REOPEN_STORE")).ErrorOccured;
+            CanCloseStorePermenantly =!(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
+            CanViewPurchaseHistory =!(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
+            CanViewStoreMessages =!(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+        //return view;
+    }
     private async void ViewStoreRolesButton()
     {
         NavigationManager.NavigateTo($"StorePage/{StoreName}/roles.o");
@@ -544,6 +555,21 @@
             AlertService.Info("Successfully appointed new owner.");
             NavigationManager.NavigateTo($"StorePage/{StoreName}");
         }
+    }
+
+    private async void SendQuestionForm()
+    {
+        Response response = await _marketAPIClient.SendMessageToStore(StoreName, SendQuestionModel.Title, SendQuestionModel.Question);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            AlertService.Info("Successfully sent the message.");
+            SendQuestionModel = new Models.SendQuestionModel();
+        }
+        StateHasChanged();
     }
 
    
