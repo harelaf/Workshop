@@ -524,7 +524,7 @@ namespace MarketProject.Service
             }
             return response;
         }
-        [HttpPost("GetItemInformation")]
+        [HttpGet("GetItemInformation")]
         public Response<List<ItemDTO>> GetItemInformation([FromHeader] String Authorization, String itemName, String itemCategory, String keyWord)
         {//II.2.2
             //filters!!!!!!!!!!!
@@ -1235,7 +1235,7 @@ namespace MarketProject.Service
             return response;
         }
 
-        [HttpPost("GetItem")]
+        [HttpGet("GetItem")]
         public Response<ItemDTO> GetItem([FromHeader] String Authorization, string storeName, int itemId)
         {
             Response<ItemDTO> response;

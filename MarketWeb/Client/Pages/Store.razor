@@ -193,7 +193,7 @@
 								@if (CanManageStock)
 								{
 									<th>
-										<a class="btn btn-info" href="ItemPageEditable/@(item.StoreName)/@item.ItemID">View @item.Name Page</a>
+										<a class="btn btn-info" href="ItemEditable/@(item.StoreName)/@item.ItemID">View @item.Name Page</a>
 									</th>
 									<th> @stock_dictionary[itemID].Item2</th>
 									<th>
@@ -215,7 +215,7 @@
 								else
 								{
 									<th>
-										<a class="btn btn-info" href="ItemPage/@(item.StoreName)/@item.ItemID">View @item.Name Page</a>
+										<a class="btn btn-info" href="Item/@(item.StoreName)/@item.ItemID">View @item.Name Page</a>
 									</th>
 								}
 

@@ -74,7 +74,7 @@ else
     <h5>Add Your Review: </h5>
     <EditForm Model="@AddReviewModel" OnSubmit="ReviewItemForm">
         <DataAnnotationsValidator />
-        <div width: 20%; class="form-group">
+        <div width=20% class="form-group">
             <label>Rating</label>
             <input type="range" @bind-value="AddReviewModel.Rating" @bind-value:event="oninput" min="0" max="10">
             <output>@AddReviewModel.Rating</output>
