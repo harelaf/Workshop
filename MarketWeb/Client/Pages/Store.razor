@@ -13,58 +13,45 @@
 
 @if (StoreInfo != null)
 {
-    <div class="text-center">
-        <h1 class="display-4">Store @(StoreInfo.StoreName) Page</h1>
-        @if (!StoreIsActive)
-        {
-            <h2 class="display-4" style="color:red">Store is Inactive</h2>
-        }
-        <br />
-    </div>
-    @if (CanViewPurchaseHistory || CanViewStoreMessages)
-    {
-        <h2>Store Administration:</h2>
-    }
-    @if (CanViewPurchaseHistory)
-    {
-        <a class="btn btn-info" href="StorePage/@(StoreInfo.StoreName)/purchases">
-            View @(StoreInfo.StoreName) Purchase History
-        </a>
-    }
-    @if (CanViewStoreMessages)
-    {
-        <a class="btn btn-info" href="StorePage/@(StoreInfo.StoreName)/messages">
-            View @(StoreInfo.StoreName) Messages
-        </a>
+	<div class="text-center">
+		<h1 class="display-4">Store @(StoreInfo.StoreName) Page</h1>
+		@if (!StoreIsActive)
+		{
+			<h2 class="display-4" style="color:red">Store is Inactive</h2>
+		}
+		<br />
+	</div>
+	@if (CanViewPurchaseHistory || CanViewStoreMessages)
+	{
+		<h2>Store Administration:</h2>
+	}
+	@if (CanViewPurchaseHistory)
+	{
+		<button class="btn btn-primary" @onclick="() => ViewPurchaseHistory()">View @(StoreInfo.StoreName) Purchase History</button>
 
-    }
-    @if (CanCloseStore)
-    {
-        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="CloseStore"
-   asp-route-storeName="@(StoreInfo.StoreName)">
-            close @(StoreInfo.StoreName)
-        </a>
-        <br />
-        <br />
-    }
-    @if (CanCloseStorePermenantly)
-    {
-        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="CloseStorePermenantly"
-   asp-route-storeName="@(StoreInfo.StoreName)">
-            close @(StoreInfo.StoreName) Permenantly
-        </a>
-        <br />
-        <br />
-    }
-    @if ((!StoreIsActive) && CanReopenStore)
-    {
-        <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="ReopenStore"
-   asp-route-storeName="@(StoreInfo.StoreName)">
-            Reopen @(StoreInfo.StoreName)
-        </a>
-        <br />
-        <br />
-    }
+	}
+	@if (CanViewStoreMessages)
+	{
+		<button class="btn btn-primary" @onclick="() => ViewStoreMessages()">View @(StoreInfo.StoreName) Messages</button>
+	}
+	@if (CanCloseStore)
+	{
+		<button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
+		<br />
+		<br />
+	}
+	@if (CanCloseStorePermenantly)
+	{
+		<button class="btn btn-primary" @onclick="() => CloseStorePermenantly()">close @(StoreInfo.StoreName) Permenantly</button>
+		<br />
+		<br />
+	}
+	@if ((!StoreIsActive) && CanReopenStore)
+	{
+		<button class="btn btn-primary" @onclick="() => ReopenStore()">Reopen @(StoreInfo.StoreName)</button>
+		<br />
+		<br />
+	}
 
     <br />
     @if (CanManageRoles)
@@ -317,6 +304,132 @@
     private bool CanViewStoreMessages { get; set; } = false;
     private bool StoreIsActive { get; set; } = true;
 
+    private async void OnValidSubmit()
+    {
+        // TODO
+    }
+    private async void ViewPurchaseHistory()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/purchases");
+    }
+    private async void ViewStoreMessages()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
+    }
+    private async void CloseStore()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.CloseStore(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully close store!");
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
+        }
+    }
+    private async void CloseStorePermenantly()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.CloseStorePermanently(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully close store permebnantly!");
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
+        }
+    }//
+    private async void ReopenStore()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.ReopenStore(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully reopen store permebnantly!");
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
+        }
+    }
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			Response<StoreDTO> response = await _marketAPIClient.GetStoreInformation(StoreName);//new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
+			if (response.ErrorOccured)
+			{
+				throw new Exception(response.ErrorMessage);
+			}
+			StoreInfo = response.Value;
+			StoreIsActive = response.Value.State == StoreState.Active;
+			CanManageRoles = !(await _marketAPIClient.HasPermission(StoreName, "APPOINT_OWNER")).ErrorOccured;
+			CanManageStock =!(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;
+			CanCloseStore =!(await _marketAPIClient.HasPermission(StoreName, "CLOSE_STORE")).ErrorOccured;
+			CanReopenStore =!(await _marketAPIClient.HasPermission(StoreName, "REOPEN_STORE")).ErrorOccured;
+			CanCloseStorePermenantly =!(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
+			CanViewPurchaseHistory =!(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
+			CanViewStoreMessages =!(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
+		}
+		catch (Exception ex)
+		{
+			AlertService.Error(ex.Message);
+		}
+		finally
+		{
+			StateHasChanged();
+		}
+		//return view;
+	}
     private async void ViewStoreRolesButton()
     {
         NavigationManager.NavigateTo($"StorePage/{StoreName}/roles.o");
@@ -433,38 +546,6 @@
         }
     }
 
-    private async void OnValidSubmit()
-    {
-        // TODO
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            Response<StoreDTO> response = await _marketAPIClient.GetStoreInformation(StoreName);//new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
-            if (response.ErrorOccured)
-            {
-                throw new Exception(response.ErrorMessage);
-            }
-            StoreInfo = response.Value;
-            StoreIsActive = response.Value.State == StoreState.Active;
-            CanManageRoles = !(await _marketAPIClient.HasPermission(StoreName, "APPOINT_OWNER")).ErrorOccured;
-            CanManageStock = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;
-            CanCloseStore = !(await _marketAPIClient.HasPermission(StoreName, "CLOSE_STORE")).ErrorOccured;
-            CanReopenStore = !(await _marketAPIClient.HasPermission(StoreName, "REOPEN_STORE")).ErrorOccured;
-            CanCloseStorePermenantly = !(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
-            CanViewPurchaseHistory = !(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
-            CanViewStoreMessages = !(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
-        }
-        catch (Exception ex)
-        {
-            AlertService.Error(ex.Message);
-        }
-        finally
-        {
-            StateHasChanged();
-        }
-    }
+   
 
 }
