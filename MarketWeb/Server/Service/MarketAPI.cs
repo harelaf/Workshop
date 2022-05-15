@@ -1257,21 +1257,21 @@ namespace MarketProject.Service
             String username1 = "username1";
             String password1 = "password1";
             String storeName1 = "storeName1";
-            String auth1 = EnterSystem().Value;
+            String auth1 = "Bearer " + EnterSystem().Value;
 
             String username2 = "username2";
             String password2 = "password2";
             String storeName2 = "storeName2";
-            String auth2 = EnterSystem().Value;
+            String auth2 = "Bearer " + EnterSystem().Value;
 
             Register(auth1, username1, password1, new DateTime(1992, 8, 4));
-            auth1 = Login(auth1, username1, password1).Value;
+            auth1 = "Bearer " + Login(auth1, username1, password1).Value;
             OpenNewStore(auth1, storeName1);
 
             Register(auth2, username2, password2, new DateTime(1992, 8, 4));
-            auth2 = Login(auth2, username2, password2).Value;
+            auth2 = "Bearer " + Login(auth2, username2, password2).Value;
             OpenNewStore(auth2, storeName2);
-
+            
             int itemID1 = 1;
             int price1 = 1;
             String itemName1 = "itemName1";
@@ -1292,8 +1292,10 @@ namespace MarketProject.Service
             String category3 = "category3";
             String desc3 = "some other other item description goes here.";
             int quantity3 = 3;
-
+            
+            /*
             AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
+            
             AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
             AddItemToStoreStock(auth1, storeName1, itemID3, itemName3, price3, desc3, category3, quantity3);
 
@@ -1332,7 +1334,7 @@ namespace MarketProject.Service
             condLst.Add(itemCond);
             OrCompositionDTO orCond = new OrCompositionDTO(false, condLst2);
             CategoryDiscountDTO categoryDis = new CategoryDiscountDTO(percentageToSubtract, dairyCategory, orCond, expiration);
-            AddStoreDiscount(auth2, storeName2, categoryDis);
+            AddStoreDiscount(auth2, storeName2, categoryDis);*/
         }
     }
 }
