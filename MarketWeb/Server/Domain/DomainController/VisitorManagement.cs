@@ -656,5 +656,11 @@ namespace MarketProject.Domain
         {
             return GetRegisteredByToken(authToken).Notifcations;
         }
+
+        internal List<string> GetStoresOfUser(string username)
+        {
+            Registered reg = GetRegisteredVisitor(username);
+            return reg.GetRegisteredVisitor();
+        }
     }
 }

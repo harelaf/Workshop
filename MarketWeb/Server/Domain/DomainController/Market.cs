@@ -164,7 +164,7 @@ namespace MarketProject.Domain
         public Store GetStoreInformation(String authToken, String storeName)
         {
             String errorMessage = null;
-            CheckIsVisitorLoggedIn(authToken, "GetStoreInformation");
+            CheckIsVisitorAVisitor(authToken, "GetStoreInformation");
             if (storeName.Equals(""))
                 errorMessage = "Invalid Input: Blank store name.";
             if (errorMessage != null)
@@ -172,14 +172,17 @@ namespace MarketProject.Domain
                 LogErrorMessage("GetStoreInformation", errorMessage);
                 throw new Exception(errorMessage);
             }
-            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
-                if (_storeManagement.isStoreActive(storeName) || _VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_INFORMATION))
+                if (_storeManagement.isStoreActive(storeName))
                     return _storeManagement.GetStoreInformation(storeName);
+                
                 else
                 {
+                    String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+                    if ( _VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_INFORMATION))
+                        return _storeManagement.GetStoreInformation(storeName);
                     errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
                     LogErrorMessage("GetStoreInformation", errorMessage);
                     throw new Exception(errorMessage);
@@ -813,7 +816,8 @@ namespace MarketProject.Domain
                 isAdmin = false;
             }
             string username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            return _storeManagement.GetStoresOfUser(username, isAdmin);
+            List<string> stores =_VisitorManagement.GetStoresOfUser(username);
+            return _storeManagement.GetStoresByName(stores);
         }
 
         public List<Store> GetAllActiveStores(String authToken)
