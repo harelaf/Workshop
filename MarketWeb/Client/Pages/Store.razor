@@ -131,7 +131,7 @@
     <br />
     <br />
 
-    @if (LayoutConfig.IsLoggedIn || LayoutConfig.IsAdmin)
+    @if (_marketAPIClient.LoggedIn || _marketAPIClient.Admin)
     {
         <h4>Send Question\Query to Store:</h4>
         <form method="post">
@@ -304,98 +304,101 @@
     private bool CanViewStoreMessages { get; set; } = false;
     private bool StoreIsActive { get; set; } = true;
 
-	private async void OnValidSubmit()
-	{
-		// TODO
-	}
-	private async void ViewPurchaseHistory()
-	{
-		// reset alerts on submit
-		AlertService.Clear();
-		NavigationManager.NavigateTo($"/StorePage/{StoreName}/purchases");
-	}
-	private async void ViewStoreMessages()
-	{
-		// reset alerts on submit
-		AlertService.Clear();
-		NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
-	}
-	private async void CloseStore()
-	{
-		// reset alerts on submit
-		AlertService.Clear();
-		try
-		{
-			Response res = await _marketAPIClient.CloseStore(StoreName);
-			if (res.ErrorOccured)
-			{
-				throw new Exception(res.ErrorMessage);
-			}
-			else
-			{
-				AlertService.Info("Successfully close store!");
-			}
-		}
-		catch(Exception e)
-		{
-			AlertService.Error(e.Message);
-		}
-		finally
+    private async void OnValidSubmit()
+    {
+        // TODO
+    }
+    private async void ViewPurchaseHistory()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/purchases");
+    }
+    private async void ViewStoreMessages()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
+    }
+    private async void CloseStore()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.CloseStore(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully close store!");
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
         {
             loading = false;
             StateHasChanged();
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
         }
     }
-	private async void CloseStorePermenantly()
-	{
-		// reset alerts on submit
-		AlertService.Clear();
-		try
-		{
-			Response res = await _marketAPIClient.CloseStorePermanently(StoreName);
-			if (res.ErrorOccured)
-			{
-				throw new Exception(res.ErrorMessage);
-			}
-			else
-			{
-				AlertService.Info("Successfully close store permebnantly!");
-			}
-		}
-		catch(Exception e)
-		{
-			AlertService.Error(e.Message);
-		}
-		finally
+    private async void CloseStorePermenantly()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.CloseStorePermanently(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully close store permebnantly!");
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
         {
             loading = false;
             StateHasChanged();
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
         }
     }//
-	private async void ReopenStore()
-	{
-		// reset alerts on submit
-		AlertService.Clear();
-		try
-		{
-			Response res = await _marketAPIClient.ReopenStore(StoreName);
-			if (res.ErrorOccured)
-			{
-				throw new Exception(res.ErrorMessage);
-			}
-			else
-			{
-				AlertService.Info("Successfully reopen store permebnantly!");
-			}
-		}
-		catch(Exception e)
-		{
-			AlertService.Error(e.Message);
-		}
-		finally
+    private async void ReopenStore()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.ReopenStore(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully reopen store permebnantly!");
+            }
+        }
+        catch(Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
         {
             loading = false;
             StateHasChanged();
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
         }
     }
 	protected override async Task OnInitializedAsync()
@@ -543,38 +546,6 @@
         }
     }
 
-    private async void OnValidSubmit()
-    {
-        // TODO
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            Response<StoreDTO> response = await _marketAPIClient.GetStoreInformation(StoreName);//new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
-            if (response.ErrorOccured)
-            {
-                throw new Exception(response.ErrorMessage);
-            }
-            StoreInfo = response.Value;
-            StoreIsActive = response.Value.State == StoreState.Active;
-            CanManageRoles = !(await _marketAPIClient.HasPermission(StoreName, "APPOINT_OWNER")).ErrorOccured;
-            CanManageStock = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;
-            CanCloseStore = !(await _marketAPIClient.HasPermission(StoreName, "CLOSE_STORE")).ErrorOccured;
-            CanReopenStore = !(await _marketAPIClient.HasPermission(StoreName, "REOPEN_STORE")).ErrorOccured;
-            CanCloseStorePermenantly = !(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
-            CanViewPurchaseHistory = !(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
-            CanViewStoreMessages = !(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
-        }
-        catch (Exception ex)
-        {
-            AlertService.Error(ex.Message);
-        }
-        finally
-        {
-            StateHasChanged();
-        }
-    }
+   
 
 }
