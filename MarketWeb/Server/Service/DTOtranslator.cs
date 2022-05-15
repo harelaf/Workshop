@@ -25,6 +25,8 @@ namespace MarketProject.Service
         //}
         public static DiscountCondition translateCondition(IConditionDTO cond)
         {
+            if(cond == null)
+                return null;
             Type type = cond.GetType();
             if(type.Equals(typeof(AndCompositionDTO)))
                 return translate((AndCompositionDTO)cond);
@@ -242,10 +244,12 @@ namespace MarketProject.Service
         public static ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {
             Dictionary<ItemDTO, int> items = new Dictionary<ItemDTO, int>();
-            foreach (KeyValuePair<Item, int> entry in shoppingBasket.Items)
+            foreach (Item key in shoppingBasket.Items.Keys)
             {
-                ItemDTO dto = toDTO(entry.Key);
-                items[dto] = entry.Value;
+                if(key == null)
+                    continue;
+                ItemDTO dto = toDTO(key);
+                items[dto] = shoppingBasket.Items[key];
             }
             return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items);
         }
@@ -259,10 +263,12 @@ namespace MarketProject.Service
         public static StockDTO toDTO(Stock stock)
         {
             Dictionary<ItemDTO, int> itemAndAmount = new Dictionary<ItemDTO, int>();
-            foreach (KeyValuePair<Item, int> entry in stock.Items)
+            foreach (Item key in stock.Items.Keys)
             {
-                ItemDTO dto = toDTO(entry.Key);
-                itemAndAmount[dto] = entry.Value;
+                if (key == null)
+                    continue;
+                ItemDTO dto = toDTO(key);
+                itemAndAmount[dto] = stock.Items[key];
             }
             return new StockDTO(itemAndAmount);
         }
