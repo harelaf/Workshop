@@ -27,41 +27,28 @@
 	}
 	@if (CanViewPurchaseHistory)
 	{
-		<a class="btn btn-info" href="StorePage/@(StoreInfo.StoreName)/purchases">
-			View @(StoreInfo.StoreName) Purchase History
-		</a>
+		<button class="btn btn-primary" @onclick="() => ViewPurchaseHistory()">View @(StoreInfo.StoreName) Purchase History</button>
+
 	}
 	@if (CanViewStoreMessages)
 	{
-		<a class="btn btn-info" href="StorePage/@(StoreInfo.StoreName)/messages">
-			View @(StoreInfo.StoreName) Messages
-		</a>
-
+		<button class="btn btn-primary" @onclick="() => ViewStoreMessages()">View @(StoreInfo.StoreName) Messages</button>
 	}
 	@if (CanCloseStore)
 	{
-		<a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="CloseStore"
-   asp-route-storeName="@(StoreInfo.StoreName)">
-			close @(StoreInfo.StoreName)
-		</a>
+		<button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
 		<br />
 		<br />
 	}
 	@if (CanCloseStorePermenantly)
 	{
-		<a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="CloseStorePermenantly"
-   asp-route-storeName="@(StoreInfo.StoreName)">
-			close @(StoreInfo.StoreName) Permenantly
-		</a>
+		<button class="btn btn-primary" @onclick="() => CloseStorePermenantly()">close @(StoreInfo.StoreName) Permenantly</button>
 		<br />
 		<br />
 	}
 	@if ((!StoreIsActive) && CanReopenStore)
 	{
-		<a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="ReopenStore"
-   asp-route-storeName="@(StoreInfo.StoreName)">
-			Reopen @(StoreInfo.StoreName)
-		</a>
+		<button class="btn btn-primary" @onclick="() => ReopenStore()">Reopen @(StoreInfo.StoreName)</button>
 		<br />
 		<br />
 	}
@@ -303,7 +290,96 @@
 	{
 		// TODO
 	}
-
+	private async void ViewPurchaseHistory()
+	{
+		// reset alerts on submit
+		AlertService.Clear();
+		NavigationManager.NavigateTo($"/StorePage/{StoreName}/purchases");
+	}
+	private async void ViewStoreMessages()
+	{
+		// reset alerts on submit
+		AlertService.Clear();
+		NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
+	}
+	private async void CloseStore()
+	{
+		// reset alerts on submit
+		AlertService.Clear();
+		try
+		{
+			Response res = await _marketAPIClient.CloseStore(StoreName);
+			if (res.ErrorOccured)
+			{
+				throw new Exception(res.ErrorMessage);
+			}
+			else
+			{
+				AlertService.Info("Successfully close store!");
+			}
+		}
+		catch(Exception e)
+		{
+			AlertService.Error(e.Message);
+		}
+		finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+	private async void CloseStorePermenantly()
+	{
+		// reset alerts on submit
+		AlertService.Clear();
+		try
+		{
+			Response res = await _marketAPIClient.CloseStorePermanently(StoreName);
+			if (res.ErrorOccured)
+			{
+				throw new Exception(res.ErrorMessage);
+			}
+			else
+			{
+				AlertService.Info("Successfully close store permebnantly!");
+			}
+		}
+		catch(Exception e)
+		{
+			AlertService.Error(e.Message);
+		}
+		finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }//
+	private async void ReopenStore()
+	{
+		// reset alerts on submit
+		AlertService.Clear();
+		try
+		{
+			Response res = await _marketAPIClient.ReopenStore(StoreName);
+			if (res.ErrorOccured)
+			{
+				throw new Exception(res.ErrorMessage);
+			}
+			else
+			{
+				AlertService.Info("Successfully reopen store permebnantly!");
+			}
+		}
+		catch(Exception e)
+		{
+			AlertService.Error(e.Message);
+		}
+		finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
 	protected override async Task OnInitializedAsync()
 	{
 		try

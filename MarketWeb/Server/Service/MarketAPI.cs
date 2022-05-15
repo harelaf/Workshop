@@ -1208,7 +1208,7 @@ namespace MarketProject.Service
             {
 
                 String authToken = parseAutherization(Authorization);
-                _market.HasPermission(storeName, authToken, op);
+                _market.HasPermission(authToken, storeName, op);
                 response = new Response();
             }
             catch (Exception e)
