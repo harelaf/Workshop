@@ -1257,11 +1257,82 @@ namespace MarketProject.Service
             String username1 = "username1";
             String password1 = "password1";
             String storeName1 = "storeName1";
-            String auth1 = "Bearer " + EnterSystem().Value;
+            String auth1 = EnterSystem().Value;
+
+            String username2 = "username2";
+            String password2 = "password2";
+            String storeName2 = "storeName2";
+            String auth2 = EnterSystem().Value;
 
             Register(auth1, username1, password1, new DateTime(1992, 8, 4));
-            auth1 = "Bearer " +Login(auth1, username1, password1).Value;
+            auth1 = Login(auth1, username1, password1).Value;
             OpenNewStore(auth1, storeName1);
+
+            Register(auth2, username2, password2, new DateTime(1992, 8, 4));
+            auth2 = Login(auth2, username2, password2).Value;
+            OpenNewStore(auth2, storeName2);
+
+            int itemID1 = 1;
+            int price1 = 1;
+            String itemName1 = "itemName1";
+            String category1 = "category1";
+            String desc1 = "some item description goes here.";
+            int quantity1 = 1;
+
+            int itemID2 = 2;
+            int price2 = 2;
+            String itemName2 = "itemName2";
+            String category2 = "dairy";
+            String desc2 = "some other item description goes here.";
+            int quantity2 = 2;
+
+            int itemID3 = 3;
+            int price3 = 3;
+            String itemName3 = "itemName3";
+            String category3 = "category3";
+            String desc3 = "some other other item description goes here.";
+            int quantity3 = 3;
+
+            AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
+            AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
+            AddItemToStoreStock(auth1, storeName1, itemID3, itemName3, price3, desc3, category3, quantity3);
+
+            AddItemToStoreStock(auth2, storeName2, itemID1, itemName1, price1, desc1, category1, quantity1);
+            AddItemToStoreStock(auth2, storeName2, itemID2, itemName2, price2, desc2, category2, quantity2);
+            AddItemToStoreStock(auth2, storeName2, itemID3, itemName3, price3, desc3, category3, quantity3);
+
+            DateTime expiration = DateTime.Today.AddDays(10);
+            int minAmount = 5;
+            int maxAmount = 15;
+            int percentageToSubtract = 10;
+            int priceToSubtract = 2;
+
+            IConditionDTO itemCondition = new SearchItemConditionDTO(itemName1, minAmount, maxAmount, false);
+            IConditionDTO dayCondition = new DayOnWeekConditionDTO(DateTime.Today.DayOfWeek.ToString(), false);
+            List<IConditionDTO> condLst = new List<IConditionDTO>();
+            condLst.Add(itemCondition);
+            condLst.Add(dayCondition);
+            IConditionDTO andCondition = new AndCompositionDTO(false, condLst);
+            ItemDiscountDTO itemDis = new ItemDiscountDTO(percentageToSubtract, itemName1, andCondition, expiration);
+            IConditionDTO categoryCond = new SearchCategoryConditionDTO(category1, minAmount, maxAmount, false);
+            NumericDiscountDTO numDis = new NumericDiscountDTO(priceToSubtract, categoryCond, expiration);
+            List<IDiscountDTO> disLst = new List<IDiscountDTO>();
+            disLst.Add(itemDis);
+            disLst.Add(numDis);
+            MaxDiscountDTO max = new MaxDiscountDTO(disLst, null);
+
+            AddStoreDiscount(auth1, storeName1, max);
+
+
+            String dairyCategory = category2;
+            PriceableConditionDTO pricable = new PriceableConditionDTO(null, 100, -1, false);
+            SearchItemConditionDTO itemCond = new SearchItemConditionDTO(itemName2, 3, -1, false);
+            List<IConditionDTO> condLst2 = new List<IConditionDTO>();
+            condLst.Add(pricable);
+            condLst.Add(itemCond);
+            OrCompositionDTO orCond = new OrCompositionDTO(false, condLst2);
+            CategoryDiscountDTO categoryDis = new CategoryDiscountDTO(percentageToSubtract, dairyCategory, orCond, expiration);
+            AddStoreDiscount(auth2, storeName2, categoryDis);
         }
     }
 }
