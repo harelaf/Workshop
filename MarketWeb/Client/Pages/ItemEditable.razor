@@ -127,7 +127,7 @@ else
 }
 <br />
 
-@if (LayoutConfig.IsLoggedIn || LayoutConfig.IsAdmin)
+@if (marketAPIClient.LoggedIn || marketAPIClient.Admin)
 {
     <h5>Add Your Review: </h5>
     <EditForm Model="@AddReviewModel" OnSubmit="ReviewItemForm">

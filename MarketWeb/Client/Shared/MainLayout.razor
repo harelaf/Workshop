@@ -2,6 +2,7 @@
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
 @inject IMarketAPIClient marketAPIClient
+@inject NavigationManager NavigationManager
 
 @if (marketAPIClient.LoggedIn)
 {
@@ -19,6 +20,9 @@
                         </NavLink>
                         <NavLink class="nav-link text-dark" href="/account/profile" Match="NavLinkMatch.All">
                             <img alt="profile" src="https://icons-for-free.com/iconfiles/png/512/avatar+human+man+profile+icon-1320085876716628234.png" width="40" height="40" />
+                        </NavLink>
+                        <NavLink class="nav-link text-dark" href="/Logout" Match="NavLinkMatch.All">
+                            Logout
                         </NavLink>
                         <NavLink class="nav-link text-dark" href="/MyPurchaseHistory" Match="NavLinkMatch.All">
                             Purchase History
@@ -62,6 +66,9 @@ else if (marketAPIClient.Admin)
                         </NavLink>
                         <NavLink class="nav-link text-dark" href="/account/profile" Match="NavLinkMatch.All">
                             <img alt="profile" src="https://icons-for-free.com/iconfiles/png/512/avatar+human+man+profile+icon-1320085876716628234.png" width="40" height="40" />
+                        </NavLink>
+                        <NavLink class="nav-link text-dark" href="/Logout" Match="NavLinkMatch.All">
+                            Logout
                         </NavLink>
                         <NavLink class="nav-link text-dark" href="/MyPurchaseHistory" Match="NavLinkMatch.All">
                             Purchase History
