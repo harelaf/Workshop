@@ -144,7 +144,7 @@
     <br />
     <br />
 
-    @if (LayoutConfig.IsLoggedIn || LayoutConfig.IsAdmin)
+    @if (_marketAPIClient.LoggedIn || _marketAPIClient.Admin)
     {
         <h4>Send Question\Query to Store:</h4>
         <form method="post">
