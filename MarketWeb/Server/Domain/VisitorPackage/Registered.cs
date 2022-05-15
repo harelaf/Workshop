@@ -207,5 +207,16 @@ namespace MarketProject.Domain
         {
             _notifications.Add(new NotifyMessage(storeName, title, message, _username));
         }
+
+        internal List<string> GetRegisteredVisitor()
+        {
+            List<string> stores = new List<string>();
+            foreach(SystemRole role in _roles)
+            {
+                if (role.StoreName != null)
+                    stores.Add(role.StoreName);
+            }
+            return stores;
+        }
     }
 }

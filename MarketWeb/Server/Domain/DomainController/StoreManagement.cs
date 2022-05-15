@@ -331,5 +331,15 @@ namespace MarketProject.Domain
             Store store = GetStore(storeName);
             return store.AnswerMessage(msgID);
         }
+
+        internal List<Store> GetStoresByName(List<string> stores)
+        {
+            List<Store> storeList = new List<Store>();
+            foreach (string storeName in stores)
+            {
+                storeList.Add(GetStore(storeName));
+            }
+            return storeList;
+        }
     }
 }
