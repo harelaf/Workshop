@@ -230,7 +230,7 @@ namespace MarketWeb.Client.Connect
                 { "zip", zip},
                 { "purchaserName", purchaserName},
                 { "paymentMethode",  paymentMethode},
-                { "shipmentMethod",  shipmentMethode}};
+                { "shipmentMethode",  shipmentMethode}};
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);

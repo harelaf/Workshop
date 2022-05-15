@@ -27,16 +27,23 @@
 <h2 style="font-size:200%;">Item Description: </h2>
 <p style="font-size:160%;"> @(item.Description)</p>
 <br />
+<br />
+<br />
+
 <div>
+    <h1 > Add to Cart</h1>
     <EditForm Model="@AddToCartModel" OnValidSubmit="AddToCartForm">
         <DataAnnotationsValidator />
         <div class="form-group">
             <label>Amount</label>
             <InputNumber @bind-Value="AddToCartModel.Amount" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-primary">Search Items</button>
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
     </EditForm>
 </div>
+<br />
+
+<br />
 <br />
 
 <h2 style="font-size:200%;">Item Ratings and Reviews: </h2>
@@ -103,12 +110,10 @@ else
         if (response.ErrorOccured)
         {
             AlertService.Error(response.ErrorMessage);
-            NavigationManager.NavigateTo("");
         }
         else
         {
             AlertService.Info("Successfully added item to cart.");
-            NavigationManager.NavigateTo("CartPage");
         }
     }
 
