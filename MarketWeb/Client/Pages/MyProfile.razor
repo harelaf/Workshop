@@ -69,9 +69,9 @@
                     <tr>
                         <td>@item.StoreName</td>
                         <td>@item.Founder.Username</td>
-                        <!-- <td>
-                            <a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="StorePage" asp-route-storename="@(item.StoreName)">View @item.StoreName Page</a>
-                        </td> -->
+                        <td>
+                            <button class="btn btn-primary" @onclick="() => ViewStoreButton(item.StoreName)">View @(item.StoreName)</button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -83,6 +83,11 @@
     private bool loading;
     private RegisteredDTO userDetails = null;
     private ICollection<StoreDTO> userStores = new List<StoreDTO>();
+
+    private async void ViewStoreButton(string StoreName)
+    {
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}");
+    }
 
     protected override async Task OnInitializedAsync()
     {
