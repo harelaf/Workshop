@@ -16,7 +16,7 @@
     }
 </style>
 
-@if (cart.Baskets.Count > 0)
+@if (cart != null && cart.Baskets.Count > 0)
 {
     @foreach (ShoppingBasketDTO shoppingBasketDTO in cart.Baskets)
     {
@@ -65,7 +65,8 @@ else
 }
 
 @code {
-    private ShoppingCartDTO cart;
+    private bool LoadedData = false;
+    private ShoppingCartDTO cart = new ShoppingCartDTO(new List<ShoppingBasketDTO>());
     private Models.UpdateItemQuantityInCartModel UpdateItemQuantityInCartModel = new Models.UpdateItemQuantityInCartModel();
 
     private async void UpdateItemQuantityInCartForm()
@@ -127,16 +128,13 @@ else
             else
             {
                 cart = response.Value;
+                LoadedData = true;
             }
         }
         catch (Exception ex)
         {
+            LoadedData = true;
             AlertService.Error(ex.Message);
-            NavigationManager.NavigateTo("");
-        }
-        finally
-        {
-            StateHasChanged();
         }
     }
 }

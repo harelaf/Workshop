@@ -80,6 +80,9 @@ else
         
         try
         {
+            ItemName = ItemName == "BLANK.VALUE" ? "" : ItemName;
+            Category = Category == "BLANK.VALUE" ? "" : Category;
+            KeyWord = KeyWord == "BLANK.VALUE" ? "" : KeyWord;
             Response<List<ItemDTO>> response = await marketAPIClient.GetItemInformation(ItemName, Category, KeyWord);
             if (response.ErrorOccured)
             {
@@ -93,7 +96,6 @@ else
         catch (Exception e)
         {
             AlertService.Error(e.Message);
-            NavigationManager.NavigateTo("");
         }
     }
 }

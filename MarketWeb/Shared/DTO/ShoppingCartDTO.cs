@@ -11,7 +11,7 @@ namespace MarketWeb.Shared.DTO
         public ICollection<ShoppingBasketDTO> Baskets => _DTObaskets;
         public ShoppingCartDTO(ICollection<ShoppingBasketDTO> basketDTOs)
         {
-            _DTObaskets = basketDTOs;
+            _DTObaskets = basketDTOs == null ? new List<ShoppingBasketDTO>() : basketDTOs;
         }
         public ShoppingBasketDTO GetBasket(String StoreName)
         {
