@@ -816,7 +816,8 @@ namespace MarketProject.Domain
                 isAdmin = false;
             }
             string username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            return _storeManagement.GetStoresOfUser(username, isAdmin);
+            List<string> stores =_VisitorManagement.GetStoresOfUser(username);
+            return _storeManagement.GetStoresByName(stores);
         }
 
         public List<Store> GetAllActiveStores(String authToken)

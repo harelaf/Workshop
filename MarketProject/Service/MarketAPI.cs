@@ -586,7 +586,7 @@ namespace MarketProject.Service
             try
             {
                 log.Info($"Remove Manager Permission called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}, op={op}.");
-                _market.RemoveManagerPermission(authToken, managerUsername, storeName, op);
+                _market.RemoveManagerPermission(authToken, managerUsername, storeName, op.ToString());
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Remove Manager Permission.");
             }

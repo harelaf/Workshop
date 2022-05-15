@@ -291,7 +291,7 @@ namespace MarketProject.Service
         }
         public static StoreFounderDTO toDTO(StoreFounder storeFounder)
         {
-            return new StoreFounderDTO(storeFounder.StoreName, storeFounder.Username);
+            return new StoreFounderDTO(storeFounder.Username, storeFounder.StoreName);
         }
         public static StoreManagerDTO toDTO(StoreManager storeManager)
         {
