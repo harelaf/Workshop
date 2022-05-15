@@ -504,7 +504,7 @@ namespace MarketProject.Service
             }
             return response;
         }
-        [HttpPost("GetStoreInformation")]
+        [HttpGet("GetStoreInformation")]
         public Response<StoreDTO> GetStoreInformation([FromHeader] String Authorization, String storeName)
         {//II.2.1
             Response<StoreDTO> response;
