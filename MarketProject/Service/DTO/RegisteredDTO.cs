@@ -12,9 +12,20 @@ namespace MarketProject.Service.DTO
         private ICollection<AdminMessageToRegisteredDTO> _adminMessages;
         private ICollection<MessageToStoreDTO> _repliedMessages;
         private ICollection<NotifyMessageDTO> _notifications;
+        private DateTime _birthDate;
+        private DateTime _birthDate;
+        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
+>>>>>>>>> Temporary merge branch 2
+        private DateTime _birthDate;
+        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
+>>>>>>>>> Temporary merge branch 2
+        private DateTime _birthDate;
+        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
+>>>>>>>>> Temporary merge branch 2
 
         public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages)
         {
+            result += "Birth Date:" + _birthDate.ToString() + "\n";
             _username = Username;
             _shoppingCart = scDTO;
             _adminMessages = adminMessages;

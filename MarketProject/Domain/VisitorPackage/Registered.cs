@@ -25,6 +25,8 @@ namespace MarketProject.Domain
         private String _salt;
         public String Salt => _salt;
 
+        public DateTime _birthDate;
+>>>>>>>>> Temporary merge branch 2
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
