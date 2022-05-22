@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
-    public abstract class DiscountCondition
+    public abstract class Condition
     {
         private bool _toNegative;
         public bool ToNegative
@@ -13,7 +13,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             private set { _toNegative = value; }
         }
 
-        protected DiscountCondition(bool negative)
+        protected Condition(bool negative)
         {
             _toNegative = negative;
         }

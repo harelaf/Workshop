@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
-    public class DayOnWeekCondition : AtomicDiscountCondition
+    public class DayOnWeekCondition : AtomicCondition
     {
         protected DayOfWeek _dayOnWeek; //between 
         

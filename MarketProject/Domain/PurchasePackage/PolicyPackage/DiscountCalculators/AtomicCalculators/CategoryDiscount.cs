@@ -12,7 +12,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             get { return _category; }
             private set { _category = value; }
         }
-        public CategoryDiscount(double percentage_to_subtract, String category, DiscountCondition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration)
+        public CategoryDiscount(double percentage_to_subtract, String category, Condition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration)
         {
             _category = category;
         }

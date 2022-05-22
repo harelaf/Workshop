@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
-    public class HourCondition : AtomicDiscountCondition
+    public class HourCondition : AtomicCondition
     {
         private int _minHour, _maxHour;
         public int MinHour

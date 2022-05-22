@@ -13,28 +13,20 @@ namespace MarketProject.Service.DTO
         private ICollection<MessageToStoreDTO> _repliedMessages;
         private ICollection<NotifyMessageDTO> _notifications;
         private DateTime _birthDate;
-        private DateTime _birthDate;
-        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
->>>>>>>>> Temporary merge branch 2
-        private DateTime _birthDate;
-        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
->>>>>>>>> Temporary merge branch 2
-        private DateTime _birthDate;
-        private ICollection<MessageToRegisteredDTO> _messagesToUsers;
->>>>>>>>> Temporary merge branch 2
 
-        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages)
+        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages, DateTime bDate)
         {
-            result += "Birth Date:" + _birthDate.ToString() + "\n";
             _username = Username;
             _shoppingCart = scDTO;
             _adminMessages = adminMessages;
             _repliedMessages = repliedMessages;
             _notifications = notifications;
+            _birthDate = bDate;
         }
         public String ToString()
         {
             String result = $"Visitor Name: {_username}\n";
+            result += "Birth Date:" + _birthDate.ToString() + "\n";
             result += "Current Cart State:\n" + _shoppingCart.ToString();
             return result;
         }

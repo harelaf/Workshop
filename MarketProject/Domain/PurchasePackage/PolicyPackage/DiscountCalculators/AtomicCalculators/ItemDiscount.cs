@@ -12,7 +12,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             get { return _itemName; }
             private set { _itemName = value; }
         }
-        public ItemDiscount(double percentage_to_subtract, String itemName, DiscountCondition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration)
+        public ItemDiscount(double percentage_to_subtract, String itemName, Condition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration)
         {
             _itemName = itemName;
         }

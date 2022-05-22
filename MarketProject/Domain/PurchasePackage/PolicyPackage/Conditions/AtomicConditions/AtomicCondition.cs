@@ -4,9 +4,9 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
-    public abstract class AtomicDiscountCondition : DiscountCondition
+    public abstract class AtomicCondition : Condition
     {
-        protected AtomicDiscountCondition(bool negative) : base(negative)
+        protected AtomicCondition(bool negative) : base(negative)
         {
         }
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
-    public abstract class SearchablePriceableCondition : AtomicDiscountCondition
+    public abstract class SearchablePriceableCondition : AtomicCondition
     {
         protected String _keyWord;
         protected int _minValue, _maxValue;

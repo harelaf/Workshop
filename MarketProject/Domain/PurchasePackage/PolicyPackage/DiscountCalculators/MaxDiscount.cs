@@ -8,7 +8,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
     public class MaxDiscount : ComposedDiscount
     {
         public MaxDiscount(List<Discount> _discountsList) : base(_discountsList){}
-        public MaxDiscount(List<Discount> discounts, DiscountCondition condition) : base(discounts, condition){}
+        public MaxDiscount(List<Discount> discounts, Condition condition) : base(discounts, condition){}
         public override string GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
         {
             Discount maxDis = GetMaxDiscount(searchablePriceable);
