@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public abstract class PercentageDiscount : AtomicDiscount
     {
@@ -26,6 +26,10 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         public PercentageDiscount(double percentage_to_subtract, DateTime expiration) : base(expiration)
         {
             _percentage_to_subtract = percentage_to_subtract;
+        }
+        public override double calcPriceFromCurrPrice(double currPrice)
+        {
+            return currPrice * (100 - PercentageToSubtract) / 100;
         }
     }
 }

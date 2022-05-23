@@ -47,7 +47,7 @@ namespace MarketProject.Service.DTO
                     {
                         if (item.ItemID == itemID)
                         {
-                            totalAmountInCart += shoppingBasketDTO.Items[item];
+                            totalAmountInCart += shoppingBasketDTO.Items[item].Amount;
                             break;
                         }
 

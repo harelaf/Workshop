@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using MarketProject.Domain.PurchasePackage.PolicyPackage;
 using MarketProject.Service.DTO;
 
 namespace AcceptanceTest

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    public interface IDiscountDTO
+    public interface AtomicDiscountDTO : IDiscountDTO
     {
     }
 }
