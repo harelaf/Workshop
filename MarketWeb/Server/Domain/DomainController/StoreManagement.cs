@@ -86,7 +86,7 @@ namespace MarketProject.Domain
         public void EditItemDescription(String storeName, int itemID, String newDescription)
         {
             Item item = GetItem(storeName, itemID);
-            item.SetName(newDescription);
+            item.SetDescription(newDescription);
         }
 
         public void RateItem(String Username, Item item, int rating, String review)

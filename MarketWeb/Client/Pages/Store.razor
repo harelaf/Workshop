@@ -34,6 +34,10 @@
         {
             <button class="btn btn-primary" @onclick="() => ViewStoreMessages()">View @(StoreInfo.StoreName) Messages</button>
         }
+         @if (CanViewStoreRoles)
+        {
+            <button class="btn btn-primary" @onclick="() => ViewStoreRoles()">View @(StoreInfo.StoreName) Store Roles</button>
+        }
         @if (CanCloseStore)
         {
             <button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
@@ -186,7 +190,7 @@
                             ItemDTO item = stock_dictionary[itemID].Item1;
                             <tr>
                                 <th>@item.Name</th>
-                                <th>@item.Price</th>
+                                <th>@(String.Format("{0:0.00}", item.Price))</th>
                                 @if (CanManageStock)
                                 {
                                     <th>
@@ -214,6 +218,10 @@
                                     <th>
                                         <a class="btn btn-primary" href="Item/@(item.StoreName)/@itemID">View @item.Name Page</a>
                                     </th>
+                                    if (@stock_dictionary[itemID].Item2 == 0)
+                                    {
+                                        <th> <a style="color:red">Item Out Of Stock</a></th>
+                                    }
                                 }
                             </tr>
                         }
@@ -347,6 +355,7 @@ else
     private bool CanCloseStorePermenantly { get; set; } = false;
     private bool CanViewPurchaseHistory { get; set; } = false;
     private bool CanViewStoreMessages { get; set; } = false;
+    private bool CanViewStoreRoles { get; set; } = false;
     private bool StoreIsActive { get; set; } = true;
 
     private async void OnValidSubmit()
@@ -364,6 +373,11 @@ else
         // reset alerts on submit
         AlertService.Clear();
         NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
+    }
+    private async void ViewStoreRoles(){
+        // reset alerts on submit
+        AlertService.Clear();
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/roles");
     }
     private async void CloseStore()
     {
@@ -466,6 +480,7 @@ else
             CanCloseStorePermenantly = !(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
             CanViewPurchaseHistory = !(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
             CanViewStoreMessages = !(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
+            CanViewStoreRoles = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;//should add new op: 
         }
         catch (Exception ex)
         {
