@@ -359,7 +359,6 @@ namespace MarketProject.Service
             Response response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Add Item To Stock called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, name={name}, price={price}, description={description}, category={category}, quantity={quantity}.");
                 _market.AddItemToStoreStock(authToken, storeName, itemID, name, price, description, category, quantity);

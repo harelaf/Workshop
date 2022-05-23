@@ -9,15 +9,19 @@ namespace MarketWeb.Client.Models
 
         [Required]
         public string Name { get; set; }
+
         [Required]
-        [Range(0, 10000000)]
+        [Range(0, float.MaxValue)]
         public float Price { get; set; }
+
         [Required]
         public string Description { get; set; }
+
         [Required]
         public string Category { get; set; }
+
         [Required]
-        [Range(0,10000000)]
+        [Range(0,int.MaxValue)]
         public int Quantity { get; set; }
 
     }

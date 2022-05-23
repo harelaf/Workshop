@@ -8,7 +8,7 @@ namespace MarketWeb.Client.Models
         public string ReceiverUsername { get; set; }
 
         [Required]
-        public string Ttile { get; set; }
+        public string Title { get; set; }
 
         [Required]
         public string Message { get; set; }

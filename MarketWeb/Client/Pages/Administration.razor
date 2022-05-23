@@ -21,25 +21,26 @@
 
 <div>
     <h3><font color="red">Permanently Delete a User:</font></h3>
-    <EditForm Model="@DeleteUserModel" OnSubmit="DeleteUserForm">
+    
+    <EditForm Model="@DeleteUserModel" OnValidSubmit="DeleteUserForm">
         <DataAnnotationsValidator />
         <div class="form-group">
             <label>Username</label>
-            <InputText @bind-value="DeleteUserModel.UserName" class="form-control" />
+            <InputText @bind-Value="DeleteUserModel.UserName" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-primary">Add Review</button>
+        <button type="submit" class="btn btn-primary">Delete User</button>
     </EditForm>
 </div>
 <br />
 <div>
     <h3>View Store Purchase History:</h3>
-    <EditForm Model="@ViewStorePurchaseHistoryModel" OnSubmit="ViewStorePurchaseHistoryForm">
+    <EditForm Model="@ViewStorePurchaseHistoryModel" OnValidSubmit="ViewStorePurchaseHistoryForm">
         <DataAnnotationsValidator />
         <div class="form-group">
             <label>Store Name</label>
-            <InputText @bind-value="ViewStorePurchaseHistoryModel.StoreName" class="form-control" />
+            <InputText @bind-Value="ViewStorePurchaseHistoryModel.StoreName" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-primary">Add Review</button>
+        <button type="submit" class="btn btn-primary">View Purchase History</button>
     </EditForm>
 </div>
 <br />
@@ -47,26 +48,22 @@
     <h3>View Complaints:</h3>
     <input class="btn btn-primary" value="View Complaints" @onclick="ViewComplaintsButton" />
 </div>
-<div>
-    <h3>View Store Purchase History:</h3>
-    <p>THIS FEATURE IS NOT DONE YET</p>
-</div>
 <br />
 <div>
     <h3>Send Messages to Buyers and Sellers:</h3>
-    <EditForm Model="@SendAdminMessageModel" OnSubmit="SendAdminMessageForm">
+    <EditForm Model="@SendAdminMessageModel" OnValidSubmit="SendAdminMessageForm">
         <DataAnnotationsValidator />
         <div class="form-group">
             <label>Username of The Recipient</label>
-            <InputText @bind-value="SendAdminMessageModel.ReceiverUsername" class="form-control" />
+            <InputText @bind-Value="SendAdminMessageModel.ReceiverUsername" class="form-control" />
         </div>
         <div class="form-group">
             <label>Message Title</label>
-            <InputText @bind-value="SendAdminMessageModel.Ttile" class="form-control" />
+            <InputText @bind-Value="SendAdminMessageModel.Title" class="form-control" />
         </div>
         <div class="form-group">
             <label>Message Body</label>
-            <InputText @bind-value="SendAdminMessageModel.Message" class="form-control" />
+            <InputText @bind-Value="SendAdminMessageModel.Message" class="form-control" />
         </div>
         <button type="submit" class="btn btn-primary">Send Message</button>
     </EditForm>
@@ -100,23 +97,7 @@
         // reset alerts on submit
         AlertService.Clear();
 
-        /*
-        List<Tuple<DateTime, ShoppingBasketDTO>> tuples = new List<Tuple<DateTime, ShoppingBasketDTO>>();
-        tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 30, 14, 30, 0), new ShoppingBasketDTO()));
-        tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 18, 10, 14, 0), new ShoppingBasketDTO()));
-        tuples.Add(new Tuple<DateTime, ShoppingBasketDTO>(new DateTime(2022, 5, 1, 22, 55, 0), new ShoppingBasketDTO()));
-        Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response = new Response<List<Tuple<DateTime, ShoppingBasketDTO>>>(tuples);// service.GetStorePurchaseHistory(token storeName);
-        */
-        Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response = await marketAPIClient.GetStorePurchasesHistory(ViewStorePurchaseHistoryModel.StoreName);
-        if (response.ErrorOccured)
-        {
-            AlertService.Error(response.ErrorMessage);
-            NavigationManager.NavigateTo($"/Store/{ViewStorePurchaseHistoryModel.StoreName}");
-        }
-        else
-        {
-            NavigationManager.NavigateTo($"/MyPurchaseHistory/{ViewStorePurchaseHistoryModel.StoreName}");
-        }
+        NavigationManager.NavigateTo($"/StorePage/{ViewStorePurchaseHistoryModel.StoreName}/purchases");
     }
 
     private async void ViewComplaintsButton()
@@ -141,7 +122,7 @@
         // reset alerts on submit
         AlertService.Clear();
 
-        Response response = await marketAPIClient.SendAdminMessage(SendAdminMessageModel.ReceiverUsername, SendAdminMessageModel.Ttile, SendAdminMessageModel.Message);
+        Response response = await marketAPIClient.SendAdminMessage(SendAdminMessageModel.ReceiverUsername, SendAdminMessageModel.Title, SendAdminMessageModel.Message);
         if (response.ErrorOccured)
         {
             AlertService.Error(response.ErrorMessage);
