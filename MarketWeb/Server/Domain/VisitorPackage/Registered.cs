@@ -31,20 +31,6 @@ namespace MarketProject.Domain
         public ICollection<SystemRole> Roles { get { return _roles; } }
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
 
-        public bool IsAdmin 
-        { 
-            get 
-            { 
-                foreach (SystemRole role in _roles)
-                {
-                    if (role.GetType() == typeof(SystemAdmin))
-                    {
-                        return true;
-                    }
-                }
-                return false; 
-            } 
-        }
         public SystemAdmin GetAdminRole
         {
             get
@@ -103,7 +89,7 @@ namespace MarketProject.Domain
             LogErrorMessage("hasAccess", errorMessage);
             throw new Exception(errorMessage);
         }
-
+      
         public void AddRole(SystemRole role)
         {
             String errorMessage;

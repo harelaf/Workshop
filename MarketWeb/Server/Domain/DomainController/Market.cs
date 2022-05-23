@@ -504,7 +504,7 @@ namespace MarketProject.Domain
             else
             {
                 senderUsername= _VisitorManagement.GetRegisteredUsernameByToken(userToken);
-                if (_VisitorManagement.CheckAccess(senderUsername, null, Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE))
+                if (_VisitorManagement.CheckAccess(senderUsername,null,  Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE))
                 {
                     errorMessage = "User " + senderUsername + " don't have permission to preform this operation.";
                 }
@@ -650,7 +650,7 @@ namespace MarketProject.Domain
         internal void AppointSystemAdmin(String authToken, String adminUsername)
         {
             String registered = _VisitorManagement.GetRegisteredUsernameByToken(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
-            if (_VisitorManagement.CheckAccess(registered, null, Operation.APPOINT_SYSTEM_ADMIN))
+            if (_VisitorManagement.CheckAccess(registered,null, Operation.APPOINT_SYSTEM_ADMIN))
                 _VisitorManagement.AppointSystemAdmin(adminUsername);
         }
 
@@ -751,7 +751,7 @@ namespace MarketProject.Domain
         public void RemoveRegisteredVisitor(String authToken, String usr_toremove)
         {
             String errorMessage = null;
-            if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), null, Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
+            if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), null,  Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
             {
                 Registered registeredToRemove = _VisitorManagement.GetRegisteredVisitor(usr_toremove);
                 _VisitorManagement.RemoveRegisteredVisitor(usr_toremove);
@@ -801,7 +801,7 @@ namespace MarketProject.Domain
             if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(userToken), storeName, op))
                 throw new Exception("Access denied!");
         }
-
+        
         public List<Store> GetStoresOfUser(String authToken)
         {
             String errorMessage = null;
@@ -809,7 +809,7 @@ namespace MarketProject.Domain
             bool isAdmin = true;
             try
             {
-                HasPermission(authToken, "", "PERMENENT_CLOSE_STORE");
+                HasPermission(authToken, null, "PERMENENT_CLOSE_STORE");
             }
             catch (Exception e)
             {
@@ -827,7 +827,7 @@ namespace MarketProject.Domain
             bool isAdmin = true;
             try
             {
-                HasPermission(authToken, "", "PERMENENT_CLOSE_STORE");
+                HasPermission(authToken,null,  "PERMENENT_CLOSE_STORE");
             }
             catch (Exception e)
             {

@@ -35,7 +35,7 @@
 		{
 			<button class="btn btn-primary" @onclick="() => ViewStoreMessages()">View @(StoreInfo.StoreName) Messages</button>
 		}
-		@if (CanCloseStore)
+		@if ((StoreIsActive) &&CanCloseStore)
 		{
 			<button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
 			<br />
@@ -383,18 +383,20 @@ else
 			else
 			{
 				AlertService.Info("Successfully close store!");
+
 			}
 		}
 		catch (Exception e)
 		{
 			AlertService.Error(e.Message);
+			
 		}
-		finally
-		{
-			loading = false;
+		finally{
 			StateHasChanged();
+			NavigationManager.NavigateTo($"");
 			NavigationManager.NavigateTo($"/StorePage/{StoreName}");
 		}
+
 	}
 	private async void CloseStorePermenantly()
 	{
@@ -418,8 +420,8 @@ else
 		}
 		finally
 		{
-			loading = false;
 			StateHasChanged();
+			NavigationManager.NavigateTo($"");
 			NavigationManager.NavigateTo($"/StorePage/{StoreName}");
 		}
 	}//
@@ -445,8 +447,8 @@ else
 		}
 		finally
 		{
-			loading = false;
 			StateHasChanged();
+			NavigationManager.NavigateTo($"");
 			NavigationManager.NavigateTo($"/StorePage/{StoreName}");
 		}
 	}
