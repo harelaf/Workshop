@@ -576,7 +576,6 @@ namespace MarketProject.Domain
                 return Visitor.hasAccess(storeName, op);
             throw new Exception($"'{username}' visitor is not permitted this operation.");
         }
-
         public void AddRole(string Username, SystemRole role)
         {
             Registered Visitor = GetRegisteredVisitor(Username);

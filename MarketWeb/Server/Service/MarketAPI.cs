@@ -1217,6 +1217,8 @@ namespace MarketProject.Service
             }
             return response;
         }
+        
+
         [HttpPost("IsStoreActive")]
         public Response IsStoreActive([FromHeader] String Authorization, string storeName, string op)
         {
