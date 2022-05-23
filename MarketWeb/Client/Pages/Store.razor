@@ -172,6 +172,7 @@
 				<table class="table">
 					<thead>
 						<tr>
+							<th> item id</th>
 							<th>Name</th>
 							<th>Price</th>
 							<th>View Button</th>
@@ -188,6 +189,7 @@
 						{
 							ItemDTO item = stock_dictionary[itemID].Item1;
 							<tr>
+								<th> @itemID</th>
 								<th>@item.Name</th>
 								<th>@item.Price</th>
 								@if (CanManageStock)
@@ -200,13 +202,13 @@
 										<a class="btn btn-info" asp-area="" asp-controller="Home" asp-action="RemoveItemFromStock" asp-route-storename="@(item.StoreName)" asp-route-itemId="@item.ItemID">Remove</a>
 									</th>
 									<th>
-										<EditForm Model="@UpdateQuantityModel" OnSubmit="UpdateQuantityForm">
+										<EditForm Model="@UpdateQuantityModel">
 											<DataAnnotationsValidator />
 											<div class="form-group">
 												<label>New Quantity</label>
-												<InputNumber @bind-Value="UpdateQuantityModel.Quantity" class="form-control" />
+												<InputNumber @bind-Value="UpdateQuantityModel.Quantity" class="form-control" />	
 											</div>
-											<button type="submit" class="btn btn-primary">
+											<button type="submit" class="btn btn-primary" @onclick="() => UpdateQuantityForm(UpdateQuantityModel.Quantity, itemID)">
 												Update
 											</button>
 										</EditForm>
@@ -240,6 +242,10 @@
 						<InputNumber @bind-Value="AddItemModel.Id" class="form-control" />
 					</div>
 					<div class="form-group">
+						<label>q</label>
+						<InputNumber @bind-Value="AddItemModel.Quantity" class="form-control" />
+					</div>
+					<div class="form-group">
 						<label>Name</label>
 						<InputText @bind-Value="AddItemModel.Name" class="form-control" />
 					</div>
@@ -254,10 +260,6 @@
 					<div class="form-group">
 						<label>Category</label>
 						<InputText @bind-Value="AddItemModel.Category" class="form-control" />
-					</div>
-					<div class="form-group">
-						<label>Quantity</label>
-						<InputNumber @bind-Value="AddItemModel.Quantity" class="form-control" />
 					</div>
 					<button type="submit" class="btn btn-primary">
 						Add
@@ -389,7 +391,7 @@ else
 		catch (Exception e)
 		{
 			AlertService.Error(e.Message);
-			
+
 		}
 		finally{
 			StateHasChanged();
@@ -612,9 +614,9 @@ else
 		StateHasChanged();
 	}
 
-	private async void UpdateQuantityForm()
+	private async void UpdateQuantityForm(int quantity, int itemid )
 	{
-		Response response = await _marketAPIClient.UpdateStockQuantityOfItem(StoreName, UpdateQuantityModel.ItemID, UpdateQuantityModel.Quantity);
+		Response response = await _marketAPIClient.UpdateStockQuantityOfItem(StoreName, itemid, quantity);
 		if (response.ErrorOccured)
 		{
 			AlertService.Error(response.ErrorMessage);
@@ -625,17 +627,20 @@ else
 			UpdateQuantityModel = new Models.UpdateQuantityModel();
 		}
 		StateHasChanged();
+		NavigationManager.NavigateTo($"");
+			NavigationManager.NavigateTo($"/StorePage/{StoreName}");
 	}
 
 	private async void AddItemForm()
 	{
+		int q = AddItemModel.Quantity;
 		Response response = await _marketAPIClient.AddItemToStoreStock(StoreName,
 																		AddItemModel.Id,
 																		AddItemModel.Name,
 																		AddItemModel.Price,
 																		AddItemModel.Description,
 																		AddItemModel.Category,
-																		AddItemModel.Quantity);
+																		q);
 		if (response.ErrorOccured)
 		{
 			AlertService.Error(response.ErrorMessage);
@@ -644,9 +649,10 @@ else
 		{
 			AddItemModel = new Models.AddItemModel();
 			await OnInitializedAsync();
-			AlertService.Info("Successfully added item to stock.");
+			AlertService.Info("Successfully added item to stock. q was: "+q);
 		}
 		StateHasChanged();
+
 	}
 
 

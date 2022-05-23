@@ -297,7 +297,7 @@ namespace MarketWeb.Client.Connect
                 { "price", price.ToString()},
                 { "description" , description},
                 { "category", category},
-                { "quantit", quantity.ToString()}
+                { "quantity", quantity.ToString()}
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
