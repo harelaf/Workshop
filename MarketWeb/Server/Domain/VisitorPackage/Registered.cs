@@ -80,9 +80,12 @@ namespace MarketProject.Domain
         internal bool hasAccess(String storeName, Operation op)
         {
             String errorMessage;
+            bool IsAdminFlag = IsAdmin;
             foreach (SystemRole role in _roles)
             {
                 if (role.hasAccess(storeName, op))
+                    return true;
+                else if (IsAdminFlag && role.hasAccess(null, op))
                     return true;
             }
             errorMessage = $"No permission to execute operation: {op.ToString()}.";
