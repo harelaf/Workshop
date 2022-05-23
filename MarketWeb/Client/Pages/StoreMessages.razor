@@ -12,78 +12,98 @@
 @layout MainLayout
 
 <div class="text-center">
-    <h1 class="display-4">@(StoreName)  Messages</h1>
-    <br />
-    <br />
+	<h1 class="display-4">@(StoreName)  Messages</h1>
+	<br />
+	<br />
 </div>
 <br />
-@if (Messages.Count>0)
+@if (Messages.Count > 0)
 {
-    <table style="width:100%" class="table">
-        <tr>
-            <th><h4>User Name </h4></th>
-            <th><h4> Title</h4></th>
-            <th><h4> Message</h4></th>
-            <th><h4> Reply</h4></th>
+	<table style="width:100%" class="table">
+		<tr>
+			<th><h4>User Name </h4></th>
+			<th><h4> Title</h4></th>
+			<th><h4> Message</h4></th>
+			<th><h4> Reply</h4></th>
 
-        </tr>
-        @foreach (MessageToStoreDTO msg in Messages)
-        {
-            <tr >
-                <th>@msg.SenderUsername</th>
-                <th>@msg.Title</th>
-                <th>@msg.Message</th>
-                <th> 
-                    <form method="post">
-                        <textarea required rows="4" cols="50" id="replyMessage" name="replyMessage"> Enter message here...</textarea>
-                        <br />
-                        <input class="btn btn-info" type="submit" value="Reply" asp-area="" asp-controller="Home" asp-action="ReplyMessage" 
-                        asp-route-storename="@(StoreName)" asp-route-receiverUsername="@msg.SenderUsername" asp-route-msgId="@msg.Id" asp-route-replyMessage=""  />
-                    </form>
-                </th>
-            </tr>
-        }
-    </table>
-    <br /> 
- 
+		</tr>
+		@foreach (MessageToStoreDTO msg in Messages)
+		{
+			<tr>
+				<th>@msg.SenderUsername</th>
+				<th>@msg.Title</th>
+				<th>@msg.Message</th>
+				<th>
+					<EditForm Model="@ReplyModel" OnSubmit="OnValidSubmit">
+						<DataAnnotationsValidator />
+						<div class="form-group">
+							<label>Title</label>
+							<InputText @bind-Value="ReplyModel.Title" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label>Reply</label>
+							<InputTextArea @bind-Value="ReplyModel.Reply" class="form-control" />
+						</div>
+						<button type="submit" class="btn btn-primary">
+							Reply
+						</button>
+						
+					</EditForm>
+				</th>
+			</tr>
+		}
+	</table>
+	<br />
+
 }
 else
 {
-    <h4> There were no messages sent to this store yet.</h4>
+	<h4> There were no messages sent to this store yet.</h4>
 }
 
 @code {
-    [Parameter] public string StoreName{ get; set; }
-    Queue<MessageToStoreDTO> Messages = new Queue<MessageToStoreDTO>();
+	[Parameter] public string StoreName { get; set; }
+	Queue<MessageToStoreDTO> Messages = new Queue<MessageToStoreDTO>();
+	Models.ReplyModel ReplyModel = new Models.ReplyModel();
 
 
 
 
-    private async void OnValidSubmit()
-    {
-        // TODO
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
+	private async void OnValidSubmit()
+	{
+		Response response = await _marketAPIClient.AnswerStoreMesseage(StoreName,ReplyModel.Receiver, ReplyModel.Title, ReplyModel.Reply);
+        if (response.ErrorOccured)
         {
-            Response<Queue<MessageToStoreDTO>> response = await _marketAPIClient.GetStoreMessages(StoreName);
-            if (!!response.ErrorOccured)
-            {
-                throw new Exception(response.ErrorMessage);
-            }
-            Messages = response.Value;
+            AlertService.Error(response.ErrorMessage);
         }
-        catch (Exception ex)
+        else
         {
-            AlertService.Error(ex.Message);
+            AlertService.Info("Successfully sent the reply.");
+            ReplyModel = new Models.ReplyModel();
         }
-        finally
-        {
-            StateHasChanged();
-        }
-    
-    }
+        StateHasChanged();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			Response<Queue<MessageToStoreDTO>> response = await _marketAPIClient.GetStoreMessages(StoreName);
+			if (!!response.ErrorOccured)
+			{
+				throw new Exception(response.ErrorMessage);
+			}
+			Messages = response.Value;
+		}
+		catch (Exception ex)
+		{
+			AlertService.Error(ex.Message);
+		}
+		finally
+		{
+			StateHasChanged();
+		}
+
+	}
 
 }

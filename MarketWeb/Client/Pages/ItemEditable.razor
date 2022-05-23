@@ -34,8 +34,7 @@
                 <EditForm Model="@ChangeItemNameModel" OnSubmit="ChangeItemNameForm">
                     <DataAnnotationsValidator />
                     <div class="form-group">
-                        <label>New Name</label>
-                        <InputText @bind-value="ChangeItemNameModel.NewName" class="form-control" />
+                        <InputText @bind-Value="ChangeItemNameModel.NewName" class="form-control" />
                     </div>
                     <button type="submit" class="btn btn-primary">Change Name</button>
                 </EditForm>
@@ -48,8 +47,7 @@
                 <EditForm Model="@ChangeItemPriceModel" OnSubmit="ChangeItemPriceForm">
                     <DataAnnotationsValidator />
                     <div class="form-group">
-                        <label>New Name</label>
-                        <InputNumber TValue="float" @bind-value="ChangeItemPriceModel.NewPrice" class="form-control" />
+                        <InputNumber TValue="float" @bind-Value="ChangeItemPriceModel.NewPrice" class="form-control" />
                     </div>
                     <button type="submit" class="btn btn-primary">Change Price</button>
                 </EditForm>
@@ -69,8 +67,7 @@
                 <EditForm Model="@ChangeItemDescriptionModel" OnSubmit="ChangeItemDescriptionForm">
                     <DataAnnotationsValidator />
                     <div class="form-group">
-                        <label>New Name</label>
-                        <InputText @bind-value="ChangeItemDescriptionModel.NewDescription" class="form-control" />
+                        <InputText @bind-Value="ChangeItemDescriptionModel.NewDescription" class="form-control" />
                     </div>
                     <button type="submit" class="btn btn-primary">Change Description</button>
                 </EditForm>
@@ -84,19 +81,24 @@
     </tbody>
 </table>
 <br />
+<br />
+<br />
 
 <div>
+    <h1 > Add to Cart</h1>
     <EditForm Model="@AddToCartModel" OnValidSubmit="AddToCartForm">
         <DataAnnotationsValidator />
         <div class="form-group">
             <label>Amount</label>
             <InputNumber @bind-Value="AddToCartModel.Amount" class="form-control" />
         </div>
-        <button type="submit" class="btn btn-primary">Search Items</button>
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
     </EditForm>
 </div>
 <br />
 
+<br />
+<br />
 <h2 style="font-size:200%;">Item Ratings and Reviews: </h2>
 @if (item.Rating.Ratings.Count > 0)
 {
@@ -132,7 +134,7 @@ else
     <h5>Add Your Review: </h5>
     <EditForm Model="@AddReviewModel" OnSubmit="ReviewItemForm">
         <DataAnnotationsValidator />
-        <div width: 20%; class="form-group">
+        <div width=20% class="form-group">
             <label>Rating</label>
             <input type="range" @bind-value="AddReviewModel.Rating" @bind-value:event="oninput" min="0" max="10">
             <output>@AddReviewModel.Rating</output>
@@ -165,10 +167,12 @@ else
         {
             AlertService.Error(response.ErrorMessage);
             StateHasChanged();
+            
         }
         else
         {
-            AlertService.Error("Successfully changed item name.");
+            await OnInitializedAsync();
+            AlertService.Info("Successfully changed item name.");
             StateHasChanged();
         }
     }
@@ -183,11 +187,14 @@ else
         {
             AlertService.Error(response.ErrorMessage);
             StateHasChanged();
+            
         }
         else
         {
-            AlertService.Error("Successfully changed item price.");
+            await OnInitializedAsync();
+            AlertService.Info("Successfully changed item price.");
             StateHasChanged();
+            
         }
     }
 
@@ -201,11 +208,14 @@ else
         {
             AlertService.Error(response.ErrorMessage);
             StateHasChanged();
+            
         }
         else
         {
-            AlertService.Error("Successfully changed item description.");
+            await OnInitializedAsync();
+            AlertService.Info("Successfully changed item description.");
             StateHasChanged();
+            
         }
     }
 
@@ -218,12 +228,11 @@ else
         if (response.ErrorOccured)
         {
             AlertService.Error(response.ErrorMessage);
-            NavigationManager.NavigateTo("");
         }
         else
         {
+            await OnInitializedAsync();
             AlertService.Info("Successfully added item to cart.");
-            NavigationManager.NavigateTo("CartPage");
         }
     }
 
@@ -243,6 +252,7 @@ else
         }
         else
         {
+            await OnInitializedAsync();
             AlertService.Info("Successfully reviewed item.");
             StateHasChanged();
         }
