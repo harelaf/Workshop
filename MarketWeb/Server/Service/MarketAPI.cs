@@ -24,7 +24,7 @@ namespace MarketProject.Service
         {
             _market = market;
             //_logger = logger;
-            LoadData();
+            //LoadData();
         }
 
         private String parseAutherization(String Authorization)

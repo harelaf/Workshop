@@ -99,7 +99,7 @@ namespace MarketProject.Domain
                 if (role.hasAccess(storeName, op))
                     return true;
             }
-            errorMessage = "no permission for this operation.";
+            errorMessage = $"No permission to execute operation: {op.ToString()}.";
             LogErrorMessage("hasAccess", errorMessage);
             throw new Exception(errorMessage);
         }
