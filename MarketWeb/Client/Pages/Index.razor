@@ -95,19 +95,11 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 
         if (model.Category == null && model.ItemName == null && model.Keyword == null)
         {
-            loading = false;
             AlertService.Error("Please enter a value before trying to search for an item.");
             StateHasChanged();
         }
         else
         {
-            //Task<Response<List<ItemDTO>>> task = _marketAPIClient.GetItemInformation(itemname, category, keyword);
-            /*List<ItemDTO> items = new List<ItemDTO>();
-            items.Add(new ItemDTO("item1", 10.5, "store1"));
-            items.Add(new ItemDTO("item2", 9.5, "store1"));
-            items.Add(new ItemDTO("item3", 15.5, "store2"));*/
-            //Response<List<ItemDTO>> response = task.Result; //new Response<List<ItemDTO>>(items);
-            loading = false;
             model.Category = model.Category == null ? "BLANK.VALUE" : model.Category;
             model.ItemName = model.ItemName == null ? "BLANK.VALUE" : model.ItemName;
             model.Keyword = model.Keyword == null ? "BLANK.VALUE" : model.Keyword;
@@ -117,20 +109,6 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
 
     protected override async Task OnInitializedAsync()
     {
-        //Console.WriteLine("Test");
-        //await marketAPIClient.EnterSystem();
-
-        // Copied and edited from MarketWebProject.Controllers.HomeController - Index
-        // ======================
-        //if (modelcs == null)
-        //    modelcs = new MainModel();
-        //USE GetAllActiveStores(authToken);
-        //Response<List<StoreDTO>> response = LayoutConfig.marketAPI.GetAllActiveStores(LayoutConfig.authToken);
-        /*StoreDTO store1 = new StoreDTO();
-        StoreDTO store2 = new StoreDTO();
-        List<StoreDTO> lst = new List<StoreDTO>();
-        lst.Add(store1);
-        lst.Add(store2);*/
         try
         {
             Response<List<StoreDTO>> response = await marketAPIClient.GetAllActiveStores();

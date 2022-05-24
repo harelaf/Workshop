@@ -23,7 +23,7 @@
         string storeName = shoppingBasketDTO.StoreName;
         double total = 0;
         IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
-        <h4>@storeName</h4>
+        <h4>Store: @storeName</h4>
         <table style="width:100%" id="@storeName">
             <tr>
                 <th>Product Name</th>
@@ -32,6 +32,7 @@
             </tr>
             @foreach (int itemID in items.Keys)
             {
+                total += items[itemID].Item1.Price * items[itemID].Item2;
                 <tr id="@(items[itemID].Item1.Name + storeName)">
                     <th>@items[itemID].Item1.Name</th>
                     <th>@items[itemID].Item2</th>
@@ -40,22 +41,19 @@
                         <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
                     </th>
                     <th>
-                        <EditForm Model="@UpdateItemQuantityInCartModel" OnSubmit="UpdateItemQuantityInCartForm">
+                        <EditForm Model="@UpdateItemQuantityInCartModel">
                             <DataAnnotationsValidator />
-                            @{
-                                UpdateItemQuantityInCartModel.StoreName = items[itemID].Item1.StoreName;
-                                UpdateItemQuantityInCartModel.ItemID = itemID;
-                            }
-                            <div class="form-group">
-                                <label>Review</label>
+                            <div id="@itemID" class="form-group">
+                                <label>New Quantity</label>
                                 <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
                             </div>
-                            <button type="submit" class="btn btn-primary">Add Review</button>
+                            <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
                         </EditForm>
                     </th>
                 </tr>
             }
         </table>
+        <h4>Your total (without discounts) is: $@total</h4>
     }
     <button class="btn btn-primary" @onclick="PurchaseCartButton">Purchase Cart</button>
 }
@@ -69,12 +67,12 @@ else
     private ShoppingCartDTO cart = new ShoppingCartDTO(new List<ShoppingBasketDTO>());
     private Models.UpdateItemQuantityInCartModel UpdateItemQuantityInCartModel = new Models.UpdateItemQuantityInCartModel();
 
-    private async void UpdateItemQuantityInCartForm()
+    private async void UpdateItemQuantityInCartForm(string storeName, int itemID)
     {
         // reset alerts on submit
         AlertService.Clear();
 
-        Response response = await marketAPIClient.UpdateQuantityOfItemInCart(UpdateItemQuantityInCartModel.ItemID, UpdateItemQuantityInCartModel.StoreName, UpdateItemQuantityInCartModel.NewQuantity);
+        Response response = await marketAPIClient.UpdateQuantityOfItemInCart(itemID, storeName, UpdateItemQuantityInCartModel.NewQuantity);
         if (response.ErrorOccured)
         {
             AlertService.Error(response.ErrorMessage);
@@ -83,8 +81,10 @@ else
         else
         {
             AlertService.Info("Item quantity updated.");
+            NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
         }
+        UpdateItemQuantityInCartModel = new Models.UpdateItemQuantityInCartModel();
     }
 
     private async void PurchaseCartButton()
@@ -104,11 +104,13 @@ else
         if (response.ErrorOccured)
         {
             AlertService.Error(response.ErrorMessage);
+            NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
         }
         else
         {
             AlertService.Info("Successfully removed item.");
+            NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
         }
     }

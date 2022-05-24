@@ -232,7 +232,8 @@ namespace MarketProject.Service
                 toDTO(registered.ShoppingCart),
                 adminMessages,
                 notifications,
-                repliedMessages);
+                repliedMessages,
+                registered._birthDate);
         }
         public static ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {

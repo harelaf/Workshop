@@ -100,19 +100,26 @@ namespace MarketProject.Domain
             Dictionary<string, List<Item>> filteredItems = new Dictionary<string, List<Item>>();
             foreach (String storeName in _stores.Keys)
             {
-                List<Item> items = _stores[storeName].getItemsByName(itemName);
-                foreach (Item item in items)
+                Stock stock = _stores[storeName].Stock;
+                List<Item> cur_items = new List<Item>();
+                foreach (KeyValuePair<Item, int> pair in stock.Items)
                 {
-                    if (itemCategory != null && itemCategory.Length > 0 && !item.Category.Contains(itemCategory))
+                    Item item = pair.Key;
+                    if (itemName != null && itemName.Length > 0 && item.Name.Contains(itemName))
                     {
-                        if (keyWord != null && keyWord.Length > 0 && item.Description != null && item.Description.Length > 0 && !item.Description.Contains(keyWord))
-                        {
-                            items.Remove(item);
-                        }
+                        cur_items.Add(item);
+                    }
+                    else if (itemCategory != null && itemCategory.Length > 0 && item.Category.Contains(itemCategory))
+                    {
+                        cur_items.Add(item);
+                    }
+                    else if (keyWord != null && keyWord.Length > 0 && item.Description != null && item.Description.Length > 0 && item.Description.Contains(keyWord))
+                    {
+                        cur_items.Add(item);
                     }
                 }
-                if (items.Count > 0)
-                    filteredItems.Add(storeName, items);
+                if (cur_items.Count > 0)
+                    filteredItems.Add(storeName, cur_items);
             }
             return filteredItems;
         }

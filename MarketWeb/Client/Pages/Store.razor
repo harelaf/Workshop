@@ -34,7 +34,7 @@
         {
             <button class="btn btn-primary" @onclick="() => ViewStoreMessages()">View @(StoreInfo.StoreName) Messages</button>
         }
-        
+
         @if (CanCloseStore)
         {
             <button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
@@ -59,8 +59,7 @@
     <div>
         @if (CanManageRoles)
         {
-            <h2> Manage Store Roles: </h2>
-            <br />
+            <h5> Manage Store Roles: </h5>
             <button class="btn btn-primary" @onclick="() => ViewStoreRoles()">View @(StoreInfo.StoreName) Roles</button>
             <br />
             <h5>Appoint Store Owner: </h5>
@@ -75,25 +74,25 @@
                 </button>
             </EditForm>
             <br />
-             <h5>Fire Store Owner: </h5>
-             <EditForm Model="@FireRoleModel" OnValidSubmit="FireOwner">
-            <DataAnnotationsValidator />
-            <div class="form-group">
-                <label>Username</label>
-                <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
-                <ValidationMessage For="@(() => FireRoleModel.Username)" />
-            </div>
-            <button disabled="@loading" class="btn btn-primary">
-                @if (loading) 
-                {
-                    <span class="spinner-border spinner-border-sm mr-1"></span>
-                }
-                Fire Owner
-            </button>
-        </EditForm>
+            <h5>Fire Store Owner: </h5>
+            <EditForm Model="@FireRoleModel" OnValidSubmit="FireOwner">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
+                    <ValidationMessage For="@(() => FireRoleModel.Username)" />
+                </div>
+                <button disabled="@loading" class="btn btn-primary">
+                    @if (loading)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Fire Owner
+                </button>
+            </EditForm>
 
             <br />
-           
+
             <h5>Appoint Store Manager: </h5>
             <EditForm Model="@AppointRoleModel" OnValidSubmit="AppointNewManager">
                 <DataAnnotationsValidator />
@@ -106,22 +105,22 @@
                 </button>
             </EditForm>
             <br />
-           <h5>Fire Store Manager: </h5>
-             <EditForm Model="@FireRoleModel" OnValidSubmit="FireManager">
-            <DataAnnotationsValidator />
-            <div class="form-group">
-                <label>Username</label>
-                <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
-                <ValidationMessage For="@(() => FireRoleModel.Username)" />
-            </div>
-            <button disabled="@loading" class="btn btn-primary">
-                @if (loading) 
-                {
-                    <span class="spinner-border spinner-border-sm mr-1"></span>
-                }
-                Fire Manager
-            </button>
-        </EditForm>
+            <h5>Fire Store Manager: </h5>
+            <EditForm Model="@FireRoleModel" OnValidSubmit="FireManager">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
+                    <ValidationMessage For="@(() => FireRoleModel.Username)" />
+                </div>
+                <button disabled="@loading" class="btn btn-primary">
+                    @if (loading)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Fire Manager
+                </button>
+            </EditForm>
             <h5>Manage Permission of Store Manager: </h5>
             <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="ModifyManagerPermissionsForm">
                 <DataAnnotationsValidator />
@@ -317,24 +316,27 @@
     <br />
     <br />
     <br />
-    @if (_marketAPIClient.LoggedIn)
+    @if (_marketAPIClient.LoggedIn || _marketAPIClient.Admin)
     {
-        <!-- add review button-->
         <div>
             <h5>Add Your Review: </h5>
-            <form method="post" id="usrform">
-                <div width: 20%;>
-                    <p>Please pick a rating:</p>
-                    <input type="range" id="rating" name="rating" title="rating" min="0" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
-                    <output>5</output>
+            <EditForm Model="@RateStoreModel" OnValidSubmit="RateStoreForm">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div>
+                        <input type="range" @bind-value="@(RateStoreModel.rating)" id="rating" name="rating" title="rating" min="0" max="10" oninput="this.nextElementSibling.value = this.value"/>
+                        <output>5</output>
+                    </div>
                 </div>
-                <br />
-                <textarea rows="2" cols="50" id="comment" name="comment" form="usrform"> Enter comment here...</textarea>
-                <br />
-                <input class="btn btn-primary" type="submit" value="Add" asp-area="" asp-controller="Home"
-               asp-action="AddStoreReview" asp-route-newQuantity=""
-               asp-route-storeName="@(StoreInfo.StoreName)" />
-            </form>
+                <div class="form-group">
+                    <label>Comment</label>
+                    <InputTextArea @bind-Value="RateStoreModel.comment" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Add Review
+                </button>
+            </EditForm>
         </div>
     }
 }
@@ -352,6 +354,7 @@ else
     private Models.SendQuestionModel SendQuestionModel = new Models.SendQuestionModel();
     private Models.UpdateQuantityModel UpdateQuantityModel = new Models.UpdateQuantityModel();
     private Models.AddItemModel AddItemModel = new Models.AddItemModel();
+    private Models.RateStoreModel RateStoreModel = new Models.RateStoreModel();
     private bool loading;
     private ICollection<StoreDTO> activeStores = new List<StoreDTO>();
 
@@ -382,7 +385,8 @@ else
         AlertService.Clear();
         NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
     }
-    private async void ViewStoreRoles(){
+    private async void ViewStoreRoles()
+    {
         // reset alerts on submit
         AlertService.Clear();
         NavigationManager.NavigateTo($"/StorePage/{StoreName}/roles");
@@ -491,7 +495,7 @@ else
             CanCloseStorePermenantly = !(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
             CanViewPurchaseHistory = !(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
             CanViewStoreMessages = !(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
-            CanViewStoreRoles = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;//should add new op: 
+            CanViewStoreRoles = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;//should add new op:
         }
         catch (Exception ex)
         {
@@ -515,39 +519,39 @@ else
         try
         {
             string feedback = "";
-            if(!askHistoryPermission)
+            if (!askHistoryPermission)
             {//remove history permmision
                 Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
                 if (response.ErrorOccured)
                     throw new Exception(response.ErrorMessage);
-                feedback += "remove history permssion from store manager: " + managerUserName+" ; ";
+                feedback += "remove history permssion from store manager: " + managerUserName + " ; ";
             }
-            if(askHistoryPermission)
+            if (askHistoryPermission)
             {//add history permmision
                 Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
                 if (response.ErrorOccured)
                     throw new Exception(response.ErrorMessage);
-                feedback += "add history permssion to store manager: " + managerUserName+" ; ";
+                feedback += "add history permssion to store manager: " + managerUserName + " ; ";
             }
-            if(!askMsgPermission)
+            if (!askMsgPermission)
             {//remove msg permmision
                 Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
                 if (response.ErrorOccured)
                     throw new Exception(response.ErrorMessage);
-                feedback += "remove msg permssion from store manager: " + managerUserName+" ; ";
+                feedback += "remove msg permssion from store manager: " + managerUserName + " ; ";
             }
-            if(askMsgPermission)
+            if (askMsgPermission)
             {//add msg permmision
                 Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
                 if (response.ErrorOccured)
                     throw new Exception(response.ErrorMessage);
-                feedback += "add msg permssion to store manager: " + managerUserName+" ; ";
+                feedback += "add msg permssion to store manager: " + managerUserName + " ; ";
             }
             AlertService.Info(feedback);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-          AlertService.Error(ex.Message); 
+            AlertService.Error(ex.Message);
         }
         finally
         {
@@ -569,11 +573,11 @@ else
             {
                 throw new Exception(response.ErrorMessage);
             }
-            AlertService.Info("Successfully appointed new owner: "+toAppoint);
+            AlertService.Info("Successfully appointed new owner: " + toAppoint);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-          AlertService.Error(ex.Message); 
+            AlertService.Error(ex.Message);
         }
         finally
         {
@@ -591,7 +595,7 @@ else
         FireRoleModel = new Models.FireRoleModel();
         try
         {
-            Response response = await _marketAPIClient.RemoveStoreOwner(toFire,StoreName);
+            Response response = await _marketAPIClient.RemoveStoreOwner(toFire, StoreName);
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);
@@ -600,7 +604,7 @@ else
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message); 
+            AlertService.Error(ex.Message);
         }
         finally
         {
@@ -624,11 +628,11 @@ else
             {
                 throw new Exception(response.ErrorMessage);
             }
-            AlertService.Info("Successfully appointed new Manager: "+toAppoint);
+            AlertService.Info("Successfully appointed new Manager: " + toAppoint);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-          AlertService.Error(ex.Message); 
+            AlertService.Error(ex.Message);
         }
         finally
         {
@@ -646,7 +650,7 @@ else
         FireRoleModel = new Models.FireRoleModel();
         try
         {
-            Response response = await _marketAPIClient.RemoveStoreManager(toFire,StoreName);
+            Response response = await _marketAPIClient.RemoveStoreManager(toFire, StoreName);
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);
@@ -655,7 +659,7 @@ else
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message); 
+            AlertService.Error(ex.Message);
         }
         finally
         {
@@ -698,14 +702,14 @@ else
         }
         catch (Exception ex)
         {
-            AlertService.Error(ex.Message); 
+            AlertService.Error(ex.Message);
         }
         finally
         {
             loading = false;
             StateHasChanged();
         }
-       
+
     }
 
     private async void UpdateQuantityForm(int ItemID)
@@ -743,6 +747,23 @@ else
             AddItemModel = new Models.AddItemModel();
             await OnInitializedAsync();
             AlertService.Info($"Successfully added item to stock.");
+        }
+        StateHasChanged();
+    }
+
+    private async void RateStoreForm()
+    {
+        Response response = await _marketAPIClient.RateStore(StoreName, RateStoreModel.rating, RateStoreModel.comment);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            RateStoreModel = new Models.RateStoreModel();
+            AlertService.Info($"Successfully reviewed store.");
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"StorePage/{StoreName}");
         }
         StateHasChanged();
     }

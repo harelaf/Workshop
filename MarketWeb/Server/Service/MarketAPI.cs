@@ -207,7 +207,6 @@ namespace MarketProject.Service
             Response response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Update Quantity Of Item In Cart called with parameters: authToken={authToken}, itemId={itemID}, storeName={storeName}, newQuantity={newQuantity}.");
                 _market.UpdateQuantityOfItemInCart(authToken, itemID, storeName, newQuantity);
@@ -531,7 +530,6 @@ namespace MarketProject.Service
             Response<List<ItemDTO>> response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Get Item Information called with parameters: authToken={authToken}, itemName={itemName}, itemCategory={itemCategory}, keyWord={keyWord}.");
                 IDictionary<string, List<Item>> result = _market.GetItemInformation(authToken, itemName, itemCategory, keyWord);
@@ -808,7 +806,6 @@ namespace MarketProject.Service
             Response<StoreFounderDTO> response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Get Store Founder called with parameters: authToken={authToken}, storeName={storeName}.");
                 StoreFounder founder = _market.getStoreFounder(storeName, authToken);

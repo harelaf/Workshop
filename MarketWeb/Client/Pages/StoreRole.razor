@@ -67,7 +67,7 @@
 
 @code {
     [Parameter] public string StoreName { get; set; }
-    private StoreFounderDTO Founder { get; set; } = new StoreFounderDTO("err: no founder", "s");
+    private StoreFounderDTO Founder { get; set; } = new StoreFounderDTO("N/A", "N/A");
     private List<StoreOwnerDTO> Owners { get; set; } = new List<StoreOwnerDTO>();
     private List<StoreManagerDTO> Managers { get; set; } = new List<StoreManagerDTO>();
 
@@ -77,14 +77,14 @@
         {
             string errMsg = "";
             Response<StoreFounderDTO> response_founder = await _marketAPIClient.GetStoreFounder(StoreName);
-            Response<List<StoreOwnerDTO>> res_owners = await  _marketAPIClient.GetStoreOwners(StoreName);
-            Response<List<StoreManagerDTO>> res_managers = await  _marketAPIClient.GetStoreManagers(StoreName);
+            Response<List<StoreOwnerDTO>> res_owners = await _marketAPIClient.GetStoreOwners(StoreName);
+            Response<List<StoreManagerDTO>> res_managers = await _marketAPIClient.GetStoreManagers(StoreName);
             if (response_founder.ErrorOccured)
-                errMsg+=(response_founder.ErrorMessage)+="; ";
+                errMsg += "Error with founder: " + response_founder.ErrorMessage + "; ";
             if (res_owners.ErrorOccured)
-                errMsg+=(res_owners.ErrorMessage)+="; ";
+                errMsg += "Error with owners: " + (res_owners.ErrorMessage) + "; ";
             if (res_managers.ErrorOccured)
-                errMsg+=(res_managers.ErrorMessage)+="; ";
+                errMsg += "Error with managers: " + (res_managers.ErrorMessage) + "; ";
             if (errMsg != "")
                 AlertService.Error(errMsg);
             else
@@ -93,7 +93,6 @@
                 Owners = res_owners.Value;
                 Managers = res_managers.Value; 
             }
-            
 		}
 		catch (Exception ex)
 		{
@@ -103,7 +102,6 @@
 		{
 			StateHasChanged();
 		}
-
 	}
 
 }

@@ -20,13 +20,14 @@ namespace MarketWeb.Shared.DTO
         public ICollection<NotifyMessageDTO > NotifyMessages { get { return _notifications; } set { _notifications = value; } }
         public DateTime BirthDate { get { return _birthDate; } set { _birthDate = value; } }
 
-        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages)
+        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages, DateTime dob)
         {
             _username = Username;
             _shoppingCart = scDTO;
             _adminMessages = adminMessages;
             _repliedMessages = repliedMessages;
             _notifications = notifications;
+            _birthDate = dob;
         }
         public String ToString()
         {

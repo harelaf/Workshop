@@ -20,7 +20,7 @@
 
     <br />
     <h3>Date of Birth:</h3>
-    <p>**GET DOB FROM DTO**</p>
+    <p>@(userDetails.BirthDate)</p>
     <br />
     <div class="card">
         <h4 class="card-header">Change Password</h4>
@@ -95,10 +95,6 @@
         {
             Response<RegisteredDTO> response1 = await _marketAPIClient.GetVisitorInformation();
             Response<List<StoreDTO>> response2 = await _marketAPIClient.GetStoresOfUser();
-            /*Response<RegisteredDTO> response1 = new Response<RegisteredDTO>(new RegisteredDTO());
-            List<StoreDTO> storesDTO = new List<StoreDTO>();
-            storesDTO.Add(new StoreDTO());
-            Response<List<StoreDTO>> response2 = new Response<List<StoreDTO>>(storesDTO);*/
             if (response1.ErrorOccured)
             {
                 throw new Exception(response1.ErrorMessage);
