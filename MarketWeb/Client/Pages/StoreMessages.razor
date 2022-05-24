@@ -89,7 +89,7 @@ else
 		try
 		{
 			Response<Queue<MessageToStoreDTO>> response = await _marketAPIClient.GetStoreMessages(StoreName);
-			if (!!response.ErrorOccured)
+			if (response.ErrorOccured)
 			{
 				throw new Exception(response.ErrorMessage);
 			}

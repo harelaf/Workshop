@@ -572,9 +572,18 @@ namespace MarketProject.Domain
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
             {
+				if (!_VisitorManagement.IsRegistered(managerUsername))
+				{
+                    throw new Exception("there is no register user in system with username: " + managerUsername + ". you can only appoint register user to store role.");
+				}
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreManager(newManager, storeName))
-                    _VisitorManagement.AddRole(managerUsername, newManager); }
+                    _VisitorManagement.AddRole(managerUsername, newManager); 
+            }
+			else
+			{
+                throw new Exception("you dont have accses to appoint users to this stores");
+			}
         }
 
         public ICollection<AdminMessageToRegistered> GetRegisteredMessagesFromAdmin(string authToken)
@@ -594,10 +603,18 @@ namespace MarketProject.Domain
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
             {
+                if (!_VisitorManagement.IsRegistered(ownerUsername))
+                {
+                    throw new Exception("there is no register user in system with username: " + ownerUsername + ". you can only appoint register user to store role.");
+                }
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreOwner(newOwner, storeName))
                     _VisitorManagement.AddRole(ownerUsername, newOwner);
             }
+			else
+			{
+                throw new Exception("you don't have access to fire owner in store.");
+			}
         }
 
         public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, String paymentMethode, String shipmentMethode)
@@ -785,9 +802,16 @@ namespace MarketProject.Domain
             else
                 throw new Exception("Manager can only have permiisions: 4.12: RECEIVE_AND_REPLY_STORE_MESSAGE or 4.13:STORE_HISTORY_INFO");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+			if (!_VisitorManagement.IsRegistered(managerUsername))
+			{
+                throw new Exception("there is no such user in system as: " + managerUsername);
+			}
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
-
+			else
+			{
+                throw new Exception("you don't have permission to modify manager permission...");
+			}
         }
         public void HasPermission(string userToken, string storeName, string op_name)
         {
@@ -842,8 +866,16 @@ namespace MarketProject.Domain
             if (!_opNameToOp.ContainsKey(opName))
                 throw new Exception("the input op_name is'nt exists!!!!");
             Operation op = _opNameToOp[opName];
+            if (!_VisitorManagement.IsRegistered(managerUsername))
+            {
+                throw new Exception("there is no such user in system as: " + managerUsername);
+            }
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
+			else
+			{
+                throw new Exception("no permission to remove manager permission.");
+			}
         }
         /// <summary>
         /// <para> For Req II.1.3. </para>

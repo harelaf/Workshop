@@ -24,22 +24,16 @@ namespace MarketProject.Domain
         /// <returns>true when the permission has been granted to this user, even if he was already permitted. false otherwise.</returns>
         public override bool grantPermission(Operation op, string storeName, string grantor)
         {
-            if (!base.StoreName.Equals(storeName))
+            if (!StoreName.Equals(storeName))
                 throw new Exception("the store name is incorrect.");
             if (!_appointer.Equals(grantor))
                 throw new Exception("store-manager permissions can be changed by appointer only.");
-
-            List<Operation> optOps = new List<Operation>(){  //optional operations
-                Operation.MANAGE_INVENTORY,
-                Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY,
-                Operation.DEFINE_CONCISTENCY_CONSTRAINT,
-                Operation.STORE_WORKERS_INFO
-            };
-            if (!optOps.Contains(op))
+            if (!(op.Equals(Operation.STORE_HISTORY_INFO) || op.Equals(Operation.RECEIVE_AND_REPLY_STORE_MESSAGE)))
                 throw new Exception("the operation you wish to permit is illegal for store manager.");
             lock (operations)
             {
-                operations.Add(op);
+                if (!operations.Contains(op))
+                    operations.Add(op);
             }
             return true;
         }
@@ -52,13 +46,14 @@ namespace MarketProject.Domain
         /// <returns>true when the permission has been denied from this user, even if he was never permitted. false otherwise.</returns>
         public override bool denyPermission(Operation op, string storeName, string denier)
         {
-            if (!base.StoreName.Equals(storeName))
-                throw new Exception("the store name is incorrect.");
             if (!_appointer.Equals(denier))
-                throw new Exception("store-manager permissions can be changed by appointer only."); 
-            lock (operations)
+                throw new Exception("store-manager permissions can be changed by appointer only.");
+            if (!(op.Equals(Operation.STORE_HISTORY_INFO) || op.Equals(Operation.RECEIVE_AND_REPLY_STORE_MESSAGE)))
+                 throw new Exception("manager doesn't has this permission go be removed!");
+            lock (_operations)
             {
-                operations.Remove(op);
+                if (_operations.Contains(op))
+                     _operations.Remove(op);
             }
             return true;
         }

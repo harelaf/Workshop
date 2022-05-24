@@ -108,7 +108,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        //AlertService.Clear(); // ?????
+        AlertService.Clear();
         try
         {
             Response<RegisteredDTO> response_user = await marketAPIClient.GetVisitorInformation();

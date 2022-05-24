@@ -1,4 +1,4 @@
-﻿@page "/StorePage/{StoreName}/roles"
+﻿@page "/StorePage/{StoreName}/roles" 
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
 @using MarketWeb.Client.Services
@@ -12,8 +12,11 @@
 @layout MainLayout
 
 <div class="text-center">
-    <h1 class="display-4">Store @(StoreName) Roles Page</h1>
+	<h1 class="display-4">Store @(StoreName) Roles Page</h1>
+	<br />
 </div>
+<br />
+
  <h4>Founder</h4>
  <h5>@(Founder.Username)</h5>
  <br />
@@ -38,6 +41,7 @@
     {
         <h4>store has no owners</h4>
     }
+
 <br />
  <h4>Managers</h4>
     @if (Managers.Count > 0)
@@ -62,55 +66,44 @@
     }
 
 @code {
-    [Parameter] public string StoreName{ get; set; }
-    private Models.SearchItemModel model = new Models.SearchItemModel();
-    private bool loading;
-    private ICollection<StoreDTO> activeStores = new List<StoreDTO>();
-
-    private StoreFounderDTO Founder { get; set; } = null;
+    [Parameter] public string StoreName { get; set; }
+    private StoreFounderDTO Founder { get; set; } = new StoreFounderDTO("err: no founder", "s");
     private List<StoreOwnerDTO> Owners { get; set; } = new List<StoreOwnerDTO>();
     private List<StoreManagerDTO> Managers { get; set; } = new List<StoreManagerDTO>();
-
-
-
-    private async void OnValidSubmit()
-    {
-        // TODO
-    }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-           Response<StoreFounderDTO> founder_res = await _marketAPIClient.GetStoreFounder(StoreName);//new Response<StoreFounderDTO>(new StoreFounderDTO(storeName, "Yafa"));//service.GetStoreFounder(storeName);
-            /*List<StoreOwnerDTO> owners_list = new List<StoreOwnerDTO>();
-            owners_list.Add(new StoreOwnerDTO(storeName, "Afik", "Shlomi"));
-            owners_list.Add(new StoreOwnerDTO(storeName, "Shlomi", "Beni"));
-            owners_list.Add(new StoreOwnerDTO(storeName, "Beni", "Yafa"));*/
-            Response<List<StoreOwnerDTO>> owners_res = await _marketAPIClient.GetStoreOwners(StoreName);//new Response<List<StoreOwnerDTO>>(owners_list); //_service.GetStoreOwners(storeName);
-            /*List<StoreManagerDTO> managers_list = new List<StoreManagerDTO>();
-            managers_list.Add(new StoreManagerDTO(storeName, "Afik", "Shlomi"));
-            managers_list.Add(new StoreManagerDTO(storeName, "Shlomi", "Beni"));
-            managers_list.Add(new StoreManagerDTO(storeName, "Beni", "Yafa"));*/
-            Response<List<StoreManagerDTO>> managers_res = await _marketAPIClient.GetStoreManagers(StoreName);//new Response<List<StoreManagerDTO>>(managers_list); //_service.GetStoreManagers(storeName);
-            if (owners_res.ErrorOccured || managers_res.ErrorOccured || founder_res.ErrorOccured)
+            string errMsg = "";
+            Response<StoreFounderDTO> response_founder = await _marketAPIClient.GetStoreFounder(StoreName);
+            Response<List<StoreOwnerDTO>> res_owners = await  _marketAPIClient.GetStoreOwners(StoreName);
+            Response<List<StoreManagerDTO>> res_managers = await  _marketAPIClient.GetStoreManagers(StoreName);
+            if (response_founder.ErrorOccured)
+                errMsg+=(response_founder.ErrorMessage)+="; ";
+            if (res_owners.ErrorOccured)
+                errMsg+=(res_owners.ErrorMessage)+="; ";
+            if (res_managers.ErrorOccured)
+                errMsg+=(res_managers.ErrorMessage)+="; ";
+            if (errMsg != "")
+                AlertService.Error(errMsg);
+            else
             {
-                string message = "owners: " + owners_res.ErrorMessage + "\nmanagers: " + managers_res.ErrorMessage + "\nfounder: "+founder_res.ErrorMessage;
-                throw new Exception(message);
+                Founder = response_founder.Value;
+                Owners = res_owners.Value;
+                Managers = res_managers.Value; 
             }
-            Owners = owners_res.Value;
-            Managers = managers_res.Value;
-            Founder = founder_res.Value; 
-        }
-        catch (Exception ex)
-        {
-            AlertService.Error(ex.Message);
-        }
-        finally
-        {
-            StateHasChanged();
-        }
-    
-    }
+            
+		}
+		catch (Exception ex)
+		{
+			AlertService.Error(ex.Message);
+		}
+		finally
+		{
+			StateHasChanged();
+		}
+
+	}
 
 }

@@ -581,6 +581,10 @@ namespace MarketProject.Domain
             Registered Visitor = GetRegisteredVisitor(Username);
             if (Visitor != null)
                 Visitor.AddRole(role);
+            else
+            {
+                throw new Exception("there is no register user in system with username: " + Username +". you can only appoint register user to store role.");
+			}
         }
 
         public void RemoveRole(string Username, string storeName)

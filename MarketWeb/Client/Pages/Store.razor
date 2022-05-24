@@ -34,10 +34,7 @@
         {
             <button class="btn btn-primary" @onclick="() => ViewStoreMessages()">View @(StoreInfo.StoreName) Messages</button>
         }
-         @if (CanViewStoreRoles)
-        {
-            <button class="btn btn-primary" @onclick="() => ViewStoreRoles()">View @(StoreInfo.StoreName) Store Roles</button>
-        }
+        
         @if (CanCloseStore)
         {
             <button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
@@ -63,11 +60,11 @@
         @if (CanManageRoles)
         {
             <h2> Manage Store Roles: </h2>
-
-            <button class="btn btn-primary" @onclick="ViewStoreRolesButton">View Store Roles</button>
+            <br />
+            <button class="btn btn-primary" @onclick="() => ViewStoreRoles()">View @(StoreInfo.StoreName) Roles</button>
             <br />
             <h5>Appoint Store Owner: </h5>
-            <EditForm Model="@AppointRoleModel" OnSubmit="AppointNewOwner">
+            <EditForm Model="@AppointRoleModel" OnValidSubmit="AppointNewOwner">
                 <DataAnnotationsValidator />
                 <div class="form-group">
                     <label>Username</label>
@@ -78,20 +75,27 @@
                 </button>
             </EditForm>
             <br />
-            <h5>Fire Store Owner: </h5>
-            <EditForm Model="@FireRoleModel" OnSubmit="FireOwner">
-                <DataAnnotationsValidator />
-                <div class="form-group">
-                    <label>Username</label>
-                    <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    Fire Owner
-                </button>
-            </EditForm>
+             <h5>Fire Store Owner: </h5>
+             <EditForm Model="@FireRoleModel" OnValidSubmit="FireOwner">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Username</label>
+                <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
+                <ValidationMessage For="@(() => FireRoleModel.Username)" />
+            </div>
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading) 
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Fire Owner
+            </button>
+        </EditForm>
+
             <br />
+           
             <h5>Appoint Store Manager: </h5>
-            <EditForm Model="@AppointRoleModel" OnSubmit="AppointNewManager">
+            <EditForm Model="@AppointRoleModel" OnValidSubmit="AppointNewManager">
                 <DataAnnotationsValidator />
                 <div class="form-group">
                     <label>Username</label>
@@ -102,20 +106,24 @@
                 </button>
             </EditForm>
             <br />
-            <h5>Fire Store Manager: </h5>
-            <EditForm Model="@FireRoleModel" OnSubmit="FireManager">
-                <DataAnnotationsValidator />
-                <div class="form-group">
-                    <label>Username</label>
-                    <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    Fire Manager
-                </button>
-            </EditForm>
-            <br />
+           <h5>Fire Store Manager: </h5>
+             <EditForm Model="@FireRoleModel" OnValidSubmit="FireManager">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Username</label>
+                <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
+                <ValidationMessage For="@(() => FireRoleModel.Username)" />
+            </div>
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading) 
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Fire Manager
+            </button>
+        </EditForm>
             <h5>Manage Permission of Store Manager: </h5>
-            <EditForm Model="@ModifyStoreManagerPermissionsModel" OnSubmit="ModifyManagerPermissionsForm">
+            <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="ModifyManagerPermissionsForm">
                 <DataAnnotationsValidator />
                 <div class="form-group">
                     <label>Username</label>
@@ -142,7 +150,7 @@
         @if (_marketAPIClient.LoggedIn || _marketAPIClient.Admin)
         {
             <h4>Send Question\Query to Store:</h4>
-            <EditForm Model="@SendQuestionModel" OnSubmit="SendQuestionForm">
+            <EditForm Model="@SendQuestionModel" OnValidSubmit="SendQuestionForm">
                 <DataAnnotationsValidator />
                 <div class="form-group">
                     <label>Title</label>
@@ -403,6 +411,7 @@ else
         {
             loading = false;
             StateHasChanged();
+            NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo($"/StorePage/{StoreName}");
         }
     }
@@ -430,6 +439,7 @@ else
         {
             loading = false;
             StateHasChanged();
+            NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo($"/StorePage/{StoreName}");
         }
     }
@@ -458,6 +468,7 @@ else
         {
             loading = false;
             StateHasChanged();
+            NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo($"/StorePage/{StoreName}");
         }
     }
@@ -493,121 +504,164 @@ else
         //return view;
     }
 
-    private async void ViewStoreRolesButton()
-    {
-        NavigationManager.NavigateTo($"StorePage/{StoreName}/roles.o");
-    }
-
     private async void ModifyManagerPermissionsForm()
     {
-        string feedback = "";
-        Response res_history = new Response();
-        Response res_hasAcces_history = await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO");
-        if ((!res_hasAcces_history.ErrorOccured) != ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory)
+        // reset alerts on submit
+        AlertService.Clear();
+        bool askHistoryPermission = ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory;
+        bool askMsgPermission = ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply;
+        string managerUserName = ModifyStoreManagerPermissionsModel.Username;
+        ModifyStoreManagerPermissionsModel = new Models.ModifyStoreManagerPermissionsModel();
+        try
         {
-            if (ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory)
-            {
-                res_history = await _marketAPIClient.AddManagerPermission(ModifyStoreManagerPermissionsModel.Username, StoreName, "STORE_HISTORY_INFO");
-                feedback += "add to store manager : " + ModifyStoreManagerPermissionsModel.Username + " permission: Store Purchase History\n";
+            string feedback = "";
+            if(!askHistoryPermission)
+            {//remove history permmision
+                Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
+                if (response.ErrorOccured)
+                    throw new Exception(response.ErrorMessage);
+                feedback += "remove history permssion from store manager: " + managerUserName+" ; ";
             }
-            else
-            {
-                res_history = await _marketAPIClient.RemoveManagerPermission(ModifyStoreManagerPermissionsModel.Username, StoreName, "STORE_HISTORY_INFO");
-                feedback += "remove from store manager : " + ModifyStoreManagerPermissionsModel.Username + " permission: Store Purchase History\n";
+            if(askHistoryPermission)
+            {//add history permmision
+                Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
+                if (response.ErrorOccured)
+                    throw new Exception(response.ErrorMessage);
+                feedback += "add history permssion to store manager: " + managerUserName+" ; ";
             }
-        }
-
-        Response res_info = new Response();
-        Response res_hasAcces_info = await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
-        if ((!res_hasAcces_info.ErrorOccured) != ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply)
-        {
-            if (ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply)
-            {
-                res_info = await _marketAPIClient.AddManagerPermission(ModifyStoreManagerPermissionsModel.Username, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
-                feedback += "add to store manager : " + ModifyStoreManagerPermissionsModel.Username + " permission: Recive and Reply to Msg\n";
+            if(!askMsgPermission)
+            {//remove msg permmision
+                Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
+                if (response.ErrorOccured)
+                    throw new Exception(response.ErrorMessage);
+                feedback += "remove msg permssion from store manager: " + managerUserName+" ; ";
             }
-            else
-            {
-                res_info = await _marketAPIClient.RemoveManagerPermission(ModifyStoreManagerPermissionsModel.Username, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
-                feedback += "remove from store manager : " + ModifyStoreManagerPermissionsModel.Username + " permission: Recive and Reply to Msg\n";
+            if(askMsgPermission)
+            {//add msg permmision
+                Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
+                if (response.ErrorOccured)
+                    throw new Exception(response.ErrorMessage);
+                feedback += "add msg permssion to store manager: " + managerUserName+" ; ";
             }
-        }
-
-        if (res_info.ErrorOccured || res_history.ErrorOccured)
-        {
-            AlertService.Error("history permission: " + res_history.ErrorMessage + "\nMsg permission: " + res_info.ErrorMessage);
-            StateHasChanged();
-        }
-        else
-        {
             AlertService.Info(feedback);
-            NavigationManager.NavigateTo("");
-            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
+        }
+        catch(Exception ex)
+        {
+          AlertService.Error(ex.Message); 
+        }
+        finally
+        {
+            StateHasChanged();
         }
     }
 
     private async void AppointNewOwner()
     {
-        Response response = await _marketAPIClient.AddStoreOwner(AppointRoleModel.Username, StoreName);
+        // reset alerts on submit
+        AlertService.Clear();
+        string toAppoint = AppointRoleModel.Username;
         AppointRoleModel = new Models.AppointRoleModel();
-        if (response.ErrorOccured)
+
+        try
         {
-            AlertService.Error(response.ErrorMessage);
+            Response response = await _marketAPIClient.AddStoreOwner(toAppoint, StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully appointed new owner: "+toAppoint);
         }
-        else
+        catch(Exception ex)
         {
-            AlertService.Info("Successfully appointed new owner.");
+          AlertService.Error(ex.Message); 
         }
-        NavigationManager.NavigateTo("");
-        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
     private async void FireOwner()
     {
-        Response response = await _marketAPIClient.RemoveStoreOwner(AppointRoleModel.Username, StoreName);
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+        string toFire = FireRoleModel.Username;
         FireRoleModel = new Models.FireRoleModel();
-        if (response.ErrorOccured)
+        try
         {
-            AlertService.Error(response.ErrorMessage);
+            Response response = await _marketAPIClient.RemoveStoreOwner(toFire,StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("succesfully remove owner: " + toFire);
         }
-        else
+        catch (Exception ex)
         {
-            AlertService.Info("Successfully appointed new owner.");
+            AlertService.Error(ex.Message); 
         }
-        NavigationManager.NavigateTo("");
-        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+
     }
 
     private async void AppointNewManager()
     {
-        Response response = await _marketAPIClient.AddStoreManager(AppointRoleModel.Username, StoreName);
+        // reset alerts on submit
+        AlertService.Clear();
+        string toAppoint = AppointRoleModel.Username;
         AppointRoleModel = new Models.AppointRoleModel();
-        if (response.ErrorOccured)
+
+        try
         {
-            AlertService.Error(response.ErrorMessage);
+            Response response = await _marketAPIClient.AddStoreManager(toAppoint, StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully appointed new Manager: "+toAppoint);
         }
-        else
+        catch(Exception ex)
         {
-            AlertService.Info("Successfully appointed new owner.");
+          AlertService.Error(ex.Message); 
         }
-        NavigationManager.NavigateTo("");
-        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
     private async void FireManager()
     {
-        Response response = await _marketAPIClient.RemoveStoreManager(AppointRoleModel.Username, StoreName);
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+        string toFire = FireRoleModel.Username;
         FireRoleModel = new Models.FireRoleModel();
-        if (response.ErrorOccured)
+        try
         {
-            AlertService.Error(response.ErrorMessage);
+            Response response = await _marketAPIClient.RemoveStoreManager(toFire,StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("succesfully remove manager: " + toFire);
         }
-        else
+        catch (Exception ex)
         {
-            AlertService.Info("Successfully appointed new owner.");
+            AlertService.Error(ex.Message); 
         }
-        NavigationManager.NavigateTo("");
-        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
     }
 
     private async void RemoveItemFromStock(string storename, int itemid)
@@ -621,24 +675,37 @@ else
         {
             AlertService.Info("Successfully removed item from stock.");
         }
+        StateHasChanged();
         NavigationManager.NavigateTo("");
         NavigationManager.NavigateTo($"StorePage/{StoreName}");
     }
 
     private async void SendQuestionForm()
     {
-        Response response = await _marketAPIClient.SendMessageToStore(StoreName, SendQuestionModel.Title, SendQuestionModel.Question);
-        if (response.ErrorOccured)
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+
+        try
         {
-            AlertService.Error(response.ErrorMessage);
-        }
-        else
-        {
+            Response response = await _marketAPIClient.SendMessageToStore(StoreName, SendQuestionModel.Title, SendQuestionModel.Question);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
             AlertService.Info("Successfully sent the message.");
-            SendQuestionModel = new Models.SendQuestionModel();
         }
-        NavigationManager.NavigateTo("");
-        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message); 
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+       
     }
 
     private async void UpdateQuantityForm(int ItemID)
@@ -653,6 +720,7 @@ else
             AlertService.Info("Successfully updated stock quantity.");
             UpdateQuantityModel = new Models.UpdateQuantityModel();
         }
+        StateHasChanged();
         NavigationManager.NavigateTo("");
         NavigationManager.NavigateTo($"StorePage/{StoreName}");
     }

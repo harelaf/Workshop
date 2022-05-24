@@ -178,6 +178,8 @@ namespace MarketProject.Domain
         public void RemoveManagerPermission(String appointer, String storeName, Operation op)
         {
             SystemRole role = GetRole(storeName);
+            if (role == null)
+                throw new Exception(Username+ " is not a manager of store: "+storeName);
             role.denyPermission(op, storeName, appointer);
         }
 
