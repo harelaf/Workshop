@@ -541,7 +541,7 @@ namespace MarketWeb.Client.Connect
                 { "storeName" , storeName }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
-            Response<List<StoreOwnerDTO>> res = await _httpService.Get<Response<List<StoreOwnerDTO>>>(newUrl);
+            Response<List<StoreOwnerDTO>> res = await _httpService.Post<Response<List<StoreOwnerDTO>>>(newUrl, null);
             return res;
         }
 
@@ -553,19 +553,21 @@ namespace MarketWeb.Client.Connect
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
-            Response<List<StoreManagerDTO>> res = await _httpService.Get<Response<List<StoreManagerDTO>>>(newUrl);
+            Response<List<StoreManagerDTO>> res = await _httpService.Post<Response<List<StoreManagerDTO>>>(newUrl, null);
             return res;
         }
 
         public async Task<Response<StoreFounderDTO>> GetStoreFounder(string storeName)
         {
+            //throw new NotImplementedException("in client get founder of store: "+storeName);
             const string url = "api/market/GetStoreFounder";
             var param = new Dictionary<string, string>() {
                 { "storeName" , storeName }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
-            Response<StoreFounderDTO> res = await _httpService.Get<Response<StoreFounderDTO>>(newUrl);
+            Response<StoreFounderDTO> res = await _httpService.Post<Response<StoreFounderDTO>>(newUrl, null);
+			
             return res;
         }
 
@@ -604,7 +606,7 @@ namespace MarketWeb.Client.Connect
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
-            Response<List<Tuple<DateTime, ShoppingBasketDTO>>> res = await _httpService.Get<Response<List<Tuple<DateTime, ShoppingBasketDTO>>>>(newUrl);
+            Response<List<Tuple<DateTime, ShoppingBasketDTO>>> res = await _httpService.Post<Response<List<Tuple<DateTime, ShoppingBasketDTO>>>>(newUrl, null);
             return res;
         }
 
