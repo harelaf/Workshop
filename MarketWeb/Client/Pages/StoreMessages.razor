@@ -40,14 +40,10 @@
 					<EditForm Model="@ReplyModel">
                         <DataAnnotationsValidator />
 						<div class="form-group">
-							<label>Title</label>
-							<InputText id="@i" @bind-Value="ReplyModel.Title" class="form-control" />
-						</div>
-						<div class="form-group">
 							<label>Reply</label>
 							<InputTextArea id="@(i+Messages.Count)" @bind-Value="ReplyModel.Reply" class="form-control" />
 						</div>
-                        <button class="btn btn-primary" @onclick="() => OnValidSubmit(msg.Replier)">
+                        <button class="btn btn-primary" @onclick="() => OnValidSubmit(msg.SenderUsername, msg.Id)">
                             Reply
                         </button>
                     </EditForm>
@@ -65,43 +61,41 @@ else
 
 @code {
 	[Parameter] public string StoreName { get; set; }
-	Queue<MessageToStoreDTO> Messages = new Queue<MessageToStoreDTO>();
+	List<MessageToStoreDTO> Messages = new List<MessageToStoreDTO>();
 	Models.ReplyModel ReplyModel = new Models.ReplyModel();
 
 
 
 
-	private async void OnValidSubmit(string reciver)
+	private async void OnValidSubmit(string reciver, int msgid)
 	{
-		 AlertService.Clear();
+		AlertService.Clear();
 		try
 		{
-			Response response = await _marketAPIClient.AnswerStoreMesseage(StoreName, reciver, ReplyModel.Title, ReplyModel.Reply);
+			Response response = await _marketAPIClient.AnswerStoreMesseage(reciver, msgid, StoreName, ReplyModel.Reply);
 			ReplyModel = new Models.ReplyModel();
 			if (response.ErrorOccured)
 			{
 				throw new Exception(response.ErrorMessage);
 			}
+			
+			NavigationManager.NavigateTo("");
+			NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
+			StateHasChanged();
 			AlertService.Info("Successfully sent the reply.");
 		}
 		catch(Exception ex)
 		{
 			AlertService.Error(ex.Message);
-		}
-		finally
-		{
 			StateHasChanged();
-			NavigationManager.NavigateTo("");
-			NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
 		}
-		
 	}
 
 	protected override async Task OnInitializedAsync()
 	{
 		try
 		{
-			Response<Queue<MessageToStoreDTO>> response = await _marketAPIClient.GetStoreMessages(StoreName);
+			Response<List<MessageToStoreDTO>> response = await _marketAPIClient.GetStoreMessages(StoreName);
 			if (response.ErrorOccured)
 			{
 				throw new Exception(response.ErrorMessage);

@@ -322,7 +322,7 @@ namespace MarketProject.Domain
             }
         }
 
-        public Queue<MessageToStore> GetStoreMessages(string storeName)
+        public List<MessageToStore> GetStoreMessages(string storeName)
         {
             Store store = GetStore(storeName);
             return store.MessagesToStore;

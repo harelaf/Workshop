@@ -26,7 +26,8 @@ namespace MarketProject.Domain
 
         private int _id;
         public int Id => _id;
-
+        
+        public void Setid(int id) { _id = Id; }
         public MessageToStore(String storeName, String senderUsername, string title, string message, int id)
         {
             _storeName = storeName;

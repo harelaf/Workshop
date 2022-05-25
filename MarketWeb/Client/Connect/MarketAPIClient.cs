@@ -56,8 +56,8 @@ namespace MarketWeb.Client.Connect
         public Task<Response<List<StoreOwnerDTO>>> GetStoreOwners(String storeName);
         public Task<Response<List<StoreManagerDTO>>> GetStoreManagers(String storeName);
         public Task<Response<StoreFounderDTO>> GetStoreFounder(String storeName);
-        public Task<Response<Queue<MessageToStoreDTO>>> GetStoreMessages(String storeName);
-        public Task<Response> AnswerStoreMesseage(String storeName, string recieverUsername, String title, String reply);
+        public Task<Response<List<MessageToStoreDTO>>> GetStoreMessages(String storeName);
+        public Task<Response> AnswerStoreMesseage(string receiverUsername, int msgID, string storeName, string reply);
         public Task<Response<List<Tuple<DateTime, ShoppingBasketDTO>>>> GetStorePurchasesHistory(String storeName);
         public Task<Response> CloseStorePermanently(String storeName);
         public Task<Response<ComplaintDTO>> GetRegisterdComplaints();
@@ -571,30 +571,36 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response<Queue<MessageToStoreDTO>>> GetStoreMessages(string storeName)
+        public async Task<Response<List<MessageToStoreDTO>>> GetStoreMessages(string storeName)
         {
+
             const string url = "api/market/GetStoreMessages";
             var param = new Dictionary<string, string>() {
                 { "storeName" , storeName }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
-            Response<Queue<MessageToStoreDTO>> res = await _httpService.Get<Response<Queue<MessageToStoreDTO>>>(newUrl);
+            Response<List<MessageToStoreDTO>> res = await _httpService.Get<Response<List<MessageToStoreDTO>>>(newUrl);
             return res;
         }
 
-        public async Task<Response> AnswerStoreMesseage(string storeName, string recieverUsername, string title, string reply)
+        public async Task<Response> AnswerStoreMesseage(string receiverUsername, int msgID, string storeName, string reply)
         {
+            
             const string url = "api/market/AnswerStoreMesseage";
             var param = new Dictionary<string, string>() {
                 { "storeName" , storeName },
-                {"recieverUsername", recieverUsername },
-                { "title", title},
+                {"receiverUsername", receiverUsername },
+                { "msgID", msgID.ToString()},
                 { "reply", reply}
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);
+			if (res.ErrorOccured)
+			{
+                throw new NotImplementedException($"answer msg: reciver= {receiverUsername}, msgID = {msgID},  store={storeName}, reply = {reply}");
+            }
             return res;
         }
 

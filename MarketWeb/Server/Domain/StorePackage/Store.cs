@@ -10,12 +10,13 @@ namespace MarketProject.Domain
     public class Store
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private Stock _stock;
-        public Stock Stock => _stock;
+		private Stock _stock;
+        private static int messageId=0;
+		public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
         private DiscountPolicy _discountPolicy;
-        private Queue<MessageToStore> _messagesToStore;
-        public Queue<MessageToStore> MessagesToStore => _messagesToStore;
+        private List<MessageToStore> _messagesToStore;
+        public List<MessageToStore> MessagesToStore => _messagesToStore;
         private Rating _rating;
         public Rating Rating => _rating;
         private List<StoreManager> _managers;
@@ -39,7 +40,7 @@ namespace MarketProject.Domain
             _stock = new Stock();
             _purchasePolicy = purchasePolicy;
             _discountPolicy = discountPolicy;
-            _messagesToStore = new Queue<MessageToStore>();
+            _messagesToStore = new List<MessageToStore>();
             _rating = new Rating();
             _managers = new List<StoreManager>();
             _owners = new List<StoreOwner>();
@@ -253,7 +254,11 @@ namespace MarketProject.Domain
 
         public void AddMessage(MessageToStore message)
         {
-            _messagesToStore.Enqueue(message);
+
+            messageId++;
+            _messagesToStore.Add(message);
+            message.Setid(messageId);
+
         }
 
         public void CloseStore()
@@ -382,7 +387,7 @@ namespace MarketProject.Domain
             {
                 if(msg.Id == msgID)
                 {
-                    _messagesToStore.Enqueue(msg);
+                    _messagesToStore.Remove(msg);
                     return msg;
                 }
             }

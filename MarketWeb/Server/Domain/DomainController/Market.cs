@@ -539,7 +539,7 @@ namespace MarketProject.Domain
             String errorMessage = null;
             MessageToStore msg = null;
             CheckIsVisitorLoggedIn(authToken, "AnswerStoreMesseage");
-            string appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            string replierUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_storeManagement.CheckStoreNameExists(storeName))
                 errorMessage = "there is no store in system with the given store name";
             else if (!_VisitorManagement.IsRegistered(receiverUsername))
@@ -555,10 +555,10 @@ namespace MarketProject.Domain
                 LogErrorMessage("AnswerStoreMesseage", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendStoreMessageReplyment(msg, appointerUsername,receiverUsername ,reply);
+            _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername ,reply);
         }
 
-        public Queue<MessageToStore> GetStoreMessages(String authToken, String storeName)
+        public List<MessageToStore> GetStoreMessages(String authToken, String storeName)
         {
             String username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if(_VisitorManagement.CheckAccess(username, storeName, Operation.RECEIVE_AND_REPLY_STORE_MESSAGE))

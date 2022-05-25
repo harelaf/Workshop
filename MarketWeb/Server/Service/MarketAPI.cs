@@ -820,23 +820,23 @@ namespace MarketProject.Service
         }
 
         [HttpGet("GetStoreMessages")]
-        public Response<Queue<MessageToStoreDTO>> GetStoreMessages([FromHeader] String Authorization, String storeName)
+        public Response<List<MessageToStoreDTO>> GetStoreMessages([FromHeader] String Authorization, String storeName)
         {//II.4.12
             //should return with id
-            Response<Queue<MessageToStoreDTO>> response;
+            Response<List<MessageToStoreDTO>> response;
             try
             {
 
                 String authToken = parseAutherization(Authorization);
-                Queue<MessageToStore> messages = _market.GetStoreMessages(authToken, storeName);
-                Queue<MessageToStoreDTO> messagesDTOs = new Queue<MessageToStoreDTO>();
+                List<MessageToStore> messages = _market.GetStoreMessages(authToken, storeName);
+                List<MessageToStoreDTO> messagesDTOs = new List<MessageToStoreDTO>();
                 foreach (MessageToStore messageToStore in messages)
-                    messagesDTOs.Enqueue(DTOtranslator.toDTO(messageToStore));
-                response = new Response<Queue<MessageToStoreDTO>>(messagesDTOs);
+                    messagesDTOs.Add(DTOtranslator.toDTO(messageToStore));
+                response = new Response<List<MessageToStoreDTO>>(messagesDTOs);
             }
             catch (Exception e)
             {
-                response = new Response<Queue<MessageToStoreDTO>>(e); _logger.Error(e.Message);
+                response = new Response<List<MessageToStoreDTO>>(e); _logger.Error(e.Message);
             }
             return response;
         }
@@ -911,7 +911,6 @@ namespace MarketProject.Service
             Response response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Answer Store Message called with parameters: authToken={authToken}, msgId={msgID},storeName={storeName} reply={reply}.");
                 _market.AnswerStoreMesseage(authToken, receiverUsername, msgID, storeName, reply);
