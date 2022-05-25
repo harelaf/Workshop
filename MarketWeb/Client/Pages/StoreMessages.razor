@@ -27,31 +27,33 @@
 			<th><h4> Reply</h4></th>
 
 		</tr>
+		@{int i=0;
 		@foreach (MessageToStoreDTO msg in Messages)
 		{
+			i++;
 			<tr>
 				<th>@msg.SenderUsername</th>
 				<th>@msg.Title</th>
 				<th>@msg.Message</th>
 				<th>
-					<EditForm Model="@ReplyModel" OnSubmit="OnValidSubmit">
-						<DataAnnotationsValidator />
+
+					<EditForm Model="@ReplyModel">
+                        <DataAnnotationsValidator />
 						<div class="form-group">
 							<label>Title</label>
-							<InputText @bind-Value="ReplyModel.Title" class="form-control" />
+							<InputText id="@i" @bind-Value="ReplyModel.Title" class="form-control" />
 						</div>
 						<div class="form-group">
 							<label>Reply</label>
-							<InputTextArea @bind-Value="ReplyModel.Reply" class="form-control" />
+							<InputTextArea id="@(i+Messages.Count)" @bind-Value="ReplyModel.Reply" class="form-control" />
 						</div>
-						<button type="submit" class="btn btn-primary">
-							Reply
-						</button>
-						
-					</EditForm>
+                        <button class="btn btn-primary" @onclick="() => OnValidSubmit(msg.Replier)">
+                            Reply
+                        </button>
+                    </EditForm>
 				</th>
 			</tr>
-		}
+		}}
 	</table>
 	<br />
 
@@ -69,19 +71,30 @@ else
 
 
 
-	private async void OnValidSubmit()
+	private async void OnValidSubmit(string reciver)
 	{
-		Response response = await _marketAPIClient.AnswerStoreMesseage(StoreName,ReplyModel.Receiver, ReplyModel.Title, ReplyModel.Reply);
-        if (response.ErrorOccured)
-        {
-            AlertService.Error(response.ErrorMessage);
-        }
-        else
-        {
-            AlertService.Info("Successfully sent the reply.");
-            ReplyModel = new Models.ReplyModel();
-        }
-        StateHasChanged();
+		 AlertService.Clear();
+		try
+		{
+			Response response = await _marketAPIClient.AnswerStoreMesseage(StoreName, reciver, ReplyModel.Title, ReplyModel.Reply);
+			ReplyModel = new Models.ReplyModel();
+			if (response.ErrorOccured)
+			{
+				throw new Exception(response.ErrorMessage);
+			}
+			AlertService.Info("Successfully sent the reply.");
+		}
+		catch(Exception ex)
+		{
+			AlertService.Error(ex.Message);
+		}
+		finally
+		{
+			StateHasChanged();
+			NavigationManager.NavigateTo("");
+			NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
+		}
+		
 	}
 
 	protected override async Task OnInitializedAsync()

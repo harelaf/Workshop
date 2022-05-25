@@ -310,8 +310,8 @@ namespace MarketProject.Service
         {
             return new StoreOwnerDTO(
                 storeOwner.operations,
-                storeOwner.StoreName,
                 storeOwner.Username,
+                storeOwner.StoreName,
                 storeOwner.Appointer);
         }
         public static PurchasePolicyDTO toDTO(PurchasePolicy policy)
