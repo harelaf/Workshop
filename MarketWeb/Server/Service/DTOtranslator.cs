@@ -221,19 +221,27 @@ namespace MarketProject.Service
             ICollection<AdminMessageToRegisteredDTO> adminMessages = new List<AdminMessageToRegisteredDTO>();
             ICollection<MessageToStoreDTO> repliedMessages = new List<MessageToStoreDTO>();
             ICollection<NotifyMessageDTO> notifications = new List<NotifyMessageDTO>();
+            IDictionary<int, ComplaintDTO> filedComplaints = new Dictionary<int, ComplaintDTO>();
             foreach (AdminMessageToRegistered msg in registered.AdminMessages)
                 adminMessages.Add(toDTO(msg));
             foreach (MessageToStore msg in registered.messageToStores)
                 repliedMessages.Add(toDTO(msg));
             foreach (NotifyMessage msg in registered.Notifcations)
                 notifications.Add(toDTO(msg));
+            foreach (KeyValuePair<int, Complaint> row in registered.FiledComplaints)
+                filedComplaints[row.Key] = toDTO(row.Value);
             return new RegisteredDTO(
                 registered.Username,
                 toDTO(registered.ShoppingCart),
                 adminMessages,
                 notifications,
                 repliedMessages,
+                filedComplaints,
                 registered._birthDate);
+        }
+        public static ComplaintDTO toDTO(Complaint complaint)
+        {
+            return new ComplaintDTO(complaint.ID, complaint.CartID, complaint.GetComplainer(), complaint.Message, complaint.Response);
         }
         public static ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {

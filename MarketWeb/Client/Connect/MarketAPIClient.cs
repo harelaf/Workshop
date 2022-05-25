@@ -60,7 +60,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response> AnswerStoreMesseage(String storeName, string recieverUsername, String title, String reply);
         public Task<Response<List<Tuple<DateTime, ShoppingBasketDTO>>>> GetStorePurchasesHistory(String storeName);
         public Task<Response> CloseStorePermanently(String storeName);
-        public Task<Response<ComplaintDTO>> GetRegisterdComplaints();
+        public Task<Response<ICollection<ComplaintDTO>>> GetRegisterdComplaints();
         public Task<Response> ReplyToComplaint(int complaintID, String reply);
         public Task<Response> SendMessageToRegisterd(String storeName, String UsernameReciever, String title, String message);
         public Task<Response<ICollection<AdminMessageToRegisteredDTO>>> GetRegisteredMessagesFromAdmin();
@@ -620,9 +620,9 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response<ComplaintDTO>> GetRegisterdComplaints()
+        public async Task<Response<ICollection<ComplaintDTO>>> GetRegisterdComplaints()
         {
-            Response<ComplaintDTO> res = await _httpService.Get<Response<ComplaintDTO>>("api/market/GetRegisterdComplaints");
+            Response<ICollection<ComplaintDTO>> res = await _httpService.Post<Response<ICollection<ComplaintDTO>>>("api/market/GetRegisterdComplaints", null);
             return res;
         }
 
