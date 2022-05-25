@@ -19,39 +19,38 @@ h1{
 
 <div class="text-center">
     <h1 class="display-4">@(username)'s Purchase History</h1>
-    <br />
-    <br />
 </div>
 <br />
 @if (purchasedCartDTOs.Count > 0)
 {
-    @foreach (PurchasedCartDTO cartPurchase in purchasedCartDTOs)
+    @foreach (Tuple<DateTime, ShoppingCartDTO> cartPurchase in purchasedCartDTOs)
     {
-        DateTime date = cartPurchase.Date;
-        ShoppingCartDTO cart = cartPurchase.ShoppingCart;
+        DateTime date = cartPurchase.Item1;
+        ShoppingCartDTO cart = cartPurchase.Item2;
         <h4>@date</h4>
-        @foreach (ShoppingBasketDTO basket in cart.Baskets)
+        @if (cart != null && cart.Baskets != null)
         {
-            <table style="width:100%" id="@date">
-                <tr>
-                    <th>Product Name</th>
-                    <th>Amount</th>
-                    <th>price per unit</th>
-                </tr>
-                @foreach (int itemID in basket.Items.Keys)
-                {
-
-                    <tr id="@(basket.Items[itemID].Item1.Name + date.ToString())">
-                        <th>@basket.Items[itemID].Item1.Name</th>
-                        <th>@basket.Items[itemID].Item2</th>
-                        <th>$@basket.Items[itemID].Item1.Price</th>
+            @foreach (ShoppingBasketDTO basket in cart.Baskets)
+            {
+                <table style="width:100%" id="@date">
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Amount</th>
+                        <th>Price Per Unit</th>
                     </tr>
-                }
-            </table>
-            <br />
+                    @foreach (int itemID in basket.Items.Keys)
+                    {
+                        <tr id="@(basket.Items[itemID].Item1.Name + date.ToString())">
+                            <th>@basket.Items[itemID].Item1.Name</th>
+                            <th>@basket.Items[itemID].Item2</th>
+                            <th>$@basket.Items[itemID].Item1.Price</th>
+                        </tr>
+                    }
+                </table>
+                <br />
+            }
         }
     }
-
 }
 else
 {
@@ -60,18 +59,18 @@ else
 
 @code {
     private Models.MyPurchaseHistoryModel model = new Models.MyPurchaseHistoryModel();
-    private bool loading;
-    private ICollection<PurchasedCartDTO> purchasedCartDTOs = new List<PurchasedCartDTO>();
+    private bool loading = false;
+    private List<Tuple<DateTime, ShoppingCartDTO>> purchasedCartDTOs = new List<Tuple<DateTime, ShoppingCartDTO>>();
     private string username = "";
 
 
     protected override async Task OnInitializedAsync()
     {
-        //AlertService.Clear(); // ?????
+        AlertService.Clear();
         try
         {
             Response<RegisteredDTO> response_user = await marketAPIClient.GetVisitorInformation();
-            Response<ICollection<PurchasedCartDTO>> res_history = await marketAPIClient.GetMyPurchasesHistory();
+            Response<List<Tuple<DateTime, ShoppingCartDTO>>> res_history = await marketAPIClient.GetMyPurchasesHistory();
             if (response_user.ErrorOccured)
             {
                 throw new Exception(response_user.ErrorMessage);

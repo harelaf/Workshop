@@ -22,7 +22,7 @@ namespace MarketProject.Domain
             if (paymentMethode== paymentMethode_mock_true)
                 return true;
             if(!_paymentServices_name_ip.ContainsKey(paymentMethode))
-                return false;//defultmock mock
+                return true;//default mock
             return realPay(price, _paymentServices_name_ip[paymentMethode]);
         }
         private bool realPay(double price, int ip)

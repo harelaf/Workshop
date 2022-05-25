@@ -596,27 +596,30 @@ namespace MarketProject.Service
             return response;
         }
         [HttpGet("GetMyPurchasesHistory")]
-        public Response<ICollection<PurchasedCartDTO>> GetMyPurchasesHistory([FromHeader] String Authorization)
+        public Response<List<Tuple<DateTime, ShoppingCartDTO>>> GetMyPurchasesHistory([FromHeader] String Authorization)
         {//II.3.7
-            Response<ICollection<PurchasedCartDTO>> response;
+            Response<List<Tuple<DateTime, ShoppingCartDTO>>> response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Get My Purchases History called with parameters: authToken={authToken}.");
                 ICollection<Tuple<DateTime, ShoppingCart>> purchasedCarts = _market.GetMyPurchases(authToken);
-                ICollection<PurchasedCartDTO> purchasedCartsDTO = new List<PurchasedCartDTO>();
+                List<PurchasedCartDTO> purchasedCartsDTO = new List<PurchasedCartDTO>();
                 foreach (Tuple<DateTime, ShoppingCart> purchase in purchasedCarts)
                 {
                     purchasedCartsDTO.Add(DTOtranslator.toDTO(purchase.Item1, purchase.Item2));
                 }
-
-                response = new Response<ICollection<PurchasedCartDTO>>(purchasedCartsDTO);
+                List<Tuple<DateTime, ShoppingCartDTO>> something = new List<Tuple<DateTime, ShoppingCartDTO>>();
+                foreach (PurchasedCartDTO p in purchasedCartsDTO)
+                {
+                    something.Add(new Tuple<DateTime, ShoppingCartDTO>(p.Date, p.ShoppingCart));
+                }
+                response = new Response<List<Tuple<DateTime, ShoppingCartDTO>>>(something);
                 _logger.Info($"SUCCESSFULY executed Get My Purchases History.");
             }
             catch (Exception e)
             {
-                response = new Response<ICollection<PurchasedCartDTO>>(null, e); _logger.Error(e.Message);
+                response = new Response<List<Tuple<DateTime, ShoppingCartDTO>>>(null, e); _logger.Error(e.Message);
             }
             return response;
         }

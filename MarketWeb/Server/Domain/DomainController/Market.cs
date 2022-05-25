@@ -504,9 +504,9 @@ namespace MarketProject.Domain
             else
             {
                 senderUsername= _VisitorManagement.GetRegisteredUsernameByToken(userToken);
-                if (_VisitorManagement.CheckAccess(senderUsername,null,  Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE))
+                if (!_VisitorManagement.CheckAccess(senderUsername, null, Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE))
                 {
-                    errorMessage = "User " + senderUsername + " don't have permission to preform this operation.";
+                    errorMessage = "User " + senderUsername + " doesn't have permission to preform this operation.";
                 }
             }
             

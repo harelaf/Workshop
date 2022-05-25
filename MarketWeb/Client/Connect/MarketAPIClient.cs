@@ -46,7 +46,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response<List<ItemDTO>>> GetItemInformation(String itemName, String itemCategory, String keyWord);
         public Task<Response> SendMessageToStore(String storeName, String title, String description);
         public Task<Response> FileComplaint(int cartID, String message);
-        public Task<Response<ICollection<PurchasedCartDTO>>> GetMyPurchasesHistory();
+        public Task<Response<List<Tuple<DateTime, ShoppingCartDTO>>>> GetMyPurchasesHistory();
         public Task<Response<RegisteredDTO>> GetVisitorInformation();
         public Task<Response> EditVisitorPassword(String oldPassword, String newPassword);
         public Task<Response> RemoveManagerPermission(String managerUsername, String storeName, string op);
@@ -457,9 +457,9 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response<ICollection<PurchasedCartDTO>>> GetMyPurchasesHistory()
+        public async Task<Response<List<Tuple<DateTime, ShoppingCartDTO>>>> GetMyPurchasesHistory()
         {
-            Response<ICollection<PurchasedCartDTO>> res = await _httpService.Get<Response<ICollection<PurchasedCartDTO>>>("api/market/GetMyPurchasesHistory");
+            Response<List<Tuple<DateTime, ShoppingCartDTO>>> res = await _httpService.Get<Response<List<Tuple<DateTime, ShoppingCartDTO>>>>("api/market/GetMyPurchasesHistory");
             return res;
         }
 
@@ -731,7 +731,7 @@ namespace MarketWeb.Client.Connect
         {
             const string url = "api/market/SendMessageToRegisterd";
             var param = new Dictionary<string, string>() {
-                { "receiverUsername", receiverUsername },
+                { "UsernameReciever", receiverUsername },
                 { "title", title },
                 { "message", message }
             };

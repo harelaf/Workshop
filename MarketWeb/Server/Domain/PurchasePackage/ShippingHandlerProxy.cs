@@ -22,7 +22,7 @@ namespace MarketProject.Domain
             if(shipmentMethode == shippingMethode_mock_true)
                 return true;
             if(!_shipmentServices_name_ip.ContainsKey(shipmentMethode))
-                return false;//defult mock
+                return true;//default mock
             return realShippment(address, city, country, zip, purchaserName, _shipmentServices_name_ip[shipmentMethode]);
         }
      

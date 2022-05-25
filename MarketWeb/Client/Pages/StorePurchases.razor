@@ -49,7 +49,7 @@ else
 }
 
 @code {
-    [Parameter] public string StoreName{ get; set; }
+    [Parameter] public string StoreName { get; set; }
     public List<Tuple<DateTime, ShoppingBasketDTO>> Purchases { get; set; } = new List<Tuple<DateTime, ShoppingBasketDTO>>();
 
     protected override async Task OnInitializedAsync()
