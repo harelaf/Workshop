@@ -77,6 +77,43 @@
             </tbody>
         </table>
     }
+    <br />
+    <h2>My Complaints:</h2>
+    @if (userDetails.FiledComplaints.Count == 0)
+    {
+        <font><b>You haven't filed any complaints yet.</b></font>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Complaint ID</th>
+                    <th>Cart ID</th>
+                    <th>Complaint</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (KeyValuePair<int, ComplaintDTO> row in userDetails.FiledComplaints)
+                {
+                    <tr>
+                        <td>@row.Key</td>
+                        <td>@row.Value.cartID</td>
+                        <td>@row.Value.Message</td>
+                        @if (@row.Value.Response.Length == 0)
+                        {
+                            <td>No response as of yet.</td>
+                        }
+                        else
+                        {
+                            <td>@row.Value.Response</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 }
 @code {
     private Models.Account.ChangePasswordModel model = new Models.Account.ChangePasswordModel();

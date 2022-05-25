@@ -44,6 +44,7 @@ namespace MarketProject.Domain
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
             _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
+            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens)
@@ -56,6 +57,7 @@ namespace MarketProject.Domain
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
             _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
+            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Guest> visitorsGuestsTokens)
@@ -68,6 +70,7 @@ namespace MarketProject.Domain
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
             _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
+            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens)
@@ -80,6 +83,7 @@ namespace MarketProject.Domain
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
             _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
+            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
 
@@ -664,6 +668,11 @@ namespace MarketProject.Domain
         {
             Registered reg = GetRegisteredVisitor(username);
             return reg.GetRegisteredVisitor();
+        }
+
+        internal IDictionary<int, Complaint> GetRegisterdComplaints(string authToken)
+        {
+            return CurrentAdmin.ReceivedComplaints;
         }
     }
 }

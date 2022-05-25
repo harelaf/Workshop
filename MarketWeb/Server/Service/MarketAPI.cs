@@ -973,10 +973,26 @@ namespace MarketProject.Service
             return response;
         }
 
+        [HttpPost("GetRegisterdComplaints")]
         public Response<ICollection<ComplaintDTO>> GetRegisterdComplaints([FromHeader] String Authorization)
         {//II.6.3
-            //return each complaint id in addition to its information
-            throw new NotImplementedException();
+            Response<ICollection<ComplaintDTO>> response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Get Registered Complaints called with parameters: authToken={authToken}.");
+                IDictionary<int, Complaint> complaints = _market.GetRegisterdComplaints(authToken);
+                ICollection<ComplaintDTO> result = new List<ComplaintDTO>();
+                foreach (KeyValuePair<int, Complaint> c in complaints)
+                    result.Add(DTOtranslator.toDTO(c.Value));
+                response = new Response<ICollection<ComplaintDTO>>(result);
+                _logger.Info($"SUCCESSFULY executed Get Registered Complaints.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<ComplaintDTO>>(e); _logger.Error(e.Message);
+            }
+            return response;
         }
 
         /// <summary>

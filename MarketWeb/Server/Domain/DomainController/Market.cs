@@ -902,6 +902,11 @@ namespace MarketProject.Domain
             _VisitorManagement.FileComplaint(authToken, cartID, message);
         }
 
+        public IDictionary<int, Complaint> GetRegisterdComplaints(string authToken)
+        {
+            return _VisitorManagement.GetRegisterdComplaints(authToken);
+        }
+
         /// <summary>
         /// <para> For Req II.6.3. </para>
         /// <para> System admin replies to a complaint he received.</para>

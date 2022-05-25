@@ -30,6 +30,7 @@ namespace MarketProject.Domain
         private ICollection<SystemRole> _roles;
         public ICollection<SystemRole> Roles { get { return _roles; } }
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
+        public IDictionary<int, Complaint> FiledComplaints => _filedComplaints;
 
         public bool IsAdmin
         {
