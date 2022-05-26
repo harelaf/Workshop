@@ -77,7 +77,7 @@ namespace AcceptanceTest
                     int item_num = 0;
                     foreach (int itemId in items.Keys)
                     {
-                        if (itemId == itemId_inRegCart)
+                        if (itemId == itemId_inGuestCart)
                         {
                             Assert.AreEqual(itemAmount_inGuestCart, items[itemId].Item2);
                             item_num++;
