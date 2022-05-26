@@ -483,14 +483,23 @@ namespace MarketWeb.Server.Domain
         /// <param name="Username"> The Username of the Visitor to log out.</param>
         public void RemoveRegisteredVisitor(string Username)
         {
-            String errorMessage;
+            String errorMessage=null;
+            Registered userToRemove;
             if (!IsRegistered(Username))
             {
-                errorMessage = "No such registered Visitor.";
+                errorMessage = "No such registered Visitor.";  
+            }
+            else
+            {
+                userToRemove = GetRegisteredVisitor(Username);
+                if(userToRemove.Roles.Count>0)
+                    errorMessage = "The user you asked to remove has role in system.";
+            }
+            if (errorMessage != null)
+            {
                 LogErrorMessage("RemoveRegisteredVisitor", errorMessage);
                 throw new Exception(errorMessage);
-            }
-
+            }    
             LogoutByUsername(Username);
             _registeredVisitors.Remove(Username);
         }

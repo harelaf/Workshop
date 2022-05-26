@@ -785,8 +785,9 @@ namespace MarketWeb.Server.Domain
             if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), null,  Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
             {
                 Registered registeredToRemove = _VisitorManagement.GetRegisteredVisitor(usr_toremove);
+               
                 _VisitorManagement.RemoveRegisteredVisitor(usr_toremove);
-                _storeManagement.RemoveAllRoles(registeredToRemove);
+                
             }
             else
             {
