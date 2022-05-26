@@ -14,7 +14,7 @@ namespace AcceptanceTest
     [TestClass]
     public class GetItemInfoTest
     {
-        MarketAPI marketAPI = new MarketAPI(true);
+        MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName_inSystem = "Shefa Issachar";
         string storeName_outSystem = "bla";
         string guest_VisitorToken;

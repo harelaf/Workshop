@@ -15,7 +15,7 @@ namespace AcceptanceTest
     [TestClass]
     public class TestAddItemToStock
     {
-        MarketAPI marketAPI = new MarketAPI(true);
+        MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName_inSystem = "Krusty Krab";
         string storeName_outSystem = "Chum Bucket";
         string username_founder = "SpongeBob SquarePants";

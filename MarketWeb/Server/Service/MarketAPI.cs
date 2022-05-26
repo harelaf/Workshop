@@ -20,17 +20,19 @@ namespace MarketWeb.Service
         private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         //private ILogger<MarketAPI> _logger;
         private int _id;
-        private bool testMode;
+        private bool testMode = false;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
-            _market = market;
-            //_logger = logger;
-            //LoadData();
-        }
-        public MarketAPI(bool testmode)
-        {
-            _market = new Market();
-            testMode = testmode;
+            if (market == null)
+            {
+                _market = new Market();
+                testMode = true;
+            }
+            else
+            {
+                _market = market;
+            }
+            //testMode = false;
             //_logger = logger;
             //LoadData();
         }

@@ -17,7 +17,7 @@ namespace AcceptanceTest
     [TestClass]
     public class AddAndRemoveRolesTest
     {
-        MarketAPI marketAPI = new MarketAPI(true);
+        MarketAPI marketAPI = new MarketAPI(null, null);
         String storeName = "test's Shop";
         //String storeName_outSystem = "bla";
         String guest_VisitorToken;

@@ -14,7 +14,7 @@ namespace AcceptanceTest
     [TestClass]
     public class TestGetAndAnswerStoreMessages
     {
-        MarketAPI marketAPI = new MarketAPI(true);
+        MarketAPI marketAPI = new MarketAPI(null, null);
         DateTime dob = new DateTime(2001, 7, 30);
         string storeName = "Krusty Krab";
         string username_founder = "SpongeBob SquarePants";

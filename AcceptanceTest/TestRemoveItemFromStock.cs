@@ -15,7 +15,7 @@ namespace AcceptanceTest
     [TestClass]
     public class TestRemoveItemFromStock
     {
-        MarketAPI marketAPI = new MarketAPI(true);
+        MarketAPI marketAPI = new MarketAPI(null, null);
         DateTime dob = new DateTime(2001, 7, 30);
         string storeName_inSystem = "Krusty Krab";
         string storeName_outSystem = "Chum Bucket";
