@@ -643,7 +643,7 @@ namespace MarketWeb.Server.Domain
         }
         private void RecRemoveStoreOwner(string appointer, string ownerApointee, string storeName)
         {
-            Tuple<List<string>, List<string>> owners_managers = _storeManagement.RemoveStoreOwner(ownerApointee, storeName, ownerApointee);
+            Tuple<List<string>, List<string>> owners_managers = _storeManagement.RemoveStoreOwner(ownerApointee, storeName, appointer);
             _VisitorManagement.RemoveRole(ownerApointee, storeName);
             List<string> managers = owners_managers.Item2;
             foreach(string manager in managers)
