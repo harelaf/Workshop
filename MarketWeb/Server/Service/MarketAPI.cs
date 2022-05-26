@@ -24,21 +24,23 @@ namespace MarketWeb.Service
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             _market = market;
+            if(market == null)
+            {
+                testMode = true;
+                _market = new Market();
+            }
+           
             //_logger = logger;
             //LoadData();
         }
-        public MarketAPI(bool testmode)
-        {
-            _market = new Market();
-            testMode = testmode;
-            //_logger = logger;
-            //LoadData();
-        }
+       
 
         private String parseAutherization(String Authorization)
         {
-            if(testMode)
+            if (testMode)
+            {
                 return Authorization;
+            }
             if (!AuthenticationHeaderValue.TryParse(Authorization, out var headerValue))
             {
                 throw new Exception("Invalid token!");
