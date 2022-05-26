@@ -1,9 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
-using MarketProject.Service;
-using MarketProject.Service.DTO;
 using System.Collections.Generic;
 using System;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 
 namespace AcceptanceTest
 {
@@ -78,12 +80,13 @@ namespace AcceptanceTest
             Assert.AreEqual(iterations, totalAmountInCarts);
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             Assert.IsNotNull(store);
-            IDictionary<ItemDTO, int> stock = store.Stock.Items;
-            foreach (ItemDTO item in stock.Keys)
+            IDictionary<int, Tuple<ItemDTO, int>> stock = store.Stock.Items;
+            foreach (int itemid in stock.Keys)
             {
+                ItemDTO item = stock[itemid].Item1;
                 if (item.ItemID == itemID_inStock_1)
                 {
-                    Assert.AreEqual(stock[item], 0);
+                    Assert.AreEqual(stock[itemid].Item2, 0);
                     break;
                 }
             }
@@ -162,10 +165,12 @@ namespace AcceptanceTest
         
         private int getAmountOfItemInStock(int itemID, StockDTO stock)
         {
-            foreach (ItemDTO item in stock.Items.Keys)
+            Dictionary<int, Tuple<ItemDTO, int>> dic_stock = stock.Items;
+            foreach (int itemid in dic_stock.Keys)
             {
+                ItemDTO item= dic_stock[itemid].Item1;
                 if (itemID == item.ItemID)
-                    return stock.Items[item];
+                    return stock.Items[itemid].Item2;
             }
             return 0;
         }

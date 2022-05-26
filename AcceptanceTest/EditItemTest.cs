@@ -1,11 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
-using MarketProject.Service;
-using MarketProject.Service.DTO;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using MarketProject.Domain;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 
 namespace AcceptanceTest
 {

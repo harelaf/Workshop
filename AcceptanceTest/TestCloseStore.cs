@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MarketProject.Service;
-using System.Threading;
-using MarketProject.Service.DTO;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 
 namespace AcceptanceTest
 {
@@ -58,7 +59,7 @@ namespace AcceptanceTest
             Assert.IsFalse(response1.ErrorOccured);
 
             StoreDTO dto = response1.Value;
-            Assert.AreEqual(dto.State, MarketProject.Domain.StoreState.Inactive);
+            Assert.AreEqual(dto.State, StoreState.Inactive);
 
             Response<RegisteredDTO> response2 = marketAPI.GetVisitorInformation(registered_token_founder);
             Assert.IsFalse(response2.ErrorOccured);

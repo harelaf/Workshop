@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Text;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
     internal static class HashManager
     {

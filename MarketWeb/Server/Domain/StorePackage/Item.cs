@@ -1,9 +1,9 @@
-﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
+﻿using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
     public class Item
     {

@@ -1,11 +1,13 @@
-﻿using MarketProject.Service;
-using MarketProject.Service.DTO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 
 namespace AcceptanceTest
 {
@@ -41,10 +43,11 @@ namespace AcceptanceTest
         public void happy_reviewerSendsMessageAndTheMessageArrivesAsExpected()
         {
             Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 8);
-            Response<Queue<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
+            Response<List<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
             if (!response2.ErrorOccured)
             {
-                MessageToStoreDTO messageObj = response2.Value.Dequeue();
+                MessageToStoreDTO messageObj = response2.Value[0];
+                response2.Value.RemoveAt(0);
                 Assert.AreEqual(messageObj.Title, title);
                 Assert.AreEqual(messageObj.StoreName, storeName);
                 Assert.AreEqual(messageObj.SenderUsername, username_reviewer);
@@ -60,7 +63,7 @@ namespace AcceptanceTest
         public void sad_reviewerSendsMessageAndTheRequestsStoreMessages()
         {
             Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 9);
-            Response<Queue<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_reviewer, storeName);
+            Response<List<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_reviewer, storeName);
             Assert.IsTrue(response2.ErrorOccured);
         }
 
@@ -69,10 +72,11 @@ namespace AcceptanceTest
         {
             String answerBody = "weare here for you 24/5.5";
             Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 80);
-            Response<Queue<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
+            Response<List<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
             if (!response2.ErrorOccured)
             {
-                MessageToStoreDTO messageObj = response2.Value.Dequeue();
+                MessageToStoreDTO messageObj = response2.Value[0];
+                response2.Value.RemoveAt(0);
                 Response response3 = marketAPI.AnswerStoreMesseage(registered_token_founder, messageObj.SenderUsername,80, storeName, answerBody);
                 Assert.IsFalse(response3.ErrorOccured);
                 Response<ICollection<MessageToStoreDTO>> res = marketAPI.GetRegisterAnsweredStoreMessages(registered_token_reviewer);

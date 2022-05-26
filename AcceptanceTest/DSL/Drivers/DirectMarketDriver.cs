@@ -1,4 +1,6 @@
-﻿using MarketProject.Service;
+﻿
+using MarketWeb.Service;
+using MarketWeb.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;

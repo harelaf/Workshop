@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using MarketProject.Domain;
 using MarketWeb.Shared;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
     public class StoreManager : SystemRole
     {

@@ -1,5 +1,6 @@
-﻿using MarketProject.Domain;
-using MarketProject.Domain.PurchasePackage.DiscountPackage;
+﻿
+using MarketWeb.Server.Domain;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace MarketProject.Service
+namespace MarketWeb.Service
 {
     [Route("api/market/")]
     [ApiController]
@@ -23,6 +24,12 @@ namespace MarketProject.Service
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             _market = market;
+            //_logger = logger;
+            //LoadData();
+        }
+        public MarketAPI()
+        {
+            _market = new Market();
             //_logger = logger;
             //LoadData();
         }

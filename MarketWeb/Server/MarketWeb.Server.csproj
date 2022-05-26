@@ -26,5 +26,9 @@
     <ProjectReference Include="..\Shared\MarketWeb.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Service\Models\" />
+  </ItemGroup>
+
 
 </Project>

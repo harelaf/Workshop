@@ -36,5 +36,27 @@ namespace MarketWeb.Shared.DTO
             }
             return toString;
         }
+        public int getAmountOfItemInCart(string storeName, int itemID)
+        {
+            int totalAmountInCart = 0;
+            foreach (ShoppingBasketDTO shoppingBasketDTO in _DTObaskets)
+            {
+                if (shoppingBasketDTO.StoreName == storeName)
+                {
+                    foreach (int itemid in shoppingBasketDTO.Items.Keys)
+                    {
+                        if (itemid == itemID)
+                        {
+                            totalAmountInCart += shoppingBasketDTO.Items[itemid].Item2;
+                            break;
+                        }
+
+                    }
+                    break;
+                }
+
+            }
+            return totalAmountInCart;
+        }
     }
 }

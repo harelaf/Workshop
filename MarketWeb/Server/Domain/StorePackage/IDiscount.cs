@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
     public interface IDiscount
     {
