@@ -46,9 +46,11 @@ namespace AcceptanceTest
         {
             String managerUsername = "new manager";
             String ownerUsername = "new owner";
-            String store_owner_token = (marketAPI.EnterSystem()).Value;// guest
+            String store_owner_token = (marketAPI.EnterSystem()).Value;// owner
             marketAPI.Register(store_owner_token, ownerUsername, "123456789", dob); 
             marketAPI.AddStoreOwner(store_founder_token, ownerUsername, storeName);
+            String store_manager_token = (marketAPI.EnterSystem()).Value;// manager
+            marketAPI.Register(store_manager_token, managerUsername, "123456789", dob);
             Boolean res1 = false, res2 = false;
             Thread thread1 = new Thread(() => {
                 res1 = marketAPI.AddStoreManager(store_founder_token, managerUsername, storeName).ErrorOccured;
@@ -63,15 +65,15 @@ namespace AcceptanceTest
             thread2.Join();
 
             List<StoreManagerDTO> lst = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
+            Assert.IsFalse(lst.Count == 0, "Managers list is empty");
             bool found = false;
             foreach(StoreManagerDTO s in lst)
                 if(s.Username == managerUsername)
                     found = true;
             
-            Assert.IsTrue(found);
-            Assert.IsTrue(res1 || res2);
-            Assert.IsFalse(res1 && res2);
-            Assert.IsFalse(!res1 && !res2);
+            Assert.IsTrue(found, "found is false");
+            Assert.IsTrue(res1 || res2, "both res1 and res2 are false");
+            Assert.IsFalse(res1 && res2, "both res1 and res2 are true");
         }
 
         [TestMethod]
