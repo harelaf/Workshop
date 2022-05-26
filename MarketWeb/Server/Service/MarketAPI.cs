@@ -36,11 +36,14 @@ namespace MarketWeb.Service
             //_logger = logger;
             //LoadData();
         }
+       
 
         private String parseAutherization(String Authorization)
         {
-            if(testMode)
+            if (testMode)
+            {
                 return Authorization;
+            }
             if (!AuthenticationHeaderValue.TryParse(Authorization, out var headerValue))
             {
                 throw new Exception("Invalid token!");
