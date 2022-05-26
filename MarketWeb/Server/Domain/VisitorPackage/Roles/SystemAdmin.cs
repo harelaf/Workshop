@@ -4,7 +4,7 @@ using System.Text;
 using MarketWeb.Shared;
 
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
     public class SystemAdmin : SystemRole
     {

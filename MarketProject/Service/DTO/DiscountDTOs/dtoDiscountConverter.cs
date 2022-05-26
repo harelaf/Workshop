@@ -17,7 +17,7 @@ namespace MarketProject.Service.DTO
         //public Discount ConvertConcrete(AllProductsDiscountDTO discount_dto)
         //{
         //    double percentage = discount_dto.Percentage;
-        //    DiscountCondition condition = conCon.convertCondition(discount_dto.Condition);
+        //    Condition condition = conCon.convertCondition(discount_dto.Condition);
         //    DateTime expiration = discount_dto.Expiration;
         //    return new AllProductsDiscount(percentage, condition, expiration);
         //}
@@ -25,7 +25,7 @@ namespace MarketProject.Service.DTO
         //{
         //    double percentage_to_subtract = discount_dto.Percentage_to_subtract;
         //    String category = discount_dto.Category;
-        //    DiscountCondition condition = conCon.convertCondition(discount_dto.Condition);
+        //    Condition condition = conCon.convertCondition(discount_dto.Condition);
         //    DateTime expiration = discount_dto.Expiration;
         //    return new CategoryDiscount(percentage_to_subtract, category, condition, expiration);
         //}
@@ -33,7 +33,7 @@ namespace MarketProject.Service.DTO
         //{
         //    double percentage_to_subtract = discount_dto.PercentageToSubtract;
         //    String category = discount_dto.ItemName;
-        //    DiscountCondition condition = conCon.convertCondition(discount_dto.Condition);
+        //    Condition condition = conCon.convertCondition(discount_dto.Condition);
         //    DateTime expiration = discount_dto.Expiration;
         //    return new ItemDiscount(percentage_to_subtract, category, condition, expiration);
         //}
@@ -42,13 +42,13 @@ namespace MarketProject.Service.DTO
         //    List<Discount> discount_list = new List<Discount>();
         //    foreach(IDiscountDTO discountDTO in discount_dto.Discounts)
         //        discount_list.Add(convertDiscount(discountDTO));
-        //    DiscountCondition condition = conCon.convertCondition(discount_dto.Condition);
+        //    Condition condition = conCon.convertCondition(discount_dto.Condition);
         //    return new MaxDiscount(discount_list, condition);
         //}
         //public Discount ConvertConcrete(NumericDiscountDTO discount_dto)
         //{
         //    double priceToSubtract = discount_dto.PriceToSubtract;
-        //    DiscountCondition condition = conCon.convertCondition(discount_dto.Condition);
+        //    Condition condition = conCon.convertCondition(discount_dto.Condition);
         //    DateTime expiration = discount_dto.Expiration;
         //    return new NumericDiscount(priceToSubtract, condition, expiration);
         //}
@@ -57,7 +57,7 @@ namespace MarketProject.Service.DTO
         //    List<Discount> discounts = new List<Discount>();
         //    foreach(IDiscountDTO discountDTO in discount_dto.Discounts)
         //        discounts.Add(convertDiscount(discountDTO));
-        //    DiscountCondition condition = conCon.convertCondition(discount_dto.Condition);
+        //    Condition condition = conCon.convertCondition(discount_dto.Condition);
         //    return new PlusDiscount(discounts, condition);
         //}
     }

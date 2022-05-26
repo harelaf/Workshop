@@ -2,18 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MarketProject.Service;
-using System.Threading;
-using MarketProject.Service.DTO;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
+using MarketWeb.Service;
 
 namespace AcceptanceTest
 {
     [TestClass]
     public class TestReopenStore
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(null, null);
         DateTime dob = new DateTime(2001, 7, 30);
         string storeName_inSystem = "Krusty Krab";
         string storeName_outSystem = "Chum Bucket";
@@ -58,7 +56,7 @@ namespace AcceptanceTest
             Assert.IsFalse(response1.ErrorOccured);
 
             StoreDTO dto = response1.Value;
-            Assert.AreEqual(dto.State, MarketProject.Domain.StoreState.Active);
+            Assert.AreEqual(dto.State, StoreState.Active);
 
             Response<RegisteredDTO> response2 = marketAPI.GetVisitorInformation(registered_token_founder);
             Assert.IsFalse(response2.ErrorOccured);

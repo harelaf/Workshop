@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MarketProject.Domain;
-using MarketProject.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Shared.DTO;
 using MarketWeb.Shared;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+using MarketWeb.Server.Domain;
 
-namespace MarketProject.Service
+namespace MarketWeb.Service
 {
     public static class DTOtranslator
     {

@@ -1,5 +1,6 @@
-﻿using MarketProject.Domain;
-using MarketProject.Domain.PurchasePackage.DiscountPackage;
+﻿
+using MarketWeb.Server.Domain;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace MarketProject.Service
+namespace MarketWeb.Service
 {
     [Route("api/market/")]
     [ApiController]
@@ -19,16 +20,30 @@ namespace MarketProject.Service
         private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         //private ILogger<MarketAPI> _logger;
         private int _id;
-
+        private bool testMode = false;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
-            _market = market;
+            if (market == null)
+            {
+                _market = new Market();
+                testMode = true;
+            }
+            else
+            {
+                _market = market;
+            }
+            //testMode = false;
             //_logger = logger;
             //LoadData();
         }
+       
 
         private String parseAutherization(String Authorization)
         {
+            if (testMode)
+            {
+                return Authorization;
+            }
             if (!AuthenticationHeaderValue.TryParse(Authorization, out var headerValue))
             {
                 throw new Exception("Invalid token!");
@@ -74,6 +89,7 @@ namespace MarketProject.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                
                 _logger.Info($"Login called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(authToken, Username, password);

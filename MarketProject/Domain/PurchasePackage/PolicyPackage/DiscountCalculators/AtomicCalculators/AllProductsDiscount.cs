@@ -9,7 +9,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
     {
         public AllProductsDiscount(double percentage_to_subtract, DateTime expiration) : base(percentage_to_subtract, expiration){}
 
-        public AllProductsDiscount(double percentage_to_subtract, DiscountCondition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration){}
+        public AllProductsDiscount(double percentage_to_subtract, Condition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration){}
 
         public override string GetDiscountString(int indent)
         {

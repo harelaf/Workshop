@@ -1,5 +1,5 @@
-using MarketProject.Domain;
-using MarketProject.Service;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;

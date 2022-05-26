@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using MarketProject.Service;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 using System.Threading;
-using MarketProject.Service.DTO;
 
 namespace AcceptanceTest
 {
@@ -14,7 +15,7 @@ namespace AcceptanceTest
     [TestClass]
     public class TestRemoveItemFromStock
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(null, null);
         DateTime dob = new DateTime(2001, 7, 30);
         string storeName_inSystem = "Krusty Krab";
         string storeName_outSystem = "Chum Bucket";

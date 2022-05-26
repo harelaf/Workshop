@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
-    public class DayOnWeekCondition : AtomicDiscountCondition
+    public class DayOnWeekCondition : AtomicCondition
     {
         protected DayOfWeek _dayOnWeek; //between 
         
@@ -14,7 +14,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
-            return DateTime.Now.DayOfWeek == _dayOnWeek;
+            return checkNegative(DateTime.Now.DayOfWeek == _dayOnWeek);
         }
         public override String GetConditionString(int indent)
         {

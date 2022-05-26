@@ -64,6 +64,7 @@ namespace MarketProject.Domain.Tests
             String guestToken = "abcd";
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, new Registered(Username, password, dob));
             Guest guest = new Guest(guestToken);
@@ -84,6 +85,7 @@ namespace MarketProject.Domain.Tests
             String guestToken = "abcd";
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String triedUsername = "";
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, new Registered(Username, password, dob));
@@ -102,6 +104,7 @@ namespace MarketProject.Domain.Tests
             String guestToken = "abcd";
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String triedPassword = "";
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, new Registered(Username, password, dob));
@@ -146,6 +149,7 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String authToken = "abcd";
             String triedToken = "a";
             Registered registered = new Registered(Username, password, dob);
@@ -191,6 +195,7 @@ namespace MarketProject.Domain.Tests
         public void RemoveRegisteredVisitor_InvalidUsername_ThrowsException()
         {
             String Username = "Test";
+            DateTime bDay = new DateTime(1992, 8, 4);
             VisitorManagement VisitorManagement = new VisitorManagement();
 
 
@@ -202,6 +207,7 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String authToken = "abcd";
             Registered registered = new Registered(Username, password, dob);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
@@ -266,6 +272,7 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String newPassword = "1";
             String authToken = "abcd";
             Registered registered = new Registered(Username, password, dob);
@@ -291,6 +298,7 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String triedPassword = "12";
             String newPassword = "1";
             String authToken = "abcd";
@@ -317,6 +325,7 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String newPassword = "";
             String authToken = "abcd";
             DateTime dob = new DateTime(2001, 7, 30);
@@ -348,6 +357,7 @@ namespace MarketProject.Domain.Tests
             // Complainer
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String authToken = "abcd";
             int cartId = 1;
             String message = "Test message";
@@ -384,6 +394,7 @@ namespace MarketProject.Domain.Tests
             // Complainer
             String Username = "Test";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             int cartId = 1;
             String message = "Test message";
             Registered registered = new Registered(Username, password, dob);
@@ -462,6 +473,7 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.STORE_HISTORY_INFO;
 
@@ -483,6 +495,7 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.STORE_HISTORY_INFO;
 
@@ -497,6 +510,7 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.STORE_HISTORY_INFO;
 
@@ -511,6 +525,7 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
@@ -532,6 +547,7 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
@@ -546,6 +562,7 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
@@ -560,6 +577,7 @@ namespace MarketProject.Domain.Tests
             String appointer = "appointer";
             String managerUsername = "manager";
             String password = "123";
+            DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.CANCEL_SUBSCRIPTION;
 

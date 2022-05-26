@@ -82,7 +82,7 @@ namespace MarketProject.Domain
             _notifications = new List<NotifyMessage>();
             _repliedMessages = new List<MessageToStore>();  
             _username = Username;
-            _password = password;
+            SetPassword(password);
             _roles = new List<SystemRole>();
             SetPassword(password);  
         }

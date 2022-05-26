@@ -29,17 +29,17 @@ namespace MarketProject
 			store = new Store(storeName, founder, new PurchasePolicy(), new DiscountPolicy());
 			basket = new ShoppingBasket(store);
 
-			DiscountCondition itemCon = new SearchItemCondition(itemName, 5, 15, false);
-			DiscountCondition hour = new HourCondition(20, 22, false);
-			List<DiscountCondition> lst = new List<DiscountCondition>();
+			Condition itemCon = new SearchItemCondition(itemName, 5, 15, false);
+			Condition hour = new HourCondition(20, 22, false);
+			List<Condition> lst = new List<Condition>();
 			lst.Add(itemCon);
 			lst.Add(hour);
-			DiscountCondition and = new AndComposition(false, lst);
-			DiscountCondition priceCon = new PriceableCondition("", 0, 100, false);
-			List<DiscountCondition> lst2 = new List<DiscountCondition>();
+			Condition and = new AndComposition(false, lst);
+			Condition priceCon = new PriceableCondition("", 0, 100, false);
+			List<Condition> lst2 = new List<Condition>();
 			lst2.Add(priceCon);
 			lst2.Add(and);
-			DiscountCondition or = new OrComposition(false, lst2);
+			Condition or = new OrComposition(false, lst2);
 			Discount dis = new CategoryDiscount(percentage_to_subtract, "category", or, expiration);
 			ItemDiscount dis2 = new ItemDiscount(percentage_to_subtract, itemName, expiration);
 			List<Discount> lst3 = new List<Discount>();

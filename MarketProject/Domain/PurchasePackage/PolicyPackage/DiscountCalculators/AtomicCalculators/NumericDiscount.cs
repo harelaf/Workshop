@@ -17,7 +17,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
                 _price_to_subtract = value;
             }
         }
-        public NumericDiscount(double priceToSubtract, DiscountCondition _condition, DateTime expiration) : base(_condition, expiration)
+        public NumericDiscount(double priceToSubtract, Condition _condition, DateTime expiration) : base(_condition, expiration)
         {
             _price_to_subtract = priceToSubtract;
         }

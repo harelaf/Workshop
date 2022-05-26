@@ -18,7 +18,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             }
         }
 
-        public ComposedDiscount(List<Discount> discounts, DiscountCondition condition) : base(condition)
+        public ComposedDiscount(List<Discount> discounts, Condition condition) : base(condition)
         {
             lock(_discountList){
                 _discountList = discounts;

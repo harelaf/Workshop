@@ -1,10 +1,10 @@
-﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Shared;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
     public class StoreManagement
     {
@@ -248,7 +248,7 @@ namespace MarketProject.Domain
             Store store = GetStore(storeName);
             return store.AddStoreOwner(newOwner);
         }
-        public bool RemoveStoreOwner(string ownerUsername, string storeName, String appointerUsername)
+        public Tuple<List<string>, List<string>> RemoveStoreOwner(string ownerUsername, string storeName, String appointerUsername)
         {
             Store store = GetStore(storeName);
             return store.RemoveStoreOwner(ownerUsername, appointerUsername);

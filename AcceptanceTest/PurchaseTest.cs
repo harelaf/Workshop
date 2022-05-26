@@ -1,7 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
-using MarketProject.Service;
-using MarketProject.Service.DTO;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 using System.Collections.Generic;
 using System;
 
@@ -11,7 +13,7 @@ namespace AcceptanceTest
     [TestClass]
     public class PurchaseTest
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName_inSystem = "afik's Shop";
         string guest_VisitorToken;
         string registered_VisitorToken;
@@ -71,13 +73,13 @@ namespace AcceptanceTest
                 ShoppingBasketDTO shoppingBasketDTO = item.Item2;
                 if (shoppingBasketDTO.StoreName== storeName_inSystem)
                 {
-                    IDictionary<ItemDTO, int> items = shoppingBasketDTO.Items;
+                    IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
                     int item_num = 0;
-                    foreach( KeyValuePair<ItemDTO, int> p in items)
+                    foreach (int itemId in items.Keys)
                     {
-                        if (p.Key.ItemID== itemId_inGuestCart)
+                        if (itemId == itemId_inGuestCart)
                         {
-                            Assert.AreEqual(itemAmount_inGuestCart, p.Value);
+                            Assert.AreEqual(itemAmount_inGuestCart, items[itemId].Item2);
                             item_num++;
                             break;
                         }
@@ -180,13 +182,13 @@ namespace AcceptanceTest
                 ShoppingBasketDTO shoppingBasketDTO = item.Item2;
                 if (shoppingBasketDTO.StoreName == storeName_inSystem)
                 {
-                    IDictionary<ItemDTO, int> items = shoppingBasketDTO.Items;
+                    IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
                     int item_num = 0;
-                    foreach (KeyValuePair<ItemDTO, int> p in items)
+                    foreach (int itemId in items.Keys)
                     {
-                        if (p.Key.ItemID == itemId_inRegCart)
+                        if (itemId == itemId_inRegCart)
                         {
-                            Assert.AreEqual(itemAmount_inRegCart, p.Value);
+                            Assert.AreEqual(itemAmount_inRegCart, items[itemId].Item2);
                             item_num++;
                             break;
                         }
@@ -196,24 +198,24 @@ namespace AcceptanceTest
                 }
             }
             //check recored added in Visitor history:
-            ICollection<PurchasedCartDTO> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
-            foreach (PurchasedCartDTO purchasedCartDTO in Visitor_history)
+            List<Tuple<DateTime,ShoppingCartDTO>> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
+            foreach (Tuple<DateTime, ShoppingCartDTO> purchasedCartDTO in Visitor_history)
             {
-                if (purchasedCartDTO.Date.Date== DateTime.Now.Date)//purchased now
+                if (purchasedCartDTO.Item1.Date== DateTime.Now.Date)//purchased now
                 {
-                    Assert.AreEqual(1, purchasedCartDTO.ShoppingCart.Baskets.Count);
+                    Assert.AreEqual(1, purchasedCartDTO.Item2.Baskets.Count);
 
-                    foreach(ShoppingBasketDTO shoppingBasketDTO in purchasedCartDTO.ShoppingCart.Baskets)
+                    foreach(ShoppingBasketDTO shoppingBasketDTO in purchasedCartDTO.Item2.Baskets)
                     {
                         if (shoppingBasketDTO.StoreName == storeName_inSystem)//
                         {
-                            IDictionary<ItemDTO, int> items = shoppingBasketDTO.Items;
+                            IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
                             int item_num = 0;
-                            foreach (KeyValuePair<ItemDTO, int> p in items)
+                            foreach (int itemId in items.Keys)
                             {
-                                if (p.Key.ItemID == itemId_inRegCart)
+                                if (itemId == itemId_inRegCart)
                                 {
-                                    Assert.AreEqual(itemAmount_inRegCart, p.Value);
+                                    Assert.AreEqual(itemAmount_inRegCart, items[itemId].Item2);
                                     item_num++;
                                     break;
                                 }
@@ -249,7 +251,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
 
             //check there was recored added in Visitor history:
-            ICollection<PurchasedCartDTO> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
+            List<Tuple<DateTime, ShoppingCartDTO>> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
@@ -278,7 +280,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
 
             //check there was recored added in Visitor history:
-            ICollection<PurchasedCartDTO> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
+            List<Tuple<DateTime, ShoppingCartDTO>> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
@@ -307,7 +309,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
 
             //check there was recored added in Visitor history:
-            ICollection<PurchasedCartDTO> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
+            List<Tuple<DateTime, ShoppingCartDTO>> Visitor_history = marketAPI.GetMyPurchasesHistory(registered_VisitorToken).Value;
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
@@ -317,10 +319,12 @@ namespace AcceptanceTest
 
         private int getAmountOfItemInStock(int itemID, StockDTO stock)
         {
-            foreach (ItemDTO item in stock.Items.Keys)
+            Dictionary<int, Tuple<ItemDTO, int>> dic_stock = stock.Items;
+            foreach (int itemid in dic_stock.Keys)
             {
+                ItemDTO item = dic_stock[itemid].Item1;
                 if (itemID == item.ItemID)
-                    return stock.Items[item];
+                    return stock.Items[itemid].Item2;
             }
             return 0;
         }

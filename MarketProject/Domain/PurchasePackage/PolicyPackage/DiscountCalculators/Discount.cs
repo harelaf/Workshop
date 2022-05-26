@@ -6,9 +6,9 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
     public abstract class Discount
     {
-        private DiscountCondition _condition; 
+        private Condition _condition; 
 
-        protected Discount(DiscountCondition condition)
+        protected Discount(Condition condition)
         {
             _condition = condition;
         }

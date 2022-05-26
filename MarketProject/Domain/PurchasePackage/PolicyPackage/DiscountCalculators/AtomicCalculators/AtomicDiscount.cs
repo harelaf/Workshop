@@ -15,7 +15,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         { 
             return newLine(indent) + "Expired on: " + _expiration.ToString();
         }
-        protected AtomicDiscount(DiscountCondition condition, DateTime expiration) : base(condition)
+        protected AtomicDiscount(Condition condition, DateTime expiration) : base(condition)
         {
             _expiration = expiration;
         }

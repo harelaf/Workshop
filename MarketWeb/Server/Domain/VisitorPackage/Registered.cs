@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MarketWeb.Shared;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
     public class Registered : Visitor
     {

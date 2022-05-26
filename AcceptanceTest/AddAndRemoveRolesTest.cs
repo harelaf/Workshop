@@ -1,6 +1,7 @@
-﻿using MarketProject.Domain;
-using MarketProject.Service;
-using MarketProject.Service.DTO;
+﻿using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -9,12 +10,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+
+
 namespace AcceptanceTest
 {
     [TestClass]
     public class AddAndRemoveRolesTest
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(null, null);
         String storeName = "test's Shop";
         //String storeName_outSystem = "bla";
         String guest_VisitorToken;
@@ -43,9 +46,11 @@ namespace AcceptanceTest
         {
             String managerUsername = "new manager";
             String ownerUsername = "new owner";
-            String store_owner_token = (marketAPI.EnterSystem()).Value;// guest
+            String store_owner_token = (marketAPI.EnterSystem()).Value;// owner
             marketAPI.Register(store_owner_token, ownerUsername, "123456789", dob); 
             marketAPI.AddStoreOwner(store_founder_token, ownerUsername, storeName);
+            String store_manager_token = (marketAPI.EnterSystem()).Value;// manager
+            marketAPI.Register(store_manager_token, managerUsername, "123456789", dob);
             Boolean res1 = false, res2 = false;
             Thread thread1 = new Thread(() => {
                 res1 = marketAPI.AddStoreManager(store_founder_token, managerUsername, storeName).ErrorOccured;
@@ -60,21 +65,21 @@ namespace AcceptanceTest
             thread2.Join();
 
             List<StoreManagerDTO> lst = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
+            Assert.IsFalse(lst.Count == 0, "Managers list is empty");
             bool found = false;
             foreach(StoreManagerDTO s in lst)
                 if(s.Username == managerUsername)
                     found = true;
             
-            Assert.IsTrue(found);
-            Assert.IsTrue(res1 || res2);
-            Assert.IsFalse(res1 && res2);
-            Assert.IsFalse(!res1 && !res2);
+            Assert.IsTrue(found, "found is false");
+            Assert.IsTrue(res1 || res2, "both res1 and res2 are false");
+            Assert.IsFalse(res1 && res2, "both res1 and res2 are true");
         }
 
         [TestMethod]
         public void TestAddManager_circularAppointing_unsuccessful()
         {
-            Registered user = marketAPI.getUser(store_founder_token);
+            RegisteredDTO user = marketAPI.GetVisitorInformation(store_founder_token).Value;
             String ownerUsername1 = "new owner1";
             String ownerUsername2 = "new owner2";
             String managerUsername3 = "new manager3";
@@ -111,7 +116,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestRemoveRole()
         {
-            Registered user = marketAPI.getUser(store_founder_token);
+            RegisteredDTO user = marketAPI.GetVisitorInformation(store_founder_token).Value;
             String ownerUsername1 = "new owner1";
             String ownerUsername2 = "new owner2";
             String managerUsername3 = "new manager3";
@@ -127,13 +132,12 @@ namespace AcceptanceTest
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
-            marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
             //marketAPI.AddStoreOwner(store_owner_token1, ownerUsername2, storeName);
             List<StoreManagerDTO> lst_m;
             List<StoreOwnerDTO> lst_o;
             //act
-            Response response1 = marketAPI.AddStoreOwner(store_founder_name, store_owner_token1, storeName);
-            Response response2 = marketAPI.AddStoreOwner(store_founder_name, store_owner_token2, storeName);
+            Response response1 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
+            Response response2 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername2, storeName);
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
             
             lst_m = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
@@ -142,10 +146,10 @@ namespace AcceptanceTest
             lst_o = marketAPI.GetStoreOwners(store_founder_token, storeName).Value;
             Assert.IsNotNull(lst_o);
             Assert.AreEqual(2, lst_o.Count);
-
-            Response response1_fire = marketAPI.RemoveStoreOwner(store_founder_name, store_owner_token1, storeName);
-            Response response2_fire = marketAPI.RemoveStoreOwner(store_founder_name, store_owner_token2, storeName);
-            Response response3_fire = marketAPI.RemoveStoreManager(store_owner_token2, managerUsername3, storeName);
+            //Response response3_fire = marketAPI.RemoveStoreManager(store_owner_token2, managerUsername3, storeName);
+            Response response1_fire = marketAPI.RemoveStoreOwner(store_founder_token, ownerUsername1, storeName);
+            Response response2_fire = marketAPI.RemoveStoreOwner(store_founder_token, ownerUsername2, storeName);
+            
 
             lst_m = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
             Assert.IsNotNull(lst_m);

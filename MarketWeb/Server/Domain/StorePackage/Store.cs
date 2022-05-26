@@ -1,10 +1,11 @@
-﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Shared;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
 
     public class Store
@@ -324,8 +325,9 @@ namespace MarketProject.Domain
                 _owners.Remove(owner);
         }
 
-        public bool RemoveStoreOwner(string ownerUsername, String appointerUsername)
+        public Tuple<List<string>, List<string>> RemoveStoreOwner(string ownerUsername, String appointerUsername)
         {
+            Tuple<List<string>, List<string>> apointee_OwnersNManagers;
             String errorMessage = null;
             StoreOwner owner = GetOwner(ownerUsername);
             if (owner == null)
@@ -333,12 +335,37 @@ namespace MarketProject.Domain
             else if (!owner.isAppointer(appointerUsername))
                 errorMessage = "this visitor has no permission to remove this owner.";
             else
-                return _owners.Remove(owner);
+            {
+                apointee_OwnersNManagers = new Tuple<List<string>, List<string>>
+                    (GetAllApointeeOwners(ownerUsername), GetAllApointeeManagers(ownerUsername));
+                _owners.Remove(owner);
+                return apointee_OwnersNManagers;
+            }
+                
             LogErrorMessage("RemoveStoreOwner", errorMessage);
             throw new Exception(errorMessage);
 
         }
-
+        private List<string> GetAllApointeeOwners(string appinterOwner) 
+        { 
+            List<string> owners = new List<string>();
+            foreach (StoreOwner owner in _owners)
+            {
+                if (owner.isAppointer(appinterOwner))
+                    owners.Add(owner.Username);
+            }
+            return owners;
+        }
+        private List<string> GetAllApointeeManagers(string appinterOwner)
+        {
+            List<string> managers = new List<string>();
+            foreach (StoreManager manager in _managers)
+            {
+                if (manager.isAppointer(appinterOwner))
+                    managers.Add(manager.Username);
+            }
+            return managers;
+        }
         public bool RemoveStoreManager(string managerUsername, String appointerUsername)
         {
             String errorMessage = null;

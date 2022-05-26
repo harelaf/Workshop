@@ -14,13 +14,14 @@ namespace MarketProject.Service.DTO
         private ICollection<NotifyMessageDTO> _notifications;
         private DateTime _birthDate;
 
-        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages)
+        public RegisteredDTO(string Username, ShoppingCartDTO scDTO, ICollection<AdminMessageToRegisteredDTO> adminMessages, ICollection<NotifyMessageDTO> notifications, ICollection<MessageToStoreDTO> repliedMessages, DateTime bDate)
         {
             _username = Username;
             _shoppingCart = scDTO;
             _adminMessages = adminMessages;
             _repliedMessages = repliedMessages;
             _notifications = notifications;
+            _birthDate = bDate;
         }
         public String ToString()
         {

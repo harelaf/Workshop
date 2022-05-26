@@ -1,8 +1,9 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPackage
 {
     public class MaxDiscount : ComposedDiscount
     {

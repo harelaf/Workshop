@@ -18,7 +18,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             }
         }
 
-        public PercentageDiscount(double percentage_to_subtract, DiscountCondition _condition, DateTime expiration) : base(_condition, expiration)
+        public PercentageDiscount(double percentage_to_subtract, Condition _condition, DateTime expiration) : base(_condition, expiration)
         {
             _percentage_to_subtract = percentage_to_subtract;
         }

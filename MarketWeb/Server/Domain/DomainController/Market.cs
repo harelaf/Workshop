@@ -1,10 +1,10 @@
-﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Shared;
 
-namespace MarketProject.Domain
+namespace MarketWeb.Server.Domain
 {
     public class Market
     {
@@ -638,8 +638,23 @@ namespace MarketProject.Domain
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_OWNER))
             {
-                if (_storeManagement.RemoveStoreOwner(ownerUsername, storeName, appointerUsername))
-                    _VisitorManagement.RemoveRole(ownerUsername, storeName);
+                RecRemoveStoreOwner(appointerUsername, ownerUsername, storeName);
+            }
+        }
+        private void RecRemoveStoreOwner(string appointer, string ownerApointee, string storeName)
+        {
+            Tuple<List<string>, List<string>> owners_managers = _storeManagement.RemoveStoreOwner(ownerApointee, storeName, appointer);
+            _VisitorManagement.RemoveRole(ownerApointee, storeName);
+            List<string> managers = owners_managers.Item2;
+            foreach(string manager in managers)
+            {
+                if (_storeManagement.RemoveStoreManager(manager, storeName, ownerApointee))
+                    _VisitorManagement.RemoveRole(manager, storeName);
+            }
+            List<string> owners = owners_managers.Item1;
+            foreach(string owner in owners)
+            {
+                RecRemoveStoreOwner(ownerApointee, owner, storeName);
             }
         }
         public void RemoveStoreManager(String authToken, String managerUsername, String storeName)

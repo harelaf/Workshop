@@ -4,23 +4,23 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
-    public class XorComposition : ComposedDiscountCondition
+    public class XorComposition : ComposedCondition
     {
         public XorComposition(bool negative) : base(negative)
         {
         }
 
-        public XorComposition(bool negative, List<DiscountCondition> conditions) : base(negative, conditions)
+        public XorComposition(bool negative, List<Condition> conditions) : base(negative, conditions)
         {
         }
 
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
             bool result;
-            bool found = _discountConditionList.Count == 0;
-            foreach (DiscountCondition discountCondition in this._discountConditionList)
+            bool found = _ConditionList.Count == 0;
+            foreach (Condition Condition in this._ConditionList)
             {
-                if (discountCondition.Check(searchablePriceable))
+                if (Condition.Check(searchablePriceable))
                 {
                     if(!found)
                         found = true;
@@ -43,7 +43,7 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             String pad2 = newLine(indent + 1);
             String str = "Apply logic XOR on the following expressions:";
             int index = 0;
-            foreach (DiscountCondition con in _discountConditionList)
+            foreach (Condition con in _ConditionList)
                 str += $"{pad2}{++index}. {con.GetConditionString(indent + 1)}";
             return str;
         }

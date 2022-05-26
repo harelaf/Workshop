@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.DiscountPackage
 {
-    public class HourCondition : AtomicDiscountCondition
+    public class HourCondition : AtomicCondition
     {
         private int _minHour, _maxHour;
         public int MinHour
@@ -36,9 +36,9 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
             if(MaxHour < MinHour) // Example: (min - 14, max - 0) => check if current hour is *not* in range 0-14
-                return !IsInRange(DateTime.Now.Hour, MaxHour, MinHour);
+                return checkNegative(!IsInRange(DateTime.Now.Hour, MaxHour, MinHour));
             else
-                return IsInRange(DateTime.Now.Hour, MinHour, MaxHour);
+                return checkNegative(IsInRange(DateTime.Now.Hour, MinHour, MaxHour));
         }
         public override String GetConditionString(int indent)
         {
