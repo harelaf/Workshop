@@ -1,4 +1,5 @@
 ﻿using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using MarketProject.Service.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -833,9 +834,12 @@ namespace MarketProject.Domain
             return _storeManagement.GetAllActiveStores(username, isAdmin);
         }
 
-        public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)
+        public void RemoveManagerPermission(String authToken, String managerUsername, String storeName, string opName)
         {
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_opNameToOp.ContainsKey(opName))
+                throw new Exception("the input op_name is'nt exists!!!!");
+            Operation op = _opNameToOp[opName];
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
         }
@@ -937,6 +941,20 @@ namespace MarketProject.Domain
             _opNameToOp.Add("RECEIVE_AND_REPLY_ADMIN_MESSAGE", Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE);
             _opNameToOp.Add("SYSTEM_STATISTICS", Operation.SYSTEM_STATISTICS);
             _opNameToOp.Add("APPOINT_SYSTEM_ADMIN", Operation.APPOINT_SYSTEM_ADMIN);
+        }
+
+        public Item GetItem(string token,string storeName, int itemId)
+        {
+            string errorMessage=null;
+            CheckIsVisitorAVisitor(token, "GetItem");
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("GetItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return _storeManagement.GetItem(storeName, itemId);
         }
 
         public void AddStoreDiscount(String authToken, String storeName, Discount discount)

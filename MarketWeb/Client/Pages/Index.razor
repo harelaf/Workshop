@@ -1,0 +1,131 @@
+﻿@page "/"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+.fa-anchor,.fa-coffee {font-size:200px}
+</style>
+
+<!-- Header -->
+<header class="w3-container w3-blue w3-center" style="padding:128px 16px">
+  <h1 class="w3-margin w3-jumbo">Welcome to The Market</h1>
+  <p class="w3-xlarge"> Under construction<br> ...clearly </p>
+  <!--<button class="w3-button w3-black w3-padding-large w3-large w3-margin-top">Get Started</button>-->
+</header>
+<br />
+<div class="card">
+    <h4 class="card-header">Item Search Box</h4>
+    <div class="card-body">
+        <EditForm Model="@model" OnSubmit="ItemSearchForm">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Name</label>
+                <InputText @bind-Value="model.ItemName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <InputText @bind-Value="model.Category" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Keyword</label>
+                <InputText @bind-Value="model.Keyword" class="form-control" />
+            </div>
+            <button type="submit" disabled="@loading" class="btn btn-primary">
+                @if (loading)
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Search Items
+            </button>
+        </EditForm>
+    </div>
+</div>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>Store Name</th>
+            <th>Founder Name</th>
+            <th>View Store Button</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (StoreDTO item in activeStores)
+        {
+            <tr>
+                <td>@item.StoreName</td>
+                <td>@item.Founder.Username</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => ViewStoreButton(item.StoreName)">View Store</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private Models.SearchItemModel model = new Models.SearchItemModel();
+    private bool loading;
+    private ICollection<StoreDTO> activeStores = new List<StoreDTO>();
+
+    private async void ViewStoreButton(string StoreName)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+    }
+
+    private async void ItemSearchForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+
+        if (model.Category == null && model.ItemName == null && model.Keyword == null)
+        {
+            AlertService.Error("Please enter a value before trying to search for an item.");
+            StateHasChanged();
+        }
+        else
+        {
+            model.Category = model.Category == null ? "BLANK.VALUE" : model.Category;
+            model.ItemName = model.ItemName == null ? "BLANK.VALUE" : model.ItemName;
+            model.Keyword = model.Keyword == null ? "BLANK.VALUE" : model.Keyword;
+            NavigationManager.NavigateTo($"ItemSearch/{model.ItemName}/{model.Category}/{model.Keyword}");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Response<List<StoreDTO>> response = await marketAPIClient.GetAllActiveStores();
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            activeStores = response.Value;
+            //activeStores = lst;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}

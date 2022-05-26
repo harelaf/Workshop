@@ -1,0 +1,39 @@
+﻿@model MainModel
+@using MarketWeb.Shared.DTO
+@using ClientWebApplication.Views.Shared
+
+@{
+    @if (LayoutConfig.IsLoggedIn)
+    {
+        Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    }
+    else if (LayoutConfig.IsAdmin)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutGuest.cshtml";
+    }
+    ViewData["Title"] = "Open a New Store";
+}
+<div class="text-center">
+    <h1 class="display-4">Open a New Store</h1>
+    <br />
+    @if (Model.ErrorOccurred)
+    {
+        <p style="background:red">@Model.Message</p>
+    }
+    else if (Model.Message != null && Model.Message.Length > 0)
+    {
+        <p style="background:green">@Model.Message</p>
+    }
+    <br />
+</div>
+<br />
+<h3>Please enter the name of your new store:</h3>
+<form method="post">
+    <input type="text" name="storename" title="storename" id="storename" />
+    <input class="btn btn-info" type="submit" value="Open Store" asp-area="" asp-controller="Home" asp-action="OpenNewStoreForm" asp-route-storename="" />
+</form>
+<br />

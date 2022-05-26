@@ -25,7 +25,7 @@ namespace AcceptanceTest
         int itemID_inStock_2;
         int itemAmount_inSttock_2;
         int itemID_outStock = 1111111;
-        DateTime bDay = new DateTime(1992, 8, 4);
+        DateTime dob = new DateTime(2001, 7, 30);
 
         [TestInitialize()]
         public void setup()
@@ -33,8 +33,8 @@ namespace AcceptanceTest
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             store_founder_token = (marketAPI.EnterSystem()).Value;// guest
             store_founder_name = "afik";
-            marketAPI.Register(store_founder_token, store_founder_name, "123456789", bDay);
-            store_founder_token = (marketAPI.Login(store_founder_token, "afik", "123456789")).Value;// reg
+            marketAPI.Register(store_founder_token, store_founder_name, "123456789", new DateTime(2001, 7, 30));
+            store_founder_token = (marketAPI.Login(store_founder_token, store_founder_name, "123456789")).Value;// reg
             marketAPI.OpenNewStore(store_founder_token, storeName);
         }
 
@@ -44,7 +44,7 @@ namespace AcceptanceTest
             String managerUsername = "new manager";
             String ownerUsername = "new owner";
             String store_owner_token = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token, ownerUsername, "123456789", bDay); 
+            marketAPI.Register(store_owner_token, ownerUsername, "123456789", dob); 
             marketAPI.AddStoreOwner(store_founder_token, ownerUsername, storeName);
             Boolean res1 = false, res2 = false;
             Thread thread1 = new Thread(() => {
@@ -81,11 +81,11 @@ namespace AcceptanceTest
             String password = "123456789";
             bool doubleCheck = false;
             String store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token1, ownerUsername1, password, bDay);
+            marketAPI.Register(store_owner_token1, ownerUsername1, password, dob);
             String store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_owner_token2, ownerUsername2, password, bDay);
+            marketAPI.Register(store_owner_token2, ownerUsername2, password, dob);
             String store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(store_manager_token3, managerUsername3, password, bDay);
+            marketAPI.Register(store_manager_token3, managerUsername3, password, dob);
 
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
@@ -107,5 +107,54 @@ namespace AcceptanceTest
             Assert.IsFalse(response3.ErrorOccured);
             Assert.IsTrue(doubleCheck);
         }
+
+        [TestMethod]
+        public void TestRemoveRole()
+        {
+            Registered user = marketAPI.getUser(store_founder_token);
+            String ownerUsername1 = "new owner1";
+            String ownerUsername2 = "new owner2";
+            String managerUsername3 = "new manager3";
+            String password = "123456789";
+            bool doubleCheck = false;
+            String store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_owner_token1, ownerUsername1, password, dob);
+            String store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_owner_token2, ownerUsername2, password, dob);
+            String store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_manager_token3, managerUsername3, password, dob);
+
+            store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
+            store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
+            store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
+            marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
+            //marketAPI.AddStoreOwner(store_owner_token1, ownerUsername2, storeName);
+            List<StoreManagerDTO> lst_m;
+            List<StoreOwnerDTO> lst_o;
+            //act
+            Response response1 = marketAPI.AddStoreOwner(store_founder_name, store_owner_token1, storeName);
+            Response response2 = marketAPI.AddStoreOwner(store_founder_name, store_owner_token2, storeName);
+            Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
+            
+            lst_m = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
+            Assert.IsNotNull(lst_m);
+            Assert.AreEqual(1, lst_m.Count);
+            lst_o = marketAPI.GetStoreOwners(store_founder_token, storeName).Value;
+            Assert.IsNotNull(lst_o);
+            Assert.AreEqual(2, lst_o.Count);
+
+            Response response1_fire = marketAPI.RemoveStoreOwner(store_founder_name, store_owner_token1, storeName);
+            Response response2_fire = marketAPI.RemoveStoreOwner(store_founder_name, store_owner_token2, storeName);
+            Response response3_fire = marketAPI.RemoveStoreManager(store_owner_token2, managerUsername3, storeName);
+
+            lst_m = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
+            Assert.IsNotNull(lst_m);
+            Assert.AreEqual(0, lst_m.Count);
+            lst_o = marketAPI.GetStoreOwners(store_founder_token, storeName).Value;
+            Assert.IsNotNull(lst_o);
+            Assert.AreEqual(0, lst_o.Count);
+           
+        }
+
     }
 }

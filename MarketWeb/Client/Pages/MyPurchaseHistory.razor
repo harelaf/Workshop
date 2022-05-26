@@ -1,0 +1,97 @@
+﻿@page "/MyPurchaseHistory"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@using System
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+h1{
+    text-align:center;
+}
+</style>
+
+<div class="text-center">
+    <h1 class="display-4">@(username)'s Purchase History</h1>
+</div>
+<br />
+@if (purchasedCartDTOs.Count > 0)
+{
+    @foreach (Tuple<DateTime, ShoppingCartDTO> cartPurchase in purchasedCartDTOs)
+    {
+        DateTime date = cartPurchase.Item1;
+        ShoppingCartDTO cart = cartPurchase.Item2;
+        <h4>@date</h4>
+        @if (cart != null && cart.Baskets != null)
+        {
+            @foreach (ShoppingBasketDTO basket in cart.Baskets)
+            {
+                <table style="width:100%" id="@date">
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Amount</th>
+                        <th>Price Per Unit</th>
+                    </tr>
+                    @foreach (int itemID in basket.Items.Keys)
+                    {
+                        <tr id="@(basket.Items[itemID].Item1.Name + date.ToString())">
+                            <th>@basket.Items[itemID].Item1.Name</th>
+                            <th>@basket.Items[itemID].Item2</th>
+                            <th>$@basket.Items[itemID].Item1.Price</th>
+                        </tr>
+                    }
+                </table>
+                <br />
+            }
+        }
+    }
+}
+else
+{
+    <h4>This user hasn't purchased anything yet!</h4>
+}
+
+@code {
+    private Models.MyPurchaseHistoryModel model = new Models.MyPurchaseHistoryModel();
+    private bool loading = false;
+    private List<Tuple<DateTime, ShoppingCartDTO>> purchasedCartDTOs = new List<Tuple<DateTime, ShoppingCartDTO>>();
+    private string username = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        AlertService.Clear();
+        try
+        {
+            Response<RegisteredDTO> response_user = await marketAPIClient.GetVisitorInformation();
+            Response<List<Tuple<DateTime, ShoppingCartDTO>>> res_history = await marketAPIClient.GetMyPurchasesHistory();
+            if (response_user.ErrorOccured)
+            {
+                throw new Exception(response_user.ErrorMessage);
+            }
+            username = response_user.Value.Username;
+            if (res_history.ErrorOccured)
+            {
+                throw new Exception(res_history.ErrorMessage);
+            }
+            purchasedCartDTOs = res_history.Value; 
+        }
+        catch(Exception e)
+        {
+             AlertService.Error(e.Message, true, true);
+             StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+
+    }
+
+}

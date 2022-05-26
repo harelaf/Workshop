@@ -1,0 +1,107 @@
+﻿@page "/StorePage/{StoreName}/roles" 
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+<div class="text-center">
+	<h1 class="display-4">Store @(StoreName) Roles Page</h1>
+	<br />
+</div>
+<br />
+
+ <h4>Founder</h4>
+ <h5>@(Founder.Username)</h5>
+ <br />
+ <h4>Owners</h4>
+    @if (Owners.Count > 0)
+    {
+        <table style="width:50%" class="table">
+            <tr>
+                <th>Owner User Name</th>
+                <th>Appointer User Name</th>
+            </tr>
+            @foreach (StoreOwnerDTO owner in Owners)
+            {
+                <tr>
+                    <th>@owner.Username</th>
+                    <th>@owner.Appointer</th>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <h4>store has no owners</h4>
+    }
+
+<br />
+ <h4>Managers</h4>
+    @if (Managers.Count > 0)
+    {
+        <table style="width:50%" class="table">
+            <tr>
+                <th>Manager User Name</th>
+                <th>Appointer User Name</th>
+            </tr>
+            @foreach (StoreManagerDTO manager in Managers)
+            {
+                <tr>
+                    <th>@manager.Username</th>
+                    <th>@manager.Appointer</th>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <h4>store has no managers</h4>
+    }
+
+@code {
+    [Parameter] public string StoreName { get; set; }
+    private StoreFounderDTO Founder { get; set; } = new StoreFounderDTO("N/A", "N/A");
+    private List<StoreOwnerDTO> Owners { get; set; } = new List<StoreOwnerDTO>();
+    private List<StoreManagerDTO> Managers { get; set; } = new List<StoreManagerDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            string errMsg = "";
+            Response<StoreFounderDTO> response_founder = await _marketAPIClient.GetStoreFounder(StoreName);
+            Response<List<StoreOwnerDTO>> res_owners = await _marketAPIClient.GetStoreOwners(StoreName);
+            Response<List<StoreManagerDTO>> res_managers = await _marketAPIClient.GetStoreManagers(StoreName);
+            if (response_founder.ErrorOccured)
+                errMsg += "Error with founder: " + response_founder.ErrorMessage + "; ";
+            if (res_owners.ErrorOccured)
+                errMsg += "Error with owners: " + (res_owners.ErrorMessage) + "; ";
+            if (res_managers.ErrorOccured)
+                errMsg += "Error with managers: " + (res_managers.ErrorMessage) + "; ";
+            if (errMsg != "")
+                AlertService.Error(errMsg);
+            else
+            {
+                Founder = response_founder.Value;
+                Owners = res_owners.Value;
+                Managers = res_managers.Value; 
+            }
+		}
+		catch (Exception ex)
+		{
+			AlertService.Error(ex.Message);
+		}
+		finally
+		{
+			StateHasChanged();
+		}
+	}
+
+}

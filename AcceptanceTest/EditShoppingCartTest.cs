@@ -22,14 +22,14 @@ namespace AcceptanceTest
         int itemId_inGuestCart;
         int itemAmount_inRegCart = 10;
         int itemAmount_inGuestCart = 10;
-        DateTime bDay = new DateTime(1992, 8, 4);
+        DateTime dob = new DateTime(2001, 7, 30);
 
         [TestInitialize()]
         public void setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(registered_VisitorToken, "afik", "123456789", bDay);
+            marketAPI.Register(registered_VisitorToken, "afik", "123456789", dob);
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
             itemID_inStock_1 = 1; itemAmount_inSttock_1 = 20;

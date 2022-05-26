@@ -8,11 +8,11 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
     {
         protected String _keyWord;
         protected int _minValue, _maxValue;
-        public SearchablePriceableCondition(String keyWord, int minAmount, int maxAmount, bool negative) : base(negative)
+        public SearchablePriceableCondition(String keyWord, int minValue, int maxValue, bool negative) : base(negative)
         {
             _keyWord = keyWord;
-            _minValue = minAmount;
-            _maxValue = maxAmount;
+            _minValue = minValue;
+            _maxValue = maxValue;
         }
     }
 }

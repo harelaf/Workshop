@@ -1,5 +1,5 @@
 ﻿@model MainModel
-@using MarketWebProject.DTO
+@using MarketWeb.Shared.DTO
 @using MarketWebProject.Views.Shared
 
 @{
@@ -25,11 +25,7 @@
 <br />
 <h3>Username:</h3>
 <p>@((ViewData["visitor"] as RegisteredDTO).Username)</p>
-<form method="post">
-    <p>Please enter a new username:</p>
-    <input type="text" required name="newUsername" title="newUsername" id="newUsername" />
-    <input class="btn btn-info" type="submit" value="Change Password" asp-area="" asp-controller="Home" asp-action="ChangeUsername" asp-route-newUsername=""/>
-</form>
+
 <br />
 <h3>Date of Birth:</h3>
 <p>**GET DOB FROM DTO**</p>

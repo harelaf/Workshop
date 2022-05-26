@@ -28,14 +28,14 @@ namespace AcceptanceTest
         string itemCategory;
         int itemQuantity;
         int newQuantity;
-
+        DateTime dob = new DateTime(2001, 7, 30);
 
         [TestInitialize]
         public void setup()
         {
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(registered_token_founder, username_founder, "123456789", new DateTime(1992, 8, 4));
+            marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
             itemId = 100;

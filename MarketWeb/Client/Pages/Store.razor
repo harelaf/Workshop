@@ -1,0 +1,769 @@
+﻿@page "/StorePage/{StoreName}"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+@if (StoreInfo != null)
+{
+    <div class="text-center">
+        <h1 class="display-4">Store @(StoreInfo.StoreName) Page</h1>
+        @if (!StoreIsActive)
+        {
+            <h2 class="display-4" style="color:red">Store is Inactive</h2>
+        }
+        <br />
+    </div>
+    <div>
+        @if (CanViewPurchaseHistory || CanViewStoreMessages)
+        {
+            <h2>Store Administration:</h2>
+        }
+        @if (CanViewPurchaseHistory)
+        {
+            <button class="btn btn-primary" @onclick="() => ViewPurchaseHistory()">View @(StoreInfo.StoreName) Purchase History</button>
+        }
+        @if (CanViewStoreMessages)
+        {
+            <button class="btn btn-primary" @onclick="() => ViewStoreMessages()">View @(StoreInfo.StoreName) Messages</button>
+        }
+
+        @if (CanCloseStore && StoreIsActive)
+        {
+            <button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
+            <br />
+            <br />
+        }
+        @if (CanCloseStorePermenantly)
+        {
+            <button class="btn btn-primary" @onclick="() => CloseStorePermenantly()">close @(StoreInfo.StoreName) Permenantly</button>
+            <br />
+            <br />
+        }
+        @if (!StoreIsActive && CanReopenStore)
+        {
+            <button class="btn btn-primary" @onclick="() => ReopenStore()">Reopen @(StoreInfo.StoreName)</button>
+            <br />
+            <br />
+        }
+    </div>
+
+    <br />
+    <div>
+        @if (CanManageRoles)
+        {
+            <h5> Manage Store Roles: </h5>
+            <button class="btn btn-primary" @onclick="() => ViewStoreRoles()">View @(StoreInfo.StoreName) Roles</button>
+            <br />
+            <h5>Appoint Store Owner: </h5>
+            <EditForm Model="@AppointRoleModel" OnValidSubmit="AppointNewOwner">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="AppointRoleModel.Username" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Appoint Owner
+                </button>
+            </EditForm>
+            <br />
+            <h5>Fire Store Owner: </h5>
+            <EditForm Model="@FireRoleModel" OnValidSubmit="FireOwner">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
+                    <ValidationMessage For="@(() => FireRoleModel.Username)" />
+                </div>
+                <button disabled="@loading" class="btn btn-primary">
+                    @if (loading)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Fire Owner
+                </button>
+            </EditForm>
+
+            <br />
+
+            <h5>Appoint Store Manager: </h5>
+            <EditForm Model="@AppointRoleModel" OnValidSubmit="AppointNewManager">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="AppointRoleModel.Username" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Appoint Manager
+                </button>
+            </EditForm>
+            <br />
+            <h5>Fire Store Manager: </h5>
+            <EditForm Model="@FireRoleModel" OnValidSubmit="FireManager">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="FireRoleModel.Username" class="form-control" />
+                    <ValidationMessage For="@(() => FireRoleModel.Username)" />
+                </div>
+                <button disabled="@loading" class="btn btn-primary">
+                    @if (loading)
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Fire Manager
+                </button>
+            </EditForm>
+            <h5>Manage Permission of Store Manager: </h5>
+            <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="ModifyManagerPermissionsForm">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText @bind-Value="ModifyStoreManagerPermissionsModel.Username" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Receive information and Reply</label>
+                    <input id="ReceiveInfoAndReply" @bind-value="ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply" name="ReciveInfoAndReply" type="checkbox" />
+                </div>
+                <div class="form-group">
+                    <label>Receive Store Purchase History</label>
+                    <input id="ReceiveStorePurchaseHistory" @bind-value="ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory" name="ReceiveStorePurchaseHistory" type="checkbox" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Modify Permissions
+                </button>
+            </EditForm>
+        }
+    </div>
+    <br />
+    <br />
+
+    <div>
+        @if (_marketAPIClient.LoggedIn || _marketAPIClient.Admin)
+        {
+            <h4>Send Question\Query to Store:</h4>
+            <EditForm Model="@SendQuestionModel" OnValidSubmit="SendQuestionForm">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Title</label>
+                    <InputText @bind-Value="SendQuestionModel.Title" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Question</label>
+                    <InputTextArea @bind-Value="SendQuestionModel.Question" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Send
+                </button>
+            </EditForm>
+        }
+    </div>
+    <br />
+    <br />
+    <div>
+        <h2>Our Items:</h2>
+        @if (StoreInfo.Stock == null || StoreInfo.Stock.Items == null || StoreInfo.Stock.Items.Count == 0)
+        {
+            <font color="red"><b> This store doesn't have any items yet.</b></font>
+        }
+        else
+        {
+            IDictionary<int, Tuple<ItemDTO, int>> stock_dictionary = StoreInfo.Stock.Items;
+            <div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>View Button</th>
+                            @if (CanManageStock)
+                            {
+                                <th>Amount in Stock</th>
+                                <th>Remove from Stock</th>
+                                <th>Update Quantity in Stock</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (int itemID in stock_dictionary.Keys)
+                        {
+                            ItemDTO item = stock_dictionary[itemID].Item1;
+                            <tr>
+                                <th>@item.Name</th>
+                                <th>@(String.Format("{0:0.00}", item.Price))</th>
+                                @if (CanManageStock)
+                                {
+                                    <th>
+                                        <a class="btn btn-primary" href="ItemEditable/@(item.StoreName)/@itemID">View @item.Name Page</a>
+                                    </th>
+                                    <th>@stock_dictionary[itemID].Item2</th>
+                                    <th>
+                                        <button class="btn btn-primary" @onclick="() => RemoveItemFromStock(item.StoreName, itemID)">Remove</button>
+                                    </th>
+                                    <th>
+                                        <EditForm Model="@UpdateQuantityModel">
+                                            <DataAnnotationsValidator />
+                                            <div class="form-group">
+                                                <label>New Quantity</label>
+                                                <InputNumber id="@itemID" @bind-Value="UpdateQuantityModel.Quantity" class="form-control" />
+                                            </div>
+                                            <button class="btn btn-primary" @onclick="() => UpdateQuantityForm(itemID)">
+                                                Update
+                                            </button>
+                                        </EditForm>
+                                    </th>
+                                }
+                                else
+                                {
+                                    <th>
+                                        <a class="btn btn-primary" href="Item/@(item.StoreName)/@itemID">View @item.Name Page</a>
+                                    </th>
+                                    if (@stock_dictionary[itemID].Item2 == 0)
+                                    {
+                                        <th> <a style="color:red">Item Out Of Stock</a></th>
+                                    }
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <br />
+        <br />
+        @if (CanManageStock)
+        {//add item to stock:
+         //storeName, itemID, name, price, description, category, quantity
+            <div>
+                <h5>Add New Item To Store Stock: </h5>
+                <br />
+                <EditForm Model="@AddItemModel" OnValidSubmit="AddItemForm">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label>ID</label>
+                        <InputNumber TValue="int" @bind-Value="AddItemModel.Id" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <InputText @bind-Value="AddItemModel.Name" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Price</label>
+                        <InputNumber @bind-Value="AddItemModel.Price" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <InputText @bind-Value="AddItemModel.Description" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <InputText @bind-Value="AddItemModel.Category" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <InputNumber @bind-Value="AddItemModel.Quantity" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Add
+                    </button>
+                </EditForm>
+            </div>
+        }
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <div>
+        <h1 style="font-size:200%;">Store Ratings and Comments: </h1>
+
+        @if (StoreInfo.Rating.Ratings.Count > 0)
+        {
+            Dictionary<String, Tuple<int, String>> rating = StoreInfo.Rating.Ratings;
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User name</th>
+                        <th>Rating Score</th>
+                        <th>Review</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (String userName in rating.Keys)
+                    {
+                        <tr>
+                            <td>@userName</td>
+                            <td>@rating[userName].Item1</td>
+                            <td>@rating[userName].Item2</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p style="font-size:160%;">no one has rated this store yet..</p>
+        }
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    @if (_marketAPIClient.LoggedIn || _marketAPIClient.Admin)
+    {
+        <div>
+            <h5>Add Your Review: </h5>
+            <EditForm Model="@RateStoreModel" OnValidSubmit="RateStoreForm">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div>
+                        <input type="range" @bind-value="@(RateStoreModel.rating)" id="rating" name="rating" title="rating" min="0" max="10" oninput="this.nextElementSibling.value = this.value"/>
+                        <output>5</output>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Comment</label>
+                    <InputTextArea @bind-Value="RateStoreModel.comment" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    Add Review
+                </button>
+            </EditForm>
+        </div>
+    }
+}
+else
+{
+    <span class="spinner-border spinner-border-sm mr-1"></span>
+}
+
+
+@code {
+    [Parameter] public string StoreName { get; set; }
+    private Models.AppointRoleModel AppointRoleModel = new Models.AppointRoleModel();
+    private Models.FireRoleModel FireRoleModel = new Models.FireRoleModel();
+    private Models.ModifyStoreManagerPermissionsModel ModifyStoreManagerPermissionsModel = new Models.ModifyStoreManagerPermissionsModel();
+    private Models.SendQuestionModel SendQuestionModel = new Models.SendQuestionModel();
+    private Models.UpdateQuantityModel UpdateQuantityModel = new Models.UpdateQuantityModel();
+    private Models.AddItemModel AddItemModel = new Models.AddItemModel();
+    private Models.RateStoreModel RateStoreModel = new Models.RateStoreModel();
+    private bool loading;
+    private ICollection<StoreDTO> activeStores = new List<StoreDTO>();
+
+    private StoreDTO StoreInfo { get; set; } = null;
+    private bool CanManageRoles { get; set; } = false;
+    private bool CanManageStock { get; set; } = false;
+    private bool CanCloseStore { get; set; } = false;
+    private bool CanReopenStore { get; set; } = false;
+    private bool CanCloseStorePermenantly { get; set; } = false;
+    private bool CanViewPurchaseHistory { get; set; } = false;
+    private bool CanViewStoreMessages { get; set; } = false;
+    private bool CanViewStoreRoles { get; set; } = false;
+    private bool StoreIsActive { get; set; } = true;
+
+    private async void OnValidSubmit()
+    {
+        // TODO
+    }
+    private async void ViewPurchaseHistory()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/purchases");
+    }
+    private async void ViewStoreMessages()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
+    }
+    private async void ViewStoreRoles()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/roles");
+    }
+    private async void CloseStore()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.CloseStore(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully close store!");
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
+        }
+    }
+    private async void CloseStorePermenantly()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.CloseStorePermanently(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully close store permebnantly!");
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+            NavigationManager.NavigateTo("");
+        }
+    }
+
+    private async void ReopenStore()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            Response res = await _marketAPIClient.ReopenStore(StoreName);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfully reopen store permebnantly!");
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Response<StoreDTO> response = await _marketAPIClient.GetStoreInformation(StoreName);//new Response<StoreDTO>(new StoreDTO(new StoreFounderDTO("afik's store", "afik"),"afik's store", "Active"));// get store frome service
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            StoreInfo = response.Value;
+            StoreIsActive = response.Value.State == StoreState.Active;
+            CanManageRoles = !(await _marketAPIClient.HasPermission(StoreName, "APPOINT_OWNER")).ErrorOccured;
+            CanManageStock = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;
+            CanCloseStore = !(await _marketAPIClient.HasPermission(StoreName, "CLOSE_STORE")).ErrorOccured;
+            CanReopenStore = !(await _marketAPIClient.HasPermission(StoreName, "REOPEN_STORE")).ErrorOccured;
+            CanCloseStorePermenantly = !(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
+            CanViewPurchaseHistory = !(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
+            CanViewStoreMessages = !(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
+            CanViewStoreRoles = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;//should add new op:
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+        //return view;
+    }
+
+    private async void ModifyManagerPermissionsForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        bool askHistoryPermission = ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory;
+        bool askMsgPermission = ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply;
+        string managerUserName = ModifyStoreManagerPermissionsModel.Username;
+        ModifyStoreManagerPermissionsModel = new Models.ModifyStoreManagerPermissionsModel();
+        try
+        {
+            string feedback = "";
+            if (!askHistoryPermission)
+            {//remove history permmision
+                Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
+                if (response.ErrorOccured)
+                    throw new Exception(response.ErrorMessage);
+                feedback += "remove history permssion from store manager: " + managerUserName + " ; ";
+            }
+            if (askHistoryPermission)
+            {//add history permmision
+                Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
+                if (response.ErrorOccured)
+                    throw new Exception(response.ErrorMessage);
+                feedback += "add history permssion to store manager: " + managerUserName + " ; ";
+            }
+            if (!askMsgPermission)
+            {//remove msg permmision
+                Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
+                if (response.ErrorOccured)
+                    throw new Exception(response.ErrorMessage);
+                feedback += "remove msg permssion from store manager: " + managerUserName + " ; ";
+            }
+            if (askMsgPermission)
+            {//add msg permmision
+                Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
+                if (response.ErrorOccured)
+                    throw new Exception(response.ErrorMessage);
+                feedback += "add msg permssion to store manager: " + managerUserName + " ; ";
+            }
+            AlertService.Info(feedback);
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void AppointNewOwner()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        string toAppoint = AppointRoleModel.Username;
+        AppointRoleModel = new Models.AppointRoleModel();
+
+        try
+        {
+            Response response = await _marketAPIClient.AddStoreOwner(toAppoint, StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully appointed new owner: " + toAppoint);
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void FireOwner()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+        string toFire = FireRoleModel.Username;
+        FireRoleModel = new Models.FireRoleModel();
+        try
+        {
+            Response response = await _marketAPIClient.RemoveStoreOwner(toFire, StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("succesfully remove owner: " + toFire);
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+
+    }
+
+    private async void AppointNewManager()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        string toAppoint = AppointRoleModel.Username;
+        AppointRoleModel = new Models.AppointRoleModel();
+
+        try
+        {
+            Response response = await _marketAPIClient.AddStoreManager(toAppoint, StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully appointed new Manager: " + toAppoint);
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void FireManager()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+        string toFire = FireRoleModel.Username;
+        FireRoleModel = new Models.FireRoleModel();
+        try
+        {
+            Response response = await _marketAPIClient.RemoveStoreManager(toFire, StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("succesfully remove manager: " + toFire);
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async void RemoveItemFromStock(string storename, int itemid)
+    {
+        Response response = await _marketAPIClient.RemoveItemFromStore(storename, itemid);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            AlertService.Info("Successfully removed item from stock.");
+        }
+        StateHasChanged();
+        NavigationManager.NavigateTo("");
+        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+    }
+
+    private async void SendQuestionForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+
+        try
+        {
+            Response response = await _marketAPIClient.SendMessageToStore(StoreName, SendQuestionModel.Title, SendQuestionModel.Question);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully sent the message.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+
+    }
+
+    private async void UpdateQuantityForm(int ItemID)
+    {
+        Response response = await _marketAPIClient.UpdateStockQuantityOfItem(StoreName, ItemID, UpdateQuantityModel.Quantity);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            AlertService.Info("Successfully updated stock quantity.");
+            UpdateQuantityModel = new Models.UpdateQuantityModel();
+        }
+        StateHasChanged();
+        NavigationManager.NavigateTo("");
+        NavigationManager.NavigateTo($"StorePage/{StoreName}");
+    }
+
+    private async void AddItemForm()
+    {
+        Response response = await _marketAPIClient.AddItemToStoreStock(StoreName,
+                                                                       AddItemModel.Id,
+                                                                       AddItemModel.Name,
+                                                                       AddItemModel.Price,
+                                                                       AddItemModel.Description,
+                                                                       AddItemModel.Category,
+                                                                       AddItemModel.Quantity);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            AddItemModel = new Models.AddItemModel();
+            await OnInitializedAsync();
+            AlertService.Info($"Successfully added item to stock.");
+        }
+        StateHasChanged();
+    }
+
+    private async void RateStoreForm()
+    {
+        Response response = await _marketAPIClient.RateStore(StoreName, RateStoreModel.rating, RateStoreModel.comment);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            RateStoreModel = new Models.RateStoreModel();
+            AlertService.Info($"Successfully reviewed store.");
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"StorePage/{StoreName}");
+        }
+        StateHasChanged();
+    }
+}

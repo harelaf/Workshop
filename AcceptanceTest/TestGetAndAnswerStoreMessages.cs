@@ -13,6 +13,7 @@ namespace AcceptanceTest
     public class TestGetAndAnswerStoreMessages
     {
         MarketAPI marketAPI = new MarketAPI();
+        DateTime dob = new DateTime(2001, 7, 30);
         string storeName = "Krusty Krab";
         string username_founder = "SpongeBob SquarePants";
         string username_reviewer = "Mr. Depp";
@@ -29,8 +30,8 @@ namespace AcceptanceTest
             guest_token = marketAPI.EnterSystem().Value;
             registered_token_founder = marketAPI.EnterSystem().Value;
             registered_token_reviewer = marketAPI.EnterSystem().Value;
-            marketAPI.Register(registered_token_founder, username_founder, "123456789", new DateTime(1992, 8, 4));
-            marketAPI.Register(registered_token_reviewer, username_reviewer, "123456789", new DateTime(1992, 8, 4));
+            marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
+            marketAPI.Register(registered_token_reviewer, username_reviewer, "123456789", dob);
             registered_token_founder = marketAPI.Login(registered_token_founder, username_founder, "123456789").Value;
             registered_token_reviewer = marketAPI.Login(registered_token_reviewer, username_reviewer, "123456789").Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName);

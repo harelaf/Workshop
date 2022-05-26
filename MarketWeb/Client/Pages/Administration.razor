@@ -1,0 +1,150 @@
+﻿@page "/Administration"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+    h1 {
+        text-align: center;
+    }
+</style>
+
+<h1 class="display-4"><font color="red">Administration Page</font></h1>
+<br />
+
+<div>
+    <h3><font color="red">Permanently Delete a User:</font></h3>
+    
+    <EditForm Model="@DeleteUserModel" OnValidSubmit="DeleteUserForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Username</label>
+            <InputText @bind-Value="DeleteUserModel.UserName" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Delete User</button>
+    </EditForm>
+</div>
+<br />
+<div>
+    <h3>View Store Purchase History:</h3>
+    <EditForm Model="@ViewStorePurchaseHistoryModel" OnValidSubmit="ViewStorePurchaseHistoryForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Store Name</label>
+            <InputText @bind-Value="ViewStorePurchaseHistoryModel.StoreName" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">View Purchase History</button>
+    </EditForm>
+</div>
+<br />
+<div>
+    <h3>View Complaints:</h3>
+    <button class="btn btn-primary" @onclick="ViewComplaintsButton">View Complaints</button>
+</div>
+<br />
+<div>
+    <h3>Send Messages to Buyers and Sellers:</h3>
+    <EditForm Model="@SendAdminMessageModel" OnValidSubmit="SendAdminMessageForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Username of The Recipient</label>
+            <InputText @bind-Value="SendAdminMessageModel.ReceiverUsername" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Message Title</label>
+            <InputText @bind-Value="SendAdminMessageModel.Title" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Message Body</label>
+            <InputText @bind-Value="SendAdminMessageModel.Message" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Send Message</button>
+    </EditForm>
+</div>
+
+@code {
+    private Models.DeleteUserModel DeleteUserModel = new Models.DeleteUserModel();
+    private Models.ViewStorePurchaseHistoryModel ViewStorePurchaseHistoryModel = new Models.ViewStorePurchaseHistoryModel();
+    private Models.SendAdminMessageModel SendAdminMessageModel = new Models.SendAdminMessageModel();
+
+    private async void DeleteUserForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.RemoveRegisteredVisitorAsync(DeleteUserModel.UserName);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            AlertService.Info("User deleted successfully.");
+            StateHasChanged();
+        }
+    }
+
+    private async void ViewStorePurchaseHistoryForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        NavigationManager.NavigateTo($"/StorePage/{ViewStorePurchaseHistoryModel.StoreName}/purchases");
+    }
+
+    private async void ViewComplaintsButton()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.GetRegisterdComplaints();
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/Complaints");
+        }
+    }
+
+    private async void SendAdminMessageForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.SendAdminMessage(SendAdminMessageModel.ReceiverUsername, SendAdminMessageModel.Title, SendAdminMessageModel.Message);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            AlertService.Info("Message sent.");
+            StateHasChanged();
+        }
+        SendAdminMessageModel = new Models.SendAdminMessageModel();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        if (!marketAPIClient.Admin)
+        {
+            AlertService.Error("Only system admins can access the administration page.");
+            NavigationManager.NavigateTo("");
+        }
+    }
+}

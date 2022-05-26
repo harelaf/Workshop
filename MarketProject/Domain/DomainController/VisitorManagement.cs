@@ -319,7 +319,7 @@ namespace MarketProject.Domain
                 LogErrorMessage("Login", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _visitorsGuestsTokens.Remove(curToken);
+            
             Registered registered = GetRegisteredVisitor(Username);
             if (registered != null && _loggedinVisitorsTokens.Values.Contains(registered))
                 errorMessage = $"Visitor: {Username} is already logged in to the system.";
@@ -339,6 +339,7 @@ namespace MarketProject.Domain
                 LogErrorMessage("Login", errorMessage);
                 throw new Exception(errorMessage);
             }
+            _visitorsGuestsTokens.Remove(curToken);
             return authToken;
         }
 

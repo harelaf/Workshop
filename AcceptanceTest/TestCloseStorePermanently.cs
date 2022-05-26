@@ -28,7 +28,7 @@ namespace AcceptanceTest
             admin_token = (marketAPI.Login(admin_token, "admin", "admin")).Value;
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(registered_token_founder, username_founder, "123456789", new DateTime(1992, 8, 4));
+            marketAPI.Register(registered_token_founder, username_founder, "123456789", new DateTime(2001, 7, 30));
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
             marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 100);
