@@ -286,6 +286,8 @@
 
         @if (StoreInfo.Rating.Ratings.Count > 0)
         {
+            <p>This store has a rating of: @StoreInfo.Rating.GetRating()</p>
+            <br />
             Dictionary<String, Tuple<int, String>> rating = StoreInfo.Rating.Ratings;
             <table class="table">
                 <thead>

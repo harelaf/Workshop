@@ -12,9 +12,9 @@
 
 @layout MainLayout
 <style>
-h1{
-    text-align:center;
-}
+    h1 {
+        text-align: center;
+    }
 </style>
 
 <div class="text-center">
@@ -80,12 +80,12 @@ else
             {
                 throw new Exception(res_history.ErrorMessage);
             }
-            purchasedCartDTOs = res_history.Value; 
+            purchasedCartDTOs = res_history.Value;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-             AlertService.Error(e.Message, true, true);
-             StateHasChanged();
+            AlertService.Error(e.Message, true, true);
+            StateHasChanged();
         }
         finally
         {

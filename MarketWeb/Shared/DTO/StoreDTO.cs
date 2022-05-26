@@ -17,8 +17,8 @@ namespace MarketWeb.Shared.DTO
         private DiscountPolicyDTO _discountPolicy;
         public DiscountPolicyDTO DiscountPolicy => _discountPolicy;
 
-        private Queue<MessageToStoreDTO> _messagesToStore;
-        public Queue<MessageToStoreDTO> MessagesToStore => _messagesToStore;
+        private List<MessageToStoreDTO> _messagesToStore;
+        public List<MessageToStoreDTO> MessagesToStore => _messagesToStore;
 
         private RatingDTO _rating;
         public RatingDTO Rating => _rating;
@@ -38,7 +38,7 @@ namespace MarketWeb.Shared.DTO
         private StoreState _state;
         public StoreState State => _state;
 
-        public StoreDTO(String storeName, StoreFounderDTO founder, PurchasePolicyDTO purchasePolicy, DiscountPolicyDTO discountPolicy, StockDTO stock, Queue<MessageToStoreDTO> messages, RatingDTO rating, List<StoreManagerDTO> managers, List<StoreOwnerDTO> owners, StoreState state)
+        public StoreDTO(String storeName, StoreFounderDTO founder, PurchasePolicyDTO purchasePolicy, DiscountPolicyDTO discountPolicy, StockDTO stock, List<MessageToStoreDTO> messages, RatingDTO rating, List<StoreManagerDTO> managers, List<StoreOwnerDTO> owners, StoreState state)
         {
             _storeName = storeName;
             _stock = stock;

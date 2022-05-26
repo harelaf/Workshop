@@ -273,9 +273,9 @@ namespace MarketProject.Service
         }
         public static StoreDTO toDTO(Store store)
         {
-            Queue<MessageToStoreDTO> messagesToStore = new Queue<MessageToStoreDTO>();
-            foreach (MessageToStore msg in store.MessagesToStore) //Might be in reverse order...
-                messagesToStore.Enqueue(toDTO(msg));
+            List<MessageToStoreDTO> messagesToStore = new List<MessageToStoreDTO>();
+            foreach (MessageToStore msg in store.MessagesToStore)
+                messagesToStore.Add(toDTO(msg));
             List<StoreManagerDTO> managers = new List<StoreManagerDTO>();
             foreach (StoreManager manager in store.GetManagers())
                 managers.Add(toDTO(manager));

@@ -150,7 +150,6 @@ namespace MarketProject.Service
             Response response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Remove Registered Visitor called with parameters: authToken={authToken}, username={usr_toremove}.");
                 _market.RemoveRegisteredVisitor(authToken, usr_toremove);

@@ -180,7 +180,7 @@ namespace MarketWeb.Client.Connect
             const string url = "api/market/RemoveRegisteredVisitor";
             var param = new Dictionary<string, string>() { { "usr_toremove", usr_toremove } };
             var newUrl = QueryHelpers.AddQueryString(url, param);
-            Response res = await _httpService.Post<Response>(newUrl, null);
+            Response res = await _httpService.Get<Response>(newUrl);
             return res;
         }
 
