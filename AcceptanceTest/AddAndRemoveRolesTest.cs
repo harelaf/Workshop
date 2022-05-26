@@ -17,7 +17,7 @@ namespace AcceptanceTest
     [TestClass]
     public class AddAndRemoveRolesTest
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(true);
         String storeName = "test's Shop";
         //String storeName_outSystem = "bla";
         String guest_VisitorToken;
@@ -130,7 +130,6 @@ namespace AcceptanceTest
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
-            marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
             //marketAPI.AddStoreOwner(store_owner_token1, ownerUsername2, storeName);
             List<StoreManagerDTO> lst_m;
             List<StoreOwnerDTO> lst_o;

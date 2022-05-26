@@ -12,7 +12,7 @@ namespace AcceptanceTest
     [TestClass]
     public class EditShoppingCartTest
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(true);
         string storeName_inSystem = "afik's Shop";
         string guest_VisitorToken;
         string registered_VisitorToken;

@@ -17,7 +17,7 @@ namespace AcceptanceTest.DSL.Drivers
     /// </summary>
     public class DirectMarketDriver : IMarketDriver
     {
-        private MarketAPI _marketAPI = new MarketAPI();
+        private MarketAPI _marketAPI = new MarketAPI(true);
         private String? _errorMessage = null;
         private String? _currentGuestToken = null;
         private String? _loggedInVisitorToken = null;

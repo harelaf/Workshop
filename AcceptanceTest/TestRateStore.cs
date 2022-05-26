@@ -14,7 +14,7 @@ namespace AcceptanceTest
     [TestClass]
     public class TestRateStore
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(true);
         string storeName_inSystem = "Krusty Krab";
         string storeName_outSystem = "Chum Bucket";
         string username = "SpongeBob SquarePants";

@@ -20,22 +20,25 @@ namespace MarketWeb.Service
         private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         //private ILogger<MarketAPI> _logger;
         private int _id;
-
+        private bool testMode;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             _market = market;
             //_logger = logger;
             //LoadData();
         }
-        public MarketAPI()
+        public MarketAPI(bool testmode)
         {
             _market = new Market();
+            testMode = testmode;
             //_logger = logger;
             //LoadData();
         }
 
         private String parseAutherization(String Authorization)
         {
+            if(testMode)
+                return Authorization;
             if (!AuthenticationHeaderValue.TryParse(Authorization, out var headerValue))
             {
                 throw new Exception("Invalid token!");
@@ -81,6 +84,7 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                
                 _logger.Info($"Login called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(authToken, Username, password);

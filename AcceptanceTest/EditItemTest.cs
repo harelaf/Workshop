@@ -13,7 +13,7 @@ namespace AcceptanceTest
     [TestClass]
     public class EditItemTest
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(true);
         string storeName_inSystem = "Shefa Issachar";
         string storeName_outSystem = "bla";
         string guest_VisitorToken;
