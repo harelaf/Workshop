@@ -84,6 +84,7 @@ namespace MarketProject.Domain
             _username = Username;
             SetPassword(password);
             _roles = new List<SystemRole>();
+            SetPassword(password);  
         }
         public void SendMessage(AdminMessageToRegistered message)
         {

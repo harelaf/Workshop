@@ -1,0 +1,101 @@
+﻿@page "/ItemSearch/{ItemName}/{Category}/{KeyWord}"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+    h1 {
+        text-align: center;
+    }
+</style>
+
+<h1>Item Search Results</h1>
+<br />
+@if (searchedItems.Count == 0)
+{
+    <font color="red"><b>No items were found for your search parameters.</b></font>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Store Name</th>
+                <th>View Item Button</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ItemDTO item in searchedItems)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Price</td>
+                    <td>@item.StoreName</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => ViewItemButton(item.StoreName, item.ItemID)">View Item</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    [Parameter] public string ItemName { get; set; }
+    [Parameter] public string Category { get; set; }
+    [Parameter] public string KeyWord { get; set; }
+
+    List<ItemDTO> searchedItems = new List<ItemDTO>();
+
+    private async void ViewItemButton(string StoreName, int itemID)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response HasAccess = await marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK");
+        if (HasAccess.ErrorOccured)
+        {
+            NavigationManager.NavigateTo($"Item/{StoreName}/{itemID}");
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"ItemEditable/{StoreName}/{itemID}");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        
+        try
+        {
+            ItemName = ItemName == "BLANK.VALUE" ? "" : ItemName;
+            Category = Category == "BLANK.VALUE" ? "" : Category;
+            KeyWord = KeyWord == "BLANK.VALUE" ? "" : KeyWord;
+            Response<List<ItemDTO>> response = await marketAPIClient.GetItemInformation(ItemName, Category, KeyWord);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            else
+            {
+                searchedItems = response.Value;
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+    }
+}

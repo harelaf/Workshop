@@ -1,0 +1,163 @@
+﻿@page "/Item/{StoreName}/{ItemID:int}"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+    h1 {
+        text-align: center;
+    }
+</style>
+
+<h1 class="display-4">Item @(item.Name) Page</h1>
+<br />
+<h2 style="font-size:200%;">Item Price:</h2>
+<p style="font-size:160%;">$ @(String.Format("{0:0.00}", item.Price))</p>
+<br />
+<h2 style="font-size:200%;">Item Category: </h2>
+<p style="font-size:160%;"> @(item.Category)</p>
+<br />
+<h2 style="font-size:200%;">Item Description: </h2>
+<p style="font-size:160%;"> @(item.Description)</p>
+<br />
+<br />
+<br />
+
+<div>
+    <h1 > Add to Cart</h1>
+    <EditForm Model="@AddToCartModel" OnValidSubmit="AddToCartForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Amount</label>
+            <InputNumber @bind-Value="AddToCartModel.Amount" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+    </EditForm>
+</div>
+<br />
+
+<br />
+<br />
+
+<h2 style="font-size:200%;">Item Ratings and Reviews: </h2>
+@if (item.Rating.Ratings.Count > 0)
+{
+    Dictionary<String, Tuple<int, String>> rating = item.Rating.Ratings;
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User name</th>
+                <th>Rating Score</th>
+                <th>Review</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (String userName in rating.Keys)
+            {
+                <tr>
+                    <td>@userName</td>
+                    <td>@rating[userName].Item1</td>
+                    <td>@rating[userName].Item2</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p style="font-size:160%;">No reviews available for this item.</p>
+}
+<br />
+
+@if (marketAPIClient.LoggedIn || marketAPIClient.Admin)
+{
+    <h5>Add Your Review: </h5>
+    <EditForm Model="@AddReviewModel" OnSubmit="ReviewItemForm">
+        <DataAnnotationsValidator />
+        <div width=20% class="form-group">
+            <label>Rating</label>
+            <input type="range" @bind-Value="AddReviewModel.Rating" @bind-Value:event="oninput" min="0" max="10">
+            <output>@AddReviewModel.Rating</output>
+        </div>
+        <div class="form-group">
+            <label>Review</label>
+            <InputTextArea @bind-Value="AddReviewModel.Review" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Review</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public string StoreName { get; set; }
+    [Parameter] public int ItemID { get; set; }
+    ItemDTO item = new ItemDTO(0, "", 0, "", "", new RatingDTO(new Dictionary<string, Tuple<int, string>>()), "");
+    private Models.AddToCartModel AddToCartModel = new Models.AddToCartModel();
+    private Models.AddReviewModel AddReviewModel = new Models.AddReviewModel();
+
+    private async void AddToCartForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.AddItemToCart(ItemID, StoreName, AddToCartModel.Amount);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            AlertService.Info("Successfully added item to cart.");
+        }
+    }
+
+    private async void ReviewItemForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        if (AddReviewModel.Review == null)
+            AddReviewModel.Review = "";
+
+        Response response = await marketAPIClient.RateItem(ItemID, StoreName, AddReviewModel.Rating, AddReviewModel.Review);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            AlertService.Info("Successfully reviewed item.");
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response<ItemDTO> response = await marketAPIClient.GetItem(StoreName, ItemID);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            else
+            {
+                item = response.Value;
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message);
+        }
+    }
+}

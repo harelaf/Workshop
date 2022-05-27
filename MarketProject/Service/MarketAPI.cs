@@ -579,14 +579,14 @@ namespace MarketProject.Service
             return response;
         }
 
-        public Response RemoveManagerPermission(String authToken, String managerUsername, String storeName, Operation op)//permission param is Enum
+        public Response RemoveManagerPermission(String authToken, String managerUsername, String storeName, String op)//permission param is Enum
         {//II.4.7
 
             Response response;
             try
             {
                 log.Info($"Remove Manager Permission called with parameters: authToken={authToken}, managerUsername={managerUsername}, storeName={storeName}, op={op}.");
-                _market.RemoveManagerPermission(authToken, managerUsername, storeName, op);
+                _market.RemoveManagerPermission(authToken, managerUsername, storeName, op.ToString());
                 response = new Response();
                 log.Info($"SUCCESSFULY executed Remove Manager Permission.");
             }

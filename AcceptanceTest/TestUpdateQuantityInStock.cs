@@ -1,12 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MarketProject.Service;
 using System.Threading;
-using MarketProject.Service.DTO;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 
 namespace AcceptanceTest
 {
@@ -14,7 +12,7 @@ namespace AcceptanceTest
     [TestClass]
     public class TestUpdateQuantityInStock
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName_inSystem = "Krusty Krab";
         string storeName_outSystem = "Chum Bucket";
         string username_founder = "SpongeBob SquarePants";
@@ -28,14 +26,14 @@ namespace AcceptanceTest
         string itemCategory;
         int itemQuantity;
         int newQuantity;
-
+        DateTime dob = new DateTime(2001, 7, 30);
 
         [TestInitialize]
         public void setup()
         {
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(registered_token_founder, username_founder, "123456789", new DateTime(1992, 8, 4));
+            marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
             itemId = 100;

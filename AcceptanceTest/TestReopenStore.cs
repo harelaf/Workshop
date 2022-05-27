@@ -2,18 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MarketProject.Service;
-using System.Threading;
-using MarketProject.Service.DTO;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
+using MarketWeb.Service;
 
 namespace AcceptanceTest
 {
     [TestClass]
     public class TestReopenStore
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(null, null);
+        DateTime dob = new DateTime(2001, 7, 30);
         string storeName_inSystem = "Krusty Krab";
         string storeName_outSystem = "Chum Bucket";
         string username_founder = "SpongeBob SquarePants";
@@ -26,7 +25,7 @@ namespace AcceptanceTest
         {
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
-            marketAPI.Register(registered_token_founder, username_founder, "123456789", new DateTime(1992, 8, 4));
+            marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
             marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 100);
@@ -57,7 +56,7 @@ namespace AcceptanceTest
             Assert.IsFalse(response1.ErrorOccured);
 
             StoreDTO dto = response1.Value;
-            Assert.AreEqual(dto.State, MarketProject.Domain.StoreState.Active);
+            Assert.AreEqual(dto.State, StoreState.Active);
 
             Response<RegisteredDTO> response2 = marketAPI.GetVisitorInformation(registered_token_founder);
             Assert.IsFalse(response2.ErrorOccured);

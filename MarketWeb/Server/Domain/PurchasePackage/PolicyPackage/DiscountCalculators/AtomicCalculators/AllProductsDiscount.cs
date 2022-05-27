@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MarketWeb.Server.Domain.PolicyPackage
+{
+    public class AllProductsDiscount : PercentageDiscount
+    {
+        public AllProductsDiscount(double percentage_to_subtract, DateTime expiration) : base(percentage_to_subtract, expiration){}
+
+        public AllProductsDiscount(double percentage_to_subtract, Condition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration){}
+
+        public override string GetDiscountString(int indent)
+        {
+            return PercentageToSubtract + "% off all products." +
+                ExpirationToString(indent) +
+                ConditionToString(indent);
+        }
+        public override string GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
+        {
+            return PercentageToSubtract + "% off all products." +
+                $"{newLine(indent)}{searchablePriceable.GetTotalPrice()} - {GetTotalDiscount(searchablePriceable)} = {searchablePriceable.GetTotalPrice() - GetTotalDiscount(searchablePriceable)}" +
+                ExpirationToString(indent) +
+                ConditionToString(indent);
+        }
+        public override void applyDiscount(ISearchablePriceable searchablePriceable)
+        {
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return;
+            searchablePriceable.SetAllProductsDiscount(this);
+        }
+        public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
+        {
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return 0;
+            return searchablePriceable.GetTotalPrice() * PercentageToSubtract / 100;
+        }
+    }
+}

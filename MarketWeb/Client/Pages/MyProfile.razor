@@ -1,0 +1,181 @@
+﻿@page "/account/profile"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@if (userDetails != null){
+    <div class="text-center">
+        <h1 class="display-4">@(userDetails.Username)'s Profile</h1>
+        <br />
+        <br />
+    </div>
+    <br />
+    <h3>Username:</h3>
+    <p>@(userDetails.Username)</p>
+
+    <br />
+    <h3>Date of Birth:</h3>
+    <p>@(userDetails.BirthDate)</p>
+    <br />
+    <div class="card">
+        <h4 class="card-header">Change Password</h4>
+        <div class="card-body">
+            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Old Password</label>
+                    <InputText @bind-Value="model.OldPassword" type="password" class="form-control" />
+                    <ValidationMessage For="@(() => model.OldPassword)" />
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <InputText @bind-Value="model.NewPassword" type="password" class="form-control" />
+                    <ValidationMessage For="@(() => model.NewPassword)" />
+                </div>
+                <button disabled="@loading" class="btn btn-primary">
+                    @if (loading) 
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Change
+                </button>
+            </EditForm>
+        </div>
+    </div>
+    <br />
+    <h2>My Stores:</h2>
+    @if (userStores.Count == 0)
+    {
+        <font><b>You don't have a role in any store in the market.</b></font>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Store Name</th>
+                    <th>Founder Name</th>
+                    <th>View Store Button</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (StoreDTO item in userStores)
+                {
+                    <tr>
+                        <td>@item.StoreName</td>
+                        <td>@item.Founder.Username</td>
+                        <td>
+                            <button class="btn btn-primary" @onclick="() => ViewStoreButton(item.StoreName)">View @(item.StoreName)</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <br />
+    <h2>My Complaints:</h2>
+    @if (userDetails.FiledComplaints.Count == 0)
+    {
+        <font><b>You haven't filed any complaints yet.</b></font>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Complaint ID</th>
+                    <th>Cart ID</th>
+                    <th>Complaint</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (KeyValuePair<int, ComplaintDTO> row in userDetails.FiledComplaints)
+                {
+                    <tr>
+                        <td>@row.Key</td>
+                        <td>@row.Value.cartID</td>
+                        <td>@row.Value.Message</td>
+                        @if (@row.Value.Response.Length == 0)
+                        {
+                            <td>No response as of yet.</td>
+                        }
+                        else
+                        {
+                            <td>@row.Value.Response</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+@code {
+    private Models.Account.ChangePasswordModel model = new Models.Account.ChangePasswordModel();
+    private bool loading;
+    private RegisteredDTO userDetails = null;
+    private ICollection<StoreDTO> userStores = new List<StoreDTO>();
+
+    private async void ViewStoreButton(string StoreName)
+    {
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Response<RegisteredDTO> response1 = await _marketAPIClient.GetVisitorInformation();
+            Response<List<StoreDTO>> response2 = await _marketAPIClient.GetStoresOfUser();
+            if (response1.ErrorOccured)
+            {
+                throw new Exception(response1.ErrorMessage);
+            }
+            userDetails = response1.Value;
+            if (response2.ErrorOccured)
+            {
+                throw new Exception(response2.ErrorMessage);
+            }
+            userStores = response2.Value;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void OnValidSubmit()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+        try
+        {
+            Response response = await _marketAPIClient.EditVisitorPassword(model.OldPassword, model.NewPassword);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Password was changed successfully!");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

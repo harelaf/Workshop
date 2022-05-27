@@ -1,0 +1,77 @@
+﻿@page "/account/register"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@inject IMarketAPIClient MarketAPIClient
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+<div class="card">
+    <h4 class="card-header">Register</h4>
+    <div class="card-body">
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Username</label>
+                <InputText @bind-Value="model.Username" class="form-control" />
+                <ValidationMessage For="@(() => model.Username)" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <InputText @bind-Value="model.Password" type="password" class="form-control" />
+                <ValidationMessage For="@(() => model.Password)" />
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <InputText @bind-Value="model.ConfirmPassword" type="password" class="form-control" />
+                <ValidationMessage For="@(() => model.ConfirmPassword)" />
+            </div>
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <InputDate @bind-Value="model.DateOfBirth" class="form-control" />
+                <ValidationMessage For="@(() => model.DateOfBirth)" />
+            </div>
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading) 
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Register
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Models.Account.RegisterModel model = new Models.Account.RegisterModel();
+    private bool loading;
+
+    private async void OnValidSubmit()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        loading = true;
+        try
+        {
+            Response response = await MarketAPIClient.Register(model.Username, model.Password, model.DateOfBirth);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            var returnUrl = "/account/login";
+            NavigationManager.NavigateTo(returnUrl);
+            AlertService.Info("Successfully registered!");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
+    }
+}

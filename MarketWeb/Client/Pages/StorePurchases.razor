@@ -1,0 +1,77 @@
+﻿@page "/StorePage/{StoreName}/purchases"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+<div class="text-center">
+    <h1 class="display-4">@(StoreName) Purchases History</h1>
+    <br />
+    <br />
+</div>
+<br />
+
+@if (Purchases.Count>0)
+{
+    @foreach (Tuple<DateTime, ShoppingBasketDTO> purchase in Purchases)
+    {
+        DateTime date = purchase.Item1;
+        ShoppingBasketDTO basket = purchase.Item2;
+        <h4>@date</h4>
+        <table style="width:100%" id="@date">
+            <tr>
+                <th>Product Name</th>
+                <th>Amount</th>
+                <th>price per unit</th>
+            </tr>
+            @foreach (int itemId in basket.Items.Keys)
+            {
+                <tr id="@(basket.Items[itemId].Item1.Name + date.ToString())">
+                    <th>@basket.Items[itemId].Item1.Name</th>
+                    <th>@basket.Items[itemId].Item2</th>
+                    <th>$@basket.Items[itemId].Item1.Price</th>
+                </tr>
+            }
+        </table>
+        <br /> 
+    }
+}
+else
+{
+    <h4> There were no purchase made in this store yet.</h4>
+}
+
+@code {
+    [Parameter] public string StoreName { get; set; }
+    public List<Tuple<DateTime, ShoppingBasketDTO>> Purchases { get; set; } = new List<Tuple<DateTime, ShoppingBasketDTO>>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Response<List<Tuple<DateTime, ShoppingBasketDTO>>> response = await _marketAPIClient.GetStorePurchasesHistory(StoreName);// service.GetStorePurchaseHistory(token storeName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            Purchases = response.Value;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    
+    }
+
+}

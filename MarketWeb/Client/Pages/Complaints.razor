@@ -1,0 +1,125 @@
+﻿@page "/Complaints"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+    h1 {
+        text-align: center;
+    }
+</style>
+
+<h1 class="display-4"><font color="red">Complaints Page</font></h1>
+<br />
+<div>
+    @if (complaints.Count == 0)
+    {
+        <font><b>No complaints in the system.</b></font>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Complaint ID</th>
+                    <th>Complainer Name</th>
+                    <th>Complainer Cart ID</th>
+                    <th>Complaint</th>
+                    <th>Your Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ComplaintDTO complaint in complaints)
+                {
+                    <tr>
+                        <td>@complaint.ID</td>
+                        <td>@complaint.ComplainerUsername</td>
+                        <td>@complaint.cartID</td>
+                        <td>@complaint.Message</td>
+                        @if (complaint.Response != null && complaint.Response != "")
+                        {
+                            <EditForm Model="@ReplyToComplaintModel">
+                                <DataAnnotationsValidator />
+                                <div class="form-group">
+                                    <label>Your Response</label>'
+                                    <InputTextArea @bind-Value="ReplyToComplaintModel.Reply" class="form-control" />
+                                </div>
+                                <button class="btn btn-primary" @onclick="() => ReplyToComplaintForm(complaint.ID)">
+                                    Reply
+                                </button>
+                            </EditForm>
+                        }
+                        else
+                        {
+                            <td>@complaint.Response</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    ICollection<ComplaintDTO> complaints = new List<ComplaintDTO>();
+    Models.ReplyToComplaintModel ReplyToComplaintModel = new Models.ReplyToComplaintModel();
+
+    private async void ReplyToComplaintForm(int complaintID)
+    {
+        try
+        {
+            Response response = await marketAPIClient.ReplyToComplaint(complaintID, ReplyToComplaintModel.Reply);
+            if (response.ErrorOccured)
+            {
+                AlertService.Error(response.ErrorMessage);
+            }
+            else
+            {
+                AlertService.Info("Successfuly replied to message.");
+                NavigationManager.NavigateTo("");
+                NavigationManager.NavigateTo("/Complaints");
+            }
+        }
+		catch (Exception ex)
+		{
+			AlertService.Error(ex.Message);
+		}
+		finally
+		{
+			StateHasChanged();
+		}
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        if (!marketAPIClient.Admin)
+        {
+            AlertService.Error("Only system admins can access the administration page.");
+            NavigationManager.NavigateTo("");
+        }
+        else
+        {
+            Response<ICollection<ComplaintDTO>> response = await marketAPIClient.GetRegisterdComplaints();
+            if (response.ErrorOccured)
+            {
+                AlertService.Error(response.ErrorMessage);
+                StateHasChanged();
+            }
+            else
+            {
+                complaints = response.Value;
+                StateHasChanged();
+            }
+        }
+    }
+}

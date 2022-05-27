@@ -1,4 +1,6 @@
-﻿using MarketProject.Service;
+﻿
+using MarketWeb.Service;
+using MarketWeb.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace AcceptanceTest.DSL.Drivers
     /// </summary>
     public class DirectMarketDriver : IMarketDriver
     {
-        private MarketAPI _marketAPI = new MarketAPI();
+        private MarketAPI _marketAPI = new MarketAPI(null, null);
         private String? _errorMessage = null;
         private String? _currentGuestToken = null;
         private String? _loggedInVisitorToken = null;

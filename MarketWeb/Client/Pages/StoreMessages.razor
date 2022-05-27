@@ -1,0 +1,116 @@
+﻿@page "/StorePage/{StoreName}/messages"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+<div class="text-center">
+	<h1 class="display-4">@(StoreName)  Messages</h1>
+	<br />
+	<br />
+</div>
+<br />
+@if (Messages.Count > 0)
+{
+	<table style="width:100%" class="table">
+		<tr>
+			<th><h4>User Name </h4></th>
+			<th><h4> Title</h4></th>
+			<th><h4> Message</h4></th>
+			<th><h4> Reply</h4></th>
+
+		</tr>
+		@{int i=0;
+		@foreach (MessageToStoreDTO msg in Messages)
+		{
+			i++;
+			<tr>
+				<th>@msg.SenderUsername</th>
+				<th>@msg.Title</th>
+				<th>@msg.Message</th>
+				<th>
+
+					<EditForm Model="@ReplyModel">
+                        <DataAnnotationsValidator />
+						<div class="form-group">
+							<label>Reply</label>
+							<InputTextArea id="@(i+Messages.Count)" @bind-Value="ReplyModel.Reply" class="form-control" />
+						</div>
+                        <button class="btn btn-primary" @onclick="() => OnValidSubmit(msg.SenderUsername, msg.Id)">
+                            Reply
+                        </button>
+                    </EditForm>
+				</th>
+			</tr>
+		}}
+	</table>
+	<br />
+
+}
+else
+{
+	<h4> There were no messages sent to this store yet.</h4>
+}
+
+@code {
+	[Parameter] public string StoreName { get; set; }
+	List<MessageToStoreDTO> Messages = new List<MessageToStoreDTO>();
+	Models.ReplyModel ReplyModel = new Models.ReplyModel();
+
+
+
+
+	private async void OnValidSubmit(string reciver, int msgid)
+	{
+		AlertService.Clear();
+		try
+		{
+			Response response = await _marketAPIClient.AnswerStoreMesseage(reciver, msgid, StoreName, ReplyModel.Reply);
+			ReplyModel = new Models.ReplyModel();
+			if (response.ErrorOccured)
+			{
+				throw new Exception(response.ErrorMessage);
+			}
+			
+			NavigationManager.NavigateTo("");
+			NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
+			StateHasChanged();
+			AlertService.Info("Successfully sent the reply.");
+		}
+		catch(Exception ex)
+		{
+			AlertService.Error(ex.Message);
+			StateHasChanged();
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		try
+		{
+			Response<List<MessageToStoreDTO>> response = await _marketAPIClient.GetStoreMessages(StoreName);
+			if (response.ErrorOccured)
+			{
+				throw new Exception(response.ErrorMessage);
+			}
+			Messages = response.Value;
+		}
+		catch (Exception ex)
+		{
+			AlertService.Error(ex.Message);
+		}
+		finally
+		{
+			StateHasChanged();
+		}
+
+	}
+
+}

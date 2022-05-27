@@ -1,16 +1,18 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
-using MarketProject.Service;
-using MarketProject.Service.DTO;
 using System.Collections.Generic;
 using System;
+using MarketWeb.Server.Domain;
+using MarketWeb.Service;
+using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 
 namespace AcceptanceTest
 {
     [TestClass]
     public class EditShoppingCartTest
     {
-        MarketAPI marketAPI = new MarketAPI();
+        MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName_inSystem = "afik's Shop";
         string guest_VisitorToken;
         string registered_VisitorToken;
@@ -22,14 +24,14 @@ namespace AcceptanceTest
         int itemId_inGuestCart;
         int itemAmount_inRegCart = 10;
         int itemAmount_inGuestCart = 10;
-        DateTime bDay = new DateTime(1992, 8, 4);
+        DateTime dob = new DateTime(2001, 7, 30);
 
         [TestInitialize()]
         public void setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
-            marketAPI.Register(registered_VisitorToken, "afik", "123456789", bDay);
+            marketAPI.Register(registered_VisitorToken, "afik", "123456789", dob);
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
             itemID_inStock_1 = 1; itemAmount_inSttock_1 = 20;
@@ -108,13 +110,14 @@ namespace AcceptanceTest
             //amount in stoer the same
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             Assert.IsNotNull(store);
-            IDictionary<ItemDTO, int> stock = store.Stock.Items;
-            foreach (ItemDTO item in stock.Keys)
+            Dictionary<int, Tuple<ItemDTO, int>> stock = store.Stock.Items;
+            foreach (int itemid in stock.Keys)
             {
-                if(item.ItemID==itemId_inRegCart)
-                    Assert.AreEqual(stock[item], itemAmount_inSttock_1);
-                if (item.ItemID == itemAmount_inGuestCart)
-                    Assert.AreEqual(stock[item], itemAmount_inSttock_2);
+
+                if(itemid ==itemId_inRegCart)
+                    Assert.AreEqual(stock[itemid].Item2, itemAmount_inSttock_1);
+                if (itemid == itemAmount_inGuestCart)
+                    Assert.AreEqual(stock[itemid].Item2, itemAmount_inSttock_2);
             }
             //anount in cart the same
             ShoppingCartDTO cart_guest = marketAPI.ViewMyCart(guest_VisitorToken).Value;
@@ -133,19 +136,19 @@ namespace AcceptanceTest
             //amount in stoer updated to zero
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             Assert.IsNotNull(store);
-            IDictionary<ItemDTO, int> stock = store.Stock.Items;
-            int itemsInStore = 0;
-            foreach (ItemDTO item in stock.Keys)
+            Dictionary<int, Tuple<ItemDTO, int>> stock = store.Stock.Items;
+                int itemsInStore = 0;
+            foreach (int itemid in stock.Keys)
             {
-                if (item.ItemID == itemId_inRegCart)
+                if (itemid == itemId_inRegCart)
                 {
                     itemsInStore++;
-                    Assert.AreEqual(stock[item], 0);
+                    Assert.AreEqual(stock[itemid].Item2, 0);
                 }
-                if (item.ItemID == itemId_inGuestCart)
+                if (itemid == itemId_inGuestCart)
                 {
                     itemsInStore++;
-                    Assert.AreEqual(stock[item], 0);
+                    Assert.AreEqual(stock[itemid].Item2, 0);
                 }
             }
             Assert.AreEqual(itemsInStore, 2);
@@ -167,19 +170,19 @@ namespace AcceptanceTest
             //amount in stoer increased by toDecrease
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             Assert.IsNotNull(store);
-            IDictionary<ItemDTO, int> stock = store.Stock.Items;
+            IDictionary<int, Tuple<ItemDTO, int>> stock = store.Stock.Items;
             int itemsInStore = 0;
-            foreach (ItemDTO item in stock.Keys)
+            foreach (int itemid in stock.Keys)
             {
-                if (item.ItemID == itemId_inRegCart)
+                if (itemid == itemId_inRegCart)
                 {
                     itemsInStore++;
-                    Assert.AreEqual(stock[item], itemAmount_inSttock_1 + to_decrease);
+                    Assert.AreEqual(stock[itemid].Item2, itemAmount_inSttock_1 + to_decrease);
                 }
-                if (item.ItemID == itemId_inGuestCart)
+                if (itemid == itemId_inGuestCart)
                 {
                     itemsInStore++;
-                    Assert.AreEqual(stock[item], itemAmount_inSttock_2 + to_decrease);
+                    Assert.AreEqual(stock[itemid].Item2, itemAmount_inSttock_2 + to_decrease);
                 }
             }
             Assert.AreEqual(itemsInStore, 2);
@@ -236,12 +239,12 @@ namespace AcceptanceTest
 
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             Assert.IsNotNull(store);
-            IDictionary<ItemDTO, int> stock = store.Stock.Items;
-            foreach (ItemDTO item in stock.Keys)
+            IDictionary<int, Tuple<ItemDTO, int>> stock = store.Stock.Items;
+            foreach (int itemid in stock.Keys)
             {
-                if (item.ItemID == newItenID)
+                if (itemid == newItenID)
                 {
-                    Assert.AreEqual(stock[item], 0);
+                    Assert.AreEqual(stock[itemid].Item2, 0);
                     break;
                 }
             }
@@ -250,10 +253,12 @@ namespace AcceptanceTest
 
         private int getAmountOfItemInStock(int itemID, StockDTO stock)
         {
-            foreach (ItemDTO item in stock.Items.Keys)
+            Dictionary<int, Tuple<ItemDTO, int>> dic_stock = stock.Items;
+            foreach (int itemid in dic_stock.Keys)
             {
+                ItemDTO item = dic_stock[itemid].Item1;
                 if (itemID == item.ItemID)
-                    return stock.Items[item];
+                    return stock.Items[itemid].Item2;
             }
             return 0;
         }
