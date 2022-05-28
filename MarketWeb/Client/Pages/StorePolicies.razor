@@ -1,0 +1,168 @@
+﻿@page "/StorePage/{StoreName}/Policies"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+<div class="text-center" id="Title">
+    <h1 class="display-4">@(StoreName)'s Policies Page</h1>
+    <br />
+</div>
+<div id="Discount Policy">
+    <h2>Discount Policies</h2>
+    <p>
+        In order to add a new discount policy to your store, please read the following instructions:
+        <br />
+        These are the discount types currently available and their respective string representation:
+        <ul>
+            <li>
+                A categoric discount.&nbsp;&nbsp;<b></b>
+            </li>
+            <li>
+                A numeric discount.&nbsp;&nbsp;<b></b>
+            </li>
+            <li>
+                Discount for a specific item.&nbsp;&nbsp;<b></b>
+            </li>
+            <li>
+                Whole store sale.&nbsp;&nbsp;<b></b>
+            </li>
+        </ul>
+    </p>
+    <br />
+    <p>
+        Discounts can also be conditioned.
+        <br />
+        These are the currently available conditions and their respective string representation:
+        <ul>
+            <li>
+                Day of the week.&nbsp;&nbsp;<b>(DayOfWeek_{1-7})</b>
+            </li>
+            <li>
+                Specific hour.&nbsp;&nbsp;<b>(Hour_{1-12}_{AM/PM})</b>
+            </li>
+            <li>
+                Total price of cart.&nbsp;&nbsp;<b>(TotalCartPrice_{&lt;/&gt;}_{PRICE})</b>
+            </li>
+            <li>
+                Amount of some item in cart.&nbsp;&nbsp;<b>(ItemTotalAmountInCart_{&lt;/&gt;}_{AMOUNT})</b>
+            </li>
+            <li>
+                Total price of some item in cart.&nbsp;&nbsp;<b>(ItemTotalPriceInCart_{&lt;/&gt;}_{PRICE})</b>
+            </li>
+            <li>
+                Amount of some category in cart.&nbsp;&nbsp;<b>(CategoryTotalAmountInCart_{&lt;/&gt;}_{AMOUNT})</b>
+            </li>
+            <li>
+                Total price of some category in cart.&nbsp;&nbsp;<b>(CategoryTotalPriceInCart_{&lt;/&gt;}_{PRICE})</b>
+            </li>
+        </ul>
+        The conditions can be composed together using the following logical operations:
+        <ul>
+            <li>
+                AND.
+            </li>
+            <li>
+                OR.
+            </li>
+            <li>
+                XOR.
+            </li>
+        </ul>
+    </p>
+    <br />
+    <p>
+        In order to add a condition (optional), follow these rules:
+        <br />
+        <ol>
+            <li>
+                Use the aforementioned string representation formats only.
+            </li>
+            <li>
+                When the representation contains a '{XXX}', it means you can input a value of your own, or choose one.
+                <br />
+                For example,
+                <br />
+                <ul>
+                    <li>
+                        {&lt;/&gt;}, means you can choose either &lt; (lesser than) or &gt; (greater than).
+                    </li>
+                    <li>
+                        {PRICE}, means you can input your own price there.
+                    </li>
+                </ul>
+                <br />
+                In order to add a condition which states that the price of the cart needs to be greater than $50, use the following format:
+                <br />
+                <b>TotalCartPrice_&gt;_50</b>
+            </li>
+            <li>
+                In order to create composed conditions, use AND/OR/XOR in a prefix syntax.
+                <br />
+                In a prefix syntax, first put the operator (i.e. AND), and then the operands (i.e. the conditions).
+                <br />
+                In Order to a add condition that states the price of the cart is greater than $50 <b>and</b> the day of week is Sunday, use the following format:
+                <br />
+                <b>(AND TotalCartPrice_&gt;_50 DayOfWeek_1)</b>
+            </li>
+        </ol>
+        <br />
+        Here are a few examples to help you:
+        <ul>
+            <li>
+                Hour of day is 8PM and category 'Food' total price is lesser than $123:
+                <br />
+                <b>(AND Hour_8_PM CategoryTotalPriceInCart_&lt;_123)</b>
+            </li>
+            <li>
+                Either the total price of the cart is greater than $45 or the previous bullet:
+                <br />
+                <b>(OR TotalCartPrice_&gt;_45 (AND Hour_8_PM CategoryTotalPriceInCart_&lt;_123))</b>
+            </li>
+            <li>
+                Day of week is Wednesday XOR the previous bullet.
+                <br />
+                <b>(XOR DayOfWeek_4 (OR TotalCartPrice_&gt;_45 (AND Hour_8_PM CategoryTotalPriceInCart_&lt;_123)))</b>
+            </li>
+        </ul>
+    </p>
+    <br />
+
+    <h3>Add New Discount</h3>
+    <EditForm Model="@AddingDiscountModel" OnValidSubmit="AddDiscountForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Condition (Optional)</label>
+            <InputText @bind-Value="AddingDiscountModel.ConditionString" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Discount</label>
+            <InputText @bind-Value="AddingDiscountModel.DiscountString" class="form-control" />
+        </div>
+        <button class="btn btn-primary">
+            Add Discount
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public string StoreName { get; set; }
+    Models.AddingDiscountModel AddingDiscountModel = new Models.AddingDiscountModel();
+
+    private async void AddDiscountForm()
+    {
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+}
