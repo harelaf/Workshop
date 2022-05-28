@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
+@using MarketWeb.Shared.DTO
 @inject IMarketAPIClient marketAPIClient
 @inject NavigationManager NavigationManager
 
@@ -41,6 +42,10 @@
 		{
 			<a href="/Administration" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Administration</a>
 		}
+		<div style="float:right">
+			<div class='ikrNoti_Counter'>@notifications.Count()</div>
+			<div class='ikrNoti_Button' @onclick="ToggleNotificationMenu"></div>
+		</div>
 	</div>
 
 	<!-- Navbar on small screens -->
@@ -63,10 +68,31 @@
 			<a href="/Administration" class="w3-bar-item w3-button w3-padding-large">Administration</a>
 		}
 	</div>
+	<div class='ikrNotifications' style="display:@BoxCss !important">
+		<h3> Notifications </h3>
+		<div class="container">
+			@if (notifications.Count() == 0)
+			{
+				<p> No notifications. </p>
+			}
+			else
+			{
+				<div class='ikrNotificationItems'>
+					@foreach (NotifyMessageDTO notification in notifications)
+					{
+						<div class='ikrSingleNotiDiv'>
+							Blegh
+						</div>
+					}
+				</div>
+			}
+		</div>
+
+	</div>
 	<Alert />
 </div>
 <div class="main">
-	<div >
+	<div>
 		<br />
 		<br />
 		<br />
@@ -83,6 +109,10 @@
 
 
 @code {
+	private ICollection<NotifyMessageDTO> notifications = new List<NotifyMessageDTO>();
+
+	private string BoxCss = "none";
+
 	bool collapseNavMenu = true;
 
 	string baseMenuClass = "navbar-collapse d-sm-inline-flex flex-sm-row-reverse";
@@ -92,5 +122,11 @@
 	void ToggleNavMenu()
 	{
 		collapseNavMenu = !collapseNavMenu;
+	}
+
+	private void ToggleNotificationMenu()
+	{
+		if (BoxCss == "none") BoxCss = "block";
+		else BoxCss = "none";
 	}
 }
