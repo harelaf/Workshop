@@ -1,8 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
 @using MarketWeb.Shared.DTO
 @inject IMarketAPIClient marketAPIClient
+@inject IAlertService AlertService
 @inject NavigationManager NavigationManager
 
 <style>
@@ -97,7 +100,9 @@
 		<br />
 		<br />
 		<main role="main" class="pb-3">
-			@Body
+			<CascadingValue Value=btn_clicked >
+				@Body
+			</CascadingValue>
 		</main>
 	</div>
 	<footer class="border-top footer text-muted">
@@ -128,5 +133,41 @@
 	{
 		if (BoxCss == "none") BoxCss = "block";
 		else BoxCss = "none";
+	}
+
+	EventCallback _btn_clicked = EventCallback.Empty;
+	EventCallback btn_clicked  {
+		get {
+			if (_btn_clicked.Equals(EventCallback.Empty))
+				_btn_clicked = EventCallback.Factory.Create(this, GetNotifications);
+			return _btn_clicked;
+		}
+	}
+
+	public async void GetNotifications()
+	{
+		try
+        {
+			Response<ICollection<NotifyMessageDTO>> response = await marketAPIClient.GetRegisteredMessagesNotofication();
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            notifications = response.Value;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+	}
+
+	public void ClearNotifications()
+	{
+		notifications = new List<NotifyMessageDTO>();
+        StateHasChanged();
 	}
 }
