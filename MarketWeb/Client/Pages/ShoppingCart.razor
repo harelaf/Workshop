@@ -21,21 +21,25 @@
     @foreach (ShoppingBasketDTO shoppingBasketDTO in cart.Baskets)
     {
         string storeName = shoppingBasketDTO.StoreName;
-        double total = 0;
+        double totalNoDiscount = 0;
+        double totalWithDiscount = 0;
         IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
         <h4>Store: @storeName</h4>
         <table style="width:100%" id="@storeName">
             <tr>
                 <th>Product Name</th>
                 <th>Amount</th>
-                <th>price per unit</th>
-                <th>applied discounts</th>
-                <th>actual price</th>
+                <th>Price Per Unit</th>
+                <th>Applied Discounts</th>
+                <th>Actual Price Per All Items</th>
+                <th>Remove Item</th>
+                <th>Update Quantity</th>
             </tr>
             @foreach (int itemID in items.Keys)
             {
                 String detailsString = discountDetailsToString(items[itemID].Item2);
-                total += items[itemID].Item1.Price;
+                totalNoDiscount += items[itemID].Item1.Price;
+                totalWithDiscount += items[itemID].Item2.ActualPrice;
                 <tr id="@(items[itemID].Item1.Name + storeName)">
                     <th>@items[itemID].Item1.Name</th>
                     <th>@items[itemID].Item2.Amount</th>
@@ -58,7 +62,8 @@
                 </tr>
             }
         </table>
-        <h4>Your total (without discounts) is: $@total</h4>
+        <h4>Your total (without discounts) is: $@totalNoDiscount</h4>
+        <h4>Your total (with discounts) is: $@totalWithDiscount</h4>
     }
     <button class="btn btn-primary" @onclick="PurchaseCartButton">Purchase Cart</button>
 }
@@ -122,8 +127,8 @@ else
 
     private String discountDetailsToString(DiscountDetailsDTO details)
     {
-        if (details == null)
-            return null;
+        if (details == null || details.DiscountList == null)
+            return "";
         String str = "";
         foreach(AtomicDiscountDTO dis in details.DiscountList)
             str += $"{discountToString(dis)}\n";
@@ -133,7 +138,7 @@ else
     private String discountToString(AtomicDiscountDTO dis)
     {
         if (dis == null)
-            return null;
+            return "";
         String str = "";
         Type type = dis.GetType();
         if (type.Equals(typeof(AllProductsDiscountDTO)))
@@ -150,7 +155,7 @@ else
     private String conditionToString(IConditionDTO cond)
     {
         if (cond == null)
-            return null;
+            return "";
         Type type = cond.GetType();
         if (type.Equals(typeof(AndCompositionDTO)))
             return specificConditionToString((AndCompositionDTO)cond);
