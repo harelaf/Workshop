@@ -34,7 +34,7 @@ namespace MarketWeb.Server.Domain
         }
         public double calcPriceFromCurrPrice(double currPrice)
         {
-            double price = currPrice;
+            double price = currPrice * Amount;
             foreach(AtomicDiscount discount in DiscountList)
                 price = discount.calcPriceFromCurrPrice(price);
             return price;

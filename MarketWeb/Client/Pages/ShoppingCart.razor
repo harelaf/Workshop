@@ -16,33 +16,38 @@
     }
 </style>
 
-@if (cart != null && cart.Baskets.Count > 0)
+@if (cart.Baskets.Count > 0)
 {
     @foreach (ShoppingBasketDTO shoppingBasketDTO in cart.Baskets)
     {
         string storeName = shoppingBasketDTO.StoreName;
         double total = 0;
-        IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
+        IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
         <h4>Store: @storeName</h4>
         <table style="width:100%" id="@storeName">
             <tr>
                 <th>Product Name</th>
                 <th>Amount</th>
                 <th>price per unit</th>
+                <th>applied discounts</th>
+                <th>actual price</th>
             </tr>
             @foreach (int itemID in items.Keys)
             {
-                total += items[itemID].Item1.Price * items[itemID].Item2;
+                String detailsString = discountDetailsToString(items[itemID].Item2);
+                total += items[itemID].Item1.Price;
                 <tr id="@(items[itemID].Item1.Name + storeName)">
                     <th>@items[itemID].Item1.Name</th>
-                    <th>@items[itemID].Item2</th>
+                    <th>@items[itemID].Item2.Amount</th>
                     <th>$@items[itemID].Item1.Price</th>
+                    <th>@detailsString</th>
+                    <th>@items[itemID].Item2.ActualPrice</th>
                     <th>
                         <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
                     </th>
                     <th>
                         <EditForm Model="@UpdateItemQuantityInCartModel">
-                            <DataAnnotationsValidator />
+                            <DataAnnotationsValidator/>
                             <div id="@itemID" class="form-group">
                                 <label>New Quantity</label>
                                 <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
@@ -113,6 +118,137 @@ else
             NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
         }
+    }
+
+    private String discountDetailsToString(DiscountDetailsDTO details)
+    {
+        if (details == null)
+            return null;
+        String str = "";
+        foreach(AtomicDiscountDTO dis in details.DiscountList)
+            str += $"{discountToString(dis)}\n";
+        return str;
+    }
+
+    private String discountToString(AtomicDiscountDTO dis)
+    {
+        if (dis == null)
+            return null;
+        String str = "";
+        Type type = dis.GetType();
+        if (type.Equals(typeof(AllProductsDiscountDTO)))
+            return specificDiscountToString((AllProductsDiscountDTO)dis);
+        if (type.Equals(typeof(CategoryDiscountDTO)))
+            return specificDiscountToString((CategoryDiscountDTO)dis);
+        if (type.Equals(typeof(ItemDiscountDTO)))
+            return specificDiscountToString((ItemDiscountDTO)dis);
+        if (type.Equals(typeof(NumericDiscountDTO)))
+            return specificDiscountToString((NumericDiscountDTO)dis);
+        else throw new NotImplementedException($"need an implementation for {type} discount type.");
+    }
+
+    private String conditionToString(IConditionDTO cond)
+    {
+        if (cond == null)
+            return null;
+        Type type = cond.GetType();
+        if (type.Equals(typeof(AndCompositionDTO)))
+            return specificConditionToString((AndCompositionDTO)cond);
+        if (type.Equals(typeof(DayOnWeekConditionDTO)))
+            return specificConditionToString((DayOnWeekConditionDTO)cond);
+        if (type.Equals(typeof(HourConditionDTO)))
+            return specificConditionToString((HourConditionDTO)cond);
+        if (type.Equals(typeof(OrCompositionDTO)))
+            return specificConditionToString((OrCompositionDTO)cond);
+        if (type.Equals(typeof(PriceableConditionDTO)))
+            return specificConditionToString((PriceableConditionDTO)cond);
+        if (type.Equals(typeof(SearchCategoryConditionDTO)))
+            return specificConditionToString((SearchCategoryConditionDTO)cond);
+        if (type.Equals(typeof(SearchItemConditionDTO)))
+            return specificConditionToString((SearchItemConditionDTO)cond);
+        if (type.Equals(typeof(XorCompositionDTO)))
+            return specificConditionToString((XorCompositionDTO)cond);
+        else throw new NotImplementedException();
+    }
+
+    private String specificConditionToString(AndCompositionDTO condition)
+    {
+        String str = "Apply AND logic over the following condition(s):\n";
+        int index = 1;
+        foreach(IConditionDTO innerCond in condition.Conditions)
+            str += $"{index++}. {conditionToString(innerCond)}\n";
+        return str;
+    }
+
+    private String specificConditionToString(OrCompositionDTO condition)
+    {
+        String str = "Apply OR logic over the following condition(s):\n";
+        int index = 1;
+        foreach(IConditionDTO innerCond in condition.Conditions)
+            str += $"{index++}. {conditionToString(innerCond)}\n";
+        return str;
+    }
+
+    private String specificConditionToString(XorCompositionDTO condition)
+    {
+        String str = "Apply XOR logic over the following condition(s):\n";
+        int index = 1;
+        foreach(IConditionDTO innerCond in condition.Conditions)
+            str += $"{index++}. {conditionToString(innerCond)}\n";
+        return str;
+    }
+
+    private String specificConditionToString(SearchItemConditionDTO condition)
+    {
+        String neg = condition.Negative ? "NOT " : "";
+        String maxStr = condition.MaxAmount > condition.MinAmount ? $" and under {condition.MaxAmount}" : "";
+        return $"the basket is {neg}containing over {condition.MinAmount}{maxStr} of '{condition.KeyWord}'";
+    }
+
+    private String specificConditionToString(SearchCategoryConditionDTO condition)
+    {
+        String neg = condition.Negative ? "NOT " : "";
+        String maxStr = condition.MaxAmount > condition.MinAmount ? $" and under {condition.MaxAmount}" : "";
+        return $"the basket is {neg}containing over {condition.MinAmount}{maxStr} of '{condition.KeyWord}' category";
+    }
+
+    private String specificConditionToString(DayOnWeekConditionDTO condition)
+    {
+        String neg = condition.Negative ? "NOT " : "";
+        return $"today is {condition.DayOnWeek}";
+    }
+
+    private String specificConditionToString(HourConditionDTO condition)
+    {
+        String neg = condition.Negative ? "NOT " : "";
+        return $"it is {neg}between {condition.MinHour} and {condition.MaxHour} o'clock";
+    }
+
+    private String specificConditionToString(PriceableConditionDTO condition)
+    {
+        String neg = condition.Negative ? "NOT " : "";
+        String maxStr = condition.MaxAmount > condition.MinAmount ? $" and under {condition.MaxAmount}" : "";
+        return $"the total price is {neg}over {condition.MinAmount}{maxStr}";
+    }
+
+    private String specificDiscountToString(AllProductsDiscountDTO dis)
+    {
+        return $"{dis.Percentage}% off all products\nexpired on: {dis.Expiration}\ncondition(s): {conditionToString(dis.Condition)}";
+    }
+
+    private String specificDiscountToString(ItemDiscountDTO dis)
+    {
+        return $"{dis.PercentageToSubtract}% off '{dis.ItemName}' products\nexpired on: {dis.Expiration}\ncondition(s): {conditionToString(dis.Condition)}";
+    }
+
+    private String specificDiscountToString(CategoryDiscountDTO dis)
+    {
+        return $"{dis.Percentage_to_subtract}% off '{dis.Category}' category products\nexpired on: {dis.Expiration}\ncondition(s): {conditionToString(dis.Condition)}";
+    }
+
+    private String specificDiscountToString(NumericDiscountDTO dis)
+    {
+        return $"{dis.PriceToSubtract}% off the total price\nexpired on: {dis.Expiration}\ncondition(s): {conditionToString(dis.Condition)}";
     }
 
     protected override async Task OnInitializedAsync()

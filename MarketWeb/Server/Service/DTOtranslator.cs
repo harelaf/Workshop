@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using MarketWeb.Shared.DTO;
 using MarketWeb.Shared;
 using MarketWeb.Server.Domain.PolicyPackage;
@@ -201,16 +200,6 @@ namespace MarketWeb.Service
         {
             return new AdminMessageToRegisteredDTO(msg.ReceiverUsername, msg.SenderUsername, msg.Title, msg.Message);
         }
-        public ItemDTO toDTO(Item itm)
-        {
-            return new ItemDTO(
-                itm.ItemID,
-                itm.Name,
-                itm._price,
-                itm.Description,
-                itm.Category,
-                toDTO(itm.Rating));
-        }
         public ItemDTO toDTO(Item itm, String storeName)
         {
             return new ItemDTO(
@@ -284,20 +273,22 @@ namespace MarketWeb.Service
             Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = new Dictionary<int ,Tuple<ItemDTO, DiscountDetailsDTO>>();
             foreach (KeyValuePair<Item, DiscountDetails> entry in shoppingBasket.Items)
             {
-                ItemDTO dto = toDTO(entry.Key);
-                items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(toDTO(entry.Key), toDTO(entry.Value));
+                ItemDTO dto = toDTO(entry.Key, shoppingBasket.Store().StoreName);
+                items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(entry.Value, entry.Key._price));
             }
             return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items);
         }
 
-        public DiscountDetailsDTO toDTO(DiscountDetails discountDetails)
+        public DiscountDetailsDTO toDTO(DiscountDetails discountDetails, double itemPrice)
         {
             List<AtomicDiscountDTO> disList = new List<AtomicDiscountDTO>();
             foreach (AtomicDiscount discount in discountDetails.DiscountList)
                 disList.Add(discountToDTO(discount));
+            double actualPrice = discountDetails.calcPriceFromCurrPrice(itemPrice);
             return new DiscountDetailsDTO(
                 discountDetails.Amount,
-                disList);
+                disList,
+                actualPrice);
         }
 
         public ItemDiscountDTO toDTO(ItemDiscount discount)
@@ -327,13 +318,13 @@ namespace MarketWeb.Service
                 _DTObaskets.Add(toDTO(basket));
             return new ShoppingCartDTO(_DTObaskets);
         }
-        public StockDTO toDTO(Stock stock)
+        public StockDTO toDTO(Stock stock, String storeName)
         {
             Dictionary<int, Tuple<ItemDTO, int>> itemAndAmount = new Dictionary<int, Tuple<ItemDTO, int>>();
             foreach (KeyValuePair<Item, int> entry in stock.Items)
             {
-                ItemDTO dto = toDTO(entry.Key);
-                itemAndAmount[entry.Key.ItemID] = new Tuple<ItemDTO, int>(toDTO(entry.Key), entry.Value);
+                ItemDTO dto = toDTO(entry.Key, storeName);
+                itemAndAmount[entry.Key.ItemID] = new Tuple<ItemDTO, int>(dto, entry.Value);
             }
             return new StockDTO(itemAndAmount);
         }
@@ -353,7 +344,7 @@ namespace MarketWeb.Service
                 toDTO(store.GetFounder()),
                 toDTO(store.GetPurchasePolicy()),
                 toDTO(store.GetDiscountPolicy()),
-                toDTO(store.Stock),
+                toDTO(store.Stock, store.StoreName),
                 messagesToStore,
                 toDTO(store.Rating),
                 managers,

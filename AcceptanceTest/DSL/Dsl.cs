@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AcceptanceTest.DSL
+﻿namespace AcceptanceTest.DSL
 {
     /// <summary>
     /// Contains the MarketDsl. Acceptance test classes inherit this to be able to 

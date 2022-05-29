@@ -1,9 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using MarketWeb.Server.Domain;
 using MarketWeb.Service;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;

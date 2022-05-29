@@ -1,15 +1,11 @@
 ﻿
 using MarketWeb.Service;
 using MarketWeb.Shared;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Text.Json;
 //using Newtonsoft.Json;
 //using Newtonsoft.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace MarketWeb.Server.Controllers
 {
