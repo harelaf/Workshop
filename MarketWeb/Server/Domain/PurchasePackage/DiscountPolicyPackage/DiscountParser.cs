@@ -74,16 +74,23 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         public Discount Parse()
         {
-            DiscountCondition conditionParsed = ParseCondition();
+            DiscountCondition conditionParsed = null;
+            if (ConditionString.Length > 0)
+            {
+                if (ConditionString[0] != '(')
+                {
+                    conditionParsed = ParseSingleCondition();
+                }
+                else
+                {
+                    conditionParsed = ParseCondition();
+                }
+            }
             return ParseDiscount(conditionParsed);
         }
 
         private DiscountCondition ParseCondition()
         {
-            if (ConditionString[0] != '(')
-            {
-                return ParseSingleCondition();
-            }
             return null;
         }
 
@@ -406,6 +413,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         private Discount ParseDiscount(DiscountCondition condition)
         {
+            //REMEMEBER TO CHECK IF condition==null
             return null;
         }
     }
