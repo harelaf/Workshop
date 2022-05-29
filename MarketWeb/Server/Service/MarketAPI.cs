@@ -1169,15 +1169,13 @@ namespace MarketWeb.Service
         }
 
         [HttpPost("AddStoreDiscount")]
-        public Response AddStoreDiscount([FromHeader] String Authorization, String storeName, IDiscountDTO discount_dto)
+        public Response AddStoreDiscount([FromHeader] String Authorization, String storeName, String conditionString, String discountString)
         {
             Response response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
-                /////////// is log should keep the whole description of the discount??????
-                _logger.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName} and the actual discount.");
+                _logger.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName}, conditionString={conditionString}, discountString={discountString}.");
                 Discount discount = DTOtranslator.translateDiscount(discount_dto);
                 _market.AddStoreDiscount(authToken, storeName, discount);
                 response = new Response();

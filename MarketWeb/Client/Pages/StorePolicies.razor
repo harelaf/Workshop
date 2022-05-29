@@ -20,48 +20,89 @@
     <p>
         In order to add a new discount policy to your store, please read the following instructions:
         <br />
-        These are the discount types currently available and their respective string representation:
+        These are the discount types currently available and their respective formats:
         <ul>
             <li>
-                A categoric discount.&nbsp;&nbsp;<b></b>
+                A percentage off the price of an item.  <b>(ItemPercentage_{ITEM_NAME}_{PERCENTAGE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
             </li>
             <li>
-                A numeric discount.&nbsp;&nbsp;<b></b>
+                A percentage off an entire category.  <b>(CategoryPercentage_{CATEGORY_NAME}_{PERCENTAGE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
             </li>
             <li>
-                Discount for a specific item.&nbsp;&nbsp;<b></b>
-            </li>
-            <li>
-                Whole store sale.&nbsp;&nbsp;<b></b>
+                Absolute value discount.  <b>(Absolute_{VALUE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
             </li>
         </ul>
+        <br />
+        Logic can be added to discounts by using the following operatos:
+        <br />
+        <ul>
+            <li>
+                PLUS - The discounts will combine together.
+            </li>
+            <li>
+                MAX - The maximum valued discount will be picked.
+            </li>
+        </ul>
+        <br />
+        The following is an example of a discount:
+        <b>(MAX (PLUS CategoryPercentage_Dairy_10_2022_12_30 CategoryPercentage_Pasta_5_2022_11_23 Absolute_5_2022_7_1) ItemPercentage_Bread_50_2029_1_1)</b>
     </p>
     <br />
     <p>
         Discounts can also be conditioned.
         <br />
-        These are the currently available conditions and their respective string representation:
+        These are the currently available conditions and their respective formats:
         <ul>
             <li>
-                Day of the week.&nbsp;&nbsp;<b>(DayOfWeek_{1-7})</b>
+                Day of the week.  <b>(DayOfWeek_{1-7})</b>
             </li>
             <li>
-                Specific hour.&nbsp;&nbsp;<b>(Hour_{1-12}_{AM/PM})</b>
+                Specific hours.  <b>(Hour_{1-24}_{1-24})</b>
             </li>
             <li>
-                Total price of cart.&nbsp;&nbsp;<b>(TotalCartPrice_{&lt;/&gt;}_{PRICE})</b>
+                Total price of shopping basket, with 3 options:
+                <br />
+                <ol>
+                    <li>
+                        Price in range:  <b>(TotalBasketPriceRange_{FROM}_{TO})</b>
+                    </li>
+                    <li>
+                        Price starts from:  <b>(TotalBasketPriceFrom_{PRICE})</b>
+                    </li>
+                    <li>
+                        Price ends at:  <b>(TotalBasketPriceTo_{PRICE})</b>
+                    </li>
+                </ol>
             </li>
             <li>
-                Amount of some item in cart.&nbsp;&nbsp;<b>(ItemTotalAmountInCart_{&lt;/&gt;}_{AMOUNT})</b>
+                Amount of some item in cart, with 3 options:
+                <br />
+                <ol>
+                    <li>
+                        Amount in range:  <b>(ItemTotalAmountInBasketRange_{ITEM_NAME}_{FROM}_{TO})</b>
+                    </li>
+                    <li>
+                        Amount starts from:  <b>(ItemTotalAmountInBasketFrom_{ITEM_NAME}_{AMOUNT})</b>
+                    </li>
+                    <li>
+                        Amount ends at:  <b>(ItemTotalAmountInBasketTo_{ITEM_NAME}_{AMOUNT})</b>
+                    </li>
+                </ol>
             </li>
             <li>
-                Total price of some item in cart.&nbsp;&nbsp;<b>(ItemTotalPriceInCart_{&lt;/&gt;}_{PRICE})</b>
-            </li>
-            <li>
-                Amount of some category in cart.&nbsp;&nbsp;<b>(CategoryTotalAmountInCart_{&lt;/&gt;}_{AMOUNT})</b>
-            </li>
-            <li>
-                Total price of some category in cart.&nbsp;&nbsp;<b>(CategoryTotalPriceInCart_{&lt;/&gt;}_{PRICE})</b>
+                Amount of some category in cart, with 3 options:
+                <br />
+                <ol>
+                    <li>
+                        Amount in range:  <b>(CategoryTotalAmountInBasketRange_{CATEGORY_NAME}_{FROM}_{TO})</b>
+                    </li>
+                    <li>
+                        Amount starts from:  <b>(CategoryTotalAmountInBasketFrom_{CATEGORY_NAME}_{AMOUNT})</b>
+                    </li>
+                    <li>
+                        Amount ends at:  <b>(CategoryTotalAmountInBasketTo_{CATEGORY_NAME}_{AMOUNT})</b>
+                    </li>
+                </ol>
             </li>
         </ul>
         The conditions can be composed together using the following logical operations:
@@ -71,6 +112,9 @@
             </li>
             <li>
                 OR.
+            </li>
+            <li>
+                NOT.
             </li>
             <li>
                 XOR.
@@ -83,7 +127,7 @@
         <br />
         <ol>
             <li>
-                Use the aforementioned string representation formats only.
+                Use the aforementioned formats only.
             </li>
             <li>
                 When the representation contains a '{XXX}', it means you can input a value of your own, or choose one.
@@ -92,44 +136,44 @@
                 <br />
                 <ul>
                     <li>
-                        {&lt;/&gt;}, means you can choose either &lt; (lesser than) or &gt; (greater than).
+                        {1-24}, means you can choose a number (represents an hour), between 1 and 24.
                     </li>
                     <li>
                         {PRICE}, means you can input your own price there.
                     </li>
                 </ul>
                 <br />
-                In order to add a condition which states that the price of the cart needs to be greater than $50, use the following format:
+                In order to add a condition which states that the price of the cart needs to be between $50 and $100, use the following format:
                 <br />
-                <b>TotalCartPrice_&gt;_50</b>
+                <b>TotalBasketPriceRange_50_100</b>
             </li>
             <li>
                 In order to create composed conditions, use AND/OR/XOR in a prefix syntax.
                 <br />
                 In a prefix syntax, first put the operator (i.e. AND), and then the operands (i.e. the conditions).
                 <br />
-                In Order to a add condition that states the price of the cart is greater than $50 <b>and</b> the day of week is Sunday, use the following format:
+                In Order to a add condition that states the price of the cart is between $50 and $100 <b>and</b> the day of week is Sunday, use the following format:
                 <br />
-                <b>(AND TotalCartPrice_&gt;_50 DayOfWeek_1)</b>
+                <b>(AND TotalBasketPriceRange_50_100 DayOfWeek_1)</b>
             </li>
         </ol>
         <br />
         Here are a few examples to help you:
         <ul>
             <li>
-                Hour of day is 8PM and category 'Food' total price is lesser than $123:
+                Hour of day is 20:00 to 22:00 and category 'Food' amount in cart is at least than 23:
                 <br />
-                <b>(AND Hour_8_PM CategoryTotalPriceInCart_&lt;_123)</b>
+                <b>(AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23)</b>
             </li>
             <li>
                 Either the total price of the cart is greater than $45 or the previous bullet:
                 <br />
-                <b>(OR TotalCartPrice_&gt;_45 (AND Hour_8_PM CategoryTotalPriceInCart_&lt;_123))</b>
+                <b>(OR TotalBasketPriceFrom_45 (AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23))</b>
             </li>
             <li>
                 Day of week is Wednesday XOR the previous bullet.
                 <br />
-                <b>(XOR DayOfWeek_4 (OR TotalCartPrice_&gt;_45 (AND Hour_8_PM CategoryTotalPriceInCart_&lt;_123)))</b>
+                <b>(XOR DayOfWeek_4 (OR TotalBasketPriceFrom_45 (AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23)))</b>
             </li>
         </ul>
     </p>
@@ -158,7 +202,27 @@
 
     private async void AddDiscountForm()
     {
+        // reset alerts on submit
+        AlertService.Clear();
 
+        try
+        {
+            Response response = await _marketAPIClient.AddStoreDiscount(StoreName, AddingDiscountModel.ConditionString, AddingDiscountModel.DiscountString);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully added a discount to store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
     protected override async Task OnInitializedAsync()
