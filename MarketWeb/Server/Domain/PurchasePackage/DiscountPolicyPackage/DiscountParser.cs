@@ -6,19 +6,42 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 {
     public class DiscountParser
     {
+        // Discount Variables
         private String DiscountString;
+
+        // Condition Variables
         private String ConditionString;
         private int ConditionIndex = 0;
         private bool NotCondition = false;
         private Dictionary<String, Func<DiscountCondition>> ConditionFunctions;
         Dictionary<int, String> IntToDay;
+        private class NameAndValue
+        {
+            public String Name { get; }
+            public int Value { get; }
+
+            public NameAndValue(String name, int value)
+            {
+                Name = name; Value = value;
+            }
+        }
+        private class NameAndRange
+        {
+            public String Name { get; }
+            public int From { get; }
+            public int To { get; }
+
+            public NameAndRange(String name, int from, int to)
+            {
+                Name = name; From = from; To = to; 
+            }
+        }
 
         public DiscountParser(String discountString, String conditionString)        {
             DiscountString = discountString.Trim();
             ConditionString = conditionString.Trim();
             InitConditionFunctions();
-            
-            
+            InitIntToDay();
         }
 
         private void InitIntToDay()
@@ -90,83 +113,296 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             throw new Exception("Parsing condition string failed. Condition string format is wrong.");
         }
 
-        private DiscountCondition ParseDayOfWeek()
+        private int ParseOneIntegerCondition()
         {
-            int day = -1;
-            String dayString = "";
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            int value = -1;
+            String valueString = "";
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' ' || ConditionString[ConditionIndex] != '_'))
             {
-                dayString += ConditionString[ConditionIndex];
+                valueString += ConditionString[ConditionIndex];
                 ConditionIndex++;
             }
             ConditionIndex++;
 
             try
             {
-                day = int.Parse(dayString.Trim());
+                value = int.Parse(valueString.Trim());
             }
             catch (Exception)
             {
-                throw new Exception($"Parsing condition string failed. Unable to parse '{dayString}' as an integer.");
+                throw new Exception($"Parsing condition string failed. Unable to parse '{valueString}' as integer.");
             }
+
+            return value;
+        }
+
+        private int[] ParseTwoIntegersCondition()
+        {
+            int from = -1;
+            int to = -1;
+            String fromString = "";
+            String toString = "";
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' ' || ConditionString[ConditionIndex] != '_'))
+            {
+                fromString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            {
+                toString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            ConditionIndex++;
+
+            try
+            {
+                from = int.Parse(fromString.Trim());
+                to = int.Parse(toString.Trim());
+            }
+            catch (Exception)
+            {
+                throw new Exception($"Parsing condition string failed. Unable to parse '{fromString}' or '{toString}' as integers.");
+            }
+
+            return new int[] { from, to };
+        }
+
+        private NameAndValue ParseNameAndValueCondition()
+        {
+            int value = -1;
+            String nameString = "";
+            String valueString = "";
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != '_'))
+            {
+                nameString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            {
+                valueString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            ConditionIndex++;
+
+            try
+            {
+                value = int.Parse(valueString.Trim());
+            }
+            catch (Exception)
+            {
+                throw new Exception($"Parsing condition string failed. Unable to parse '{valueString}' as integer.");
+            }
+
+            return new NameAndValue(nameString, value);
+        }
+
+        private NameAndRange ParseNameAndRangeCondition()
+        {
+            int from = -1;
+            int to = -1;
+            String nameString = "";
+            String fromString = "";
+            String toString = "";
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != '_'))
+            {
+                nameString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            {
+                fromString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            {
+                toString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            ConditionIndex++;
+
+            try
+            {
+                from = int.Parse(fromString.Trim());
+                to = int.Parse(toString.Trim());
+            }
+            catch (Exception)
+            {
+                throw new Exception($"Parsing condition string failed. Unable to parse '{fromString}' or '{toString}' as integers.");
+            }
+
+            return new NameAndRange(nameString, from, to);
+        }
+
+        private DayOnWeekCondition ParseDayOfWeek()
+        {
+            int day = ParseOneIntegerCondition();
 
             if (day < 1 || day > 7)
             {
                 throw new Exception($"Parsing condition string failed. '{day}' has to be in the range [1-7].");
             }
 
-            return new DayOnWeekCondition(IntToDay[day], NotCondition);
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+            
+            return new DayOnWeekCondition(IntToDay[day], currentNot);
         }
 
-        private DiscountCondition ParseHour()
+        private HourCondition ParseHour()
         {
-            return null;
+            int[] from_to = ParseTwoIntegersCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new HourCondition(from_to[0], from_to[1], currentNot);
         }
 
-        private DiscountCondition ParseBasketRange()
+        private PriceableCondition ParseBasketRange()
         {
-            return null;
+            int[] from_to = ParseTwoIntegersCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new PriceableCondition(null, from_to[0], from_to[1], currentNot);
         }
 
         private DiscountCondition ParseBasketFrom()
         {
-            return null;
+            int from = ParseOneIntegerCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new PriceableCondition(null, from, -1, currentNot);
         }
 
         private DiscountCondition ParseBasketTo()
         {
-            return null;
+            int to = ParseOneIntegerCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new PriceableCondition(null, -1, to, currentNot);
         }
 
-        private DiscountCondition ParseItemAmountRange()
+        private SearchItemCondition ParseItemAmountRange()
         {
-            return null;
+            NameAndRange nar = ParseNameAndRangeCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new SearchItemCondition(nar.Name, nar.From, nar.To, currentNot);
         }
 
-        private DiscountCondition ParseItemAmountFrom()
+        private SearchItemCondition ParseItemAmountFrom()
         {
-            return null;
+            NameAndValue nar = ParseNameAndValueCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new SearchItemCondition(nar.Name, nar.Value, -1, currentNot);
         }
 
-        private DiscountCondition ParseItemAmountTo()
+        private SearchItemCondition ParseItemAmountTo()
         {
-            return null;
+            NameAndValue nar = ParseNameAndValueCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new SearchItemCondition(nar.Name, -1, nar.Value, currentNot);
         }
 
-        private DiscountCondition ParseCategoryAmountRange()
+        private SearchCategoryCondition ParseCategoryAmountRange()
         {
-            return null;
+            NameAndRange nar = ParseNameAndRangeCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new SearchCategoryCondition(nar.Name, nar.From, nar.To, currentNot);
         }
 
-        private DiscountCondition ParseCategoryAmountFrom()
+        private SearchCategoryCondition ParseCategoryAmountFrom()
         {
-            return null;
+            NameAndValue nar = ParseNameAndValueCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new SearchCategoryCondition(nar.Name, nar.Value, -1, currentNot);
         }
 
         private DiscountCondition ParseCategoryAmountTo()
         {
-            return null;
+            NameAndValue nar = ParseNameAndValueCondition();
+
+            bool currentNot = NotCondition;
+            if (ConditionString[ConditionIndex - 1] == ')')
+            {
+                NotCondition = false;
+            }
+
+            return new SearchCategoryCondition(nar.Name, -1, nar.Value, currentNot);
         }
+
+        /*
+         * /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+         *              CONDITION LOGIC
+         *              DISCOUNT LOGIC
+         * \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+         */
 
         private Discount ParseDiscount(DiscountCondition condition)
         {
