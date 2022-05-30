@@ -10,8 +10,43 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         // Discount Variables
         private String DiscountString;
+        private int DiscountIndex = 0;
+        private Dictionary<String, Func<Discount>> DiscountFunctions;
+        private class NameValueDate
+        {
+            public String Name { get; private set; }
+            public int Value { get; private set; }
+            public int Year { get; private set; }
+            public int Month { get; private set; }
+            public int Day { get; private set; }
+
+            public NameValueDate(string name, int value, int year, int month, int day)
+            {
+                Name = name;
+                Value = value;
+                Year = year;
+                Month = month;
+                Day = day;
+            }
+        }
+        private class ValueDate
+        {
+            public int Value { get; private set; }
+            public int Year { get; private set; }
+            public int Month { get; private set; }
+            public int Day { get; private set; }
+
+            public ValueDate(int value, int year, int month, int day)
+            {
+                Value = value;
+                Year = year;
+                Month = month;
+                Day = day;
+            }
+        }
 
         // Condition Variables
+        private DiscountCondition ParsedCondition = null;
         private String ConditionString;
         private int ConditionIndex = 0;
         private bool NotCondition = false;
@@ -20,8 +55,8 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         Dictionary<String, Func<DiscountCondition>> LogicalOperationsFunctions;
         private class NameAndValue
         {
-            public String Name { get; }
-            public int Value { get; }
+            public String Name { get; private set; }
+            public int Value { get; private set; }
 
             public NameAndValue(String name, int value)
             {
@@ -30,9 +65,9 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         }
         private class NameAndRange
         {
-            public String Name { get; }
-            public int From { get; }
-            public int To { get; }
+            public String Name { get; private set; }
+            public int From { get; private set; }
+            public int To { get; private set; }
 
             public NameAndRange(String name, int from, int to)
             {
@@ -46,6 +81,16 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             InitConditionFunctions();
             InitIntToDay();
             InitLogicalOperationsFunctions();
+            InitDiscountFunctions();
+        }
+
+        private void InitDiscountFunctions()
+        {
+            DiscountFunctions = new Dictionary<string, Func<Discount>>();
+            DiscountFunctions["ItemPercentage"] = ParseItemPerecentageDiscount;
+            DiscountFunctions["CategoryPercentage"] = ParseCategoryPerecentageDiscount;
+            DiscountFunctions["BasketPerecentage"] = ParseBasketPercentageDiscount;
+            DiscountFunctions["BasketAbsolute"] = ParseBasketNumericDiscount;
         }
 
         private void InitLogicalOperationsFunctions()
@@ -87,21 +132,21 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         public Discount Parse()
         {
-            DiscountCondition conditionParsed = null;
             if (ConditionString.Length > 0)
             {
                 if (ConditionString[0] != '(')
                 {
-                    conditionParsed = ParseSingleCondition();
+                    ParsedCondition = ParseSingleCondition();
                 }
                 else
                 {
                     ConditionIndex++;
-                    conditionParsed = ParseCondition();
+                    ParsedCondition = ParseCondition();
                 }
             }
-            _logger.Error(conditionParsed.GetConditionString(0));
-            return ParseDiscount(conditionParsed);
+            if (ParsedCondition != null)
+                _logger.Error(ParsedCondition.GetConditionString(0));
+            return ParseDiscount();
         }
 
         private DiscountCondition ParseCondition()
@@ -426,14 +471,14 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             return new PriceableCondition(null, from_to[0], from_to[1], NotCondition);
         }
 
-        private DiscountCondition ParseBasketFrom()
+        private PriceableCondition ParseBasketFrom()
         {
             int from = ParseOneIntegerCondition();
 
             return new PriceableCondition(null, from, -1, NotCondition);
         }
 
-        private DiscountCondition ParseBasketTo()
+        private PriceableCondition ParseBasketTo()
         {
             int to = ParseOneIntegerCondition();
 
@@ -475,7 +520,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             return new SearchCategoryCondition(nav.Name, nav.Value, -1, NotCondition);
         }
 
-        private DiscountCondition ParseCategoryAmountTo()
+        private SearchCategoryCondition ParseCategoryAmountTo()
         {
             NameAndValue nav = ParseNameAndValueCondition();
 
@@ -489,10 +534,75 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
          * \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
          */
 
-        private Discount ParseDiscount(DiscountCondition condition)
+        private Discount ParseDiscount()
         {
-            //REMEMEBER TO CHECK IF condition==null
             return null;
+        }
+
+        private NameValueDate ParseNameValueDateDiscount()
+        {
+            return null;
+        }
+
+        private ValueDate ParseValueDateDiscount()
+        {
+            return null;
+        }
+
+        private ItemDiscount ParseItemPerecentageDiscount()
+        {
+            NameValueDate nvd = ParseNameValueDateDiscount();
+
+            if (ParsedCondition != null)
+            {
+                return new ItemDiscount(nvd.Value, nvd.Name, ParsedCondition, new DateTime(nvd.Year, nvd.Month, nvd.Day));
+            }
+            else
+            {
+                return new ItemDiscount(nvd.Value, nvd.Name, new DateTime(nvd.Year, nvd.Month, nvd.Day));
+            }
+        }
+
+        private CategoryDiscount ParseCategoryPerecentageDiscount()
+        {
+            NameValueDate nvd = ParseNameValueDateDiscount();
+
+            if (ParsedCondition != null)
+            {
+                return new CategoryDiscount(nvd.Value, nvd.Name, ParsedCondition, new DateTime(nvd.Year, nvd.Month, nvd.Day));
+            }
+            else
+            {
+                return new CategoryDiscount(nvd.Value, nvd.Name, new DateTime(nvd.Year, nvd.Month, nvd.Day));
+            }
+        }
+
+        private AllProductsDiscount ParseBasketPercentageDiscount()
+        {
+            ValueDate vd = ParseValueDateDiscount();
+
+            if (ParsedCondition != null)
+            {
+                return new AllProductsDiscount(vd.Value, ParsedCondition, new DateTime(vd.Year, vd.Month, vd.Day));
+            }
+            else
+            {
+                return new AllProductsDiscount(vd.Value, new DateTime(vd.Year, vd.Month, vd.Day));
+            }
+        }
+
+        private NumericDiscount ParseBasketNumericDiscount()
+        {
+            ValueDate vd = ParseValueDateDiscount();
+
+            if (ParsedCondition != null)
+            {
+                return new NumericDiscount(vd.Value, ParsedCondition, new DateTime(vd.Year, vd.Month, vd.Day));
+            }
+            else
+            {
+                return new NumericDiscount(vd.Value, new DateTime(vd.Year, vd.Month, vd.Day));
+            }
         }
     }
 }

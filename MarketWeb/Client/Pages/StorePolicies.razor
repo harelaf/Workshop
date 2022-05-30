@@ -17,6 +17,7 @@
 </div>
 <div id="Discount Policy">
     <h2>Discount Policies</h2>
+    <h3>Discounts</h3>
     <p>
         In order to add a new discount policy to your store, please read the following instructions:
         <br />
@@ -29,7 +30,10 @@
                 A percentage off an entire category.  <b>(CategoryPercentage_{CATEGORY_NAME}_{PERCENTAGE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
             </li>
             <li>
-                Absolute value discount.  <b>(Absolute_{VALUE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
+                A percentage off the shopping basket.  <b>(BasketPerecentage_{PERCENTAGE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
+            </li>
+            <li>
+                Absolute value discount for the shopping basket.  <b>(BasketAbsolute_{VALUE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
             </li>
         </ul>
         <br />
@@ -40,14 +44,22 @@
                 PLUS - The discounts will combine together.
             </li>
             <li>
-                MAX - The maximum valued discount will be picked.
+                MAX - The maximum valued discount will be chosen.
             </li>
         </ul>
         <br />
+        In order to add a discount, follow these rules:
+        <br />
+        <ol>
+            <li>
+                Use the aforementioned formats only.  <font color="red">&#9888;</font> Everything is case sensitive! <font color="red">&#9888;</font>
+            </li>
+        </ol>
         The following is an example of a discount:
         <b>(MAX (PLUS CategoryPercentage_Dairy_10_2022_12_30 CategoryPercentage_Pasta_5_2022_11_23 Absolute_5_2022_7_1) ItemPercentage_Bread_50_2029_1_1)</b>
     </p>
     <br />
+    <h3>Conditions</h3>
     <p>
         Discounts can also be conditioned.
         <br />
