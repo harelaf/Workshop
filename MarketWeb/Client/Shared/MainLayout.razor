@@ -1,10 +1,12 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.SignalR.Client
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
 @using MarketWeb.Client.Services
 @using MarketWeb.Shared
 @using MarketWeb.Shared.DTO
 @inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
 @inject IAlertService AlertService
 @inject NavigationManager NavigationManager
 
@@ -114,6 +116,8 @@
 
 
 @code {
+	private HubConnection? hubConnection;
+
 	private ICollection<NotifyMessageDTO> notifications = new List<NotifyMessageDTO>();
 
 	private string BoxCss = "none";
@@ -170,4 +174,33 @@
 		notifications = new List<NotifyMessageDTO>();
         StateHasChanged();
 	}
+
+	protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/notificationhub"), options =>
+			{ 
+				options.AccessTokenProvider = () => Task.FromResult(httpService.Token);
+			})
+            .Build();
+
+        hubConnection.On<NotifyMessageDTO>("ReceiveNotification", (notification) =>
+        {
+			notifications.Add(notification);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
 }
