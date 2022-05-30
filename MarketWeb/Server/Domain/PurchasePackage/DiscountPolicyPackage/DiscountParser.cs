@@ -541,12 +541,139 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         private NameValueDate ParseNameValueDateDiscount()
         {
-            return null;
+            String nameString = "";
+            int value = -1;
+            String valueString = "";
+            int year = -1;
+            String yearString = "";
+            int month = -1;
+            String monthString = "";
+            int day = -1;
+            String dayString = "";
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != '_'))
+            {
+                nameString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != '_'))
+            {
+                valueString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
+            {
+                yearString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
+            {
+                monthString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
+            {
+                dayString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionIndex < ConditionString.Length - 1 && ConditionString[ConditionIndex] != ')')
+                ConditionIndex++;
+
+            try
+            {
+                value = int.Parse(valueString.Trim());
+                year = int.Parse(yearString.Trim());
+                month = int.Parse(monthString.Trim());
+                day = int.Parse(dayString.Trim());
+            }
+            catch (Exception)
+            {
+                throw new Exception($"Parsing condition string failed. Unable to parse '{valueString}' or '{yearString}' or '{monthString}' or '{dayString}' as integers.");
+            }
+
+            return new NameValueDate(nameString, value, year, month, day);
         }
 
         private ValueDate ParseValueDateDiscount()
         {
-            return null;
+            int value = -1;
+            String valueString = "";
+            int year = -1;
+            String yearString = "";
+            int month = -1;
+            String monthString = "";
+            int day = -1;
+            String dayString = "";
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != '_'))
+            {
+                valueString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
+            {
+                yearString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
+            {
+                monthString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionString[ConditionIndex] == ')' || (ConditionIndex > 0 && ConditionString[ConditionIndex - 1] == ')'))
+            {
+                throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
+            }
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
+            {
+                dayString += ConditionString[ConditionIndex];
+                ConditionIndex++;
+            }
+            if (ConditionIndex < ConditionString.Length - 1 && ConditionString[ConditionIndex] != ')')
+                ConditionIndex++;
+
+            try
+            {
+                value = int.Parse(valueString.Trim());
+                year = int.Parse(yearString.Trim());
+                month = int.Parse(monthString.Trim());
+                day = int.Parse(dayString.Trim());
+            }
+            catch (Exception)
+            {
+                throw new Exception($"Parsing condition string failed. Unable to parse '{valueString}' or '{yearString}' or '{monthString}' or '{dayString}' as integers.");
+            }
+
+            return new ValueDate(value, year, month, day);
         }
 
         private ItemDiscount ParseItemPerecentageDiscount()
