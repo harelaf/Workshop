@@ -127,7 +127,7 @@
         <br />
         <ol>
             <li>
-                Use the aforementioned formats only.
+                Use the aforementioned formats only.  <font color="red">&#9888;</font> Everything is case sensitive! <font color="red">&#9888;</font>
             </li>
             <li>
                 When the representation contains a '{XXX}', it means you can input a value of your own, or choose one.
@@ -171,9 +171,9 @@
                 <b>(OR TotalBasketPriceFrom_45 (AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23))</b>
             </li>
             <li>
-                Day of week is Wednesday XOR the previous bullet.
+                Day of week is not Wednesday XOR the previous bullet.
                 <br />
-                <b>(XOR DayOfWeek_4 (OR TotalBasketPriceFrom_45 (AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23)))</b>
+                <b>(XOR (NOT DayOfWeek_4) (OR TotalBasketPriceFrom_45 (AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23)))</b>
             </li>
         </ul>
     </p>

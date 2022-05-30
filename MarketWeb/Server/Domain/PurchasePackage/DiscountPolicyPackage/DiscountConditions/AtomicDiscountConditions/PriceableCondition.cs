@@ -17,7 +17,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPackage
 
         public override String GetConditionString(int indent)
         {
-            return $"The total cost is between {_minValue} and {_maxValue}.";
+            return $"{(ToNegative ? "(NOT) " : "")}The total cost is between {_minValue} and {_maxValue}.";
         }
     }
 }

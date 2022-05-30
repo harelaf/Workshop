@@ -6,6 +6,8 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 {
     public class DiscountParser
     {
+        private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         // Discount Variables
         private String DiscountString;
 
@@ -15,7 +17,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         private bool NotCondition = false;
         private Dictionary<String, Func<DiscountCondition>> ConditionFunctions;
         Dictionary<int, String> IntToDay;
-        Dictionary<String, Func<ComposedDiscountCondition>> LogicalOperationsFunctions;
+        Dictionary<String, Func<DiscountCondition>> LogicalOperationsFunctions;
         private class NameAndValue
         {
             public String Name { get; }
@@ -34,7 +36,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
             public NameAndRange(String name, int from, int to)
             {
-                Name = name; From = from; To = to; 
+                Name = name; From = from; To = to;
             }
         }
 
@@ -48,7 +50,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         private void InitLogicalOperationsFunctions()
         {
-            LogicalOperationsFunctions = new Dictionary<string, Func<ComposedDiscountCondition>>();
+            LogicalOperationsFunctions = new Dictionary<string, Func<DiscountCondition>>();
             LogicalOperationsFunctions["NOT"] = ParseLogicalNot;
             LogicalOperationsFunctions["AND"] = ParseLogicalAnd;
             LogicalOperationsFunctions["OR"] = ParseLogicalOr;
@@ -98,82 +100,158 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                     conditionParsed = ParseCondition();
                 }
             }
+            _logger.Error(conditionParsed.GetConditionString(0));
             return ParseDiscount(conditionParsed);
         }
 
         private DiscountCondition ParseCondition()
         {
-            return null;
+            if (ConditionIndex >= ConditionString.Length)
+            {
+                throw new Exception($"Parsing condition string failed. Condition has no closing bracket.");
+            }
+
+            return ParseLogicalOperation();
         }
 
-        private ComposedDiscountCondition ParseLogicalOperation()
+        private DiscountCondition ParseLogicalOperation()
         {
             String op = "";
-            while (ConditionIndex < ConditionString.Length)
+            if (ConditionIndex < ConditionString.Length)
             {
-                if (ConditionString[ConditionIndex] == ' ')
+                while (ConditionString[ConditionIndex] == ' ') //Ignore whitespace
                 {
-                    if (LogicalOperationsFunctions.ContainsKey(op))
-                    {
-                        ConditionIndex++; // Calling parsing functions with the next index.
-                        return LogicalOperationsFunctions[op]();
-                    }
-                    else
-                    {
-                        throw new Exception($"Parsing condition string failed. '{op}' is not a valid logical operation.");
-                    }
+                    ConditionIndex++;
+                }
+                while (ConditionString[ConditionIndex] != ' ')
+                {
+                    op += ConditionString[ConditionIndex];
+                    ConditionIndex++;
+                }
+                if (LogicalOperationsFunctions.ContainsKey(op))
+                {
+                    ConditionIndex++; // Calling parsing functions with the next index.
+                    return LogicalOperationsFunctions[op]();
                 }
                 else
                 {
-                    op += ConditionString[ConditionIndex];
+                    throw new Exception($"Parsing condition string failed. '{op}' is not a valid logical operation.");
                 }
-                ConditionIndex++;
             }
             throw new Exception($"Parsing condition string failed. '{op}' cannot be parsed as a logical operation.");
         }
 
-        private ComposedDiscountCondition ParseLogicalNot()
+        private DiscountCondition ParseLogicalNot()
         {
-            return null;
+            while (ConditionString[ConditionIndex] == ' ')
+            {
+                ConditionIndex++;
+            }
+
+            NotCondition = true;
+            DiscountCondition condition = ParseSingleCondition();
+            NotCondition = false;
+
+            while (ConditionString[ConditionIndex] == ' ')
+            {
+                ConditionIndex++;
+            }
+
+            if (ConditionString[ConditionIndex] != ')')
+            {
+                throw new Exception($"Parsing condition string failed. Expected only one expression in a NOT format: index={ConditionIndex}.");
+            }
+
+            ConditionIndex++;
+
+            while (ConditionString[ConditionIndex] == ' ')
+            {
+                ConditionIndex++;
+            }
+
+            return condition;
+        }
+
+        private List<DiscountCondition> ParseListOfConditions()
+        {
+            List<DiscountCondition> discounts = new List<DiscountCondition>();
+            while (ConditionIndex < ConditionString.Length && ConditionString[ConditionIndex] != ')')
+            {
+                if (ConditionString[ConditionIndex] == '(')
+                {
+                    ConditionIndex++;
+                    discounts.Add(ParseCondition());
+                }
+                else
+                {
+                    discounts.Add(ParseSingleCondition());
+                }
+            }
+            if (ConditionIndex < ConditionString.Length - 1)
+                ConditionIndex++;
+
+            return discounts;
         }
 
         private AndComposition ParseLogicalAnd()
         {
-            return null;
+            List<DiscountCondition> discounts = ParseListOfConditions();
+
+            if (discounts.Count == 0)
+            {
+                throw new Exception($"Parsing condition string failed. One of the ANDs has no conditions.");
+            }
+
+            return new AndComposition(NotCondition, discounts);
         }
 
         private OrComposition ParseLogicalOr()
         {
-            return null;
+            List<DiscountCondition> discounts = ParseListOfConditions();
+
+            if (discounts.Count == 0)
+            {
+                throw new Exception($"Parsing condition string failed. One of the ORs has no conditions.");
+            }
+
+            return new OrComposition(NotCondition, discounts);
         }
 
         private XorComposition ParseLogicalXor()
         {
-            return null;
+            List<DiscountCondition> discounts = ParseListOfConditions();
+
+            if (discounts.Count == 0)
+            {
+                throw new Exception($"Parsing condition string failed. One of the XORs has no conditions.");
+            }
+
+            return new XorComposition(NotCondition, discounts);
         }
 
         private DiscountCondition ParseSingleCondition()
         {
             String conditionName = "";
-            while (ConditionIndex < ConditionString.Length)
+            if (ConditionIndex < ConditionString.Length)
             {
-                if (ConditionString[ConditionIndex] == '_')
+                while (ConditionString[ConditionIndex] == ' ') //Ignore whitespace
                 {
-                    if (ConditionFunctions.ContainsKey(conditionName))
-                    {
-                        ConditionIndex++; // Calling parsing functions with the next index.
-                        return ConditionFunctions[conditionName]();
-                    }
-                    else
-                    {
-                        throw new Exception($"Parsing condition string failed. '{conditionName}' is not a valid condition type.");
-                    }
+                    ConditionIndex++;
+                }
+                while (ConditionString[ConditionIndex] != '_')
+                {
+                    conditionName += ConditionString[ConditionIndex];
+                    ConditionIndex++;
+                }
+                if (ConditionFunctions.ContainsKey(conditionName))
+                {
+                    ConditionIndex++; // Calling parsing functions with the next index.
+                    return ConditionFunctions[conditionName]();
                 }
                 else
                 {
-                    conditionName += ConditionString[ConditionIndex];
+                    throw new Exception($"Parsing condition string failed. '{conditionName}' is not a valid condition type.");
                 }
-                ConditionIndex++;
             }
             throw new Exception("Parsing condition string failed. Condition string format is wrong.");
         }
@@ -182,12 +260,13 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         {
             int value = -1;
             String valueString = "";
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' ' || ConditionString[ConditionIndex] != '_'))
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' ' && ConditionString[ConditionIndex] != '_'))
             {
                 valueString += ConditionString[ConditionIndex];
                 ConditionIndex++;
             }
-            ConditionIndex++;
+            if (ConditionIndex < ConditionString.Length - 1 && ConditionString[ConditionIndex] != ')')
+                ConditionIndex++;
 
             try
             {
@@ -207,7 +286,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             int to = -1;
             String fromString = "";
             String toString = "";
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' ' || ConditionString[ConditionIndex] != '_'))
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' ' && ConditionString[ConditionIndex] != '_'))
             {
                 fromString += ConditionString[ConditionIndex];
                 ConditionIndex++;
@@ -216,12 +295,14 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             {
                 throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
             }
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
             {
                 toString += ConditionString[ConditionIndex];
                 ConditionIndex++;
             }
-            ConditionIndex++;
+            if (ConditionIndex < ConditionString.Length - 1 && ConditionString[ConditionIndex] != ')')
+                ConditionIndex++;
 
             try
             {
@@ -241,7 +322,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             int value = -1;
             String nameString = "";
             String valueString = "";
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != '_'))
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != '_'))
             {
                 nameString += ConditionString[ConditionIndex];
                 ConditionIndex++;
@@ -250,12 +331,14 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             {
                 throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
             }
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
             {
                 valueString += ConditionString[ConditionIndex];
                 ConditionIndex++;
             }
-            ConditionIndex++;
+            if (ConditionIndex < ConditionString.Length - 1 && ConditionString[ConditionIndex] != ')')
+                ConditionIndex++;
 
             try
             {
@@ -276,7 +359,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             String nameString = "";
             String fromString = "";
             String toString = "";
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != '_'))
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != '_'))
             {
                 nameString += ConditionString[ConditionIndex];
                 ConditionIndex++;
@@ -285,7 +368,8 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             {
                 throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
             }
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != '_'))
             {
                 fromString += ConditionString[ConditionIndex];
                 ConditionIndex++;
@@ -294,12 +378,14 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             {
                 throw new Exception($"Parsing condition string failed. At index {ConditionIndex}.");
             }
-            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' || ConditionString[ConditionIndex] != ' '))
+            ConditionIndex++;
+            while (ConditionIndex < ConditionString.Length && (ConditionString[ConditionIndex] != ')' && ConditionString[ConditionIndex] != ' '))
             {
                 toString += ConditionString[ConditionIndex];
                 ConditionIndex++;
             }
-            ConditionIndex++;
+            if (ConditionIndex < ConditionString.Length - 1 && ConditionString[ConditionIndex] != ')')
+                ConditionIndex++;
 
             try
             {
@@ -323,143 +409,77 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 throw new Exception($"Parsing condition string failed. '{day}' has to be in the range [1-7].");
             }
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-            
-            return new DayOnWeekCondition(IntToDay[day], currentNot);
+            return new DayOnWeekCondition(IntToDay[day], NotCondition);
         }
 
         private HourCondition ParseHour()
         {
             int[] from_to = ParseTwoIntegersCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new HourCondition(from_to[0], from_to[1], currentNot);
+            return new HourCondition(from_to[0], from_to[1], NotCondition);
         }
 
         private PriceableCondition ParseBasketRange()
         {
             int[] from_to = ParseTwoIntegersCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new PriceableCondition(null, from_to[0], from_to[1], currentNot);
+            return new PriceableCondition(null, from_to[0], from_to[1], NotCondition);
         }
 
         private DiscountCondition ParseBasketFrom()
         {
             int from = ParseOneIntegerCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new PriceableCondition(null, from, -1, currentNot);
+            return new PriceableCondition(null, from, -1, NotCondition);
         }
 
         private DiscountCondition ParseBasketTo()
         {
             int to = ParseOneIntegerCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new PriceableCondition(null, -1, to, currentNot);
+            return new PriceableCondition(null, -1, to, NotCondition);
         }
 
         private SearchItemCondition ParseItemAmountRange()
         {
             NameAndRange nar = ParseNameAndRangeCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new SearchItemCondition(nar.Name, nar.From, nar.To, currentNot);
+            return new SearchItemCondition(nar.Name, nar.From, nar.To, NotCondition);
         }
 
         private SearchItemCondition ParseItemAmountFrom()
         {
-            NameAndValue nar = ParseNameAndValueCondition();
+            NameAndValue nav = ParseNameAndValueCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new SearchItemCondition(nar.Name, nar.Value, -1, currentNot);
+            return new SearchItemCondition(nav.Name, nav.Value, -1, NotCondition);
         }
 
         private SearchItemCondition ParseItemAmountTo()
         {
-            NameAndValue nar = ParseNameAndValueCondition();
+            NameAndValue nav = ParseNameAndValueCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new SearchItemCondition(nar.Name, -1, nar.Value, currentNot);
+            return new SearchItemCondition(nav.Name, -1, nav.Value, NotCondition);
         }
 
         private SearchCategoryCondition ParseCategoryAmountRange()
         {
             NameAndRange nar = ParseNameAndRangeCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new SearchCategoryCondition(nar.Name, nar.From, nar.To, currentNot);
+            return new SearchCategoryCondition(nar.Name, nar.From, nar.To, NotCondition);
         }
 
         private SearchCategoryCondition ParseCategoryAmountFrom()
         {
-            NameAndValue nar = ParseNameAndValueCondition();
+            NameAndValue nav = ParseNameAndValueCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new SearchCategoryCondition(nar.Name, nar.Value, -1, currentNot);
+            return new SearchCategoryCondition(nav.Name, nav.Value, -1, NotCondition);
         }
 
         private DiscountCondition ParseCategoryAmountTo()
         {
-            NameAndValue nar = ParseNameAndValueCondition();
+            NameAndValue nav = ParseNameAndValueCondition();
 
-            bool currentNot = NotCondition;
-            if (ConditionString[ConditionIndex - 1] == ')')
-            {
-                NotCondition = false;
-            }
-
-            return new SearchCategoryCondition(nar.Name, -1, nar.Value, currentNot);
+            return new SearchCategoryCondition(nav.Name, -1, nav.Value, NotCondition);
         }
 
         /*

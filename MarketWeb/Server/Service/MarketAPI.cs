@@ -32,12 +32,12 @@ namespace MarketWeb.Service
             {
                 _market = market;
             }
-            //testMode = false;
             //_logger = logger;
             //LoadData();
+            //String conditionString = "(OR CategoryTotalAmountInBasketFrom_Fruit_2 (AND DayOfWeek_4 (NOT TotalBasketPriceRange_22_33) (XOR Hour_0_24)) CategoryTotalAmountInBasketTo_Krabby Patties_333)";
+            //new MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage.DiscountParser("", conditionString).Parse();
         }
        
-
         private String parseAutherization(String Authorization)
         {
             if (testMode)

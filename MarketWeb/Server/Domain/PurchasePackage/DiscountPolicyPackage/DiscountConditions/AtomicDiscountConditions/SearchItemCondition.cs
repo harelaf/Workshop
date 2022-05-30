@@ -13,7 +13,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPackage
         }
         public override String GetConditionString(int indent)
         {
-            return $"The cost of {_keyWord} is between {_minValue} and {_maxValue}.";
+            return $"{(ToNegative ? "(NOT) " : "")}The cost of {_keyWord} is between {_minValue} and {_maxValue}.";
         }
     }
 }
