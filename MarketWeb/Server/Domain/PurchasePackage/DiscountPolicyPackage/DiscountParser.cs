@@ -228,59 +228,59 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         private List<DiscountCondition> ParseListOfConditions()
         {
-            List<DiscountCondition> discounts = new List<DiscountCondition>();
+            List<DiscountCondition> conditions = new List<DiscountCondition>();
             while (ConditionIndex < ConditionString.Length && ConditionString[ConditionIndex] != ')')
             {
                 if (ConditionString[ConditionIndex] == '(')
                 {
                     ConditionIndex++;
-                    discounts.Add(ParseCondition());
+                    conditions.Add(ParseCondition());
                 }
                 else
                 {
-                    discounts.Add(ParseSingleCondition());
+                    conditions.Add(ParseSingleCondition());
                 }
             }
             if (ConditionIndex < ConditionString.Length - 1)
                 ConditionIndex++;
 
-            return discounts;
+            return conditions;
         }
 
         private AndComposition ParseLogicalAnd()
         {
-            List<DiscountCondition> discounts = ParseListOfConditions();
+            List<DiscountCondition> conditions = ParseListOfConditions();
 
-            if (discounts.Count == 0)
+            if (conditions.Count == 0)
             {
                 throw new Exception($"Parsing condition string failed. One of the ANDs has no conditions.");
             }
 
-            return new AndComposition(NotCondition, discounts);
+            return new AndComposition(NotCondition, conditions);
         }
 
         private OrComposition ParseLogicalOr()
         {
-            List<DiscountCondition> discounts = ParseListOfConditions();
+            List<DiscountCondition> conditions = ParseListOfConditions();
 
-            if (discounts.Count == 0)
+            if (conditions.Count == 0)
             {
                 throw new Exception($"Parsing condition string failed. One of the ORs has no conditions.");
             }
 
-            return new OrComposition(NotCondition, discounts);
+            return new OrComposition(NotCondition, conditions);
         }
 
         private XorComposition ParseLogicalXor()
         {
-            List<DiscountCondition> discounts = ParseListOfConditions();
+            List<DiscountCondition> conditions = ParseListOfConditions();
 
-            if (discounts.Count == 0)
+            if (conditions.Count == 0)
             {
                 throw new Exception($"Parsing condition string failed. One of the XORs has no conditions.");
             }
 
-            return new XorComposition(NotCondition, discounts);
+            return new XorComposition(NotCondition, conditions);
         }
 
         private DiscountCondition ParseSingleCondition()
@@ -555,17 +555,88 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         private Discount ParseDiscountOperation()
         {
-            return null;
+            String op = "";
+            if (DiscountIndex < DiscountString.Length)
+            {
+                while (DiscountString[DiscountIndex] == ' ') //Ignore whitespace
+                {
+                    DiscountIndex++;
+                }
+                while (DiscountString[DiscountIndex] != ' ')
+                {
+                    op += DiscountString[DiscountIndex];
+                    DiscountIndex++;
+                }
+                if (DiscountOperationsFunctions.ContainsKey(op))
+                {
+                    DiscountIndex++; // Calling parsing functions with the next index.
+                    return DiscountOperationsFunctions[op]();
+                }
+                else
+                {
+                    throw new Exception($"Parsing discount string failed. '{op}' is not a valid operation.");
+                }
+            }
+            throw new Exception($"Parsing discount string failed. '{op}' cannot be parsed as an operation.");
+        }
+
+        private List<Discount> ParseListOfDiscounts()
+        {
+            List<Discount> discounts = new List<Discount>();
+            while (DiscountIndex < DiscountString.Length && DiscountString[DiscountIndex] != ')')
+            {
+                if (DiscountString[DiscountIndex] == '(')
+                {
+                    DiscountIndex++;
+                    discounts.Add(ParseDiscount());
+                }
+                else
+                {
+                    discounts.Add(ParseSingleDiscount());
+                }
+            }
+            if (DiscountIndex < DiscountString.Length - 1)
+                DiscountIndex++;
+
+            return discounts;
         }
 
         private PlusDiscount ParsePlusOperation()
         {
-            return null;
+            List<Discount> discounts = ParseListOfDiscounts();
+
+            if (discounts.Count == 0)
+            {
+                throw new Exception($"Parsing discount string failed. One of the PLUSs has no discounts.");
+            }
+
+            if (ParsedCondition != null)
+            {
+                return new PlusDiscount(discounts, ParsedCondition);
+            }
+            else
+            {
+                return new PlusDiscount(discounts);
+            }
         }
 
         private MaxDiscount ParseMaxOperation() 
         {
-            return null;
+            List<Discount> discounts = ParseListOfDiscounts();
+
+            if (discounts.Count == 0)
+            {
+                throw new Exception($"Parsing discount string failed. One of the MAXs has no discounts.");
+            }
+
+            if (ParsedCondition != null)
+            {
+                return new MaxDiscount(discounts, ParsedCondition);
+            }
+            else
+            {
+                return new MaxDiscount(discounts);
+            }
         }
 
         private Discount ParseSingleDiscount()
