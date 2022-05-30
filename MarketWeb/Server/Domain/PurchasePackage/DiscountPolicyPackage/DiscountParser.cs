@@ -15,6 +15,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         private bool NotCondition = false;
         private Dictionary<String, Func<DiscountCondition>> ConditionFunctions;
         Dictionary<int, String> IntToDay;
+        Dictionary<String, Func<ComposedDiscountCondition>> LogicalOperationsFunctions;
         private class NameAndValue
         {
             public String Name { get; }
@@ -42,6 +43,16 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             ConditionString = conditionString.Trim();
             InitConditionFunctions();
             InitIntToDay();
+            InitLogicalOperationsFunctions();
+        }
+
+        private void InitLogicalOperationsFunctions()
+        {
+            LogicalOperationsFunctions = new Dictionary<string, Func<ComposedDiscountCondition>>();
+            LogicalOperationsFunctions["NOT"] = ParseLogicalNot;
+            LogicalOperationsFunctions["AND"] = ParseLogicalAnd;
+            LogicalOperationsFunctions["OR"] = ParseLogicalOr;
+            LogicalOperationsFunctions["XOR"] = ParseLogicalXor;
         }
 
         private void InitIntToDay()
@@ -83,6 +94,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 }
                 else
                 {
+                    ConditionIndex++;
                     conditionParsed = ParseCondition();
                 }
             }
@@ -90,6 +102,52 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         }
 
         private DiscountCondition ParseCondition()
+        {
+            return null;
+        }
+
+        private ComposedDiscountCondition ParseLogicalOperation()
+        {
+            String op = "";
+            while (ConditionIndex < ConditionString.Length)
+            {
+                if (ConditionString[ConditionIndex] == ' ')
+                {
+                    if (LogicalOperationsFunctions.ContainsKey(op))
+                    {
+                        ConditionIndex++; // Calling parsing functions with the next index.
+                        return LogicalOperationsFunctions[op]();
+                    }
+                    else
+                    {
+                        throw new Exception($"Parsing condition string failed. '{op}' is not a valid logical operation.");
+                    }
+                }
+                else
+                {
+                    op += ConditionString[ConditionIndex];
+                }
+                ConditionIndex++;
+            }
+            throw new Exception($"Parsing condition string failed. '{op}' cannot be parsed as a logical operation.");
+        }
+
+        private ComposedDiscountCondition ParseLogicalNot()
+        {
+            return null;
+        }
+
+        private AndComposition ParseLogicalAnd()
+        {
+            return null;
+        }
+
+        private OrComposition ParseLogicalOr()
+        {
+            return null;
+        }
+
+        private XorComposition ParseLogicalXor()
         {
             return null;
         }
