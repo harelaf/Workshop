@@ -1176,8 +1176,7 @@ namespace MarketWeb.Service
             {
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Add Store Discount called with parameters: authToken={authToken}, storeName={storeName}, conditionString={conditionString}, discountString={discountString}.");
-                Discount discount = DTOtranslator.translateDiscount(discount_dto);
-                _market.AddStoreDiscount(authToken, storeName, discount);
+                _market.AddStoreDiscount(authToken, storeName, conditionString, discountString);
                 response = new Response();
                 _logger.Info($"SUCCESSFULY executed Add Store Discount.");
             }
@@ -1353,7 +1352,7 @@ namespace MarketWeb.Service
             disLst.Add(numDis);
             MaxDiscountDTO max = new MaxDiscountDTO(disLst, null);
 
-            AddStoreDiscount(auth1, storeName1, max);
+            //AddStoreDiscount(auth1, storeName1, max);
 
 
             String dairyCategory = category2;
@@ -1364,7 +1363,7 @@ namespace MarketWeb.Service
             condLst.Add(itemCond);
             OrCompositionDTO orCond = new OrCompositionDTO(false, condLst2);
             CategoryDiscountDTO categoryDis = new CategoryDiscountDTO(percentageToSubtract, dairyCategory, orCond, expiration);
-            AddStoreDiscount(auth2, storeName2, categoryDis);
+            //AddStoreDiscount(auth2, storeName2, categoryDis);
         }
     }
 }
