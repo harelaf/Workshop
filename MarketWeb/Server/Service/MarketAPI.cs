@@ -34,8 +34,12 @@ namespace MarketWeb.Service
             }
             //_logger = logger;
             //LoadData();
-            //String conditionString = "(OR CategoryTotalAmountInBasketFrom_Fruit_2 (AND DayOfWeek_4 (NOT TotalBasketPriceRange_22_33) (XOR Hour_0_24)) CategoryTotalAmountInBasketTo_Krabby Patties_333)";
-            //new MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage.DiscountParser("", conditionString).Parse();
+
+            // DISCOUNT TESTING
+            //String conditionString = "(OR CategoryTotalAmountInBasketFrom_Fruit_2 (AND DayOfWeek_4 (NOT TotalBasketPriceRange_22_33) (XOR Hour_0_24)) CategoryTotalAmountInBasketTo_Krabby Patties_333 (OR CategoryTotalAmountInBasketFrom_Fruit_2))";
+            //conditionString = "";
+            //String discountString = "(MAX BasketAbsolute_8_2023_1_1 CategoryPercentage_JOE_22_2222_2_2 (PLUS BasketPercentage_33_3322_2_3 BasketAbsolute_8_2023_1_1))";
+            //new MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, conditionString).Parse();
         }
        
         private String parseAutherization(String Authorization)

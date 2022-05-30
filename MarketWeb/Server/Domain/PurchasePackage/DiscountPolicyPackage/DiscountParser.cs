@@ -96,9 +96,9 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         private void InitDiscountFunctions()
         {
             DiscountFunctions = new Dictionary<string, Func<Discount>>();
-            DiscountFunctions["ItemPercentage"] = ParseItemPerecentageDiscount;
+            DiscountFunctions["ItemPercentage"] = ParseItemPercentageDiscount;
             DiscountFunctions["CategoryPercentage"] = ParseCategoryPerecentageDiscount;
-            DiscountFunctions["BasketPerecentage"] = ParseBasketPercentageDiscount;
+            DiscountFunctions["BasketPercentage"] = ParseBasketPercentageDiscount;
             DiscountFunctions["BasketAbsolute"] = ParseBasketNumericDiscount;
         }
 
@@ -153,9 +153,18 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                     ParsedCondition = ParseCondition();
                 }
             }
-            if (ParsedCondition != null)
-                _logger.Error(ParsedCondition.GetConditionString(0));
-            return ParseDiscount();
+            Discount discount = null;
+            if (DiscountString[0] != '(')
+            {
+                discount = ParseSingleDiscount();
+            }
+            else
+            {
+                DiscountIndex++;
+                discount = ParseDiscount();
+            }
+            _logger.Error(discount.GetDiscountString(0));
+            return discount;
         }
 
         private DiscountCondition ParseCondition()
@@ -697,7 +706,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
             DiscountIndex++;
-            while (DiscountIndex < DiscountString.Length && (DiscountString[DiscountIndex] != ')' && DiscountString[DiscountIndex] != ' '))
+            while (DiscountIndex < DiscountString.Length && (DiscountString[DiscountIndex] != ')' && DiscountString[DiscountIndex] != '_'))
             {
                 yearString += DiscountString[DiscountIndex];
                 DiscountIndex++;
@@ -707,7 +716,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
             DiscountIndex++;
-            while (DiscountIndex < DiscountString.Length && (DiscountString[DiscountIndex] != ')' && DiscountString[DiscountIndex] != ' '))
+            while (DiscountIndex < DiscountString.Length && (DiscountString[DiscountIndex] != ')' && DiscountString[DiscountIndex] != '_'))
             {
                 monthString += DiscountString[DiscountIndex];
                 DiscountIndex++;
@@ -760,7 +769,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
             DiscountIndex++;
-            while (DiscountIndex < DiscountString.Length && (DiscountString[DiscountIndex] != ')' && DiscountString[DiscountIndex] != ' '))
+            while (DiscountIndex < DiscountString.Length && (DiscountString[DiscountIndex] != ')' && DiscountString[DiscountIndex] != '_'))
             {
                 yearString += DiscountString[DiscountIndex];
                 DiscountIndex++;
@@ -770,7 +779,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
             DiscountIndex++;
-            while (DiscountIndex < DiscountString.Length && (DiscountString[DiscountIndex] != ')' && DiscountString[DiscountIndex] != ' '))
+            while (DiscountIndex < DiscountString.Length && (DiscountString[DiscountIndex] != ')' && DiscountString[DiscountIndex] != '_'))
             {
                 monthString += DiscountString[DiscountIndex];
                 DiscountIndex++;
@@ -803,7 +812,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             return new ValueDate(value, year, month, day);
         }
 
-        private ItemDiscount ParseItemPerecentageDiscount()
+        private ItemDiscount ParseItemPercentageDiscount()
         {
             NameValueDate nvd = ParseNameValueDateDiscount();
 
