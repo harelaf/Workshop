@@ -13,6 +13,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         private int DiscountIndex = 0;
         private Dictionary<String, Func<Discount>> DiscountFunctions;
         private Dictionary<String, Func<Discount>> DiscountOperationsFunctions;
+        private bool IsSingleCondition = false;
         private class NameValueDate
         {
             public String Name { get; private set; }
@@ -156,6 +157,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             Discount discount = null;
             if (DiscountString[0] != '(')
             {
+                IsSingleCondition = true;
                 discount = ParseSingleDiscount();
             }
             else
@@ -163,7 +165,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 DiscountIndex++;
                 discount = ParseDiscount();
             }
-            _logger.Error(discount.GetDiscountString(0));
+            //_logger.Error(discount.GetDiscountString(0));
             return discount;
         }
 
@@ -612,6 +614,13 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         private PlusDiscount ParsePlusOperation()
         {
+            int advanced = 0;
+            while (DiscountString[DiscountIndex] == ' ')
+            {
+                DiscountIndex++;
+                advanced++;
+            }
+            bool IsOutsideMost = ("(".Length + "PLUS".Length + " ".Length) + advanced == DiscountIndex;
             List<Discount> discounts = ParseListOfDiscounts();
 
             if (discounts.Count == 0)
@@ -619,7 +628,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 throw new Exception($"Parsing discount string failed. One of the PLUSs has no discounts.");
             }
 
-            if (ParsedCondition != null)
+            if (ParsedCondition != null && IsOutsideMost)
             {
                 return new PlusDiscount(discounts, ParsedCondition);
             }
@@ -631,6 +640,13 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
 
         private MaxDiscount ParseMaxOperation() 
         {
+            int advanced = 0;
+            while (DiscountString[DiscountIndex] == ' ')
+            {
+                DiscountIndex++;
+                advanced++;
+            }
+            bool IsOutsideMost = ("(".Length + "MAX".Length + " ".Length) + advanced == DiscountIndex;
             List<Discount> discounts = ParseListOfDiscounts();
 
             if (discounts.Count == 0)
@@ -638,7 +654,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 throw new Exception($"Parsing discount string failed. One of the MAXs has no discounts.");
             }
 
-            if (ParsedCondition != null)
+            if (ParsedCondition != null && IsOutsideMost)
             {
                 return new MaxDiscount(discounts, ParsedCondition);
             }
@@ -816,7 +832,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         {
             NameValueDate nvd = ParseNameValueDateDiscount();
 
-            if (ParsedCondition != null)
+            if (IsSingleCondition)
             {
                 return new ItemDiscount(nvd.Value, nvd.Name, ParsedCondition, new DateTime(nvd.Year, nvd.Month, nvd.Day));
             }
@@ -830,7 +846,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         {
             NameValueDate nvd = ParseNameValueDateDiscount();
 
-            if (ParsedCondition != null)
+            if (IsSingleCondition)
             {
                 return new CategoryDiscount(nvd.Value, nvd.Name, ParsedCondition, new DateTime(nvd.Year, nvd.Month, nvd.Day));
             }
@@ -844,7 +860,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         {
             ValueDate vd = ParseValueDateDiscount();
 
-            if (ParsedCondition != null)
+            if (IsSingleCondition)
             {
                 return new AllProductsDiscount(vd.Value, ParsedCondition, new DateTime(vd.Year, vd.Month, vd.Day));
             }
@@ -858,7 +874,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
         {
             ValueDate vd = ParseValueDateDiscount();
 
-            if (ParsedCondition != null)
+            if (IsSingleCondition)
             {
                 return new NumericDiscount(vd.Value, ParsedCondition, new DateTime(vd.Year, vd.Month, vd.Day));
             }
