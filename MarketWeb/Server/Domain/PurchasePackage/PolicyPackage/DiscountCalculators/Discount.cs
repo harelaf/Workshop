@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public abstract class Discount
     {
         private Condition _condition; 
+        public Condition Condition => _condition;
 
         protected Discount(Condition condition)
         {

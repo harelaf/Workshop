@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain;
+using System;
 
 namespace MarketProject.Service.DTO
 {

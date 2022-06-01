@@ -1,9 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MarketProject.Domain;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MarketProject.Domain.PurchasePackage.PolicyPackage.Tests
 {
-    [TestClass]
+	[TestClass]
 	public class CategoryDiscountTest
 	{
 		String category = "cakes";

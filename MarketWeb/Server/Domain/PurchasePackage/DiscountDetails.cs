@@ -17,8 +17,8 @@ namespace MarketWeb.Server.Domain
                 else throw new ArgumentException("Amount cannot be negative.");
             }
         }
-        private List<AtomicDiscount> _discountList;
-        public List<AtomicDiscount> DiscountList
+        private ISet<AtomicDiscount> _discountList;
+        public ISet<AtomicDiscount> DiscountList
         {
             get { return _discountList; }
             private set { _discountList = value; }
@@ -26,7 +26,7 @@ namespace MarketWeb.Server.Domain
         public DiscountDetails(int amount)
         {
             _amount = amount;
-            DiscountList = new List<AtomicDiscount>();
+            DiscountList = new HashSet<AtomicDiscount>();
         }
         public void AddDiscount(AtomicDiscount discount)
         {
@@ -51,6 +51,11 @@ namespace MarketWeb.Server.Domain
         internal void UpdateAmount(int newQuantity)
         {
             _amount = newQuantity;
+        }
+
+        public void resetDiscounts()
+        {
+            DiscountList.Clear();
         }
     }
 }

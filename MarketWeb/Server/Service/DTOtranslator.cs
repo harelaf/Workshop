@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using MarketWeb.Shared.DTO;
 using MarketWeb.Shared;
 using MarketWeb.Server.Domain.PolicyPackage;
@@ -47,6 +48,79 @@ namespace MarketWeb.Service
                 return translate((XorCompositionDTO)cond);
             else throw new NotImplementedException();
         }
+        public IConditionDTO conditionToDTO(Condition cond)
+        {
+            if (cond == null)
+                return null;
+            Type type = cond.GetType();
+            if (type.Equals(typeof(AndComposition)))
+                return toDTO((AndComposition)cond);
+            if (type.Equals(typeof(DayOnWeekCondition)))
+                return toDTO((DayOnWeekCondition)cond);
+            if (type.Equals(typeof(HourCondition)))
+                return toDTO((HourCondition)cond);
+            if (type.Equals(typeof(OrComposition)))
+                return toDTO((OrComposition)cond);
+            if (type.Equals(typeof(PriceableCondition)))
+                return toDTO((PriceableCondition)cond);
+            if (type.Equals(typeof(SearchCategoryCondition)))
+                return toDTO((SearchCategoryCondition)cond);
+            if (type.Equals(typeof(SearchItemCondition)))
+                return toDTO((SearchItemCondition)cond);
+            if (type.Equals(typeof(XorComposition)))
+                return toDTO((XorComposition)cond);
+            else throw new NotImplementedException();
+        }
+
+        private DayOnWeekConditionDTO toDTO(DayOnWeekCondition cond)
+        {
+            return new DayOnWeekConditionDTO(cond.DayOnWeek, cond.ToNegative);
+        }
+
+        private HourConditionDTO toDTO(HourCondition cond)
+        {
+            return new HourConditionDTO(cond.MinHour, cond.MaxHour, cond.ToNegative);
+        }
+
+        private OrCompositionDTO toDTO(OrComposition cond)
+        {
+            List<IConditionDTO> conditions = new List<IConditionDTO>();
+            foreach (Condition innerCond in cond.ConditionList)
+                conditions.Add(conditionToDTO(innerCond));
+            return new OrCompositionDTO(cond.ToNegative, conditions);
+        }
+
+        private PriceableConditionDTO toDTO(PriceableCondition cond)
+        {
+            return new PriceableConditionDTO(cond.KeyWord, cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private SearchCategoryConditionDTO toDTO(SearchCategoryCondition cond)
+        {
+            return new SearchCategoryConditionDTO(cond.KeyWord, cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private SearchItemConditionDTO toDTO(SearchItemCondition cond)
+        {
+            return new SearchItemConditionDTO(cond.KeyWord, cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private XorCompositionDTO toDTO(XorComposition cond)
+        {
+            List<IConditionDTO> conditions = new List<IConditionDTO>();
+            foreach (Condition innerCond in cond.ConditionList)
+                conditions.Add(conditionToDTO(innerCond));
+            return new XorCompositionDTO(cond.ToNegative, conditions);
+        }
+
+        private AndCompositionDTO toDTO(AndComposition cond)
+        {
+            List<IConditionDTO> conditions = new List<IConditionDTO>();
+            foreach (Condition innerCond in cond.ConditionList)
+                conditions.Add(conditionToDTO(innerCond));
+            return new AndCompositionDTO(cond.ToNegative, conditions);
+        }
+
         public AndComposition translate(AndCompositionDTO condition_dto)
         {
             bool negative = condition_dto.Negative;
@@ -271,19 +345,22 @@ namespace MarketWeb.Service
         public ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {
             Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = new Dictionary<int ,Tuple<ItemDTO, DiscountDetailsDTO>>();
+            List<NumericDiscountDTO> additionalDiscounts = new List<NumericDiscountDTO>();
             foreach (KeyValuePair<Item, DiscountDetails> entry in shoppingBasket.Items)
             {
                 ItemDTO dto = toDTO(entry.Key, shoppingBasket.Store().StoreName);
                 items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(entry.Value, entry.Key._price));
             }
-            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items);
+            foreach(NumericDiscount dis in shoppingBasket.GetAdditionalDiscounts())
+                additionalDiscounts.Add(toDTO(dis));
+            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts);
         }
 
         public DiscountDetailsDTO toDTO(DiscountDetails discountDetails, double itemPrice)
         {
             List<AtomicDiscountDTO> disList = new List<AtomicDiscountDTO>();
-            foreach (AtomicDiscount discount in discountDetails.DiscountList)
-                disList.Add(discountToDTO(discount));
+            //foreach (AtomicDiscount discount in discountDetails.DiscountList)
+            //    disList.Add(discountToDTO(discount));
             double actualPrice = discountDetails.calcPriceFromCurrPrice(itemPrice);
             return new DiscountDetailsDTO(
                 discountDetails.Amount,
@@ -293,19 +370,20 @@ namespace MarketWeb.Service
 
         public ItemDiscountDTO toDTO(ItemDiscount discount)
         {
-            return new ItemDiscountDTO(1, "1", null, DateTime.Now);
+            return new ItemDiscountDTO(discount.PercentageToSubtract, discount.ItemName, conditionToDTO(discount.Condition), discount.Expiration);
         }
+
         public AllProductsDiscountDTO toDTO(AllProductsDiscount discount)
         {
-            throw new NotImplementedException();
+            return new AllProductsDiscountDTO(discount.PercentageToSubtract, conditionToDTO(discount.Condition), discount.Expiration);
         }
         public CategoryDiscountDTO toDTO(CategoryDiscount discount)
         {
-            throw new NotImplementedException();
+            return new CategoryDiscountDTO(discount.PercentageToSubtract, discount.Category, conditionToDTO(discount.Condition), discount.Expiration);
         }
         public NumericDiscountDTO toDTO(NumericDiscount discount)
         {
-            throw new NotImplementedException();
+            return new NumericDiscountDTO(discount.PriceToSubtract, conditionToDTO(discount.Condition), discount.Expiration);
         }
         public MaxDiscountDTO toDTO(MaxDiscount dis)
         {

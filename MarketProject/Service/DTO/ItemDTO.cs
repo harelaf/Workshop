@@ -1,6 +1,8 @@
-﻿using MarketProject.Domain.PurchasePackage.PolicyPackage;
+﻿using MarketProject.Domain;
+using MarketProject.Domain.PurchasePackage.PolicyPackage;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MarketProject.Service.DTO
 {

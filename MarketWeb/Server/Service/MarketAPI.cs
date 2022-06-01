@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace MarketWeb.Service
 {
@@ -33,7 +34,7 @@ namespace MarketWeb.Service
             }
             //testMode = false;
             //_logger = logger;
-            //LoadData();
+            LoadData();
         }
        
 
@@ -239,7 +240,6 @@ namespace MarketWeb.Service
             Response<ShoppingCartDTO> response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"View My Cart called with parameters: authToken={authToken}.");
                 ShoppingCart shoppingCart = _market.ViewMyCart(authToken);
@@ -1309,21 +1309,21 @@ namespace MarketWeb.Service
             String itemName1 = "itemName1";
             String category1 = "category1";
             String desc1 = "some item description goes here.";
-            int quantity1 = 1;
+            int quantity1 = 100;
 
             int itemID2 = 2;
             int price2 = 2;
             String itemName2 = "itemName2";
             String category2 = "dairy";
             String desc2 = "some other item description goes here.";
-            int quantity2 = 2;
+            int quantity2 = 200;
 
             int itemID3 = 3;
             int price3 = 3;
             String itemName3 = "itemName3";
             String category3 = "category3";
             String desc3 = "some other other item description goes here.";
-            int quantity3 = 3;
+            int quantity3 = 300;
             
             AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
             

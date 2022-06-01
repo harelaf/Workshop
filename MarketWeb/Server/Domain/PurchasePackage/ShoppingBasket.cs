@@ -1,6 +1,7 @@
 ﻿using MarketWeb.Server.Domain.PolicyPackage;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MarketWeb.Server.Domain
 {
@@ -10,13 +11,14 @@ namespace MarketWeb.Server.Domain
         public virtual Store _store { get; set; }
         public virtual IDictionary<Item, DiscountDetails> _items { get; set; }
         public IDictionary<Item, DiscountDetails> Items => _items;
-        private DiscountDetails _additionalDiscounts;
-        public DiscountDetails AdditionalDiscounts => _additionalDiscounts;
+        private List<NumericDiscount> _additionalDiscounts;
+        public List<NumericDiscount> AdditionalDiscounts => _additionalDiscounts;
 
         public ShoppingBasket(Store store)
         {
             _store = store;
             _items = new Dictionary<Item, DiscountDetails>();
+            _additionalDiscounts = new List<NumericDiscount>();
         }
 
         public void AddItem(Item item, int amount)
@@ -24,6 +26,8 @@ namespace MarketWeb.Server.Domain
             if (isItemInBasket(item))
                 _items[item].AddAmount(amount);
             else _items[item] = new DiscountDetails(amount);
+            resetDiscounts();
+            _store.GetDiscountPolicy().ApplyDiscounts(this);
         }
 
         public virtual int GetAmountOfItem(Item item)
@@ -46,6 +50,8 @@ namespace MarketWeb.Server.Domain
             {
                 int amount = _items[item].Amount;
                 _items.Remove(item);
+                resetDiscounts();
+                _store.GetDiscountPolicy().ApplyDiscounts(this);
                 return amount;
             }
             errorMessage = "basket doesn't contain the item that was requested to be removed";
@@ -63,9 +69,18 @@ namespace MarketWeb.Server.Domain
             if (isItemInBasket(item))
             {
                 _items[item].Amount = newQuantity;
+                resetDiscounts();
+                _store.GetDiscountPolicy().ApplyDiscounts(this);
                 return true;
             }
             return false;
+        }
+
+        private void resetDiscounts()
+        {
+            foreach (DiscountDetails detail in Items.Values)
+                detail.resetDiscounts();
+            AdditionalDiscounts.Clear();
         }
 
         public bool IsBasketEmpty()
@@ -148,34 +163,41 @@ namespace MarketWeb.Server.Domain
                     sum += item._price * Items[item].Amount;
             return sum;
         }
-        public void SetAllProductsDiscount(AtomicDiscount discount)
+        public void SetAllProductsDiscount(AllProductsDiscount discount)
         {
             foreach (Item item in Items.Keys)
                 Items[item].AddDiscount(discount);
         }
-        public void SetCategoryDiscount(AtomicDiscount discount, String category)
+        public void SetCategoryDiscount(CategoryDiscount discount, String category)
         {
             foreach (Item item in Items.Keys)
                 if (item.Category == category)
                     Items[item].AddDiscount(discount);
         }
-        public void SetItemDiscount(AtomicDiscount discount, String itemName)
+        public void SetItemDiscount(ItemDiscount discount, String itemName)
         {
             foreach (Item item in Items.Keys)
                 if (item.Name == itemName)
                     Items[item].AddDiscount(discount);
         }
-        public void SetNumericDiscount(AtomicDiscount discount)
+        public void SetNumericDiscount(NumericDiscount discount)
         {
-            AdditionalDiscounts.AddDiscount(discount);
+            AdditionalDiscounts.Add(discount);
         }
         public IDictionary<Item, DiscountDetails> GetDetailsByItem()
         {
             return Items;
         }
-        public DiscountDetails GetAdditionalDiscounts()
+        public List<NumericDiscount> GetAdditionalDiscounts()
         {
             return AdditionalDiscounts;
+        }
+        public double GetAdditionalDiscountsPrice()
+        {
+            double sum = 0;
+            foreach (NumericDiscount discount in AdditionalDiscounts)
+                sum += discount.PriceToSubtract;
+            return sum;
         }
         public virtual Store Store()
         {

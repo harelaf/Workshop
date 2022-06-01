@@ -1,4 +1,8 @@
-﻿namespace MarketWeb.Shared.DTO
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MarketWeb.Shared.DTO
 {
     public class DiscountPolicyDTO
     {

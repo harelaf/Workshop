@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public abstract class ComposedCondition : Condition
     {
         protected List<Condition> _ConditionList;
+        public List<Condition> ConditionList => _ConditionList;
 
         protected ComposedCondition(bool negative) : base(negative)
         {

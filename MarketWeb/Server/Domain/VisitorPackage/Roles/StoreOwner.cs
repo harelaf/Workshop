@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.Domain

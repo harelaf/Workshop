@@ -1,4 +1,8 @@
-﻿namespace MarketWeb.Server.Domain.PolicyPackage
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public abstract class AtomicCondition : Condition
     {

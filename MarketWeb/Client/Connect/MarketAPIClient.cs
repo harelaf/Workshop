@@ -2,7 +2,9 @@
 using MarketWeb.Shared;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 using MarketWeb.Shared.DTO;
 using MarketWeb.Client.Models.Account;
 using Microsoft.AspNetCore.WebUtilities;

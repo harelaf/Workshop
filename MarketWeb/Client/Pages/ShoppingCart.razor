@@ -37,8 +37,8 @@
             </tr>
             @foreach (int itemID in items.Keys)
             {
-                String detailsString = discountDetailsToString(items[itemID].Item2);
-                totalNoDiscount += items[itemID].Item1.Price;
+                String detailsString = StringFormatter.discountDetailsToString(items[itemID].Item2);//"kkklll";//
+                totalNoDiscount += items[itemID].Item1.Price * items[itemID].Item2.Amount;
                 totalWithDiscount += items[itemID].Item2.ActualPrice;
                 <tr id="@(items[itemID].Item1.Name + storeName)">
                     <th>@items[itemID].Item1.Name</th>
@@ -125,142 +125,10 @@ else
         }
     }
 
-    private String discountDetailsToString(DiscountDetailsDTO details)
-    {
-        if (details == null || details.DiscountList == null)
-            return "";
-        String str = "";
-        foreach(AtomicDiscountDTO dis in details.DiscountList)
-            str += $"{discountToString(dis)}\n";
-        return str;
-    }
-
-    private String discountToString(AtomicDiscountDTO dis)
-    {
-        if (dis == null)
-            return "";
-        String str = "";
-        Type type = dis.GetType();
-        if (type.Equals(typeof(AllProductsDiscountDTO)))
-            return specificDiscountToString((AllProductsDiscountDTO)dis);
-        if (type.Equals(typeof(CategoryDiscountDTO)))
-            return specificDiscountToString((CategoryDiscountDTO)dis);
-        if (type.Equals(typeof(ItemDiscountDTO)))
-            return specificDiscountToString((ItemDiscountDTO)dis);
-        if (type.Equals(typeof(NumericDiscountDTO)))
-            return specificDiscountToString((NumericDiscountDTO)dis);
-        else throw new NotImplementedException($"need an implementation for {type} discount type.");
-    }
-
-    private String conditionToString(IConditionDTO cond)
-    {
-        if (cond == null)
-            return "";
-        Type type = cond.GetType();
-        if (type.Equals(typeof(AndCompositionDTO)))
-            return specificConditionToString((AndCompositionDTO)cond);
-        if (type.Equals(typeof(DayOnWeekConditionDTO)))
-            return specificConditionToString((DayOnWeekConditionDTO)cond);
-        if (type.Equals(typeof(HourConditionDTO)))
-            return specificConditionToString((HourConditionDTO)cond);
-        if (type.Equals(typeof(OrCompositionDTO)))
-            return specificConditionToString((OrCompositionDTO)cond);
-        if (type.Equals(typeof(PriceableConditionDTO)))
-            return specificConditionToString((PriceableConditionDTO)cond);
-        if (type.Equals(typeof(SearchCategoryConditionDTO)))
-            return specificConditionToString((SearchCategoryConditionDTO)cond);
-        if (type.Equals(typeof(SearchItemConditionDTO)))
-            return specificConditionToString((SearchItemConditionDTO)cond);
-        if (type.Equals(typeof(XorCompositionDTO)))
-            return specificConditionToString((XorCompositionDTO)cond);
-        else throw new NotImplementedException();
-    }
-
-    private String specificConditionToString(AndCompositionDTO condition)
-    {
-        String str = "Apply AND logic over the following condition(s):\n";
-        int index = 1;
-        foreach(IConditionDTO innerCond in condition.Conditions)
-            str += $"{index++}. {conditionToString(innerCond)}\n";
-        return str;
-    }
-
-    private String specificConditionToString(OrCompositionDTO condition)
-    {
-        String str = "Apply OR logic over the following condition(s):\n";
-        int index = 1;
-        foreach(IConditionDTO innerCond in condition.Conditions)
-            str += $"{index++}. {conditionToString(innerCond)}\n";
-        return str;
-    }
-
-    private String specificConditionToString(XorCompositionDTO condition)
-    {
-        String str = "Apply XOR logic over the following condition(s):\n";
-        int index = 1;
-        foreach(IConditionDTO innerCond in condition.Conditions)
-            str += $"{index++}. {conditionToString(innerCond)}\n";
-        return str;
-    }
-
-    private String specificConditionToString(SearchItemConditionDTO condition)
-    {
-        String neg = condition.Negative ? "NOT " : "";
-        String maxStr = condition.MaxAmount > condition.MinAmount ? $" and under {condition.MaxAmount}" : "";
-        return $"the basket is {neg}containing over {condition.MinAmount}{maxStr} of '{condition.KeyWord}'";
-    }
-
-    private String specificConditionToString(SearchCategoryConditionDTO condition)
-    {
-        String neg = condition.Negative ? "NOT " : "";
-        String maxStr = condition.MaxAmount > condition.MinAmount ? $" and under {condition.MaxAmount}" : "";
-        return $"the basket is {neg}containing over {condition.MinAmount}{maxStr} of '{condition.KeyWord}' category";
-    }
-
-    private String specificConditionToString(DayOnWeekConditionDTO condition)
-    {
-        String neg = condition.Negative ? "NOT " : "";
-        return $"today is {condition.DayOnWeek}";
-    }
-
-    private String specificConditionToString(HourConditionDTO condition)
-    {
-        String neg = condition.Negative ? "NOT " : "";
-        return $"it is {neg}between {condition.MinHour} and {condition.MaxHour} o'clock";
-    }
-
-    private String specificConditionToString(PriceableConditionDTO condition)
-    {
-        String neg = condition.Negative ? "NOT " : "";
-        String maxStr = condition.MaxAmount > condition.MinAmount ? $" and under {condition.MaxAmount}" : "";
-        return $"the total price is {neg}over {condition.MinAmount}{maxStr}";
-    }
-
-    private String specificDiscountToString(AllProductsDiscountDTO dis)
-    {
-        return $"{dis.Percentage}% off all products\nexpired on: {dis.Expiration}\ncondition(s): {conditionToString(dis.Condition)}";
-    }
-
-    private String specificDiscountToString(ItemDiscountDTO dis)
-    {
-        return $"{dis.PercentageToSubtract}% off '{dis.ItemName}' products\nexpired on: {dis.Expiration}\ncondition(s): {conditionToString(dis.Condition)}";
-    }
-
-    private String specificDiscountToString(CategoryDiscountDTO dis)
-    {
-        return $"{dis.Percentage_to_subtract}% off '{dis.Category}' category products\nexpired on: {dis.Expiration}\ncondition(s): {conditionToString(dis.Condition)}";
-    }
-
-    private String specificDiscountToString(NumericDiscountDTO dis)
-    {
-        return $"{dis.PriceToSubtract}% off the total price\nexpired on: {dis.Expiration}\ncondition(s): {conditionToString(dis.Condition)}";
-    }
-
     protected override async Task OnInitializedAsync()
     {
         // reset alerts on submit
         AlertService.Clear();
-
         try
         {
             Response<ShoppingCartDTO> response = await marketAPIClient.ViewMyCart();

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public abstract class AtomicDiscount : Discount
     {
         private DateTime _expiration;
+        public DateTime Expiration => _expiration;
         public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
         {
             return _expiration;

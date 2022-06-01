@@ -1,6 +1,7 @@
 ﻿using MarketProject.Domain.PurchasePackage.PolicyPackage;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MarketProject.Domain
 {

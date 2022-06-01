@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MarketWeb.Server.Domain.PolicyPackage
 {
@@ -25,6 +27,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         public string GetActualDiscountString(ISearchablePriceable searchablePriceable)
         {
             return _discounts.GetActualDiscountString(searchablePriceable, 0);
+        }
+
+        public void ApplyDiscounts(ISearchablePriceable searchablePriceable)
+        {
+            Discounts.applyDiscount(searchablePriceable);
         }
     }
 }

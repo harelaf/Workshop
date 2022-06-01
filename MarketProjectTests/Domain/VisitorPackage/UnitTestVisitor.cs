@@ -1,5 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MarketProject.Domain;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using MarketProject.Domain.PurchasePackage.PolicyPackage;
 
 namespace MarketProject.Domain.Tests

@@ -1,4 +1,8 @@
-﻿namespace MarketProject.Domain.PurchasePackage.PolicyPackage
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public abstract class AtomicCondition : Condition
     {

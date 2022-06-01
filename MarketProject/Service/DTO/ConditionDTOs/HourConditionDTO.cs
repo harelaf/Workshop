@@ -1,5 +1,9 @@
-﻿namespace MarketProject.Service.DTO
-{
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MarketProject.Service.DTO
+{ 
     public class HourConditionDTO : IConditionDTO
     {
         private int _minHour;

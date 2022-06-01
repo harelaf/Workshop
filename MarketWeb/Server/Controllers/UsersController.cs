@@ -1,11 +1,15 @@
 ﻿
 using MarketWeb.Service;
 using MarketWeb.Shared;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Text.Json;
 //using Newtonsoft.Json;
 //using Newtonsoft.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace MarketWeb.Server.Controllers
 {
@@ -37,7 +41,11 @@ namespace MarketWeb.Server.Controllers
         {
             _logger.LogInformation("EnterSystem called.");
             Response<string> response = _marketApi.EnterSystem();
-            var responseAsJson = JsonConvert.SerializeObject(response);
+            var responseAsJson = JsonConvert.SerializeObject(response, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                TypeNameHandling = TypeNameHandling.Auto
+            });
             //var responseAsJson = JsonConvert.SerializeObject(response, Formatting.Indented, new JsonSerializerSettings
             //{
             //    ContractResolver = new CamelCasePropertyNamesContractResolver()
