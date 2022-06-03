@@ -95,6 +95,7 @@ namespace MarketWeb.Service
                 _logger.Info($"Login called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(authToken, Username, password);
+                ConnectedUser.ChangeToken(authToken, loginToken);
                 response = new Response<String>(loginToken);
                 _logger.Info($"SUCCESSFULY executed Login.");
             }

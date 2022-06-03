@@ -867,7 +867,7 @@ namespace MarketWeb.Server.Domain
         public List<Store> GetAllActiveStores(String authToken)
         {
             NotifyMessageDTO notification = new NotifyMessageDTO("Store", "Title", "You did GetAllActiveStores", "ReceiverUsername", 0);
-            log.Info($"Sending notification to :{ String.Join(", ", ConnectedUser.Ids.ToArray())}");
+            log.Info($"Sending notification to :{authToken}");
             this._notificationHub.SendNotification(authToken, notification);
             String errorMessage = null;
             CheckIsVisitorAVisitor(authToken, "GetAllActiveStores");
