@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MarketWeb.Shared.DTO
 {
+    [JsonConverter(typeof(CategoryConverter))]
     public class CategoryDiscountDTO : AtomicDiscountDTO
     {
         private double _percentage_to_subtract;

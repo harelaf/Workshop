@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,6 +9,7 @@ namespace MarketWeb.Shared.DTO
     {
         private int _amount;
         public int Amount => _amount;
+        //[JsonConverter(typeof(ConcreteConverter))]
         private List<AtomicDiscountDTO> _discountList;
         public List<AtomicDiscountDTO> DiscountList => _discountList;
         private double _actualPrice;
