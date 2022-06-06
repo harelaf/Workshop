@@ -19,7 +19,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public override String GetConditionString(int indent)
         {
-            return $"Today is {_dayOnWeek}.";
+            return $"{(ToNegative ? "(NOT) " : "")}Today is {_dayOnWeek}.";
         }
     }
 }

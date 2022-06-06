@@ -71,6 +71,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response<ItemDTO>> GetItem(string storeName, int itemId);
         public Task<Response<List<StoreDTO>>> GetStoresOfUser();
         public Task<Response> SendAdminMessage(String receiverUsername, String title, String message);
+        public Task<Response> AddStoreDiscount(String StoreName, String ConditionString, String DiscountString);
     }
 
     public class MarketAPIClient : IMarketAPIClient
@@ -734,6 +735,19 @@ namespace MarketWeb.Client.Connect
                 { "UsernameReciever", receiverUsername },
                 { "title", title },
                 { "message", message }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+            Response res = await _httpService.Post<Response>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response> AddStoreDiscount(string StoreName, string ConditionString, string DiscountString)
+        {
+            const string url = "api/market/AddStoreDiscount";
+            var param = new Dictionary<string, string>() {
+                { "storeName", StoreName },
+                { "conditionString", ConditionString },
+                { "discountString", DiscountString }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response res = await _httpService.Post<Response>(newUrl, null);
