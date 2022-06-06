@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage;
 using MarketWeb.Server.Domain.PurchasePackage.PolicyPackage;
 using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MarketWeb.Server.Domain
 {
@@ -15,14 +19,16 @@ namespace MarketWeb.Server.Domain
         private VisitorManagement _VisitorManagement;
         private History _history;
         private IDictionary<string, Operation> _opNameToOp;
+        protected NotificationHub _notificationHub;
 
-        public Market()
+        public Market(NotificationHub notificationHub = null)
         {
             _storeManagement = new StoreManagement();
             _VisitorManagement = new VisitorManagement();
             _history = new History();
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
+            _notificationHub = notificationHub;
         }
         
        
@@ -863,6 +869,9 @@ namespace MarketWeb.Server.Domain
 
         public List<Store> GetAllActiveStores(String authToken)
         {
+            NotifyMessageDTO notification = new NotifyMessageDTO("Store", "Title", "You did GetAllActiveStores", "ReceiverUsername", 0);
+            log.Info($"Sending notification to :{authToken}");
+            this._notificationHub.SendNotification(authToken, notification);
             String errorMessage = null;
             CheckIsVisitorAVisitor(authToken, "GetAllActiveStores");
             bool isAdmin = true;

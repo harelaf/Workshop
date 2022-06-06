@@ -1,10 +1,12 @@
 ﻿
 using MarketWeb.Server.Domain;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -123,6 +125,7 @@ namespace MarketWeb.Service
                 _logger.Info($"Login called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(authToken, Username, password);
+                ConnectedUser.ChangeToken(authToken, loginToken);
                 response = new Response<String>(loginToken);
                 _logger.Info($"SUCCESSFULY executed Login.");
             }
