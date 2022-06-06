@@ -263,5 +263,62 @@ namespace MarketWeb.Server.Domain
             else
                 throw new Exception("can;t happen");
         }
+        public List<Tuple<DateTime, ShoppingCart>> PurchasedCartDalToDomain(List<Tuple<DateTime, ShoppingCartDAL>> purchasedCartDAL)
+        {
+            List<Tuple<DateTime, ShoppingCart>> cartHistory = new List<Tuple<DateTime, ShoppingCart>>();
+            foreach (Tuple<DateTime, ShoppingCartDAL> purchase in purchasedCartDAL)
+            {
+                cartHistory.Add(new Tuple<DateTime, ShoppingCart>(purchase.Item1, ShoppingCartDALToDomain(purchase.Item2)));
+            }
+            return cartHistory;
+        }
+        public List<Tuple<DateTime, ShoppingCartDAL>> PurchasedCartDomainToDal(List<Tuple<DateTime, ShoppingCart>> purchasedCart)
+        {
+            List<Tuple<DateTime, ShoppingCartDAL>> cartHistory = new List<Tuple<DateTime, ShoppingCartDAL>>();
+            foreach (Tuple<DateTime, ShoppingCart> purchase in purchasedCart)
+            {
+                cartHistory.Add(new Tuple<DateTime, ShoppingCartDAL>(purchase.Item1, ShoppingCartDomainToDAL(purchase.Item2)));
+            }
+            return cartHistory;
+        }
+
+        private ShoppingCartDAL ShoppingCartDomainToDAL(ShoppingCart cart)
+        {
+            ICollection<ShoppingBasketDAL> baskets = new List<ShoppingBasketDAL>();
+            foreach (ShoppingBasket basketDAL in cart._shoppingBaskets)
+            {
+                baskets.Add(ShoppingBasketDomainToDAL(basketDAL));
+            }
+            return new ShoppingCartDAL(baskets);
+        }
+
+        public List<Tuple<DateTime, ShoppingBasket>> PurchasedBasketDalToDomain(List<Tuple<DateTime, ShoppingBasketDAL>> purchasedBasketDAL)
+        {
+            List<Tuple<DateTime, ShoppingBasket>> basketHistory = new List<Tuple<DateTime, ShoppingBasket>>();
+            foreach (Tuple<DateTime, ShoppingBasketDAL> purchase in purchasedBasketDAL)
+            {
+                basketHistory.Add(new Tuple<DateTime, ShoppingBasket>(purchase.Item1, ShoppingBasketDALToDomain(purchase.Item2)));
+            }
+            return basketHistory;
+        }
+        public List<Tuple<DateTime, ShoppingBasketDAL>> PurchasedBasketDomainToDal(List<Tuple<DateTime, ShoppingBasket>> purchasedBasket)
+        {
+            List<Tuple<DateTime, ShoppingBasketDAL>> basketHistory = new List<Tuple<DateTime, ShoppingBasketDAL>>();
+            foreach (Tuple<DateTime, ShoppingBasket> purchase in purchasedBasket)
+            {
+                basketHistory.Add(new Tuple<DateTime, ShoppingBasketDAL>(purchase.Item1, ShoppingBasketDomainToDAL(purchase.Item2)));
+            }
+            return basketHistory;
+        }
+
+        private ShoppingBasketDAL ShoppingBasketDomainToDAL(ShoppingBasket basket)
+        {
+            IDictionary<ItemDAL, int> items = new Dictionary<ItemDAL, int>();
+            foreach (KeyValuePair<Item, int> i_a in basket.Items)
+            {
+                items.Add(ItemDomainToDal(i_a.Key), i_a.Value);
+            }
+            return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items);
+        }
     }
 }

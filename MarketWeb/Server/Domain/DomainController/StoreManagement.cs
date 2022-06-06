@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Shared;
+using MarketWeb.Server.DataLayer;
 
 namespace MarketWeb.Server.Domain
 {
@@ -10,22 +11,29 @@ namespace MarketWeb.Server.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Dictionary<String, Store> _stores; //<storeName:String, Store>
-
+        private DalTRranslator _translator;
+        private DalController _dalController = DalController.GetInstance();
         public StoreManagement()
         {
             _stores = new Dictionary<String, Store>();
+            _translator = new DalTRranslator();
         }
 
-        public Store GetStore(String storeName)
+        public Store GetActiveStore(String storeName)
         {
             String errorMessage;
             if (_stores.ContainsKey(storeName))
                 return _stores[storeName];
-            errorMessage = "Store '" + storeName + "' does not exists.";
+            errorMessage = "Store '" + storeName + "' does not exists Or inActive.";
             LogErrorMessage("GetStore", errorMessage);
             throw new Exception(errorMessage);
         }
-
+        public Store GetStore(string storeName)
+        {
+            if (_stores.ContainsKey(storeName))
+                return _stores[storeName];
+            return _translator.StoreDalToDomain(_dalController.GetStoreInformation(storeName));
+        }
         public bool IsStoreExist(String storeName)
         {
            return _stores.ContainsKey(storeName);
@@ -40,14 +48,14 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("ReserveItemFromStore", errorMessage);
                 throw new Exception(errorMessage);
             }
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.ReserveItem(itemID, amount);
         }
 
         public Item GetItem(String storeName, int itemID)
         {
             String errorMessage;
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             if (store == null)
             {
                 errorMessage = "there is no store in system with the givn storeid";
@@ -83,6 +91,7 @@ namespace MarketWeb.Server.Domain
             Item item = GetItem(storeName, itemID); 
             item.SetName(newName);
         }
+
         public void EditItemDescription(String storeName, int itemID, String newDescription)
         {
             Item item = GetItem(storeName, itemID);
@@ -126,7 +135,7 @@ namespace MarketWeb.Server.Domain
 
         public void SendMessageToStore(String Username, String storeName, String title, String message, int id)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             MessageToStore messageToStore = new MessageToStore(storeName, Username, title, message, id);
             store.AddMessage(messageToStore);
         }
@@ -140,19 +149,25 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("UnreserveItemInStore", errorMessage);
                 throw new Exception(errorMessage);
             }
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             store.UnReserveItem(item, amount_to_add);
         }
 
         public void OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
         {
+            if (_dalController.StoreExists(storeName))
+            {
+                string errorMessage = $"system allready has store with name: {storeName}";
+                LogErrorMessage("UnreserveItemInStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
             Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
             _stores[storeName] = newStore;
         }
 
         public bool CheckStoreNameExists(String storeName)
         {
-            return _stores.ContainsKey(storeName);
+            return _dalController.StoreExists(storeName);
         }
 
         public Store GetStoreInformation(String storeName)
@@ -170,52 +185,62 @@ namespace MarketWeb.Server.Domain
 
         public List<String> GetStoreRolesByName(String storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.GetStoreRolesByName();
         }
 
         public void RateStore(String Username, String storeName, int rating, String review)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             store.RateStore(Username, rating, review);
+            _dalController.RateStore(storeName, rating, review, Username);
         }
 
         public void UpdateStockQuantityOfItem(String storeName, int itemID, int newQuantity)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             store.UpdateStockQuantityOfItem(itemID, newQuantity);
+            _dalController.UpdateStockQuantityOfItem(storeName, itemID, newQuantity);
         }
 
         public bool isStoreActive(String storeName)
         {
             if (!IsStoreExist(storeName))
                 return false;
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.isActive();
         }
 
-        public void AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, String category, int quantity)
+        public void AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity)
         {
-            Store store = GetStore(storeName);
-            store.AddItemToStoreStock(itemID, name, price, description, category, quantity);
+            Store store = GetActiveStore(storeName);
+            int id = _dalController.AddItemToStoreStock(storeName, name, price, description, category, quantity);
+            store.AddItemToStoreStock(id, name, price, description, category, quantity);
+        }
+        public void AddItemToStoreStockTest(String storeName, int id, String name,  double price, String description, String category, int quantity)
+        {
+            Store store = GetActiveStore(storeName);
+            //int id = _dalController.AddItemToStoreStock(storeName, name, price, description, category, quantity);
+            store.AddItemToStoreStock(id, name, price, description, category, quantity);
         }
 
         public void RemoveItemFromStore(String storeName, int itemID)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             store.RemoveItemFromStore(itemID);
+            _dalController.RemoveItemFromStore(storeName, itemID);
         }
 
         public void CloseStore(String storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             store.CloseStore();
         }
 
         public void ReopenStore(String storeName)
         {
             String errorMessage;
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             if (store.State != StoreState.Inactive)
             {
                 errorMessage = $"Store {storeName} is not inactive.";
@@ -227,36 +252,36 @@ namespace MarketWeb.Server.Domain
 
         public void CloseStorePermanently(String storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             store.CloseStorePermanently();
             _stores.Remove(storeName);
         }
 
         public void AddStoreDiscount(String storeName, Discount discount)
         {
-            GetStore(storeName).AddDiscount(discount);
+            GetActiveStore(storeName).AddDiscount(discount);
         }
 
         public bool AddStoreManager(StoreManager newManager, string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.AddStoreManager(newManager);
         }
 
         public bool AddStoreOwner(StoreOwner newOwner, string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.AddStoreOwner(newOwner);
         }
         public Tuple<List<string>, List<string>> RemoveStoreOwner(string ownerUsername, string storeName, String appointerUsername)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.RemoveStoreOwner(ownerUsername, appointerUsername);
         }
 
         public bool RemoveStoreManager(string managerUsername, string storeName, String appointerUsername)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.RemoveStoreManager(managerUsername, appointerUsername);
         }
 
@@ -291,19 +316,19 @@ namespace MarketWeb.Server.Domain
 
         internal List<StoreManager> getStoreManagers(string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.GetManagers();
         }
 
         internal List<StoreOwner> getStoreOwners(string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.GetOwners();
         }
 
         internal StoreFounder getStoreFounder(string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.GetFounder();
         }
 
@@ -317,14 +342,14 @@ namespace MarketWeb.Server.Domain
             ICollection<String> storeNames = registered.StoresWithRoles;
             foreach (String storeName in storeNames)
             {
-                Store store = GetStore(storeName);
+                Store store = GetActiveStore(storeName);
                 store.RemoveRoles(registered.Username);
             }
         }
 
         public List<MessageToStore> GetStoreMessages(string storeName)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.MessagesToStore;
         }
 
@@ -335,7 +360,7 @@ namespace MarketWeb.Server.Domain
 
         internal MessageToStore AnswerStoreMessage(string storeName, int msgID)
         {
-            Store store = GetStore(storeName);
+            Store store = GetActiveStore(storeName);
             return store.AnswerMessage(msgID);
         }
 
@@ -344,7 +369,7 @@ namespace MarketWeb.Server.Domain
             List<Store> storeList = new List<Store>();
             foreach (string storeName in stores)
             {
-                storeList.Add(GetStore(storeName));
+                storeList.Add(GetActiveStore(storeName));
             }
             return storeList;
         }

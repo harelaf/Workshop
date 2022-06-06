@@ -168,8 +168,10 @@ namespace MarketWeb.Server.DataLayer
         }
         public void OpenNewStore(String storeName, string founderName)
         {
-            StoreDAL store = new StoreDAL(storeName, new StoreFounderDAL(storeName, founderName), StoreState.Active);
-            context.StoreDALs.Add(store);   
+            StoreFounderDAL founder = new StoreFounderDAL(storeName, founderName);
+            StoreDAL store = new StoreDAL(storeName, founder, StoreState.Active);
+            context.StoreDALs.Add(store);
+            context.RegisteredDALs.Find(founderName)._roles.Add(founder);
             context.SaveChanges();
         }
         public void AddStoreManager(String managerUsername, String storeName, string appointer)
@@ -234,12 +236,13 @@ namespace MarketWeb.Server.DataLayer
             }
             context.SaveChanges();
         }
-        public void AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, String category, int quantity)
+        public int AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity)
         {
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             ItemDAL item = new ItemDAL(new RatingDAL(new List<RateDAL>()), name, price, description, category);
-            storeDAL._stock._itemAndAmount.Add(item, quantity);
             context.SaveChanges();
+            storeDAL._stock._itemAndAmount.Add(item, quantity);
+            return item._itemID;
         }
         public void RemoveItemFromStore(String storeName, int itemID)
         {
@@ -329,11 +332,21 @@ namespace MarketWeb.Server.DataLayer
         }
         public StoreDAL GetStoreInformation(String storeName)
         {
-            return context.StoreDALs.Find(storeName);
+            StoreDAL store =  context.StoreDALs.Find(storeName);
+            if(store == null)
+                throw new Exception($"there is no such store: {storeName} in system.");
+            return store;
         }
         public ItemDAL GetItem(int itemID, String storeName)
         {
-            return context.StoreDALs.Find(storeName)._stock._itemAndAmount.Keys.Where(i => i._itemID == itemID).FirstOrDefault();
+            try
+            {
+                return context.StoreDALs.Find(storeName)._stock._itemAndAmount.Keys.Where(i => i._itemID == itemID).First();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"there is no such item: {itemID} in store: {storeName}.");
+            }   
         }
         public void SendMessageToStore(String storeName, String title, String message, string sender)
         {
@@ -351,11 +364,47 @@ namespace MarketWeb.Server.DataLayer
         {
             List<Tuple<DateTime, ShoppingCartDAL>> history = new List<Tuple<DateTime, ShoppingCartDAL>>();
             RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Find(userName);
+            if (reg_history == null)
+                return null;
             foreach (PurchasedCartDAL cart in reg_history._PurchasedCarts)
             {
                 history.Add(new Tuple<DateTime, ShoppingCartDAL>(cart._purchaseDate, cart._PurchasedCart));
             }
             return history;
+        }
+        public List<Tuple<DateTime, ShoppingBasketDAL>> GetRegisterPurchasesInStore(string userName, string storeName)
+        {
+            List<Tuple<DateTime, ShoppingBasketDAL>> history = new List<Tuple<DateTime, ShoppingBasketDAL>>();
+            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Find(userName);
+            if (reg_history == null)
+                return null;
+            foreach (PurchasedCartDAL purchasedCart in reg_history._PurchasedCarts)
+            {
+                ShoppingCartDAL cart = purchasedCart._PurchasedCart;
+                foreach(ShoppingBasketDAL purchasedBasket in cart._shoppingBaskets)
+                {
+                    if (purchasedBasket._store._storeName == storeName)
+                        history.Add(new Tuple<DateTime, ShoppingBasketDAL>(purchasedCart._purchaseDate, purchasedBasket));
+                }
+            }
+            return history;
+        }
+        public bool GetDidRegisterPurchasedInStore(string userName, string storeName)
+        {
+            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Find(userName);
+
+            if (reg_history == null)
+                return false;
+            foreach (PurchasedCartDAL purchasedCart in reg_history._PurchasedCarts)
+            {
+                ShoppingCartDAL cart = purchasedCart._PurchasedCart;
+                foreach (ShoppingBasketDAL purchasedBasket in cart._shoppingBaskets)
+                {
+                    if (purchasedBasket._store._storeName == storeName)
+                        return true;
+                }
+            }
+            return false;
         }
         public RegisteredDAL GetVisitorInformation(string userName) 
         {
@@ -442,6 +491,8 @@ namespace MarketWeb.Server.DataLayer
         {
             List<Tuple<DateTime, ShoppingBasketDAL>> history = new List<Tuple<DateTime, ShoppingBasketDAL>>();
             StorePurchasedBasketDAL store_basket = context.StorePurchaseHistory.Find(storeName);
+            if (store_basket == null)
+                return null;
             foreach (PurchasedBasketDAL basket in store_basket._PurchasedBaskets)
             {
                 history.Add(new Tuple<DateTime, ShoppingBasketDAL>(basket._purchaseDate, basket._PurchasedBasket));
@@ -495,6 +546,13 @@ namespace MarketWeb.Server.DataLayer
             context.RegisteredDALs.Find(receiverUsername)._adminMessages.Add(msg);
             context.SaveChanges();
         }
+
+        public bool StoreExists(string storeName)
+        {
+            return context.StoreDALs.Find(storeName) != null;
+        }
+
+
 
         
     }

@@ -368,14 +368,32 @@ namespace MarketWeb.Service
             return response;
         }
         [HttpPost("AddItemToStoreStock")]
-        public Response AddItemToStoreStock([FromHeader] String Authorization, String storeName, int itemID, String name, double price, String description, String category, int quantity)
+        public Response AddItemToStoreStock([FromHeader] String Authorization, String storeName, String name, double price, String description, String category, int quantity)
         {//II.4.1
             Response response;
             try
             {
                 String authToken = parseAutherization(Authorization);
-                _logger.Info($"Add Item To Stock called with parameters: authToken={authToken}, storeName={storeName}, itemID={itemID}, name={name}, price={price}, description={description}, category={category}, quantity={quantity}.");
-                _market.AddItemToStoreStock(authToken, storeName, itemID, name, price, description, category, quantity);
+                _logger.Info($"Add Item To Stock called with parameters: authToken={authToken}, storeName={storeName}, name={name}, price={price}, description={description}, category={category}, quantity={quantity}.");
+                _market.AddItemToStoreStock(authToken, storeName, name, price, description, category, quantity);
+                response = new Response();
+                _logger.Info($"SUCCESSFULY executed Add Item To Stock.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        [HttpPost("AddItemToStoreStock")]
+        public Response AddItemToStoreStock([FromHeader] String Authorization, String storeName,int id, String name, double price, String description, String category, int quantity)
+        {//II.4.1
+            Response response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Add Item To Stock called with parameters: authToken={authToken}, storeName={storeName}, name={name}, price={price}, description={description}, category={category}, quantity={quantity}.");
+                _market.AddItemToStoreStock(authToken, storeName, id,  name, price, description, category, quantity);
                 response = new Response();
                 _logger.Info($"SUCCESSFULY executed Add Item To Stock.");
             }
@@ -1326,14 +1344,14 @@ namespace MarketWeb.Service
             String desc3 = "some other other item description goes here.";
             int quantity3 = 3;
             
-            AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
+            AddItemToStoreStock(auth1, storeName1, itemName1, price1, desc1, category1, quantity1);
             
-            AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
-            AddItemToStoreStock(auth1, storeName1, itemID3, itemName3, price3, desc3, category3, quantity3);
+            AddItemToStoreStock(auth1, storeName1, itemName2, price2, desc2, category2, quantity2);
+            AddItemToStoreStock(auth1, storeName1, itemName3, price3, desc3, category3, quantity3);
 
-            AddItemToStoreStock(auth2, storeName2, itemID1, itemName1, price1, desc1, category1, quantity1);
-            AddItemToStoreStock(auth2, storeName2, itemID2, itemName2, price2, desc2, category2, quantity2);
-            AddItemToStoreStock(auth2, storeName2, itemID3, itemName3, price3, desc3, category3, quantity3);
+            AddItemToStoreStock(auth2, storeName2, itemName1, price1, desc1, category1, quantity1);
+            AddItemToStoreStock(auth2, storeName2, itemName2, price2, desc2, category2, quantity2);
+            AddItemToStoreStock(auth2, storeName2, itemName3, price3, desc3, category3, quantity3);
 
             DateTime expiration = DateTime.Today.AddDays(10);
             int minAmount = 5;
