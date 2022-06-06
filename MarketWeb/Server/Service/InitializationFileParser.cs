@@ -78,7 +78,7 @@ namespace MarketWeb.Server.Service
             methods["ExitSystem"] = ParseExitSystem;
             methods["AppointSystemAdmin"] = ParseAppointSystemAdmin;
             methods["GetItem"] = ParseGetItem;
-            //DISCOUNT STUFF IS MISSING CURRENTLY
+            methods["AddStoreDiscount"] = ParseAddStoreDiscount;
         }
 
         public void ParseInitializationFile()
@@ -735,6 +735,16 @@ namespace MarketWeb.Server.Service
             int authIndex = ParseAuthIndex(args[0], MethodName);
             int itemid = ParseInt(args[2], MethodName);
             Response response = api.GetItem(tokens[authIndex - 1], args[1], itemid);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseAddStoreDiscount(String args_)
+        {
+            String MethodName = "AddStoreDiscount";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.AddStoreDiscount(tokens[authIndex - 1], args[1], args[2], args[3]);
             if (response.ErrorOccured)
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
