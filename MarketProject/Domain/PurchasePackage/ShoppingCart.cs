@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Domain
 {
-    public class ShoppingCart : ISearchablePriceable
+    public class ShoppingCart
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual ICollection<ShoppingBasket> _shoppingBaskets { get; set; }
@@ -123,7 +123,7 @@ namespace MarketProject.Domain
         {
             String cartReceipt = "";
             ////////////////////////
-            foreach(ShoppingBasket shoppingBasket in _shoppingBaskets)
+            foreach (ShoppingBasket shoppingBasket in _shoppingBaskets)
             {
                 cartReceipt += shoppingBasket.GetBasketReceipt() + "\n";
             }

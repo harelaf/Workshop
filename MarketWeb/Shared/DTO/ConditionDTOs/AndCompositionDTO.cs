@@ -11,6 +11,7 @@ namespace MarketWeb.Shared.DTO
 
         public bool Negative => _negative;
         public List<IConditionDTO> Conditions => _conditions;
+        public int ObjType { get => 0; set { return; } }
         public AndCompositionDTO(bool negative, List<IConditionDTO> conditions)
         {
             _negative = negative;

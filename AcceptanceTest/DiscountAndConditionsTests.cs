@@ -37,110 +37,111 @@ namespace AcceptanceTest
             store_founder_token = (marketAPI.Login(store_founder_token, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(store_founder_token, storeName);
         }
-        [TestMethod]
-        public void GetTotalDiscount_noCondition_success()
-        {
-            double percentage_to_subtract = 10;
-            int amount = 10;
-            double price = 1;
-            int quantity = 100;
-            String desc = "an item";
-            ItemDiscountDTO dis = new ItemDiscountDTO(percentage_to_subtract, itemName, null, expiration);
-            marketAPI.AddStoreDiscount(store_founder_token, storeName, dis);
-            bool ans2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity).ErrorOccured;
-            bool ans = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount).ErrorOccured;
+        
+        //[TestMethod]
+        //public void GetTotalDiscount_noCondition_success()
+        //{
+            //double percentage_to_subtract = 10;
+            //int amount = 10;
+            //double price = 1;
+            //int quantity = 100;
+            //String desc = "an item";
+            //ItemDiscountDTO dis = new ItemDiscountDTO(percentage_to_subtract, itemName, null, expiration);
+            //marketAPI.AddStoreDiscount(store_founder_token, storeName, dis);
+            //bool ans2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity).ErrorOccured;
+            //bool ans = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount).ErrorOccured;
 
-            //act
-            double expected = 9.0;
-            double actual = marketAPI.CalcCartActualPrice(guest_VisitorToken).Value;
+            ////act
+            //double expected = 9.0;
+            //double actual = marketAPI.CalcCartActualPrice(guest_VisitorToken).Value;
 
-            //Assert
-            Assert.AreEqual(expected, actual);
-        }
-        [TestMethod]
-        public void GetTotalDiscount_withCondition_success()
-        {
-            double percentage_to_subtract = 10;
-            int amount = 10;
-            double price = 1;
-            int quantity = 100;
-            String desc = "an item";
-            IConditionDTO itemCondition = new SearchItemConditionDTO(itemName, 5, 15, false);
-            IConditionDTO hourCondition = new HourConditionDTO((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
-            List<IConditionDTO> condLst = new List<IConditionDTO>();
-            condLst.Add(itemCondition);
-            condLst.Add(hourCondition);
-            IConditionDTO andCondition = new AndCompositionDTO(false, condLst);
-            ItemDiscountDTO dis = new ItemDiscountDTO(percentage_to_subtract, itemName, andCondition, expiration);
-            marketAPI.AddStoreDiscount(store_founder_token, storeName, dis);
-            bool ans2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity).ErrorOccured;
-            bool ans = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount).ErrorOccured;
+            ////Assert
+            //Assert.AreEqual(expected, actual);
+        //}
+        //[TestMethod]
+        //public void GetTotalDiscount_withCondition_success()
+        //{
+        //    double percentage_to_subtract = 10;
+        //    int amount = 10;
+        //    double price = 1;
+        //    int quantity = 100;
+        //    String desc = "an item";
+        //    IConditionDTO itemCondition = new SearchItemConditionDTO(itemName, 5, 15, false);
+        //    IConditionDTO hourCondition = new HourConditionDTO((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
+        //    List<IConditionDTO> condLst = new List<IConditionDTO>();
+        //    condLst.Add(itemCondition);
+        //    condLst.Add(hourCondition);
+        //    IConditionDTO andCondition = new AndCompositionDTO(false, condLst);
+        //    ItemDiscountDTO dis = new ItemDiscountDTO(percentage_to_subtract, itemName, andCondition, expiration);
+        //    marketAPI.AddStoreDiscount(store_founder_token, storeName, dis);
+        //    bool ans2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity).ErrorOccured;
+        //    bool ans = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount).ErrorOccured;
 
-            //act
-            double expected = 9.0;
-            double actual = marketAPI.CalcCartActualPrice(guest_VisitorToken).Value;
+        //    //act
+        //    double expected = 9.0;
+        //    double actual = marketAPI.CalcCartActualPrice(guest_VisitorToken).Value;
 
-            //Assert
-            Assert.AreEqual(expected, actual);
-        }
-        [TestMethod]
-        public void GetTotalDiscount_withConditionFalse_fail()
-        {
-            double percentage_to_subtract = 10;
-            int amount = 10;
-            double price = 1;
-            int quantity = 100;
-            String desc = "an item";
-            IConditionDTO itemCondition = new SearchItemConditionDTO(itemName, 5, 15, true);
-            IConditionDTO hourCondition = new HourConditionDTO((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
-            List<IConditionDTO> condLst = new List<IConditionDTO>();
-            condLst.Add(itemCondition);
-            condLst.Add(hourCondition);
-            IConditionDTO andCondition = new AndCompositionDTO(false, condLst);
-            ItemDiscountDTO dis = new ItemDiscountDTO(percentage_to_subtract, itemName, andCondition, expiration);
-            marketAPI.AddStoreDiscount(store_founder_token, storeName, dis);
-            bool ans2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity).ErrorOccured;
-            bool ans = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount).ErrorOccured;
+        //    //Assert
+        //    Assert.AreEqual(expected, actual);
+        //}
+        //[TestMethod]
+        //public void GetTotalDiscount_withConditionFalse_fail()
+        //{
+        //    double percentage_to_subtract = 10;
+        //    int amount = 10;
+        //    double price = 1;
+        //    int quantity = 100;
+        //    String desc = "an item";
+        //    IConditionDTO itemCondition = new SearchItemConditionDTO(itemName, 5, 15, true);
+        //    IConditionDTO hourCondition = new HourConditionDTO((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
+        //    List<IConditionDTO> condLst = new List<IConditionDTO>();
+        //    condLst.Add(itemCondition);
+        //    condLst.Add(hourCondition);
+        //    IConditionDTO andCondition = new AndCompositionDTO(false, condLst);
+        //    ItemDiscountDTO dis = new ItemDiscountDTO(percentage_to_subtract, itemName, andCondition, expiration);
+        //    marketAPI.AddStoreDiscount(store_founder_token, storeName, dis);
+        //    bool ans2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity).ErrorOccured;
+        //    bool ans = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount).ErrorOccured;
 
-            //act
-            double expected = 10.0;
-            double actual = marketAPI.CalcCartActualPrice(guest_VisitorToken).Value;
+        //    //act
+        //    double expected = 10.0;
+        //    double actual = marketAPI.CalcCartActualPrice(guest_VisitorToken).Value;
 
-            //Assert
-            Assert.AreEqual(expected, actual);
-        }
-        [TestMethod]
-        public void GetTotalDiscount_withMaxDiscount_success()
-        {
-            double percentageToSubtract = 10;
-            double priceToSubtract = 2;
-            int amount = 10;
-            double price = 1;
-            int quantity = 100;
-            String desc = "an item";
-            IConditionDTO itemCondition = new SearchItemConditionDTO(itemName, 5, 15, false);
-            IConditionDTO hourCondition = new HourConditionDTO((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
-            List<IConditionDTO> condLst = new List<IConditionDTO>();
-            condLst.Add(itemCondition);
-            condLst.Add(hourCondition);
-            IConditionDTO andCondition = new AndCompositionDTO(false, condLst);
-            ItemDiscountDTO itemDis = new ItemDiscountDTO(percentageToSubtract, itemName, andCondition, expiration);
-            IConditionDTO categoryCond = new SearchCategoryConditionDTO(category, 5, 15, false);
-            NumericDiscountDTO numDis = new NumericDiscountDTO(priceToSubtract, categoryCond, expiration);
-            List<IDiscountDTO> disLst = new List<IDiscountDTO>();
-            disLst.Add(itemDis);
-            disLst.Add(numDis);
-            MaxDiscountDTO max = new MaxDiscountDTO(disLst, null);
-            marketAPI.AddStoreDiscount(store_founder_token, storeName, max);
-            bool ans2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity).ErrorOccured;
-            bool ans = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount).ErrorOccured;
+        //    //Assert
+        //    Assert.AreEqual(expected, actual);
+        //}
+        //[TestMethod]
+        //public void GetTotalDiscount_withMaxDiscount_success()
+        //{
+        //    double percentageToSubtract = 10;
+        //    double priceToSubtract = 2;
+        //    int amount = 10;
+        //    double price = 1;
+        //    int quantity = 100;
+        //    String desc = "an item";
+        //    IConditionDTO itemCondition = new SearchItemConditionDTO(itemName, 5, 15, false);
+        //    IConditionDTO hourCondition = new HourConditionDTO((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
+        //    List<IConditionDTO> condLst = new List<IConditionDTO>();
+        //    condLst.Add(itemCondition);
+        //    condLst.Add(hourCondition);
+        //    IConditionDTO andCondition = new AndCompositionDTO(false, condLst);
+        //    ItemDiscountDTO itemDis = new ItemDiscountDTO(percentageToSubtract, itemName, andCondition, expiration);
+        //    IConditionDTO categoryCond = new SearchCategoryConditionDTO(category, 5, 15, false);
+        //    NumericDiscountDTO numDis = new NumericDiscountDTO(priceToSubtract, categoryCond, expiration);
+        //    List<IDiscountDTO> disLst = new List<IDiscountDTO>();
+        //    disLst.Add(itemDis);
+        //    disLst.Add(numDis);
+        //    MaxDiscountDTO max = new MaxDiscountDTO(disLst, null);
+        //    marketAPI.AddStoreDiscount(store_founder_token, storeName, max);
+        //    bool ans2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity).ErrorOccured;
+        //    bool ans = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount).ErrorOccured;
 
-            //act
-            double expected = 8.0;
-            double actual = marketAPI.CalcCartActualPrice(guest_VisitorToken).Value;
+        //    //act
+        //    double expected = 8.0;
+        //    double actual = marketAPI.CalcCartActualPrice(guest_VisitorToken).Value;
 
-            //Assert
-            Assert.AreEqual(expected, actual);
-        }
+        //    //Assert
+        //    Assert.AreEqual(expected, actual);
+        //}
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.Domain
@@ -235,6 +235,11 @@ namespace MarketWeb.Server.Domain
         public void AddStoreDiscount(String storeName, Discount discount)
         {
             GetStore(storeName).AddDiscount(discount);
+        }
+
+        public void AddStorePurchasePolicy(string storeName, Condition condition)
+        {
+            //GetStore(storeName).AddPurchasePolicy(condition);
         }
 
         public bool AddStoreManager(StoreManager newManager, string storeName)

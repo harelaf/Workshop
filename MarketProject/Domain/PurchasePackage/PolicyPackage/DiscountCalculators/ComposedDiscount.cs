@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public abstract class ComposedDiscount : Discount
     {
@@ -17,14 +17,12 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
                 _discountList = value;
             }
         }
-
         public ComposedDiscount(List<Discount> discounts, Condition condition) : base(condition)
         {
             lock(_discountList){
                 _discountList = discounts;
             }
         }
-
         public ComposedDiscount(List<Discount> discounts) : base()
         {
             lock (_discountList)

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using MarketWeb.Shared.DTO;
 using MarketWeb.Shared;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Server.Domain;
 
 namespace MarketWeb.Service
 {
-    public static class DTOtranslator
+    public class DTOtranslator
     {
 
         //private static DTOtranslator instance = null;
         //private DTOtranslator() {}
-        //public static static object getInstance()
+        //public static object getInstance()
         //{
         //    if(instance == null)
         //        lock (instance)
@@ -23,14 +23,14 @@ namespace MarketWeb.Service
         //        }
         //    return instance;
         //}
-        public static DiscountCondition translateCondition(IConditionDTO cond)
+
+        // ====================== from DTO translation for Conditions ======================
+        public Condition translateCondition(IConditionDTO cond)
         {
             if (cond == null)
-			{
                 return null;
-			}
             Type type = cond.GetType();
-            if(type.Equals(typeof(AndCompositionDTO)))
+            if (type.Equals(typeof(AndCompositionDTO)))
                 return translate((AndCompositionDTO)cond);
             if (type.Equals(typeof(DayOnWeekConditionDTO)))
                 return translate((DayOnWeekConditionDTO)cond);
@@ -48,8 +48,146 @@ namespace MarketWeb.Service
                 return translate((XorCompositionDTO)cond);
             else throw new NotImplementedException();
         }
-        public static Discount translateDiscount(IDiscountDTO dis)
+        public IConditionDTO conditionToDTO(Condition cond)
         {
+            if (cond == null)
+                return null;
+            Type type = cond.GetType();
+            if (type.Equals(typeof(AndComposition)))
+                return toDTO((AndComposition)cond);
+            if (type.Equals(typeof(DayOnWeekCondition)))
+                return toDTO((DayOnWeekCondition)cond);
+            if (type.Equals(typeof(HourCondition)))
+                return toDTO((HourCondition)cond);
+            if (type.Equals(typeof(OrComposition)))
+                return toDTO((OrComposition)cond);
+            if (type.Equals(typeof(PriceableCondition)))
+                return toDTO((PriceableCondition)cond);
+            if (type.Equals(typeof(SearchCategoryCondition)))
+                return toDTO((SearchCategoryCondition)cond);
+            if (type.Equals(typeof(SearchItemCondition)))
+                return toDTO((SearchItemCondition)cond);
+            if (type.Equals(typeof(XorComposition)))
+                return toDTO((XorComposition)cond);
+            else throw new NotImplementedException();
+        }
+
+        private DayOnWeekConditionDTO toDTO(DayOnWeekCondition cond)
+        {
+            return new DayOnWeekConditionDTO(cond.DayOnWeek, cond.ToNegative);
+        }
+
+        private HourConditionDTO toDTO(HourCondition cond)
+        {
+            return new HourConditionDTO(cond.MinHour, cond.MaxHour, cond.ToNegative);
+        }
+
+        private OrCompositionDTO toDTO(OrComposition cond)
+        {
+            List<IConditionDTO> conditions = new List<IConditionDTO>();
+            foreach (Condition innerCond in cond.ConditionList)
+                conditions.Add(conditionToDTO(innerCond));
+            return new OrCompositionDTO(cond.ToNegative, conditions);
+        }
+
+        private PriceableConditionDTO toDTO(PriceableCondition cond)
+        {
+            return new PriceableConditionDTO(cond.KeyWord, cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private SearchCategoryConditionDTO toDTO(SearchCategoryCondition cond)
+        {
+            return new SearchCategoryConditionDTO(cond.KeyWord, cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private SearchItemConditionDTO toDTO(SearchItemCondition cond)
+        {
+            return new SearchItemConditionDTO(cond.KeyWord, cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private XorCompositionDTO toDTO(XorComposition cond)
+        {
+            List<IConditionDTO> conditions = new List<IConditionDTO>();
+            foreach (Condition innerCond in cond.ConditionList)
+                conditions.Add(conditionToDTO(innerCond));
+            return new XorCompositionDTO(cond.ToNegative, conditions);
+        }
+
+        private AndCompositionDTO toDTO(AndComposition cond)
+        {
+            List<IConditionDTO> conditions = new List<IConditionDTO>();
+            foreach (Condition innerCond in cond.ConditionList)
+                conditions.Add(conditionToDTO(innerCond));
+            return new AndCompositionDTO(cond.ToNegative, conditions);
+        }
+
+        public AndComposition translate(AndCompositionDTO condition_dto)
+        {
+            bool negative = condition_dto.Negative;
+            List<Condition> conditions = new List<Condition>();
+            foreach (IConditionDTO cond in condition_dto.Conditions)
+                conditions.Add(translateCondition(cond));
+            return new AndComposition(negative, conditions);
+        }
+        public DayOnWeekCondition translate(DayOnWeekConditionDTO condition_dto)
+        {
+            String day = condition_dto.DayOnWeek;
+            bool negative = condition_dto.Negative;
+            return new DayOnWeekCondition(day, negative);
+        }
+        public Condition translate(HourConditionDTO condition_dto)
+        {
+            int minHour = condition_dto.MinHour;
+            int maxHour = condition_dto.MaxHour;
+            bool negative = condition_dto.Negative;
+            return new HourCondition(minHour, maxHour, negative);
+        }
+        public Condition translate(OrCompositionDTO condition_dto)
+        {
+            bool negative = condition_dto.Negative;
+            List<Condition> conditions = new List<Condition>();
+            foreach (IConditionDTO cond in condition_dto.Conditions)
+                conditions.Add(translateCondition(cond));
+            return new OrComposition(negative, conditions);
+        }
+        public Condition translate(PriceableConditionDTO condition_dto)
+        {
+            String keyWord = condition_dto.KeyWord;
+            int minAmount = condition_dto.MinAmount;
+            int maxAmount = condition_dto.MaxAmount;
+            bool negative = condition_dto.Negative;
+            return new PriceableCondition(keyWord, minAmount, maxAmount, negative);
+        }
+        public Condition translate(SearchCategoryConditionDTO condition_dto)
+        {
+            String keyWord = condition_dto.KeyWord;
+            int minAmount = condition_dto.MinAmount;
+            int maxAmount = condition_dto.MaxAmount;
+            bool negative = condition_dto.Negative;
+            return new SearchCategoryCondition(keyWord, minAmount, maxAmount, negative);
+        }
+        public Condition translate(SearchItemConditionDTO condition_dto)
+        {
+            String keyWord = condition_dto.KeyWord;
+            int minAmount = condition_dto.MinAmount;
+            int maxAmount = condition_dto.MaxAmount;
+            bool negative = condition_dto.Negative;
+            return new SearchItemCondition(keyWord, minAmount, maxAmount, negative);
+        }
+        public Condition translate(XorCompositionDTO condition_dto)
+        {
+            bool negative = condition_dto.Negative;
+            List<Condition> conditions = new List<Condition>();
+            foreach (IConditionDTO cond in condition_dto.Conditions)
+                conditions.Add(translateCondition(cond));
+            return new XorComposition(negative, conditions);
+        }
+
+        // ====================== from DTO translation for Discounts ======================
+        public Discount translateDiscount(IDiscountDTO dis)
+        {
+            if (dis == null)
+                return null;
             Type type = dis.GetType();
             if (type.Equals(typeof(AllProductsDiscountDTO)))
                 return translate((AllProductsDiscountDTO)dis);
@@ -65,119 +203,78 @@ namespace MarketWeb.Service
                 return translate((PlusDiscountDTO)dis);
             else throw new NotImplementedException($"need an implementation for {type} discount type.");
         }
-        public static AndComposition translate(AndCompositionDTO condition_dto)
+        public AtomicDiscountDTO discountToDTO(Discount dis)
         {
-            bool negative = condition_dto.Negative;
-            List<DiscountCondition> conditions = new List<DiscountCondition>();
-            foreach (IConditionDTO cond in condition_dto.Conditions)
-                conditions.Add(translateCondition(cond));
-            return new AndComposition(negative, conditions);
+            if (dis == null)
+                return null;
+            Type type = dis.GetType();
+            if (type.Equals(typeof(AllProductsDiscount)))
+                return toDTO((AllProductsDiscount)dis);
+            if (type.Equals(typeof(CategoryDiscount)))
+                return toDTO((CategoryDiscount)dis);
+            if (type.Equals(typeof(ItemDiscount)))
+                return toDTO((ItemDiscount)dis);
+            if (type.Equals(typeof(NumericDiscount)))
+                return toDTO((NumericDiscount)dis);
+            //if (type.Equals(typeof(MaxDiscount)))
+            //    return toDTO((MaxDiscount)dis);
+            //if (type.Equals(typeof(PlusDiscount)))
+            //    return toDTO((PlusDiscount)dis);
+            else throw new NotImplementedException($"need an implementation for {type} discount type.");
         }
-        public static DayOnWeekCondition translate(DayOnWeekConditionDTO condition_dto)
-        {
-            String day = condition_dto.DayOnWeek;
-            bool negative = condition_dto.Negative;
-            return new DayOnWeekCondition(day, negative);
-        }
-        public static DiscountCondition translate(HourConditionDTO condition_dto)
-        {
-            int minHour = condition_dto.MinHour;
-            int maxHour = condition_dto.MaxHour;
-            bool negative = condition_dto.Negative;
-            return new HourCondition(minHour, maxHour, negative);
-        }
-        public static DiscountCondition translate(OrCompositionDTO condition_dto)
-        {
-            bool negative = condition_dto.Negative;
-            List<DiscountCondition> conditions = new List<DiscountCondition>();
-            foreach (IConditionDTO cond in condition_dto.Conditions)
-                conditions.Add(translateCondition(cond));
-            return new OrComposition(negative, conditions);
-        }
-        public static DiscountCondition translate(PriceableConditionDTO condition_dto)
-        {
-            String keyWord = condition_dto.KeyWord;
-            int minAmount = condition_dto.MinAmount;
-            int maxAmount = condition_dto.MaxAmount;
-            bool negative = condition_dto.Negative;
-            return new PriceableCondition(keyWord, minAmount, maxAmount, negative);
-        }
-        public static DiscountCondition translate(SearchCategoryConditionDTO condition_dto)
-        {
-            String keyWord = condition_dto.KeyWord;
-            int minAmount = condition_dto.MinAmount;
-            int maxAmount = condition_dto.MaxAmount;
-            bool negative = condition_dto.Negative;
-            return new SearchCategoryCondition(keyWord, minAmount, maxAmount, negative);
-        }
-        public static DiscountCondition translate(SearchItemConditionDTO condition_dto)
-        {
-            String keyWord = condition_dto.KeyWord;
-            int minAmount = condition_dto.MinAmount;
-            int maxAmount = condition_dto.MaxAmount;
-            bool negative = condition_dto.Negative;
-            return new SearchItemCondition(keyWord, minAmount, maxAmount, negative);
-        }
-        public static DiscountCondition translate(XorCompositionDTO condition_dto)
-        {
-            bool negative = condition_dto.Negative;
-            List<DiscountCondition> conditions = new List<DiscountCondition>();
-            foreach (IConditionDTO cond in condition_dto.Conditions)
-                conditions.Add(translateCondition(cond));
-            return new XorComposition(negative, conditions);
-        }
-        public static Discount translate(AllProductsDiscountDTO discount_dto)
+        public Discount translate(AllProductsDiscountDTO discount_dto)
         {
             double percentage = discount_dto.Percentage;
-            DiscountCondition condition = translateCondition(discount_dto.Condition);
+            Condition condition = translateCondition(discount_dto.Condition);
             DateTime expiration = discount_dto.Expiration;
             return new AllProductsDiscount(percentage, condition, expiration);
         }
-        public static Discount translate(CategoryDiscountDTO discount_dto)
+        public Discount translate(CategoryDiscountDTO discount_dto)
         {
             double percentage_to_subtract = discount_dto.Percentage_to_subtract;
             String category = discount_dto.Category;
-            DiscountCondition condition = translateCondition(discount_dto.Condition);
+            Condition condition = translateCondition(discount_dto.Condition);
             DateTime expiration = discount_dto.Expiration;
             return new CategoryDiscount(percentage_to_subtract, category, condition, expiration);
         }
-        public static Discount translate(ItemDiscountDTO discount_dto)
+        public Discount translate(ItemDiscountDTO discount_dto)
         {
             double percentage_to_subtract = discount_dto.PercentageToSubtract;
             String category = discount_dto.ItemName;
-            DiscountCondition condition = translateCondition(discount_dto.Condition);
+            Condition condition = translateCondition(discount_dto.Condition);
             DateTime expiration = discount_dto.Expiration;
             return new ItemDiscount(percentage_to_subtract, category, condition, expiration);
         }
-        public static Discount translate(MaxDiscountDTO discount_dto)
+        public Discount translate(MaxDiscountDTO discount_dto)
         {
             List<Discount> discount_list = new List<Discount>();
             foreach (IDiscountDTO discountDTO in discount_dto.Discounts)
                 discount_list.Add(translateDiscount(discountDTO));
-            DiscountCondition condition = translateCondition(discount_dto.Condition);
+            Condition condition = translateCondition(discount_dto.Condition);
             return new MaxDiscount(discount_list, condition);
         }
-        public static Discount translate(NumericDiscountDTO discount_dto)
+        public Discount translate(NumericDiscountDTO discount_dto)
         {
             double priceToSubtract = discount_dto.PriceToSubtract;
-            DiscountCondition condition = translateCondition(discount_dto.Condition);
+            Condition condition = translateCondition(discount_dto.Condition);
             DateTime expiration = discount_dto.Expiration;
             return new NumericDiscount(priceToSubtract, condition, expiration);
         }
-        public static Discount translate(PlusDiscountDTO discount_dto)
+        public Discount translate(PlusDiscountDTO discount_dto)
         {
             List<Discount> discounts = new List<Discount>();
             foreach (IDiscountDTO discountDTO in discount_dto.Discounts)
                 discounts.Add(translateDiscount(discountDTO));
-            DiscountCondition condition = translateCondition(discount_dto.Condition);
+            Condition condition = translateCondition(discount_dto.Condition);
             return new PlusDiscount(discounts, condition);
         }
-        public static AdminMessageToRegisteredDTO toDTO(AdminMessageToRegistered msg)
+
+        // ====================== to DTO convertion for all dto's ======================
+        public AdminMessageToRegisteredDTO toDTO(AdminMessageToRegistered msg)
         {
             return new AdminMessageToRegisteredDTO(msg.ReceiverUsername, msg.SenderUsername, msg.Title, msg.Message);
         }
-
-        public static ItemDTO toDTO(Item itm, String storeName)
+        public ItemDTO toDTO(Item itm, String storeName)
         {
             return new ItemDTO(
                 itm.ItemID,
@@ -188,11 +285,11 @@ namespace MarketWeb.Service
                 toDTO(itm.Rating),
                 storeName);
         }
-        public static RatingDTO toDTO(Rating rate)
+        public RatingDTO toDTO(Rating rate)
         {
             return new RatingDTO(rate.Ratings);
         }
-        public static MessageToStoreDTO toDTO(MessageToStore messageToStore)
+        public MessageToStoreDTO toDTO(MessageToStore messageToStore)
         {
             return new MessageToStoreDTO(
                 messageToStore.StoreName,
@@ -203,7 +300,7 @@ namespace MarketWeb.Service
                 messageToStore.Replier,
                 messageToStore.Id);
         }
-        public static NotifyMessageDTO toDTO(NotifyMessage notifyMessage)
+        public NotifyMessageDTO toDTO(NotifyMessage notifyMessage)
         {
             return new NotifyMessageDTO(
                 notifyMessage.StoreName,
@@ -212,11 +309,11 @@ namespace MarketWeb.Service
                 notifyMessage.ReceiverUsername,
                 notifyMessage.Id);
         }
-        public static PurchasedCartDTO toDTO(DateTime date, ShoppingCart shoppingCart)
+        public PurchasedCartDTO toDTO(DateTime date, ShoppingCart shoppingCart)
         {
             return new PurchasedCartDTO(date, toDTO(shoppingCart));
         }
-        public static RegisteredDTO toDTO(Registered registered)
+        public RegisteredDTO toDTO(Registered registered)
         {
             ICollection<AdminMessageToRegisteredDTO> adminMessages = new List<AdminMessageToRegisteredDTO>();
             ICollection<MessageToStoreDTO> repliedMessages = new List<MessageToStoreDTO>();
@@ -228,8 +325,8 @@ namespace MarketWeb.Service
                 repliedMessages.Add(toDTO(msg));
             foreach (NotifyMessage msg in registered.Notifcations)
                 notifications.Add(toDTO(msg));
-            foreach (KeyValuePair<int, Complaint> row in registered.FiledComplaints)
-                filedComplaints[row.Key] = toDTO(row.Value);
+            foreach (KeyValuePair<int, Complaint> pair in registered.FiledComplaints)
+                filedComplaints.Add(pair.Key, toDTO(pair.Value));
             return new RegisteredDTO(
                 registered.Username,
                 toDTO(registered.ShoppingCart),
@@ -239,42 +336,80 @@ namespace MarketWeb.Service
                 filedComplaints,
                 registered._birthDate);
         }
-        public static ComplaintDTO toDTO(Complaint complaint)
+
+        public ComplaintDTO toDTO(Complaint msg)
         {
-            return new ComplaintDTO(complaint.ID, complaint.CartID, complaint.GetComplainer(), complaint.Message, complaint.Response);
+            return new ComplaintDTO(msg.ID, msg.CartID, msg.GetComplainer(), msg.Message, msg.Response);
         }
-        public static ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
+
+        public ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {
-            Dictionary<int, Tuple<ItemDTO, int>> items = new Dictionary<int, Tuple<ItemDTO, int>>();
-            foreach (Item key in shoppingBasket.Items.Keys)
+            Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = new Dictionary<int ,Tuple<ItemDTO, DiscountDetailsDTO>>();
+            List<NumericDiscountDTO> additionalDiscounts = new List<NumericDiscountDTO>();
+            foreach (KeyValuePair<Item, DiscountDetails> entry in shoppingBasket.Items)
             {
-                ItemDTO dto = toDTO(key, shoppingBasket._store.StoreName);
-                items[dto.ItemID] = new Tuple<ItemDTO, int>(dto, shoppingBasket.Items[key]);
+                ItemDTO dto = toDTO(entry.Key, shoppingBasket.Store().StoreName);
+                items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(entry.Value, entry.Key._price));
             }
-           
-            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items);
+            foreach(NumericDiscount dis in shoppingBasket.GetAdditionalDiscounts())
+                additionalDiscounts.Add(toDTO(dis));
+            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts);
         }
-        public static ShoppingCartDTO toDTO(ShoppingCart shoppingCart)
+
+        public DiscountDetailsDTO toDTO(DiscountDetails discountDetails, double itemPrice)
+        {
+            List<String> disList = new List<String>();
+            foreach (AtomicDiscount discount in discountDetails.DiscountList)
+                disList.Add(discount.GetDiscountString(0));
+            double actualPrice = discountDetails.calcPriceFromCurrPrice(itemPrice);
+            return new DiscountDetailsDTO(
+                discountDetails.Amount,
+                disList,
+                actualPrice);
+        }
+
+        public ItemDiscountDTO toDTO(ItemDiscount discount)
+        {
+            return new ItemDiscountDTO(discount.PercentageToSubtract, discount.ItemName, conditionToDTO(discount.Condition), discount.Expiration);
+        }
+
+        public AllProductsDiscountDTO toDTO(AllProductsDiscount discount)
+        {
+            return new AllProductsDiscountDTO(discount.PercentageToSubtract, conditionToDTO(discount.Condition), discount.Expiration);
+        }
+        public CategoryDiscountDTO toDTO(CategoryDiscount discount)
+        {
+            return new CategoryDiscountDTO(discount.PercentageToSubtract, discount.Category, conditionToDTO(discount.Condition), discount.Expiration);
+        }
+        public NumericDiscountDTO toDTO(NumericDiscount discount)
+        {
+            return new NumericDiscountDTO(discount.PriceToSubtract, conditionToDTO(discount.Condition), discount.Expiration);
+        }
+        public MaxDiscountDTO toDTO(MaxDiscount dis)
+        {
+            throw new NotImplementedException();
+        }
+        public ShoppingCartDTO toDTO(ShoppingCart shoppingCart)
         {
             ICollection<ShoppingBasketDTO> _DTObaskets = new List<ShoppingBasketDTO>();
             foreach (ShoppingBasket basket in shoppingCart._shoppingBaskets)
                 _DTObaskets.Add(toDTO(basket));
             return new ShoppingCartDTO(_DTObaskets);
         }
-        public static StockDTO toDTO(Stock stock, string storeName)
+        public StockDTO toDTO(Stock stock, String storeName)
         {
             Dictionary<int, Tuple<ItemDTO, int>> itemAndAmount = new Dictionary<int, Tuple<ItemDTO, int>>();
-            foreach (Item key in stock.Items.Keys)
+            foreach (KeyValuePair<Item, int> entry in stock.Items)
             {
-                ItemDTO dto = toDTO(key, storeName);
-                itemAndAmount[dto.ItemID] = new Tuple<ItemDTO, int>(dto, stock.Items[key]);
+                ItemDTO dto = toDTO(entry.Key, storeName);
+                itemAndAmount[entry.Key.ItemID] = new Tuple<ItemDTO, int>(dto, entry.Value);
             }
             return new StockDTO(itemAndAmount);
         }
-        public static StoreDTO toDTO(Store store)
+        public StoreDTO toDTO(Store store)
         {
             List<MessageToStoreDTO> messagesToStore = new List<MessageToStoreDTO>();
-            foreach (MessageToStore msg in store.MessagesToStore)
+            foreach (MessageToStore msg in store.MessagesToStore) //Might be in reverse order...
                 messagesToStore.Add(toDTO(msg));
             List<StoreManagerDTO> managers = new List<StoreManagerDTO>();
             foreach (StoreManager manager in store.GetManagers())
@@ -294,11 +429,11 @@ namespace MarketWeb.Service
                 owners,
                 store.State);
         }
-        public static StoreFounderDTO toDTO(StoreFounder storeFounder)
+        public StoreFounderDTO toDTO(StoreFounder storeFounder)
         {
-            return new StoreFounderDTO(storeFounder.Username, storeFounder.StoreName);
+            return new StoreFounderDTO(storeFounder.StoreName, storeFounder.Username);
         }
-        public static StoreManagerDTO toDTO(StoreManager storeManager)
+        public StoreManagerDTO toDTO(StoreManager storeManager)
         {
             return new StoreManagerDTO(
                 new HashSet<Operation>(storeManager.operations),
@@ -306,31 +441,30 @@ namespace MarketWeb.Service
                 storeManager.StoreName,
                 storeManager.Appointer);
         }
-        public static StoreOwnerDTO toDTO(StoreOwner storeOwner)
+        public StoreOwnerDTO toDTO(StoreOwner storeOwner)
         {
             return new StoreOwnerDTO(
                 storeOwner.operations,
-                storeOwner.Username,
                 storeOwner.StoreName,
+                storeOwner.Username,
                 storeOwner.Appointer);
         }
-        public static PurchasePolicyDTO toDTO(PurchasePolicy policy)
+        public PurchasePolicyDTO toDTO(PurchasePolicy policy)
         {
             return new PurchasePolicyDTO();
         }
-        public static DiscountPolicyDTO toDTO(DiscountPolicy policy)
+        public DiscountPolicyDTO toDTO(DiscountPolicy policy)
         {
-            return new DiscountPolicyDTO();
+            return new DiscountPolicyDTO(toDTO(policy.Discounts));
         }
-
-        public static MessageToRegisteredDTO toDTO(MessageToRegistered MessageToRegistered)
+        // to be implemented when needed
+        public PlusDiscountDTO toDTO(PlusDiscount discounts)
         {
-
-            return new MessageToRegisteredDTO(
-                MessageToRegistered.StoreName,
-                MessageToRegistered.Username,
-                MessageToRegistered.Title,
-                MessageToRegistered.Message);
+            //List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
+            //List<IConditionDTO> conditionDTOs = new List<IConditionDTO>();
+            //foreach (Discount dis in discounts.DiscountList)
+            //    discountDTOs.Add(toDTO(dis));
+            return null;
         }
     }
 }

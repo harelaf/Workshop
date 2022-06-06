@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MarketProject.Domain;
-using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using MarketProject.Domain.PurchasePackage.PolicyPackage;
 using MarketProject.Service.DTO;
 
 namespace MarketProject.Service
@@ -129,6 +129,25 @@ namespace MarketProject.Service
                 return translate((PlusDiscountDTO)dis);
             else throw new NotImplementedException($"need an implementation for {type} discount type.");
         }
+        public AtomicDiscountDTO discountToDTO(Discount dis)
+        {
+            if (dis == null)
+                return null;
+            Type type = dis.GetType();
+            if (type.Equals(typeof(AllProductsDiscount)))
+                return toDTO((AllProductsDiscount)dis);
+            if (type.Equals(typeof(CategoryDiscount)))
+                return toDTO((CategoryDiscount)dis);
+            if (type.Equals(typeof(ItemDiscount)))
+                return toDTO((ItemDiscount)dis);
+            if (type.Equals(typeof(NumericDiscount)))
+                return toDTO((NumericDiscount)dis);
+            //if (type.Equals(typeof(MaxDiscount)))
+            //    return toDTO((MaxDiscount)dis);
+            //if (type.Equals(typeof(PlusDiscount)))
+            //    return toDTO((PlusDiscount)dis);
+            else throw new NotImplementedException($"need an implementation for {type} discount type.");
+        }
         public Discount translate(AllProductsDiscountDTO discount_dto)
         {
             double percentage = discount_dto.Percentage;
@@ -251,13 +270,44 @@ namespace MarketProject.Service
         }
         public ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {
-            Dictionary<ItemDTO, int> items = new Dictionary<ItemDTO, int>();
-            foreach (KeyValuePair<Item, int> entry in shoppingBasket.Items)
+            Dictionary<ItemDTO, DiscountDetailsDTO> items = new Dictionary<ItemDTO, DiscountDetailsDTO>();
+            foreach (KeyValuePair<Item, DiscountDetails> entry in shoppingBasket.ItemDiscounts)
             {
                 ItemDTO dto = toDTO(entry.Key);
-                items[dto] = entry.Value;
+                items[dto] = toDTO(entry.Value);
             }
             return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items);
+        }
+
+        public DiscountDetailsDTO toDTO(DiscountDetails discountDetails)
+        {
+            List<AtomicDiscountDTO> disList = new List<AtomicDiscountDTO>();
+            foreach (AtomicDiscount discount in discountDetails.DiscountList)
+                disList.Add(discountToDTO(discount));
+            return new DiscountDetailsDTO(
+                discountDetails.Amount,
+                disList);
+        }
+
+        public ItemDiscountDTO toDTO(ItemDiscount discount)
+        {
+            return new ItemDiscountDTO(1, "1", null, DateTime.Now);
+        }
+        public AllProductsDiscountDTO toDTO(AllProductsDiscount discount)
+        {
+            throw new NotImplementedException();
+        }
+        public CategoryDiscountDTO toDTO(CategoryDiscount discount)
+        {
+            throw new NotImplementedException();
+        }
+        public NumericDiscountDTO toDTO(NumericDiscount discount)
+        {
+            throw new NotImplementedException();
+        }
+        public MaxDiscountDTO toDTO(MaxDiscount dis)
+        {
+            throw new NotImplementedException();
         }
         public ShoppingCartDTO toDTO(ShoppingCart shoppingCart)
         {
@@ -328,7 +378,7 @@ namespace MarketProject.Service
             return new DiscountPolicyDTO(toDTO(policy.Discounts));
         }
         // to be implemented when needed
-        private PlusDiscountDTO toDTO(PlusDiscount discounts)
+        public PlusDiscountDTO toDTO(PlusDiscount discounts)
         {
             //List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
             //List<IConditionDTO> conditionDTOs = new List<IConditionDTO>();

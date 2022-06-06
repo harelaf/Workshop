@@ -1,7 +1,9 @@
+using MarketWeb.Client.Helpers;
 using MarketWeb.Server.Domain;
 using MarketWeb.Server.Service;
 using MarketWeb.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MarketWeb.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -69,9 +72,17 @@ namespace MarketWeb.Server
                     }
                 };
             });
-            services.AddControllersWithViews();
-            services.AddRazorPages().AddNewtonsoftJson();
             services.AddSignalR();
+            services.AddControllersWithViews();
+            services.AddRazorPages().AddNewtonsoftJson(options =>
+            {
+                //customize settings here. For example, change the naming strategy
+                options.SerializerSettings.Formatting = Formatting.Indented;
+                options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
+                //options.SerializerSettings.Converters.Add(new DiscountConverter());
+                //options.SerializerSettings.Converters.Add(new ConditionConverter());
+                //options.SerializerSettings.Converters.Add(new DetailsConverter());
+            });
             services.AddSingleton<MarketAPI>();
             services.AddSingleton<NotificationHub>();
             services.AddSingleton<Market>();

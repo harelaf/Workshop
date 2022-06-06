@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    public class NumericDiscountDTO : IDiscountDTO
+    public class NumericDiscountDTO : AtomicDiscountDTO
     {
         private double _priceToSubtract;
         private IConditionDTO _condition;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketWeb.Server.Domain
 {
-    public class ShoppingCart : ISearchablePriceable
+    public class ShoppingCart
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual ICollection<ShoppingBasket> _shoppingBaskets { get; set; }

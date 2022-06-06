@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    public class AllProductsDiscountDTO : IDiscountDTO
+    public class AllProductsDiscountDTO : AtomicDiscountDTO
     {
         private IConditionDTO _condition;
         private double _percentage;

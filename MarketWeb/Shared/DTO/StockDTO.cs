@@ -12,7 +12,7 @@ namespace MarketWeb.Shared.DTO
 
         public StockDTO(Dictionary<int, Tuple<ItemDTO, int>> itemAndAmount)
         {
-            _itemAndAmount = itemAndAmount==null? new Dictionary<int, Tuple<ItemDTO, int>>() : itemAndAmount; 
+            _itemAndAmount = itemAndAmount == null ? new Dictionary<int, Tuple<ItemDTO, int>>() : itemAndAmount; 
         }
     }
 }
