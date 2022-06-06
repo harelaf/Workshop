@@ -39,7 +39,15 @@ namespace MarketWeb.Service
             {
                 bool restore = testMode;
                 testMode = true;
-                new InitializationFileParser(this).ParseInitializationFile();
+                try
+                {
+                    new InitializationFileParser(this).ParseInitializationFile();
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.Message);
+                    //SOMEHOW RESET SYSTEM?
+                }
                 testMode = restore;
             }
         }

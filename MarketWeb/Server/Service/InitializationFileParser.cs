@@ -1,5 +1,6 @@
 ﻿using MarketWeb.Service;
 using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -174,6 +175,20 @@ namespace MarketWeb.Server.Service
             return value;
         }
 
+        private double ParseDouble(String arg, String MethodName)
+        {
+            double value;
+            try
+            {
+                value = double.Parse(arg);
+            }
+            catch
+            {
+                throw new ArgumentException($"INITIALIZER: {MethodName} failed because of faulty double.");
+            }
+            return value;
+        }
+
         private void ParseEnterSystem(String args)
         {
             if (!args.Equals("()"))
@@ -186,52 +201,542 @@ namespace MarketWeb.Server.Service
 
         private void ParseLogin(String args_)
         {
-            String[] args = ParseArgs(args_, "Login", 3);
-            int authIndex = ParseAuthIndex(args[0], "Login");
+            String MethodName = "Login";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
             Response<String> response = api.Login(tokens[authIndex - 1], args[1], args[2]);
             if (response.ErrorOccured)
-                throw new Exception($"INITIALIZER: Login failed. {response.ErrorMessage}");
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
             tokens[authIndex - 1] = response.Value;
         }
 
         private void ParseLogout(String args_)
         {
-            String[] args = ParseArgs(args_, "Logout", 1);
-            int authIndex = ParseAuthIndex(args[0], "Logout");
+            String MethodName = "Logout";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
             Response<String> response = api.Logout(tokens[authIndex - 1]);
             if (response.ErrorOccured)
-                throw new Exception($"INITIALIZER: Logout failed. {response.ErrorMessage}");
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
 
         private void ParseRegister(String args_)
         {
-            String[] args = ParseArgs(args_, "Register", 4);
-            int authIndex = ParseAuthIndex(args[0], "Register");
-            DateTime dob = ParseDateTime(args[3], "Register");
+            String MethodName = "Register";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            DateTime dob = ParseDateTime(args[3], MethodName);
             Response response = api.Register(tokens[authIndex - 1], args[1], args[2], dob);
             if (response.ErrorOccured)
-                throw new Exception($"INITIALIZER: Register failed. {response.ErrorMessage}");
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
 
         private void ParseRemoveRegisteredVisitor(String args_)
         {
-            String[] args = ParseArgs(args_, "RemoveRegisteredVisitor", 2);
-            int authIndex = ParseAuthIndex(args[0], "RemoveRegisteredVisitor");
+            String MethodName = "RemoveRegisteredVisitor";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
             Response response = api.RemoveRegisteredVisitor(tokens[authIndex - 1], args[1]);
             if (response.ErrorOccured)
-                throw new Exception($"INITIALIZER: RemoveRegisteredVisitor failed. {response.ErrorMessage}");
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
 
-
-        private void ParseAddItemToCart(string args_)
+        private void ParseAddItemToCart(String args_)
         {
-            String[] args = ParseArgs(args_, "AddItemToCart", 2);
-            int authIndex = ParseAuthIndex(args[0], "AddItemToCart");
-            int itemid = ParseInt(args[1], "AddItemToCart");
-            int amount = ParseInt(args[3], "AddItemToCart");
+            String MethodName = "AddItemToCart";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[1], MethodName);
+            int amount = ParseInt(args[3], MethodName);
             Response response = api.AddItemToCart(tokens[authIndex - 1], itemid, args[2], amount);
             if (response.ErrorOccured)
-                throw new Exception($"INITIALIZER: AddItemToCart failed. {response.ErrorMessage}");
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseRemoveItemFromCart(String args_)
+        {
+            String MethodName = "RemoveItemFromCart";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[1], MethodName);
+            Response response = api.RemoveItemFromCart(tokens[authIndex - 1], itemid, args[2]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseUpdateQuantityOfItemInCart(String args_)
+        {
+            String MethodName = "UpdateQuantityOfItemInCart";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[1], MethodName);
+            int quantity = ParseInt(args[3], MethodName);
+            Response response = api.UpdateQuantityOfItemInCart(tokens[authIndex - 1], itemid, args[2], quantity);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseViewMyCart(String args_)
+        {
+            String MethodName = "ViewMyCart";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.ViewMyCart(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParsePurchaseMyCart(String args_)
+        {
+            String MethodName = "PurchaseMyCart";
+            String[] args = ParseArgs(args_, MethodName, 8);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.PurchaseMyCart(tokens[authIndex - 1], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseOpenNewStore(String args_)
+        {
+            String MethodName = "OpenNewStore";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.OpenNewStore(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseAddStoreManager(String args_)
+        {
+            String MethodName = "AddStoreManager";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.AddStoreManager(tokens[authIndex - 1], args[1], args[2]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseAddStoreOwner(String args_)
+        {
+            String MethodName = "AddStoreOwner";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.AddStoreOwner(tokens[authIndex - 1], args[1], args[2]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseRemoveStoreOwner(String args_)
+        {
+            String MethodName = "RemoveStoreOwner";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.RemoveStoreOwner(tokens[authIndex - 1], args[1], args[2]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseRemoveStoreManager(String args_)
+        {
+            String MethodName = "RemoveStoreManager";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.RemoveStoreManager(tokens[authIndex - 1], args[1], args[2]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseAddItemToStoreStock(String args_)
+        {
+            String MethodName = "AddItemToStoreStock";
+            String[] args = ParseArgs(args_, MethodName, 8);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[2], MethodName);
+            double price = ParseDouble(args[4], MethodName);
+            int quantity = ParseInt(args[7], MethodName);
+            Response response = api.AddItemToStoreStock(tokens[authIndex - 1], args[1], itemid, args[3], price, args[5], args[6], quantity);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseRemoveItemFromStore(String args_)
+        {
+            String MethodName = "RemoveItemFromStore";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[2], MethodName);
+            Response response = api.RemoveItemFromStore(tokens[authIndex - 1], args[1], itemid);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseUpdateStockQuantityOfItem(String args_)
+        {
+            String MethodName = "UpdateStockQuantityOfItem";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[2], MethodName);
+            int quantity = ParseInt(args[3], MethodName);
+            Response response = api.UpdateStockQuantityOfItem(tokens[authIndex - 1], args[1], itemid, quantity);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseEditItemPrice(String args_)
+        {
+            String MethodName = "EditItemPrice";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[2], MethodName);
+            double price = ParseDouble(args[3], MethodName);
+            Response response = api.EditItemPrice(tokens[authIndex - 1], args[1], itemid, price);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseEditItemName(String args_)
+        {
+            String MethodName = "EditItemName";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[2], MethodName);
+            Response response = api.EditItemName(tokens[authIndex - 1], args[1], itemid, args[3]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseEditItemDescription(String args_)
+        {
+            String MethodName = "EditItemDescription";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[2], MethodName);
+            Response response = api.EditItemDescription(tokens[authIndex - 1], args[1], itemid, args[3]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseRateItem(String args_)
+        {
+            String MethodName = "RateItem";
+            String[] args = ParseArgs(args_, MethodName, 5);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[1], MethodName);
+            int rating = ParseInt(args[3], MethodName);
+            Response response = api.RateItem(tokens[authIndex - 1], itemid, args[2], rating, args[4]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseRateStore(String args_)
+        {
+            String MethodName = "RateStore";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int rating = ParseInt(args[2], MethodName);
+            Response response = api.RateStore(tokens[authIndex - 1], args[1], rating, args[3]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetStoreInformation(String args_)
+        {
+            String MethodName = "GetStoreInformation";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetStoreInformation(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetItemInformation(String args_)
+        {
+            String MethodName = "GetItemInformation";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetItemInformation(tokens[authIndex - 1], args[1], args[2], args[3]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseSendMessageToStore(String args_)
+        {
+            String MethodName = "SendMessageToStore";
+            String[] args = ParseArgs(args_, MethodName, 5);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int id = ParseInt(args[4], MethodName);
+            Response response = api.SendMessageToStore(tokens[authIndex - 1], args[1], args[2], args[3], id);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseFileComplaint(String args_)
+        {
+            String MethodName = "FileComplaint";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int cartid = ParseInt(args[1], MethodName);
+            Response response = api.FileComplaint(tokens[authIndex - 1], cartid, args[2]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetMyPurchasesHistory(String args_)
+        {
+            String MethodName = "GetMyPurchasesHistory";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetMyPurchasesHistory(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetVisitorInformation(String args_)
+        {
+            String MethodName = "GetVisitorInformation";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetVisitorInformation(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseEditUsername(String args_)
+        {
+            throw new Exception($"INITIALIZER: EDITUSERNAME failed. THIS IS NOT IMPLEMENTED.");
+        }
+
+        private void ParseEditVisitorPassword(String args_)
+        {
+            String MethodName = "EditVisitorPassword";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.EditVisitorPassword(tokens[authIndex - 1], args[1], args[2]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseRemoveManagerPermission(String args_)
+        {
+            String MethodName = "RemoveManagerPermission";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.RemoveManagerPermission(tokens[authIndex - 1], args[1], args[2], args[3]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseAddManagerPermission(String args_)
+        {
+            String MethodName = "AddManagerPermission";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.AddManagerPermission(tokens[authIndex - 1], args[1], args[2], args[3]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseCloseStore(String args_)
+        {
+            String MethodName = "CloseStore";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.CloseStore(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseReopenStore(String args_)
+        {
+            String MethodName = "ReopenStore";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.ReopenStore(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetStoreOwners(String args_)
+        {
+            String MethodName = "GetStoreOwners";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetStoreOwners(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetStoreManagers(String args_)
+        {
+            String MethodName = "GetStoreManagers";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetStoreManagers(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetStoreFounder(String args_)
+        {
+            String MethodName = "GetStoreFounder";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetStoreFounder(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetStoreMessages(String args_)
+        {
+            String MethodName = "GetStoreMessages";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetStoreMessages(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetRegisteredMessagesFromAdmin(String args_)
+        {
+            String MethodName = "GetRegisteredMessagesFromAdmin";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetRegisteredMessagesFromAdmin(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetRegisterAnsweredStoreMessages(String args_)
+        {
+            String MethodName = "GetRegisterAnsweredStoreMessages";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetRegisterAnsweredStoreMessages(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetRegisteredMessagesNotofication(String args_)
+        {
+            String MethodName = "GetRegisteredMessagesNotofication";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetRegisteredMessagesNotofication(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseAnswerStoreMesseage(String args_)
+        {
+            String MethodName = "AnswerStoreMesseage";
+            String[] args = ParseArgs(args_, MethodName, 5);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int msgid = ParseInt(args[2], MethodName);
+            Response response = api.AnswerStoreMesseage(tokens[authIndex - 1], args[1], msgid, args[3], args[4]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetStorePurchasesHistory(String args_)
+        {
+            String MethodName = "GetStorePurchasesHistory";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetStorePurchasesHistory(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseCloseStorePermanently(String args_)
+        {
+            String MethodName = "CloseStorePermanently";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.CloseStorePermanently(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetRegisterdComplaints(String args_)
+        {
+            String MethodName = "GetRegisterdComplaints";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetRegisterdComplaints(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseReplyToComplaint(String args_)
+        {
+            String MethodName = "ReplyToComplaint";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int complaintid = ParseInt(args[1], MethodName);
+            Response response = api.ReplyToComplaint(tokens[authIndex - 1], complaintid, args[2]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseSendMessageToRegisterd(String args_)
+        {
+            String MethodName = "SendMessageToRegisterd";
+            String[] args = ParseArgs(args_, MethodName, 4);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.SendMessageToRegisterd(tokens[authIndex - 1], args[1], args[2], args[3]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetStoresOfUser(String args_)
+        {
+            String MethodName = "GetStoresOfUser";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetStoresOfUser(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetAllActiveStores(String args_)
+        {
+            String MethodName = "GetAllActiveStores";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.GetAllActiveStores(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseExitSystem(String args_)
+        {
+            String MethodName = "ExitSystem";
+            String[] args = ParseArgs(args_, MethodName, 1);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.ExitSystem(tokens[authIndex - 1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseAppointSystemAdmin(String args_)
+        {
+            String MethodName = "AppointSystemAdmin";
+            String[] args = ParseArgs(args_, MethodName, 2);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            Response response = api.AppointSystemAdmin(tokens[authIndex - 1], args[1]);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
+        }
+
+        private void ParseGetItem(String args_)
+        {
+            String MethodName = "GetItem";
+            String[] args = ParseArgs(args_, MethodName, 3);
+            int authIndex = ParseAuthIndex(args[0], MethodName);
+            int itemid = ParseInt(args[2], MethodName);
+            Response response = api.GetItem(tokens[authIndex - 1], args[1], itemid);
+            if (response.ErrorOccured)
+                throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
     }
 }
