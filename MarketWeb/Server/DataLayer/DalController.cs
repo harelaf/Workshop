@@ -10,8 +10,14 @@ namespace MarketWeb.Server.DataLayer
     public class DalController
     {
         MarketContext context;
-
-        public DalController()
+        private static DalController instance = null;
+        public static DalController GetInstance()
+        {
+            if (instance == null)
+                instance = new DalController();
+            return instance;
+        }
+        private DalController()
         {
             context = new MarketContext();
         }

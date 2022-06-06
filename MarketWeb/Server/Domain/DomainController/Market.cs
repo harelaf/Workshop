@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Shared;
+using MarketWeb.Server.DataLayer;
 
 namespace MarketWeb.Server.Domain
 {
@@ -13,7 +14,8 @@ namespace MarketWeb.Server.Domain
         private VisitorManagement _VisitorManagement;
         private History _history;
         private IDictionary<string, Operation> _opNameToOp;
-
+        private DalTRranslator _dalTRranslator;
+        private DalController _dalController = DalController.GetInstance();
         public Market()
         {
             _storeManagement = new StoreManagement();
@@ -21,6 +23,7 @@ namespace MarketWeb.Server.Domain
             _history = new History();
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
+            _dalTRranslator = new DalTRranslator(); 
         }
         
        
