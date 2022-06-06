@@ -354,18 +354,17 @@ namespace MarketWeb.Server.Domain
             Store store = _storeManagement.GetActiveStore(storeName);
             lock (store)
             {
-                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.CLOSE_STORE))
-                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
-                else if (storeName.Equals(""))
+                if (storeName.Equals(""))
                     errorMessage = "Invalid Input: Blank store name.";
                 if (errorMessage != null)
                 {
                     LogErrorMessage("CloseStore", errorMessage);
                     throw new Exception(errorMessage);
                 }
+                HasPermission(authToken, storeName, "CLOSE_STORE");
                 _storeManagement.CloseStore(storeName);
             }
-            List<String> names = _storeManagement.GetStoreRolesByName(storeName);
+            List<String> names = store.GetStoreRolesByName();
             String title = $"Store: {storeName} is temporarily closing down: [{DateTime.Now.ToString()}].";
             String message = $"I am sad to inform you that {storeName} is temporarily closing down. " +
                 $"Your roles in the store will remain until we decide permanently close down." +
@@ -382,19 +381,21 @@ namespace MarketWeb.Server.Domain
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "CloseStorePermanently");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            Store store = _storeManagement.GetActiveStore(storeName);
+            Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
                 if (!_VisitorManagement.CheckAccess(Username, null, Operation.PERMENENT_CLOSE_STORE))
                     errorMessage = $"Visitor is not an admin.";
                 else if (storeName.Equals(""))
                     errorMessage = "Invalid Input: Blank store name.";
+                else if (store.State == StoreState.Closed)
+                    errorMessage = $"The store: {storeName} is allready closed!";
                 if (errorMessage != null)
                 {
                     LogErrorMessage("CloseStorePermanently", errorMessage);
                     throw new Exception(errorMessage);
                 }
-                List<String> names = _storeManagement.GetStoreRolesByName(storeName);
+                List<String> names = store.GetStoreRolesByName();
                 String title = $"Store: {storeName} is permanently closing down: [{DateTime.Now.ToString()}].";
                 String message = $"I am sad to inform you that {storeName} is closing down. " +
                     $"All of your roles have been revoked." +
@@ -414,9 +415,11 @@ namespace MarketWeb.Server.Domain
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "ReopenStore");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            Store store = _storeManagement.GetActiveStore(storeName);
+            Store store = _storeManagement.GetStore(storeName);
             lock (store)
             {
+                if (store.State == StoreState.Active || store.State == StoreState.Closed)
+                    errorMessage = $"You can't reopen store: {storeName} because it's in state: {store.State}";
                 if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.REOPEN_STORE))
                     errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
                 else if (storeName.Equals(""))
@@ -428,7 +431,7 @@ namespace MarketWeb.Server.Domain
                 }
                 _storeManagement.ReopenStore(storeName);
             }
-            List<String> names = _storeManagement.GetStoreRolesByName(storeName);
+            List<String> names = store.GetStoreRolesByName();
             String title = $"Store: {storeName} is temporarily closing down: [{DateTime.Now.ToString()}].";
             String message = $"I am happy to inform you that {storeName} is reopening. " +
                 $"Your roles in the store stayed the same." +
@@ -487,18 +490,19 @@ namespace MarketWeb.Server.Domain
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "RateItem");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            String username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             Item item = _storeManagement.GetItem(storeName, itemID);
             if (rating < 0 || rating > 10)
                 errorMessage = "Rate should be beteen 0 to 10";
-            else if (!_history.CheckIfVisitorPurchasedItemInStore(appointerUsername, storeName, item))
+            else if (!_history.CheckIfVisitorPurchasedItemInStore(username, storeName, item))
                 errorMessage = "This Visitor has never bought item with id: " + itemID + " at " + storeName;
             if (errorMessage != null)
             {
                 LogErrorMessage("RateItem", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _storeManagement.RateItem(appointerUsername, item, rating, review);
+            _storeManagement.RateItem(username, item, rating, review);
+            _dalController.RateItem(itemID, storeName, rating, review, username);
         }
 
         public IDictionary<string, List<Item>> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
@@ -516,7 +520,7 @@ namespace MarketWeb.Server.Domain
             return _storeManagement.GetItemInformation(itemName, itemCategory, keyWord);
         }
 
-        public void SendMessageToStore(String authToken, String storeName, String title, String message, int id)
+        public void SendMessageToStore(String authToken, String storeName, String title, String message)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "SendMessageToStore");
@@ -526,7 +530,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("SendMessageToStore", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _storeManagement.SendMessageToStore(senderUsername, storeName, title, message, id);
+            _storeManagement.SendMessageToStore(senderUsername, storeName, title, message);
         }
 
         public void SendAdminMessageToRegisterd(string userToken, String UsernameReciever, String title, String message)
@@ -551,7 +555,8 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("SendMessageToRegisterd", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever,senderUsername, title, message);
+            int id = _dalController.SendAdminMessage(UsernameReciever, senderUsername, title, message);
+            _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever,senderUsername, title, message, id);
         }
         private void SendNotification(string storeName, string usernameReciever, String title, String message)
         {
@@ -565,7 +570,9 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("SendMessageToRegisterd", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendNotificationMessageToRegistered(usernameReciever, storeName ,title, message);
+            int id = _dalController.SendNotification(storeName, usernameReciever, title, message);
+            _VisitorManagement.SendNotificationMessageToRegistered(usernameReciever, storeName ,title, message, id);
+            
         }
         //1. admin: sender, reciver, msg, title
         //2. notify:reciver, msg, title, store,
@@ -592,6 +599,7 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername ,reply);
+            _dalController.AnswerStoreMesseage(msgID, storeName, reply, replierUsername);
         }
 
         public List<MessageToStore> GetStoreMessages(String authToken, String storeName)
@@ -614,7 +622,11 @@ namespace MarketWeb.Server.Domain
 				}
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreManager(newManager, storeName))
-                    _VisitorManagement.AddRole(managerUsername, newManager); 
+                {
+                    _VisitorManagement.AddRole(managerUsername, newManager);
+                    _dalController.AddStoreManager(managerUsername, storeName, appointerUsername);
+                }
+                   
             }
 			else
 			{
@@ -645,7 +657,11 @@ namespace MarketWeb.Server.Domain
                 }
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreOwner(newOwner, storeName))
+                {
                     _VisitorManagement.AddRole(ownerUsername, newOwner);
+                    _dalController.AddStoreOwner(ownerUsername, storeName, appointerUsername);
+                }
+                
             }
 			else
 			{
@@ -659,7 +675,7 @@ namespace MarketWeb.Server.Domain
             ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
-            if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))
+            if (_VisitorManagement.IsVisitorLoggedin(VisitorToken)) { }
                 _history.AddRegisterPurchases(shoppingCartToDocument, _VisitorManagement.GetRegisteredUsernameByToken(VisitorToken));
         }
 
@@ -701,7 +717,10 @@ namespace MarketWeb.Server.Domain
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.REMOVE_MANAGER))
             {
                 if (_storeManagement.RemoveStoreManager(managerUsername, storeName, appointerUsername))
+                {
                     _VisitorManagement.RemoveRole(managerUsername, storeName);
+                    _dalController.RemoveStoreManager(managerUsername, storeName);
+                }
             }
         }
         public ICollection<Tuple<DateTime, ShoppingCart>> GetMyPurchases(String authToken)
@@ -712,14 +731,18 @@ namespace MarketWeb.Server.Domain
         public Registered GetVisitorInformation(String authToken)
         {
             CheckIsVisitorLoggedIn(authToken, "GetVisitorInformation");
-            return _VisitorManagement.GetRegisteredVisitor(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
+            return _VisitorManagement.GetLoggedinRegistered(authToken);
         }
 
         internal void AppointSystemAdmin(String authToken, String adminUsername)
         {
             String registered = _VisitorManagement.GetRegisteredUsernameByToken(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
             if (_VisitorManagement.CheckAccess(registered,null, Operation.APPOINT_SYSTEM_ADMIN))
+            {
                 _VisitorManagement.AppointSystemAdmin(adminUsername);
+                _dalController.AppointSystemAdmin(adminUsername);
+            }
+                
         }
 
         /// <summary>
@@ -824,7 +847,7 @@ namespace MarketWeb.Server.Domain
                 Registered registeredToRemove = _VisitorManagement.GetRegisteredVisitor(usr_toremove);
                
                 _VisitorManagement.RemoveRegisteredVisitor(usr_toremove);
-                
+                _dalController.RemoveRegisteredVisitor(usr_toremove);
             }
             else
             {

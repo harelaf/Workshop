@@ -23,11 +23,14 @@ namespace MarketWeb.Server.DataLayer
     }
     public class SystemAdminDAL : SystemRoleDAL
     {
-        internal IDictionary<int, ComplaintDAL> _receivedComplaints { get; set; }
-        public SystemAdminDAL(string username, IDictionary<int, ComplaintDAL> receivedComplaints) : base(getOps(), username, "")
+
+        public SystemAdminDAL(string username) : base(getOps(), username, "")
+        {        }
+
+        public SystemAdminDAL(ISet<Operation> operations, string username, string storeName) : base(operations, username, storeName)
         {
-            _receivedComplaints = receivedComplaints;   
         }
+
         private static ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();
@@ -42,14 +45,16 @@ namespace MarketWeb.Server.DataLayer
     }
     public class StoreFounderDAL : SystemRoleDAL
     {
-        
-        [Required]
-        internal string _appointer { get; set; }
 
         public StoreFounderDAL(string storeName, string username) : base(getOps(), username, storeName)
         {
             _storeName = storeName;
         }
+
+        public StoreFounderDAL(ISet<Operation> operations, string username, string storeName) : base(operations, username, storeName)
+        {
+        }
+
         private static ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();
@@ -79,7 +84,11 @@ namespace MarketWeb.Server.DataLayer
 
         public StoreOwnerDAL(string storeName, string appointer, string username) : base(getOps(), username, storeName)
         {
-            _storeName = storeName;
+            _appointer = appointer;
+        }
+
+        public StoreOwnerDAL(ISet<Operation> operations, string username, string storeName, string appointer) : base(operations, username, storeName)
+        {
             _appointer = appointer;
         }
 
@@ -108,7 +117,11 @@ namespace MarketWeb.Server.DataLayer
 
         public StoreManagerDAL(string storeName, string appointer, string username) : base(getOps(), username, storeName)
         {
-            _storeName = storeName;
+            _appointer = appointer;
+        }
+
+        public StoreManagerDAL(ISet<Operation> operations, string username, string storeName, string appointer) : base(operations, username, storeName)
+        {
             _appointer = appointer;
         }
         private static ISet<Operation> getOps()

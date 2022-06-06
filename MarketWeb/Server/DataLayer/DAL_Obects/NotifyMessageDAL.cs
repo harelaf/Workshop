@@ -25,5 +25,14 @@ namespace MarketWeb.Server.DataLayer
             _message = message;
             _receiverUsername = receiverUsername;
         }
+
+        public NotifyMessageDAL(int mid, string storeName, string title, string message, string receiverUsername)
+        {
+            this.mid = mid;
+            _storeName = storeName;
+            _title = title;
+            _message = message;
+            _receiverUsername = receiverUsername;
+        }
     }
 }

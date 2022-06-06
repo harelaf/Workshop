@@ -8,12 +8,9 @@ namespace MarketWeb.Server.Domain
 {
     public class SystemAdmin : SystemRole
     {
-        private IDictionary<int, Complaint> _receivedComplaints = new Dictionary<int, Complaint>();
-        public IDictionary<int, Complaint> ReceivedComplaints => _receivedComplaints;
         public SystemAdmin(string Username) : base(getOps(), Username, null) {}
-        public SystemAdmin(string Username, ISet<Operation> op, IDictionary<int, Complaint> receivedComplaints) : base(op, Username, null) 
+        public SystemAdmin(string Username, ISet<Operation> op) : base(op, Username, null) 
         {
-            _receivedComplaints = receivedComplaints;
         }
         private static ISet<Operation> getOps()
         {
@@ -27,17 +24,6 @@ namespace MarketWeb.Server.Domain
             return roles;
         }
 
-        public void ReceiveComplaint(Complaint complaint)
-        {
-            _receivedComplaints.Add(complaint.ID, complaint);
-        }
-
-        public void ReplyToComplaint(int complaintID, String reply)
-        {
-            Complaint complaint;
-            if (!_receivedComplaints.TryGetValue(complaintID, out complaint))
-                throw new Exception($"No complaint with the ID {complaintID}.");
-            complaint.Reply(reply);
-        }
+    
     }
 }

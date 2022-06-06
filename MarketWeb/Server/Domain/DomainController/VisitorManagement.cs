@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using MarketWeb.Server.DataLayer;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.Domain
@@ -11,7 +13,7 @@ namespace MarketWeb.Server.Domain
         /// <summary>
         /// Dictionary mapping Username to Visitor
         /// </summary>
-        private IDictionary<String, Registered> _registeredVisitors;
+        //private IDictionary<String, Registered> _registeredVisitors;
         /// <summary>
         /// Dictionary mapping tokens to logged in Visitors.
         /// </summary>
@@ -21,68 +23,69 @@ namespace MarketWeb.Server.Domain
         /// </summary>
         private IDictionary<String, Guest> _visitorsGuestsTokens;
         private SystemAdmin _currentAdmin;
-        public SystemAdmin CurrentAdmin { get { return _currentAdmin; } set { _currentAdmin = value; } }
-        private int _nextComplaintID = 1;
         private static readonly string DEFAULT_ADMIN_USERNAME = "admin";
         private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
         private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
-
+        private DalTRranslator _dalTRranslator;
+        private DalController _dalController = DalController.GetInstance();
 
 
         // ===================================== CONSTRUCTORS =====================================
 
-        public VisitorManagement() : this(new Dictionary<String, Registered>()) { }
+        public VisitorManagement() : this(new Dictionary<String, Registered>()) { 
+            _dalTRranslator = new DalTRranslator();
+        }
 
         // TODO: There's GOT to be a better way to do these constructors.
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors)
         {
-            _registeredVisitors = registeredVisitors;
+            //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
-
+            _dalTRranslator= new DalTRranslator();
             Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
+            //_registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
             AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens)
         {
-            _registeredVisitors = registeredVisitors;
+            //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
 
             Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
+            //_registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
             AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Guest> visitorsGuestsTokens)
         {
-            _registeredVisitors = registeredVisitors;
+            //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = visitorsGuestsTokens;
 
             Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
+            //_registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
             AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens)
         {
-            _registeredVisitors = registeredVisitors;
+            //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
 
             Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
+            //_registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
             AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
@@ -97,11 +100,18 @@ namespace MarketWeb.Server.Domain
         /// <returns> The Registered Visitor identified by Username.</returns>
         public Registered GetRegisteredVisitor(String Username)
         {
-            Registered registered;
-            _registeredVisitors.TryGetValue(Username, out registered);
-            return registered;
+            if(_loggedinVisitorsTokens.Values.Where( r => r.Username == Username).Any<Registered>())
+            {
+                return _loggedinVisitorsTokens.Values.Where(r => r.Username == Username).FirstOrDefault();
+            }
+            return _dalTRranslator.RegisteredDALToDomain(_dalController.GetRegistered(Username));
         }
-
+        public Registered GetLoggedinRegistered(string token)
+        {
+            if(_loggedinVisitorsTokens.ContainsKey(token))
+                return _loggedinVisitorsTokens[token];
+            throw new Exception($"the user is'nt loggedin");
+        }
         /// <summary>
         /// Returns the Username associated with a token.
         /// </summary>
@@ -201,7 +211,7 @@ namespace MarketWeb.Server.Domain
         public void AdminStart(string adminUsername, string adminPassword)
         {
             Registered registered = GetRegisteredVisitor(adminUsername);
-            CurrentAdmin = registered.GetAdminRole;
+            //CurrentAdmin = registered.GetAdminRole;
         }
 
 
@@ -262,7 +272,7 @@ namespace MarketWeb.Server.Domain
         public void Register(String Username, String password, DateTime birthDate)
         {
             String errorMessage = null;
-            if (_registeredVisitors.ContainsKey(Username))
+            if (IsUsernameExists(Username))
                 errorMessage = $"Username {Username} unavailable.";
             else if (!CheckValidUsername(Username))
                 errorMessage = $"Username {Username} invalid.";
@@ -275,10 +285,11 @@ namespace MarketWeb.Server.Domain
             }
 
             Registered newRegistered = new Registered(Username, password, birthDate);
-
-            _registeredVisitors.Add(Username, newRegistered); ;
         }
-
+        private bool IsUsernameExists(string username)
+        {
+            return _dalController.IsUsernameExists(username);
+        }
         /// <summary>
         /// <para> For Req II.1.3. </para>
         /// <para> Checks if Username meets requirements.</para>
@@ -301,7 +312,7 @@ namespace MarketWeb.Server.Domain
 
         public bool IsRegistered(String Username)
         {
-            return _registeredVisitors.ContainsKey(Username);
+            return IsUsernameExists(Username);
         }
 
 
@@ -325,7 +336,7 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             
-            Registered registered = GetRegisteredVisitor(Username);
+            Registered registered = _dalTRranslator.RegisteredDALToDomain(_dalController.GetRegistered(Username));
             if (registered != null && _loggedinVisitorsTokens.Values.Contains(registered))
                 errorMessage = $"Visitor: {Username} is already logged in to the system.";
             else if (registered == null ||  // Visitor with the Username doesn't exists
@@ -442,10 +453,9 @@ namespace MarketWeb.Server.Domain
         public void FileComplaint(String authToken, int cartID, String message)
         {
             Registered registered = GetRegisteredByToken(authToken);
-            Complaint complaint = new Complaint(_nextComplaintID, registered, cartID, message);
-            _nextComplaintID++;
+            int id = _dalController.FileComplaint(cartID, message, _dalTRranslator.RegisteredDomainToDAL(registered));
+            Complaint complaint = new Complaint(id, registered, cartID, message);
             registered.FileComplaint(complaint);
-            CurrentAdmin.ReceiveComplaint(complaint);
         }
 
 
@@ -470,6 +480,7 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             registered.UpdatePassword(oldPassword, newPassword);
+            _dalController.EditVisitorPassword(registered._password, registered._salt, registered.Username);
         }
 
 
@@ -484,7 +495,7 @@ namespace MarketWeb.Server.Domain
         public void RemoveRegisteredVisitor(string Username)
         {
             String errorMessage=null;
-            Registered userToRemove;
+            Registered userToRemove = null;
             if (!IsRegistered(Username))
             {
                 errorMessage = "No such registered Visitor.";  
@@ -501,7 +512,6 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }    
             LogoutByUsername(Username);
-            _registeredVisitors.Remove(Username);
         }
 
 
@@ -526,7 +536,12 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("ReplyToComplaint", errorMessage);
                 throw new Exception(errorMessage);
             }
-            adminRole.ReplyToComplaint(complaintID, reply);
+            Complaint complaint = _dalTRranslator.ComplaintDalToDomain(_dalController.GetComplaint(complaintID));
+            if(complaint == null)
+                throw new Exception($"No complaint with the ID {complaintID}.");
+            complaint.Reply(reply);
+            _dalController.ReplyToComplaint(complaintID, reply);
+
         }
 
 
@@ -611,10 +626,10 @@ namespace MarketWeb.Server.Domain
 
         // ===================================== MESSAGE OPERATIONS =====================================
 
-        public void SendAdminMessageToRegistered(String usernameReciever, string senderUsername, String title, String message)
+        public void SendAdminMessageToRegistered(String usernameReciever, string senderUsername, String title, String message, int id)
         {
 
-            AdminMessageToRegistered messageToRegistered = new AdminMessageToRegistered(usernameReciever, senderUsername, title, message);
+            AdminMessageToRegistered messageToRegistered = new AdminMessageToRegistered(id, usernameReciever, senderUsername, title, message);
             Registered reciever = GetRegisteredVisitor(usernameReciever);
             reciever.SendMessage(messageToRegistered);
         }
@@ -622,11 +637,13 @@ namespace MarketWeb.Server.Domain
         public void RemoveManagerPermission(String appointer, String managerUsername, String storeName, Operation op)
         {
             GetRegisteredVisitor(managerUsername).RemoveManagerPermission(appointer, storeName, op);
+            _dalController.RemoveManagerPermission(managerUsername, storeName, op);
         }
 
         public void AddManagerPermission(String appointer, String managerUsername, String storeName, Operation op)
         {
             GetRegisteredVisitor(managerUsername).AddManagerPermission(appointer, storeName, op);
+            _dalController.AddManagerPermission(managerUsername, storeName, op);
         }
 
         internal void AppointSystemAdmin(string adminUsername)
@@ -656,10 +673,10 @@ namespace MarketWeb.Server.Domain
             log.Error($"Exception thrown in VisitorManagement.{functionName}. Cause: {message}.");
         }
 
-        internal void SendNotificationMessageToRegistered(string usernameReciever, string storeName, string title, string message)
+        internal void SendNotificationMessageToRegistered(string usernameReciever, string storeName, string title, string message, int id)
         {
             Registered registered = GetRegisteredVisitor(usernameReciever);
-            registered.SendNotificationMsg(storeName, title, message);
+            registered.SendNotificationMsg(storeName, title, message, id);
         }
 
         internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string regUserName, string reply)
@@ -676,12 +693,19 @@ namespace MarketWeb.Server.Domain
         internal List<string> GetStoresOfUser(string username)
         {
             Registered reg = GetRegisteredVisitor(username);
-            return reg.GetRegisteredVisitor();
+            return reg.GetRegisteredStores();
         }
 
         internal IDictionary<int, Complaint> GetRegisterdComplaints(string authToken)
         {
-            return CurrentAdmin.ReceivedComplaints;
+            Registered admin = GetRegisteredByToken(authToken);
+            if(!CheckAccess(admin.Username, null, Operation.PERMENENT_CLOSE_STORE))//is asmin
+            {
+                string errorMessage = $"user {admin.Username} does'nt have permission to operation: get complaints.";
+                LogErrorMessage("GetRegisterdComplaints", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return _dalTRranslator.ComplaintsListDalToDomain(_dalController.GetRegisterdComplaints());
         }
     }
 }

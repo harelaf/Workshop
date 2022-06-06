@@ -21,7 +21,7 @@ namespace MarketWeb.Server.Domain
 
         public bool CheckIfVisitorPurchasedInStore(String Username, String storeName)
         {
-            return _dalController.GetDidRegisterPurchasedInStore(Username, storeName);
+            return _dalController.DidRegisterPurchasedInStore(Username, storeName);
         }
 
 

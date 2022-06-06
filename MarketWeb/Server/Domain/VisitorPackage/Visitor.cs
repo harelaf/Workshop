@@ -14,6 +14,11 @@ namespace MarketWeb.Server.Domain
             _shoppingCart = new ShoppingCart();
         }
 
+        protected Visitor(ShoppingCart shoppingCart)
+        {
+            _shoppingCart = shoppingCart;
+        }
+
         public void AddItemToCart(Store store, Item item, int amount)
         {
             ShoppingBasket basket= _shoppingCart.GetShoppingBasket(store.StoreName);

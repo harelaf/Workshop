@@ -31,6 +31,14 @@ namespace MarketWeb.Server.DataLayer
                 new RegisteredDAL(Username, password, salt, dob));
             context.SaveChanges();
         }
+        public RegisteredDAL GetRegistered(string username)
+        {
+            return context.RegisteredDALs.Find(username);
+        }
+        public bool IsUsernameExists(string username)
+        {
+            return context.RegisteredDALs.Find(username)!=null;
+        }
         public void RemoveRegisteredVisitor(string username) 
         {
             RegisteredDAL toRemove = context.RegisteredDALs.Find(username);
@@ -176,7 +184,7 @@ namespace MarketWeb.Server.DataLayer
         }
         public void AddStoreManager(String managerUsername, String storeName, string appointer)
         {
-            StoreManagerDAL storeManager = new StoreManagerDAL(managerUsername, storeName, appointer);
+            StoreManagerDAL storeManager = new StoreManagerDAL(storeName, appointer, managerUsername);
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             storeDAL._managers.Add(storeManager);
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(managerUsername);
@@ -185,7 +193,7 @@ namespace MarketWeb.Server.DataLayer
         }
         public void AddStoreOwner(String ownerUsername, String storeName, string appointer)
         {
-            StoreOwnerDAL storeOwner = new StoreOwnerDAL(ownerUsername, storeName, appointer);
+            StoreOwnerDAL storeOwner = new StoreOwnerDAL(storeName, appointer, ownerUsername);
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             storeDAL._owners.Add(storeOwner);
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(ownerUsername);
@@ -348,17 +356,19 @@ namespace MarketWeb.Server.DataLayer
                 throw new Exception($"there is no such item: {itemID} in store: {storeName}.");
             }   
         }
-        public void SendMessageToStore(String storeName, String title, String message, string sender)
+        public int SendMessageToStore(String storeName, String title, String message, string sender)
         {
             MessageToStoreDAL msg = new MessageToStoreDAL(storeName, sender, message, title);
             context.StoreDALs.Find(storeName)._messagesToStore.Add(msg);
             context.SaveChanges();
+            return msg.mid;
         }
-        public void FileComplaint(int cartID, String message, RegisteredDAL sender)
+        public int FileComplaint(int cartID, String message, RegisteredDAL sender)
         {
             ComplaintDAL complaint = new ComplaintDAL(sender, cartID, message);
             context.ComplaintDALs.Add(complaint);
             context.SaveChanges();
+            return complaint._id;
         }
         public List<Tuple<DateTime, ShoppingCartDAL>> GetMyPurchasesHistory(string userName)
         {
@@ -389,7 +399,7 @@ namespace MarketWeb.Server.DataLayer
             }
             return history;
         }
-        public bool GetDidRegisterPurchasedInStore(string userName, string storeName)
+        public bool DidRegisterPurchasedInStore(string userName, string storeName)
         {
             RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Find(userName);
 
@@ -528,7 +538,7 @@ namespace MarketWeb.Server.DataLayer
         }
         public void AppointSystemAdmin(String adminUsername)
         {
-            context.RegisteredDALs.Find(adminUsername)._roles.Add(new SystemAdminDAL(adminUsername, new Dictionary<int, ComplaintDAL>()));
+            context.RegisteredDALs.Find(adminUsername)._roles.Add(new SystemAdminDAL(adminUsername));
             context.SaveChanges();
 
         }
@@ -540,20 +550,32 @@ namespace MarketWeb.Server.DataLayer
                 stores.Add(context.StoreDALs.Find(storeName));
             return stores;
         }
-        public void SendAdminMessage(String receiverUsername, string senderUsername, String title, String message)
+        public int SendAdminMessage(String receiverUsername, string senderUsername, String title, String message)
         {
             AdminMessageToRegisteredDAL msg = new AdminMessageToRegisteredDAL(receiverUsername, senderUsername, title, message);
             context.RegisteredDALs.Find(receiverUsername)._adminMessages.Add(msg);
             context.SaveChanges();
+            return msg.mid;
         }
 
         public bool StoreExists(string storeName)
         {
             return context.StoreDALs.Find(storeName) != null;
         }
+        public int SendNotification(string storeName, string usernameReciever, String title, String message)
+        {
+            RegisteredDAL reg = context.RegisteredDALs.Find(usernameReciever);
+            if (usernameReciever == null)
+                throw new Exception($"there is no such user with uaername: {usernameReciever}");
+            NotifyMessageDAL notifyMessageDAL = new NotifyMessageDAL(storeName, title, message, usernameReciever);
+            reg._notifications.Add(notifyMessageDAL);
+            context.SaveChanges();
+            return notifyMessageDAL.mid;
+        }
+        public ComplaintDAL GetComplaint(int id)
+        {
+            return context.ComplaintDALs.Find(id);
+        }
 
-
-
-        
     }
 }

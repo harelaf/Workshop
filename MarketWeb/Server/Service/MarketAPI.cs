@@ -587,7 +587,7 @@ namespace MarketWeb.Service
             return response;
         }
         [HttpPost("SendMessageToStore")]
-        public Response SendMessageToStore([FromHeader] String Authorization, String storeName, String title, String description, int id)
+        public Response SendMessageToStore([FromHeader] String Authorization, String storeName, String title, String description)
         {//II.3.5
             Response response;
             try
@@ -595,7 +595,7 @@ namespace MarketWeb.Service
 
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Send Message To Store called with parameters: authToken={authToken}, storeName={storeName}, title={title}, description={description}.");
-                _market.SendMessageToStore(authToken, storeName, title, description, id);
+                _market.SendMessageToStore(authToken, storeName, title, description);
                 response = new Response();
                 _logger.Info($"SUCCESSFULY executed Send Message To Store.");
             }

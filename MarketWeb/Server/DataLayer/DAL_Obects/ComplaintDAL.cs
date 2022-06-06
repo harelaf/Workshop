@@ -19,6 +19,15 @@ namespace MarketWeb.Server.DataLayer
         internal String _response { get; set; }
         public ComplaintStatus Status { get { return _response == null ? ComplaintStatus.Open : ComplaintStatus.Closed; } }
 
+        public ComplaintDAL(int id, RegisteredDAL complainer, int cartID, string message, string response)
+        {
+            _id = id;
+            _complainer = complainer;
+            _cartID = cartID;
+            _message = message;
+            _response = response;
+        }
+
         public ComplaintDAL(RegisteredDAL complainer, int cartID, string message)
         {
             _complainer = complainer;

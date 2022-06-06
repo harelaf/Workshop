@@ -24,6 +24,20 @@ namespace MarketWeb.Server.DataLayer
         internal ICollection<NotifyMessageDAL> _notifications;
         internal ICollection<MessageToStoreDAL> _repliedMessages;
 
+        public RegisteredDAL(string username, string password, string salt, ShoppingCartDAL cart, DateTime birthDate, IDictionary<int, ComplaintDAL> filedComplaints, ICollection<SystemRoleDAL> roles, ICollection<AdminMessageToRegisteredDAL> adminMessages, ICollection<NotifyMessageDAL> notifications, ICollection<MessageToStoreDAL> repliedMessages)
+        {
+            _username = username;
+            _password = password;
+            _salt = salt;
+            _cart = cart;
+            _birthDate = birthDate;
+            _filedComplaints = filedComplaints;
+            _roles = roles;
+            _adminMessages = adminMessages;
+            _notifications = notifications;
+            _repliedMessages = repliedMessages;
+        }
+
         public RegisteredDAL(string username, string password, string salt, DateTime birthDate)
         {
             _username = username;
