@@ -39,9 +39,16 @@ namespace MarketWeb.Service
             if (useConfigurationFile)
             {
                 useConfigurationFile = false;
-                new ConfigurationFileParser().ParseConfigurationFile();
-                // TODO
-                // GET DB CONNECTION? SEND IT TO MARKET?
+                try
+                {
+                    new ConfigurationFileParser().ParseConfigurationFile();
+                    // TODO
+                    // GET DB CONNECTION? SEND IT TO MARKET?
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.Message);
+                }
             }
 
             if (useInitializationFile)
