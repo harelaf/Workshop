@@ -84,7 +84,7 @@ namespace MarketWeb.Server.Service
         public void ParseInitializationFile()
         {
             if (!File.Exists(FILE_PATH))
-                return;
+                throw new FileNotFoundException("INITIALIZER: File not found.");
             int LineNumber = -1;
             foreach (string fileline in File.ReadLines(FILE_PATH))
             {

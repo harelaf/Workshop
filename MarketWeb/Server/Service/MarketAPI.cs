@@ -23,6 +23,7 @@ namespace MarketWeb.Service
         private int _id;
         private bool testMode = false;
         private static bool useInitializationFile = true;
+        private static bool useConfigurationFile = true;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             if (market == null)
@@ -33,6 +34,21 @@ namespace MarketWeb.Service
             else
             {
                 _market = market;
+            }
+
+            if (useConfigurationFile)
+            {
+                useConfigurationFile = false;
+                try
+                {
+                    new ConfigurationFileParser().ParseConfigurationFile();
+                    // TODO
+                    // GET DB CONNECTION? SEND IT TO MARKET?
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.Message);
+                }
             }
 
             if (useInitializationFile)
@@ -47,7 +63,6 @@ namespace MarketWeb.Service
                 catch (Exception e)
                 {
                     _logger.Error(e.Message);
-                    //SOMEHOW RESET SYSTEM?
                 }
                 testMode = restore;
             }
