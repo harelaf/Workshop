@@ -77,7 +77,8 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
             }
         }
 
-        public DiscountParser(String discountString, String conditionString)        {
+        public DiscountParser(String discountString, String conditionString)
+        {
             DiscountString = discountString.Trim();
             ConditionString = conditionString.Trim();
             InitConditionFunctions();

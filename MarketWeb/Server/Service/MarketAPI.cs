@@ -1,6 +1,7 @@
 ﻿
 using MarketWeb.Server.Domain;
 using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+using MarketWeb.Server.Service;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,7 @@ namespace MarketWeb.Service
         //private ILogger<MarketAPI> _logger;
         private int _id;
         private bool testMode = false;
+        private bool useInitializationFile = true;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             if (market == null)
@@ -32,14 +34,14 @@ namespace MarketWeb.Service
             {
                 _market = market;
             }
-            //_logger = logger;
-            //LoadData();
-
-            // DISCOUNT TESTING
-            String conditionString = "(OR CategoryTotalAmountInBasketFrom_Fruit_2 (AND DayOfWeek_4 (NOT TotalBasketPriceRange_22_33) (XOR Hour_0_24)) CategoryTotalAmountInBasketTo_Krabby Patties_333 (OR CategoryTotalAmountInBasketFrom_Fruit_2))";
-            //conditionString = "";
-            String discountString = "(MAX BasketAbsolute_8_2023_1_1 CategoryPercentage_JOE_22_2222_2_2 (PLUS BasketPercentage_33_3322_2_3 BasketAbsolute_8_2023_1_1))";
-            new MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, conditionString).Parse();
+            
+            if (useInitializationFile)
+            {
+                bool restore = testMode;
+                testMode = true;
+                new InitializationFileParser(this).ParseInitializationFile();
+                testMode = restore;
+            }
         }
        
         private String parseAutherization(String Authorization)
