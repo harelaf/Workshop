@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.Domain
@@ -1024,7 +1024,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AddStoreDiscount", errorMessage);
                 throw new Exception(errorMessage);
             }
-            Discount discount = new PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, discountString).Parse();
+            Discount discount = new PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, conditionString).Parse();
             _storeManagement.AddStoreDiscount(storeName, discount);
         }
     }

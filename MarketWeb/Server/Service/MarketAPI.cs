@@ -1,7 +1,7 @@
 ﻿
 using MarketWeb.Server.Domain;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Server.Service;
+using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -255,11 +255,10 @@ namespace MarketWeb.Service
             Response<ShoppingCartDTO> response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"View My Cart called with parameters: authToken={authToken}.");
                 ShoppingCart shoppingCart = _market.ViewMyCart(authToken);
-                response = new Response<ShoppingCartDTO>(DTOtranslator.toDTO(shoppingCart));
+                response = new Response<ShoppingCartDTO>(new DTOtranslator().toDTO(shoppingCart));
                 _logger.Info($"SUCCESSFULY executed View My Cart.");
             }
             catch (Exception e)
@@ -543,7 +542,7 @@ namespace MarketWeb.Service
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Get Store Information called with parameters: authToken={authToken}, storeName={storeName}.");
                 Store result = _market.GetStoreInformation(authToken, storeName);
-                StoreDTO dto = DTOtranslator.toDTO(result);
+                StoreDTO dto = new DTOtranslator().toDTO(result);
                 response = new Response<StoreDTO>(dto);
                 _logger.Info($"SUCCESSFULY executed Get Store Information.");
             }
@@ -568,7 +567,7 @@ namespace MarketWeb.Service
                 {
                     foreach (Item item in storeNItems.Value)
                     {
-                        resultDTO.Add(DTOtranslator.toDTO(item, storeNItems.Key));
+                        resultDTO.Add(new DTOtranslator().toDTO(item, storeNItems.Key));
                     }
                 }
                 response = new Response<List<ItemDTO>>(resultDTO);
@@ -637,7 +636,7 @@ namespace MarketWeb.Service
                 List<PurchasedCartDTO> purchasedCartsDTO = new List<PurchasedCartDTO>();
                 foreach (Tuple<DateTime, ShoppingCart> purchase in purchasedCarts)
                 {
-                    purchasedCartsDTO.Add(DTOtranslator.toDTO(purchase.Item1, purchase.Item2));
+                    purchasedCartsDTO.Add(new DTOtranslator().toDTO(purchase.Item1, purchase.Item2));
                 }
                 List<Tuple<DateTime, ShoppingCartDTO>> something = new List<Tuple<DateTime, ShoppingCartDTO>>();
                 foreach (PurchasedCartDTO p in purchasedCartsDTO)
@@ -664,7 +663,7 @@ namespace MarketWeb.Service
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Get Visitor Information called with parameters: authToken={authToken}.");
                 Registered registered = _market.GetVisitorInformation(authToken);
-                response = new Response<RegisteredDTO>(DTOtranslator.toDTO(registered));
+                response = new Response<RegisteredDTO>(new DTOtranslator().toDTO(registered));
                 _logger.Info($"SUCCESSFULY executed Get Visitor Information.");
             }
             catch (Exception e)
@@ -799,7 +798,7 @@ namespace MarketWeb.Service
                 List<StoreOwner> ownerList = _market.getStoreOwners(storeName, authToken);
                 List<StoreOwnerDTO> ownerDTOlist = new List<StoreOwnerDTO>();
                 foreach (StoreOwner owner in ownerList)
-                    ownerDTOlist.Add(DTOtranslator.toDTO(owner));
+                    ownerDTOlist.Add(new DTOtranslator().toDTO(owner));
                 response = new Response<List<StoreOwnerDTO>>(ownerDTOlist);
                 _logger.Info($"SUCCESSFULY executed Get Store Owners.");
             }
@@ -822,7 +821,7 @@ namespace MarketWeb.Service
                 List<StoreManager> managerList = _market.getStoreManagers(storeName, authToken);
                 List<StoreManagerDTO> managerDTOlist = new List<StoreManagerDTO>();
                 foreach (StoreManager manager in managerList)
-                    managerDTOlist.Add(DTOtranslator.toDTO(manager));
+                    managerDTOlist.Add(new DTOtranslator().toDTO(manager));
                 response = new Response<List<StoreManagerDTO>>(managerDTOlist);
                 _logger.Info($"SUCCESSFULY executed Get Store Managers.");
             }
@@ -842,7 +841,7 @@ namespace MarketWeb.Service
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Get Store Founder called with parameters: authToken={authToken}, storeName={storeName}.");
                 StoreFounder founder = _market.getStoreFounder(storeName, authToken);
-                response = new Response<StoreFounderDTO>(DTOtranslator.toDTO(founder));
+                response = new Response<StoreFounderDTO>(new DTOtranslator().toDTO(founder));
                 _logger.Info($"SUCCESSFULY executed Get Store Founder.");
             }
             catch (Exception e)
@@ -864,7 +863,7 @@ namespace MarketWeb.Service
                 List<MessageToStore> messages = _market.GetStoreMessages(authToken, storeName);
                 List<MessageToStoreDTO> messagesDTOs = new List<MessageToStoreDTO>();
                 foreach (MessageToStore messageToStore in messages)
-                    messagesDTOs.Add(DTOtranslator.toDTO(messageToStore));
+                    messagesDTOs.Add(new DTOtranslator().toDTO(messageToStore));
                 response = new Response<List<MessageToStoreDTO>>(messagesDTOs);
             }
             catch (Exception e)
@@ -886,7 +885,7 @@ namespace MarketWeb.Service
                 ICollection<AdminMessageToRegistered> messages = _market.GetRegisteredMessagesFromAdmin(authToken);
                 ICollection<AdminMessageToRegisteredDTO> messagesDTOs = new List<AdminMessageToRegisteredDTO>();
                 foreach (AdminMessageToRegistered message in messages)
-                    messagesDTOs.Add(DTOtranslator.toDTO(message));
+                    messagesDTOs.Add(new DTOtranslator().toDTO(message));
                 response = new Response<ICollection<AdminMessageToRegisteredDTO>>(messagesDTOs);
             }
             catch (Exception e)
@@ -907,7 +906,7 @@ namespace MarketWeb.Service
                 ICollection<MessageToStore> messages = _market.GetRegisteredAnswerdStoreMessages(authToken);
                 ICollection<MessageToStoreDTO> messagesDTOs = new List<MessageToStoreDTO>();
                 foreach (MessageToStore message in messages)
-                    messagesDTOs.Add(DTOtranslator.toDTO(message));
+                    messagesDTOs.Add(new DTOtranslator().toDTO(message));
                 response = new Response<ICollection<MessageToStoreDTO>>(messagesDTOs);
             }
             catch (Exception e)
@@ -928,7 +927,7 @@ namespace MarketWeb.Service
                 ICollection<NotifyMessage> messages = _market.GetRegisteredMessagesNotofication(authToken);
                 ICollection<NotifyMessageDTO> messagesDTOs = new List<NotifyMessageDTO>();
                 foreach (NotifyMessage message in messages)
-                    messagesDTOs.Add(DTOtranslator.toDTO(message));
+                    messagesDTOs.Add(new DTOtranslator().toDTO(message));
                 response = new Response<ICollection<NotifyMessageDTO>>(messagesDTOs);
             }
             catch (Exception e)
@@ -971,7 +970,7 @@ namespace MarketWeb.Service
 
                 foreach (Tuple<DateTime, ShoppingBasket> tuple in result)
                 {
-                    ShoppingBasketDTO dto = DTOtranslator.toDTO(tuple.Item2);
+                    ShoppingBasketDTO dto = new DTOtranslator().toDTO(tuple.Item2);
                     Tuple<DateTime, ShoppingBasketDTO> toAdd = new Tuple<DateTime, ShoppingBasketDTO>(tuple.Item1, dto);
                     dtos.Add(toAdd);
                 }
@@ -1017,7 +1016,7 @@ namespace MarketWeb.Service
                 IDictionary<int, Complaint> complaints = _market.GetRegisterdComplaints(authToken);
                 ICollection<ComplaintDTO> result = new List<ComplaintDTO>();
                 foreach (KeyValuePair<int, Complaint> c in complaints)
-                    result.Add(DTOtranslator.toDTO(c.Value));
+                    result.Add(new DTOtranslator().toDTO(c.Value));
                 response = new Response<ICollection<ComplaintDTO>>(result);
                 _logger.Info($"SUCCESSFULY executed Get Registered Complaints.");
             }
@@ -1088,7 +1087,7 @@ namespace MarketWeb.Service
                 List<StoreDTO> storesDTO = new List<StoreDTO>();
                 foreach (Store store in stores)
                 {
-                    storesDTO.Add(DTOtranslator.toDTO(store));
+                    storesDTO.Add(new DTOtranslator().toDTO(store));
                 }
                 response = new Response<List<StoreDTO>>(storesDTO);
                 _logger.Info($"SUCCESSFULY executed Get Stores Of User.");
@@ -1112,7 +1111,7 @@ namespace MarketWeb.Service
                 List<StoreDTO> storesDTO = new List<StoreDTO>();
                 foreach (Store store in stores)
                 {
-                    storesDTO.Add(DTOtranslator.toDTO(store));
+                    storesDTO.Add(new DTOtranslator().toDTO(store));
                 }
                 response = new Response<List<StoreDTO>>(storesDTO);
                 _logger.Info($"SUCCESSFULY executed Get All Active Stores.");
@@ -1288,7 +1287,7 @@ namespace MarketWeb.Service
 
                 String authToken = parseAutherization(Authorization);
                 Item item = _market.GetItem(authToken, storeName, itemId);
-                response = new Response<ItemDTO>(DTOtranslator.toDTO(item, storeName));
+                response = new Response<ItemDTO>(new DTOtranslator().toDTO(item, storeName));
             }
             catch (Exception e)
             {
@@ -1322,22 +1321,22 @@ namespace MarketWeb.Service
             String itemName1 = "itemName1";
             String category1 = "category1";
             String desc1 = "some item description goes here.";
-            int quantity1 = 1;
+            int quantity1 = 100;
 
             int itemID2 = 2;
             int price2 = 2;
             String itemName2 = "itemName2";
             String category2 = "dairy";
             String desc2 = "some other item description goes here.";
-            int quantity2 = 2;
+            int quantity2 = 200;
 
             int itemID3 = 3;
             int price3 = 3;
             String itemName3 = "itemName3";
             String category3 = "category3";
             String desc3 = "some other other item description goes here.";
-            int quantity3 = 3;
-
+            int quantity3 = 300;
+            
             AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
 
             AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
@@ -1374,8 +1373,8 @@ namespace MarketWeb.Service
             PriceableConditionDTO pricable = new PriceableConditionDTO(null, 100, -1, false);
             SearchItemConditionDTO itemCond = new SearchItemConditionDTO(itemName2, 3, -1, false);
             List<IConditionDTO> condLst2 = new List<IConditionDTO>();
-            condLst.Add(pricable);
-            condLst.Add(itemCond);
+            condLst2.Add(pricable);
+            condLst2.Add(itemCond);
             OrCompositionDTO orCond = new OrCompositionDTO(false, condLst2);
             CategoryDiscountDTO categoryDis = new CategoryDiscountDTO(percentageToSubtract, dairyCategory, orCond, expiration);
             //AddStoreDiscount(auth2, storeName2, categoryDis);

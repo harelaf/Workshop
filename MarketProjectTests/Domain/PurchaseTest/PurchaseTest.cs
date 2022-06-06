@@ -3,7 +3,7 @@ using Moq;
 using MarketProject.Domain;
 using System.Collections.Generic;
 using System;
-using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using MarketProject.Domain.PurchasePackage.PolicyPackage;
 
 namespace MarketProject.Domain.Tests
 {

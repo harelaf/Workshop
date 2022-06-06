@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public abstract class Discount
     {
@@ -28,7 +28,8 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             return _condition == null ? "" : newLine(indent) + "Condition(s): " + _condition.GetConditionString(indent);
         }
 
-        public abstract double GetTotalDiscount(ISearchablePriceable searchablePriceable);
+        public abstract void applyDiscount(ISearchablePriceable searchablePriceable);
+        public abstract double GetTotalDiscount(ISearchablePriceable searchablePriceable); 
         public abstract String GetDiscountString(int indent);
         public abstract String GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent);
         public abstract DateTime GetExpirationDate(ISearchablePriceable searchablePriceable);

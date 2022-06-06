@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage.Tests
 {
 	[TestClass()]
 	public class ItemDiscountTests

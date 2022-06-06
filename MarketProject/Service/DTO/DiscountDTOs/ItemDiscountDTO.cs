@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketProject.Service.DTO
 {
-    public class ItemDiscountDTO : IDiscountDTO
+    public class ItemDiscountDTO : AtomicDiscountDTO
     {
         private double _percentage_to_subtract;
         private String _itemName;

@@ -1,5 +1,5 @@
 ﻿using MarketProject.Domain;
-using MarketProject.Domain.PurchasePackage.DiscountPackage;
+using MarketProject.Domain.PurchasePackage.PolicyPackage;
 using MarketProject.Service.DTO;
 using System;
 using System.Collections.Generic;
