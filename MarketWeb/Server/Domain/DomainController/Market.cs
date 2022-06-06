@@ -1011,7 +1011,7 @@ namespace MarketWeb.Server.Domain
             return _storeManagement.GetItem(storeName, itemId);
         }
 
-        public void AddStoreDiscount(String authToken, String storeName, Discount discount)
+        public void AddStoreDiscount(String authToken, String storeName, String conditionString, String discountString)
         {
             String errorMessage = null;
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
@@ -1024,6 +1024,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AddStoreDiscount", errorMessage);
                 throw new Exception(errorMessage);
             }
+            Discount discount = new PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, discountString).Parse();
             _storeManagement.AddStoreDiscount(storeName, discount);
         }
     }

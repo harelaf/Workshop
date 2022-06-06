@@ -18,7 +18,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPackage
         }
         public override String GetConditionString(int indent)
         {
-            return $"Today is {_dayOnWeek}.";
+            return $"{(ToNegative ? "(NOT) " : "")}Today is {_dayOnWeek}.";
         }
     }
 }

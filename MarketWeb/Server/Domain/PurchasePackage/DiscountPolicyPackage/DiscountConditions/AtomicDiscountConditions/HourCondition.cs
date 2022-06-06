@@ -42,7 +42,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPackage
         }
         public override String GetConditionString(int indent)
         {
-            return $"It is between {MinHour}:00 and {MaxHour}:00 o'clock.";
+            return $"{(ToNegative ? "(NOT) " : "")}It is between {MinHour}:00 and {MaxHour}:00 o'clock.";
         }
     }
 }
