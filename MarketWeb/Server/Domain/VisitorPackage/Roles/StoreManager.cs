@@ -14,6 +14,11 @@ namespace MarketWeb.Server.Domain
             _appointer = appointer;
         }
 
+        public StoreManager(string appointer, ISet<Operation> operations, string username, string storeName) : base(operations, username, storeName)
+        {
+            _appointer = appointer;
+        }
+
         /// <summary>
         /// checks weather the grantor is the appointer of this manager and then grant permission
         /// </summary>

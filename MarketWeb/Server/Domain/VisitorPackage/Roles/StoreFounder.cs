@@ -11,6 +11,10 @@ namespace MarketWeb.Server.Domain
         {
         }
 
+        public StoreFounder(ISet<Operation> operations, string username, string storeName) : base(operations, username, storeName)
+        {
+        }
+
         private static ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();

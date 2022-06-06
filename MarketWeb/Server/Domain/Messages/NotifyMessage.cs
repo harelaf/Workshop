@@ -6,6 +6,7 @@ namespace MarketWeb.Server.Domain
 {
     public class NotifyMessage
     {
+        private int _id;
         private String _storeName;
         public String StoreName => _storeName;
 
@@ -18,8 +19,13 @@ namespace MarketWeb.Server.Domain
         private String _receiverUsername;
         public String ReceiverUsername => _receiverUsername;
 
-        private int _id;
+        
         public int Id => _id;
+
+        public NotifyMessage(int id,string storeName, string title, string message, string receiverUsername) : this(storeName, title, message, receiverUsername)
+        {
+            _id = id;
+        }
 
         public NotifyMessage(string storeName, string title, string message, string receiverUsername)
         {

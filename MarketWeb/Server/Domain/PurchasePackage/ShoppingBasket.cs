@@ -11,6 +11,10 @@ namespace MarketWeb.Server.Domain
         public virtual IDictionary<Item, int> _items { get; set; }
         public IDictionary<Item, int> Items => _items;
 
+        public ShoppingBasket(Store store, IDictionary<Item, int> items) : this(store)
+        {
+            _items = items;
+        }
 
         public ShoppingBasket(Store store)
         {

@@ -14,6 +14,11 @@ namespace MarketWeb.Server.Domain
             _itemAndAmount = new Dictionary<Item, int>();
         }
 
+        public Stock(Dictionary<Item, int> itemAndAmount)
+        {
+            _itemAndAmount = itemAndAmount;
+        }
+
         public bool ReserveItem(Item item, int amount)
         {
             int newAmount = GetItemAmount(item) - amount;

@@ -7,14 +7,14 @@ namespace MarketWeb.Server.Domain
 {
     public class Item
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private Rating _rating;
-        private ICollection<Discount> _discounts;
-        private int _itemID;
-        private String _name;
+        internal static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        internal Rating _rating { get; set; }
+        internal ICollection<Discount> _discounts { get; set; }
+        internal int _itemID { get; set; }
+        internal String _name { get; set; }
         public virtual double _price { get; set; }
-        private String _description;
-        private String _category;
+        private String _description { get; set; }
+        private String _category { get; set; }
 
         public Rating Rating => _rating;
         public ICollection<Discount> Discounts => _discounts;

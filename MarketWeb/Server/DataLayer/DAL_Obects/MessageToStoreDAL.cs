@@ -20,6 +20,16 @@ namespace MarketWeb.Server.DataLayer
         internal string _reply { get; set; }
         internal string _replierFromStore { get; set; }
 
+        public MessageToStoreDAL(int mid, string storeName, string senderUsername, string message, string title, string reply, string replierFromStore)
+        {
+            this.mid = mid;
+            _storeName = storeName;
+            _senderUsername = senderUsername;
+            _message = message;
+            _title = title;
+            _reply = reply;
+            _replierFromStore = replierFromStore;
+        }
 
         public MessageToStoreDAL(string storeName, string senderUsername, string message, string title)
         {

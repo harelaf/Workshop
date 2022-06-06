@@ -25,6 +25,11 @@ namespace MarketWeb.Server.Domain
             _response = null;
         }
 
+        public Complaint(int id, Registered complainer, int cartID, string message, string response) : this(id, complainer, cartID, message)
+        {
+            _response = response;
+        }
+
         public void Reply(String response)
         {
             _response = response;

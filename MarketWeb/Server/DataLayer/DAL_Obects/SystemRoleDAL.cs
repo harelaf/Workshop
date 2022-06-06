@@ -23,9 +23,10 @@ namespace MarketWeb.Server.DataLayer
     }
     public class SystemAdminDAL : SystemRoleDAL
     {
-        bool _isAdmin { get; set; } = true;
-        public SystemAdminDAL(string username) : base(getOps(), username, "")
+        internal IDictionary<int, ComplaintDAL> _receivedComplaints { get; set; }
+        public SystemAdminDAL(string username, IDictionary<int, ComplaintDAL> receivedComplaints) : base(getOps(), username, "")
         {
+            _receivedComplaints = receivedComplaints;   
         }
         private static ISet<Operation> getOps()
         {
@@ -45,10 +46,9 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         internal string _appointer { get; set; }
 
-        public StoreFounderDAL(string storeName, string appointer, string username) : base(getOps(), username, storeName)
+        public StoreFounderDAL(string storeName, string username) : base(getOps(), username, storeName)
         {
             _storeName = storeName;
-            _appointer = appointer;
         }
         private static ISet<Operation> getOps()
         {

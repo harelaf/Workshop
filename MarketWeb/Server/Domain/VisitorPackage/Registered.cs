@@ -32,6 +32,19 @@ namespace MarketWeb.Server.Domain
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
         public IDictionary<int, Complaint> FiledComplaints => _filedComplaints;
 
+        public Registered(ICollection<AdminMessageToRegistered> adminMessages, ICollection<NotifyMessage> notifications, ICollection<MessageToStore> repliedMessages, string username, string password, string salt, DateTime birthDate, ICollection<SystemRole> roles, IDictionary<int, Complaint> filedComplaints)
+        {
+            _adminMessages = adminMessages;
+            _notifications = notifications;
+            _repliedMessages = repliedMessages;
+            _username = username;
+            _password = password;
+            _salt = salt;
+            _birthDate = birthDate;
+            _roles = roles;
+            _filedComplaints = filedComplaints;
+        }
+
         public bool IsAdmin
         {
             get

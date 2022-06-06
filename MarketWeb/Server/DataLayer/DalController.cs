@@ -51,13 +51,20 @@ namespace MarketWeb.Server.DataLayer
                 }
                     
             }
+            bool hasStoreBasket = false;
             ICollection<ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
             foreach (ShoppingBasketDAL shoppingBasket in shoppingBasketDALs)
             {
-                if(shoppingBasket._storeName == storeName)
+                if(shoppingBasket._store._storeName == storeName)
                 {
                     shoppingBasket._items.Add(itemToAdd, amount);
+                    hasStoreBasket = true;
                 }
+            }
+            if (!hasStoreBasket)
+            {
+                ShoppingBasketDAL basketDAL = new ShoppingBasketDAL(storeDAL, new Dictionary<ItemDAL, int>());
+                basketDAL._items.Add(itemToAdd, amount);
             }
             context.SaveChanges();
         }
@@ -69,7 +76,7 @@ namespace MarketWeb.Server.DataLayer
             ICollection <ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
             foreach (ShoppingBasketDAL shoppingBasket in shoppingBasketDALs)
             {
-                if (shoppingBasket._storeName == storeName)
+                if (shoppingBasket._store._storeName == storeName)
                 {
                     IDictionary<ItemDAL, int> basket = shoppingBasket._items;
                     foreach (ItemDAL item in basket.Keys)
@@ -105,7 +112,7 @@ namespace MarketWeb.Server.DataLayer
             ICollection<ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
             foreach (ShoppingBasketDAL shoppingBasket in shoppingBasketDALs)
             {
-                if (shoppingBasket._storeName == storeName)
+                if (shoppingBasket._store._storeName == storeName)
                 {
                     IDictionary<ItemDAL, int> basket = shoppingBasket._items;
                     foreach (ItemDAL item in basket.Keys)
@@ -155,7 +162,7 @@ namespace MarketWeb.Server.DataLayer
         }
         public void OpenNewStore(String storeName, string founderName)
         {
-            StoreDAL store = new StoreDAL(storeName, new StoreFounderDAL(storeName, "", founderName), StoreState.Active);
+            StoreDAL store = new StoreDAL(storeName, new StoreFounderDAL(storeName, founderName), StoreState.Active);
             context.StoreDALs.Add(store);   
             context.SaveChanges();
         }
@@ -328,7 +335,7 @@ namespace MarketWeb.Server.DataLayer
             context.StoreDALs.Find(storeName)._messagesToStore.Add(msg);
             context.SaveChanges();
         }
-        public void FileComplaint(int cartID, String message, string sender)
+        public void FileComplaint(int cartID, String message, RegisteredDAL sender)
         {
             ComplaintDAL complaint = new ComplaintDAL(sender, cartID, message);
             context.ComplaintDALs.Add(complaint);
@@ -464,7 +471,7 @@ namespace MarketWeb.Server.DataLayer
         }
         public void AppointSystemAdmin(String adminUsername)
         {
-            context.RegisteredDALs.Find(adminUsername)._roles.Add(new SystemAdminDAL(adminUsername));
+            context.RegisteredDALs.Find(adminUsername)._roles.Add(new SystemAdminDAL(adminUsername, new Dictionary<int, ComplaintDAL>()));
             context.SaveChanges();
 
         }
@@ -483,34 +490,6 @@ namespace MarketWeb.Server.DataLayer
             context.SaveChanges();
         }
 
-        private ShoppingCartDAL DomainCartToCartDal(ShoppingCart cartDomain)
-        {
-            ICollection<ShoppingBasketDAL> baskets = new List<ShoppingBasketDAL>(); 
-            foreach (ShoppingBasket basketDomain in cartDomain._shoppingBaskets)
-                baskets.Add(DomainBasketToBasketDal(basketDomain));
-            return new ShoppingCartDAL(baskets);
-        }
-        private ShoppingBasketDAL DomainBasketToBasketDal(ShoppingBasket basketDomain)
-        {
-            IDictionary<ItemDAL, int> items = new Dictionary<ItemDAL, int>();
-            foreach (Item item in basketDomain._items.Keys)
-                items.Add(DomainItemToItemDal(item), basketDomain._items[item]);
-            return new ShoppingBasketDAL(basketDomain._store.StoreName, items);
-        }
-        private ItemDAL DomainItemToItemDal(Item itemDomain)
-        {
-            return new ItemDAL(DomainRatingToRatingDal(itemDomain.Rating), itemDomain.Name,
-                itemDomain._price, itemDomain.Description, itemDomain.Category);
-        }
-        private RatingDAL DomainRatingToRatingDal(Rating ratingDomain)
-        {
-            ICollection<RateDAL> rateSet = new List<RateDAL>();
-            
-            foreach(KeyValuePair<string, Tuple<int, string>> rate in ratingDomain.Ratings)
-            {
-                rateSet.Add(new RateDAL(rate.Key, rate.Value.Item1, rate.Value.Item2));
-            }
-            return new RatingDAL(rateSet);
-        }
+        
     }
 }

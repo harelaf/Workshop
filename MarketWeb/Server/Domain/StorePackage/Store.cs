@@ -12,20 +12,34 @@ namespace MarketWeb.Server.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private Stock _stock;
-        private static int messageId=0;
-		public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
         private DiscountPolicy _discountPolicy;
         private List<MessageToStore> _messagesToStore;
-        public List<MessageToStore> MessagesToStore => _messagesToStore;
         private Rating _rating;
-        public Rating Rating => _rating;
         private List<StoreManager> _managers;
         private List<StoreOwner> _owners;
         private StoreFounder _founder;
         private String _storeName;
         private StoreState _state;
+        public List<MessageToStore> MessagesToStore => _messagesToStore;
+        
+        public Rating Rating => _rating;
 
+        public Store(Stock stock, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy, List<MessageToStore> messagesToStore, Rating rating, List<StoreManager> managers, List<StoreOwner> owners, StoreFounder founder, string storeName, StoreState state)
+        {
+            _stock = stock;
+            _purchasePolicy = purchasePolicy;
+            _discountPolicy = discountPolicy;
+            _messagesToStore = messagesToStore;
+            _rating = rating;
+            _managers = managers;
+            _owners = owners;
+            _founder = founder;
+            _storeName = storeName;
+            _state = state;
+        }
+
+        public Stock Stock => _stock;
         public String StoreName => _storeName;
 
         public StoreState State => _state;

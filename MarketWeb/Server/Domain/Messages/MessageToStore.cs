@@ -45,6 +45,17 @@ namespace MarketWeb.Server.Domain
             _reply = reply; 
         }
 
+        public MessageToStore(string storeName, string senderUsername, string title, string message, string reply, string replier, int id)
+        {
+            _storeName = storeName;
+            _senderUsername = senderUsername;
+            _title = title;
+            _message = message;
+            _reply = reply;
+            _replier = replier;
+            _id = id;
+        }
+
         public bool isClosed()
         {
             return Replier != null;

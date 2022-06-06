@@ -14,6 +14,11 @@ namespace MarketWeb.Server.Domain
             _shoppingBaskets = new List<ShoppingBasket>();
         }
 
+        public ShoppingCart(ICollection<ShoppingBasket> shoppingBaskets)
+        {
+            _shoppingBaskets = shoppingBaskets;
+        }
+
         public ShoppingBasket GetShoppingBasket(String storeName)
         {
             foreach (ShoppingBasket basket in _shoppingBaskets)

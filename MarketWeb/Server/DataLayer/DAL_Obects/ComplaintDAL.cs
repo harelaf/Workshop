@@ -11,7 +11,7 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         internal int _id { get; set; }
         [Required]
-        internal string _complainerUsername { get; set; }
+        internal RegisteredDAL _complainer { get; set; }
         [Required]
         internal int _cartID { get; set; }
         [Required]
@@ -19,9 +19,9 @@ namespace MarketWeb.Server.DataLayer
         internal String _response { get; set; }
         public ComplaintStatus Status { get { return _response == null ? ComplaintStatus.Open : ComplaintStatus.Closed; } }
 
-        public ComplaintDAL(string complainerUsername, int cartID, string message)
+        public ComplaintDAL(RegisteredDAL complainer, int cartID, string message)
         {
-            _complainerUsername = complainerUsername;
+            _complainer = complainer;
             _cartID = cartID;
             _message = message;
         }

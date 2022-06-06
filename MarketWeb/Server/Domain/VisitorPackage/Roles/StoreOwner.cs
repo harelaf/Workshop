@@ -13,7 +13,10 @@ namespace MarketWeb.Server.Domain
         {
             _appointer = appointer;
         }
-
+        public StoreOwner(string appointer, ISet<Operation> operations, string username, string storeName) : base(operations, username, storeName)
+        {
+            _appointer = appointer;
+        }
         private static ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();

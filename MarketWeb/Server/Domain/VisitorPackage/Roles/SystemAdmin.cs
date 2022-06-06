@@ -11,7 +11,10 @@ namespace MarketWeb.Server.Domain
         private IDictionary<int, Complaint> _receivedComplaints = new Dictionary<int, Complaint>();
         public IDictionary<int, Complaint> ReceivedComplaints => _receivedComplaints;
         public SystemAdmin(string Username) : base(getOps(), Username, null) {}
-
+        public SystemAdmin(string Username, ISet<Operation> op, IDictionary<int, Complaint> receivedComplaints) : base(op, Username, null) 
+        {
+            _receivedComplaints = receivedComplaints;
+        }
         private static ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();

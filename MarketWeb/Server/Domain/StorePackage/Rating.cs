@@ -15,6 +15,11 @@ namespace MarketWeb.Server.Domain
             _ratings = new Dictionary<String, Tuple<int, String>>();
         }
 
+        public Rating(Dictionary<string, Tuple<int, string>> ratings)
+        {
+            _ratings = ratings;
+        }
+
         public double GetRating()
         {
             double rating = 0;
