@@ -1,4 +1,4 @@
-﻿using MarketWeb.Server.Domain.PolicyPackage;
+using MarketWeb.Server.Domain.PolicyPackage;
 using System;
 using System.Collections.Generic;
 

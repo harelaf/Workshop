@@ -1,5 +1,6 @@
 ﻿
 using MarketWeb.Server.Domain;
+using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
@@ -21,6 +22,7 @@ namespace MarketWeb.Service
         //private ILogger<MarketAPI> _logger;
         private int _id;
         private bool testMode = false;
+        private static bool useInitializationFile = true;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             if (market == null)
@@ -32,16 +34,25 @@ namespace MarketWeb.Service
             {
                 _market = market;
             }
-            //_logger = logger;
-            //LoadData();
 
-            // DISCOUNT TESTING
-            String conditionString = "(OR CategoryTotalAmountInBasketFrom_Fruit_2 (AND DayOfWeek_4 (NOT TotalBasketPriceRange_22_33) (XOR Hour_0_24)) CategoryTotalAmountInBasketTo_Krabby Patties_333 (OR CategoryTotalAmountInBasketFrom_Fruit_2))";
-            //conditionString = "";
-            String discountString = "(MAX BasketAbsolute_8_2023_1_1 CategoryPercentage_JOE_22_2222_2_2 (PLUS BasketPercentage_33_3322_2_3 BasketAbsolute_8_2023_1_1))";
-            new MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, conditionString).Parse();
+            if (useInitializationFile)
+            {
+                useInitializationFile = false;
+                bool restore = testMode;
+                testMode = true;
+                try
+                {
+                    new InitializationFileParser(this).ParseInitializationFile();
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.Message);
+                    //SOMEHOW RESET SYSTEM?
+                }
+                testMode = restore;
+            }
         }
-       
+
         private String parseAutherization(String Authorization)
         {
             if (testMode)
@@ -93,7 +104,7 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
-                
+
                 _logger.Info($"Login called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(authToken, Username, password);
@@ -596,7 +607,7 @@ namespace MarketWeb.Service
         /// <param name="cartID"> The cart ID relevant to the complaint. </param>
         /// <param name="message"> The message detailing the complaint. </param>
         [HttpPost("FileComplaint")]
-        public Response FileComplaint([FromHeader] String Authorization, int cartID,  String message)
+        public Response FileComplaint([FromHeader] String Authorization, int cartID, String message)
         {//II.3.6
             Response response;
             try
@@ -1247,7 +1258,7 @@ namespace MarketWeb.Service
             }
             return response;
         }
-        
+
 
         [HttpPost("IsStoreActive")]
         public Response IsStoreActive([FromHeader] String Authorization, string storeName, string op)
@@ -1304,7 +1315,7 @@ namespace MarketWeb.Service
             Register(auth2, username2, password2, new DateTime(1992, 8, 4));
             auth2 = "Bearer " + Login(auth2, username2, password2).Value;
             OpenNewStore(auth2, storeName2);
-            
+
             int itemID1 = 1;
             int price1 = 1;
             String itemName1 = "itemName1";
@@ -1327,7 +1338,7 @@ namespace MarketWeb.Service
             int quantity3 = 300;
             
             AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
-            
+
             AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
             AddItemToStoreStock(auth1, storeName1, itemID3, itemName3, price3, desc3, category3, quantity3);
 
