@@ -140,10 +140,10 @@ namespace MarketWeb.Server.Service
             }
             catch
             {
-                throw new ArgumentException($"INITIALIZER: {MethodName} called with faulty authentication index.");
+                throw new ArgumentException($"INITIALIZER: {MethodName} called with faulty authentication index. argument={arg}");
             }
             if (authIndex < 1 || authIndex > tokens.Count)
-                throw new IndexOutOfRangeException($"INITIALIZER: {MethodName} called with faulty authentication index.");
+                throw new IndexOutOfRangeException($"INITIALIZER: {MethodName} called with faulty authentication index. argument={arg}");
             return authIndex;
         }
 
@@ -156,7 +156,7 @@ namespace MarketWeb.Server.Service
             }
             catch
             {
-                throw new ArgumentException($"INITIALIZER: {MethodName} failed because of faulty DateTime format.");
+                throw new ArgumentException($"INITIALIZER: {MethodName} failed because of faulty DateTime format. argument={arg}");
             }
             return date;
         }
@@ -170,7 +170,7 @@ namespace MarketWeb.Server.Service
             }
             catch
             {
-                throw new ArgumentException($"INITIALIZER: {MethodName} failed because of faulty integer.");
+                throw new ArgumentException($"INITIALIZER: {MethodName} failed because of faulty integer. argument={arg}");
             }
             return value;
         }
@@ -184,7 +184,7 @@ namespace MarketWeb.Server.Service
             }
             catch
             {
-                throw new ArgumentException($"INITIALIZER: {MethodName} failed because of faulty double.");
+                throw new ArgumentException($"INITIALIZER: {MethodName} failed because of faulty double. argument={arg}");
             }
             return value;
         }

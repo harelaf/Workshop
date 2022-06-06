@@ -22,7 +22,7 @@ namespace MarketWeb.Service
         //private ILogger<MarketAPI> _logger;
         private int _id;
         private bool testMode = false;
-        private bool useInitializationFile = true;
+        private static bool useInitializationFile = true;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             if (market == null)
@@ -34,9 +34,10 @@ namespace MarketWeb.Service
             {
                 _market = market;
             }
-            
+
             if (useInitializationFile)
             {
+                useInitializationFile = false;
                 bool restore = testMode;
                 testMode = true;
                 try
@@ -51,7 +52,7 @@ namespace MarketWeb.Service
                 testMode = restore;
             }
         }
-       
+
         private String parseAutherization(String Authorization)
         {
             if (testMode)
@@ -103,7 +104,7 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
-                
+
                 _logger.Info($"Login called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(authToken, Username, password);
@@ -607,7 +608,7 @@ namespace MarketWeb.Service
         /// <param name="cartID"> The cart ID relevant to the complaint. </param>
         /// <param name="message"> The message detailing the complaint. </param>
         [HttpPost("FileComplaint")]
-        public Response FileComplaint([FromHeader] String Authorization, int cartID,  String message)
+        public Response FileComplaint([FromHeader] String Authorization, int cartID, String message)
         {//II.3.6
             Response response;
             try
@@ -1258,7 +1259,7 @@ namespace MarketWeb.Service
             }
             return response;
         }
-        
+
 
         [HttpPost("IsStoreActive")]
         public Response IsStoreActive([FromHeader] String Authorization, string storeName, string op)
@@ -1315,7 +1316,7 @@ namespace MarketWeb.Service
             Register(auth2, username2, password2, new DateTime(1992, 8, 4));
             auth2 = "Bearer " + Login(auth2, username2, password2).Value;
             OpenNewStore(auth2, storeName2);
-            
+
             int itemID1 = 1;
             int price1 = 1;
             String itemName1 = "itemName1";
@@ -1336,9 +1337,9 @@ namespace MarketWeb.Service
             String category3 = "category3";
             String desc3 = "some other other item description goes here.";
             int quantity3 = 3;
-            
+
             AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
-            
+
             AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
             AddItemToStoreStock(auth1, storeName1, itemID3, itemName3, price3, desc3, category3, quantity3);
 
