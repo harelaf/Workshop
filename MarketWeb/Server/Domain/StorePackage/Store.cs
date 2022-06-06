@@ -269,11 +269,7 @@ namespace MarketWeb.Server.Domain
 
         public void AddMessage(MessageToStore message)
         {
-
-            messageId++;
             _messagesToStore.Add(message);
-            message.Setid(messageId);
-
         }
 
         public void CloseStore()

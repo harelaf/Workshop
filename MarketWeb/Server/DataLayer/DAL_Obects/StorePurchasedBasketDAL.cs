@@ -15,10 +15,10 @@ namespace MarketWeb.Server.DataLayer
         public StorePurchasedBasketDAL(string storeName)
         {
             _storeName = storeName;
-            _PurchasedBaskets = new List<ShoppingBasketDAL>();
+            _PurchasedBaskets = new List<PurchasedBasketDAL>();
         }
 
-        public StorePurchasedBasketDAL(string storeName, ICollection<ShoppingBasketDAL> purchasedBaskets) : this(storeName)
+        public StorePurchasedBasketDAL(string storeName, ICollection<PurchasedBasketDAL> purchasedBaskets) : this(storeName)
         {
             _PurchasedBaskets = purchasedBaskets;
         }
