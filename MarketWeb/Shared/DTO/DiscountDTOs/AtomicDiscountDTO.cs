@@ -6,5 +6,6 @@ namespace MarketWeb.Shared.DTO
 {
     public interface AtomicDiscountDTO : IDiscountDTO
     {
+        public int ObjType { get; set; }
     }
 }

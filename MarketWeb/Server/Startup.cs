@@ -1,5 +1,7 @@
+using MarketWeb.Client.Helpers;
 using MarketWeb.Server.Domain;
 using MarketWeb.Service;
+using MarketWeb.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using System.Linq;
 
 namespace MarketWeb.Server
@@ -24,9 +27,16 @@ namespace MarketWeb.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllersWithViews();
-            services.AddRazorPages().AddNewtonsoftJson();
+            services.AddRazorPages().AddNewtonsoftJson(options =>
+            {
+                //customize settings here. For example, change the naming strategy
+                options.SerializerSettings.Formatting = Formatting.Indented;
+                options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
+                //options.SerializerSettings.Converters.Add(new DiscountConverter());
+                //options.SerializerSettings.Converters.Add(new ConditionConverter());
+                //options.SerializerSettings.Converters.Add(new DetailsConverter());
+            });
             services.AddSingleton<MarketAPI>();
             services.AddSingleton<Market>();
         }

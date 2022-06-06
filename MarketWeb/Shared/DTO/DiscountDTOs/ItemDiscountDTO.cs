@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MarketWeb.Shared.DTO
 {
+    //[JsonConverter(typeof(ItemConverter))]
     public class ItemDiscountDTO : AtomicDiscountDTO
     {
         private double _percentage_to_subtract;
@@ -15,6 +17,7 @@ namespace MarketWeb.Shared.DTO
         public String ItemName => _itemName;
         public IConditionDTO Condition => _condition;
         public DateTime Expiration => _expiration;
+        public int ObjType { get => 3; set { return; } }
         public ItemDiscountDTO(double percentage_to_subtract, String itemName, IConditionDTO condition, DateTime expiration)
         {
             _percentage_to_subtract = percentage_to_subtract;

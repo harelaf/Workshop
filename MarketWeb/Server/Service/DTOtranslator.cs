@@ -358,9 +358,9 @@ namespace MarketWeb.Service
 
         public DiscountDetailsDTO toDTO(DiscountDetails discountDetails, double itemPrice)
         {
-            List<AtomicDiscountDTO> disList = new List<AtomicDiscountDTO>();
-            //foreach (AtomicDiscount discount in discountDetails.DiscountList)
-            //    disList.Add(discountToDTO(discount));
+            List<String> disList = new List<String>();
+            foreach (AtomicDiscount discount in discountDetails.DiscountList)
+                disList.Add(discount.GetDiscountString(0));
             double actualPrice = discountDetails.calcPriceFromCurrPrice(itemPrice);
             return new DiscountDetailsDTO(
                 discountDetails.Amount,

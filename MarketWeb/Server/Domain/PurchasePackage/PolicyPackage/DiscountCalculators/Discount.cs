@@ -38,7 +38,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             String str = "\n";
             for (int i = 0; i < numOfTabs; i++)
-                str += '\t';
+                str += "\t";
             return str;
         }
     }

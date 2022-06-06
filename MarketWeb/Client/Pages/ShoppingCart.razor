@@ -18,6 +18,7 @@
 
 @if (cart.Baskets.Count > 0)
 {
+    double totalAllBasketsWithDiscount = 0;
     @foreach (ShoppingBasketDTO shoppingBasketDTO in cart.Baskets)
     {
         string storeName = shoppingBasketDTO.StoreName;
@@ -25,7 +26,7 @@
         double totalWithDiscount = 0;
         IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
         <h4>Store: @storeName</h4>
-        <table style="width:100%" id="@storeName">
+        <table style="white-space:pre-wrap; width:100%" id="@storeName">
             <tr>
                 <th>Product Name</th>
                 <th>Amount</th>
@@ -37,9 +38,13 @@
             </tr>
             @foreach (int itemID in items.Keys)
             {
-                String detailsString = StringFormatter.discountDetailsToString(items[itemID].Item2);//"kkklll";//
+                List<String> dislist = items[itemID].Item2.DiscountList;
+                String detailsString = dislist == null || dislist.Count == 0 ? "no discount" : String.Join("\n", items[itemID].Item2.DiscountList);//"kkklll";//
+                //detailsString = detailsString.Replace("\\n", "\n").Replace("\\t", "\t");
+                //String detailsString = StringFormatter.discountDetailsToString(items[itemID].Item2);//"kkklll";//
                 totalNoDiscount += items[itemID].Item1.Price * items[itemID].Item2.Amount;
                 totalWithDiscount += items[itemID].Item2.ActualPrice;
+                totalAllBasketsWithDiscount += items[itemID].Item2.ActualPrice;
                 <tr id="@(items[itemID].Item1.Name + storeName)">
                     <th>@items[itemID].Item1.Name</th>
                     <th>@items[itemID].Item2.Amount</th>
@@ -65,6 +70,7 @@
         <h4>Your total (without discounts) is: $@totalNoDiscount</h4>
         <h4>Your total (with discounts) is: $@totalWithDiscount</h4>
     }
+    <h4>Your ALL baskets total (with discounts) is: $@totalAllBasketsWithDiscount</h4>
     <button class="btn btn-primary" @onclick="PurchaseCartButton">Purchase Cart</button>
 }
 else

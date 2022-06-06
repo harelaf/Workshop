@@ -11,9 +11,9 @@ namespace MarketWeb.Client.Helpers
                 return "null";
             if (details.DiscountList == null)
                 return "other null";
-            String str = "";
-            foreach (AtomicDiscountDTO dis in details.DiscountList)
-                str += $"{discountToString(dis)}\n";
+            String str = "fix discountDetailsToString please.";
+            //foreach (AtomicDiscountDTO dis in details.DiscountList)
+            //    str += $"{discountToString(dis)}\n";
             return str;
         }
 

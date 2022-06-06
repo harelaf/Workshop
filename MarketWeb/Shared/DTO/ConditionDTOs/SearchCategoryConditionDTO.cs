@@ -15,6 +15,7 @@ namespace MarketWeb.Shared.DTO
         public int MinAmount => _minAmount;
         public int MaxAmount => _maxAmount;
         public bool Negative => _negative;
+        public int ObjType { get => 5; set { return; } }
         public SearchCategoryConditionDTO(String keyWord, int minAmount, int maxAmount, bool negative)
         {
             _keyWord = keyWord;

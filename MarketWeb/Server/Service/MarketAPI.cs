@@ -1361,8 +1361,8 @@ namespace MarketWeb.Service
             PriceableConditionDTO pricable = new PriceableConditionDTO(null, 100, -1, false);
             SearchItemConditionDTO itemCond = new SearchItemConditionDTO(itemName2, 3, -1, false);
             List<IConditionDTO> condLst2 = new List<IConditionDTO>();
-            condLst.Add(pricable);
-            condLst.Add(itemCond);
+            condLst2.Add(pricable);
+            condLst2.Add(itemCond);
             OrCompositionDTO orCond = new OrCompositionDTO(false, condLst2);
             CategoryDiscountDTO categoryDis = new CategoryDiscountDTO(percentageToSubtract, dairyCategory, orCond, expiration);
             AddStoreDiscount(auth2, storeName2, categoryDis);
