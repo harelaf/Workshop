@@ -16,45 +16,63 @@
     }
 </style>
 
-@if (cart != null && cart.Baskets.Count > 0)
+@if (cart.Baskets.Count > 0)
 {
+    double totalAllBasketsWithDiscount = 0;
     @foreach (ShoppingBasketDTO shoppingBasketDTO in cart.Baskets)
     {
         string storeName = shoppingBasketDTO.StoreName;
-        double total = 0;
-        IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
+        double totalNoDiscount = 0;
+        double totalWithDiscount = 0;
+        IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
         <h4>Store: @storeName</h4>
-        <table style="width:100%" id="@storeName">
+        <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
             <tr>
                 <th>Product Name</th>
                 <th>Amount</th>
-                <th>price per unit</th>
+                <th>Price Per Unit</th>
+                <th>Applied Discounts</th>
+                <th>Actual Price Per All Items</th>
+                <th>Remove Item</th>
+                <th>Update Quantity</th>
             </tr>
             @foreach (int itemID in items.Keys)
             {
-                total += items[itemID].Item1.Price * items[itemID].Item2;
+                List<String> dislist = items[itemID].Item2.DiscountList;
+                String detailsString = dislist == null || dislist.Count == 0 ? "no discount" : String.Join("\n", items[itemID].Item2.DiscountList);//"kkklll";//
+                //detailsString = detailsString.Replace("\\n", "\n").Replace("\\t", "\t");
+                //String detailsString = StringFormatter.discountDetailsToString(items[itemID].Item2);//"kkklll";//
+                totalNoDiscount += items[itemID].Item1.Price * items[itemID].Item2.Amount;
+                totalWithDiscount += items[itemID].Item2.ActualPrice;
+                totalAllBasketsWithDiscount += items[itemID].Item2.ActualPrice;
                 <tr id="@(items[itemID].Item1.Name + storeName)">
                     <th>@items[itemID].Item1.Name</th>
-                    <th>@items[itemID].Item2</th>
+                    <th>@items[itemID].Item2.Amount</th>
                     <th>$@items[itemID].Item1.Price</th>
+                    <th>@detailsString</th>
+                    <th>@items[itemID].Item2.ActualPrice</th>
                     <th>
                         <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
                     </th>
                     <th>
-                        <EditForm Model="@UpdateItemQuantityInCartModel">
-                            <DataAnnotationsValidator />
-                            <div id="@itemID" class="form-group">
-                                <label>New Quantity</label>
-                                <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
-                            </div>
-                            <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
-                        </EditForm>
+                        <div>
+                            <EditForm Model="@UpdateItemQuantityInCartModel">
+                                <DataAnnotationsValidator/>
+                                <div id="@itemID" class="form-group">
+                                    <label>New Quantity</label>
+                                    <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
+                                </div>
+                                <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
+                            </EditForm>
+                        </div>
                     </th>
                 </tr>
             }
         </table>
-        <h4>Your total (without discounts) is: $@total</h4>
+        <h4>Your total (without discounts) is: $@totalNoDiscount</h4>
+        <h4>Your total (with discounts) is: $@totalWithDiscount</h4>
     }
+    <h4>Your ALL baskets total (with discounts) is: $@totalAllBasketsWithDiscount</h4>
     <button class="btn btn-primary" @onclick="PurchaseCartButton">Purchase Cart</button>
 }
 else
@@ -119,7 +137,6 @@ else
     {
         // reset alerts on submit
         AlertService.Clear();
-
         try
         {
             Response<ShoppingCartDTO> response = await marketAPIClient.ViewMyCart();

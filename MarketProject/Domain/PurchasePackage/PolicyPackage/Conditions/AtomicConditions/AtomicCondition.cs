@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public abstract class AtomicCondition : Condition
     {

@@ -8,10 +8,10 @@ namespace MarketProject.Service.DTO
     public class ShoppingBasketDTO
     {
         private String _storeName;
-        private IDictionary<ItemDTO, int> _items;
+        private IDictionary<ItemDTO, DiscountDetailsDTO> _items;
         public String StoreName => _storeName;
-        public IDictionary<ItemDTO, int> Items => _items;
-        public ShoppingBasketDTO(String storeName, Dictionary<ItemDTO, int> items)
+        public IDictionary<ItemDTO, DiscountDetailsDTO> Items => _items;
+        public ShoppingBasketDTO(String storeName, Dictionary<ItemDTO, DiscountDetailsDTO> items)
         {
             _storeName = storeName;
             _items = items;
@@ -21,10 +21,10 @@ namespace MarketProject.Service.DTO
             //_name;
             string toString = $"Shopping Basket of store: {_storeName}:\n";
             toString += string.Format($"|{0,-30}|{1,-4}|{2,-15}|{3,-30}\n", "Item ID", "Item Category", "Item Price", "Amount");
-            foreach (KeyValuePair<ItemDTO, int> entry in _items)
+            foreach (KeyValuePair<ItemDTO, DiscountDetailsDTO> entry in _items)
             {
                 toString += string.Format($"|{0,-30}|{1,-4}|{2,-15}|{3,-30}\n",
-                    entry.Key.ItemID, entry.Key.Category, entry.Key.Price, entry.Value);
+                    entry.Key.ItemID, entry.Key.Category, entry.Key.Price, entry.Value.Amount);
             }
             return toString;
         }

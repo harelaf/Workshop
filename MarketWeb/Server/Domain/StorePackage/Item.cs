@@ -1,4 +1,4 @@
-﻿using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+﻿using MarketWeb.Server.Domain.PolicyPackage;
 using System;
 using System.Collections.Generic;
 using System.Text;

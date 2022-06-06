@@ -47,7 +47,7 @@ namespace MarketWeb.Shared.DTO
                     {
                         if (itemid == itemID)
                         {
-                            totalAmountInCart += shoppingBasketDTO.Items[itemid].Item2;
+                            totalAmountInCart += shoppingBasketDTO.Items[itemid].Item2.Amount;
                             break;
                         }
 

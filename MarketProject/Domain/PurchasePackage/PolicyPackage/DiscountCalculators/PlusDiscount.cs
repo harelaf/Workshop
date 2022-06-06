@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public class PlusDiscount : ComposedDiscount
     {
@@ -17,7 +17,11 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
                 sumDis += dis.GetTotalDiscount(searchablePriceable);
             return sumDis;
         }
-
+        public override void applyDiscount(ISearchablePriceable searchablePriceable)
+        {
+            foreach(Discount dis in DiscountList)
+                dis.applyDiscount(searchablePriceable);
+        }
         public override String GetDiscountString(int indent)
         {
             String pad = newLine(indent);
@@ -30,7 +34,6 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             }
             return str;
         }
-
         public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
         {
             DateTime ans = DateTime.MinValue;
@@ -45,12 +48,10 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             }
             return ans;
         }
-
         public void AddDiscount(Discount discount)
         {
             DiscountList.Add(discount);
         }
-
         public override string GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
         {
             String pad2 = newLine(indent + 1);

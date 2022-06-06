@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public abstract class AtomicDiscount : Discount
     {
@@ -19,10 +19,10 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         {
             _expiration = expiration;
         }
-
         protected AtomicDiscount(DateTime expiration) : base()
         {
             _expiration = expiration;
         }
+        public abstract double calcPriceFromCurrPrice(double currPrice);
     }
 }

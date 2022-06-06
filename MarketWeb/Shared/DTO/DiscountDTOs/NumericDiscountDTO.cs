@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MarketWeb.Shared.DTO
 {
-    public class NumericDiscountDTO : IDiscountDTO
+    public class NumericDiscountDTO : AtomicDiscountDTO
     {
         private double _priceToSubtract;
         private IConditionDTO _condition;
@@ -13,6 +13,7 @@ namespace MarketWeb.Shared.DTO
         public double PriceToSubtract => _priceToSubtract;
         public IConditionDTO Condition => _condition;
         public DateTime Expiration => _expiration;
+        public int ObjType { get => 4; set { return; } }
         public NumericDiscountDTO(double priceToSubtract, IConditionDTO condition, DateTime expiration)
         {
             _priceToSubtract = priceToSubtract;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public class CategoryDiscount : PercentageDiscount
     {
@@ -22,11 +22,11 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             _category = category;
         }
 
-        public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
+        public override void applyDiscount(ISearchablePriceable searchablePriceable)
         {
             if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
-                return 0;
-            return searchablePriceable.GetCategoryPrice(Category) * PercentageToSubtract / 100;
+                return;
+            searchablePriceable.SetCategoryDiscount(this, Category);
         }
 
         public override string GetDiscountString(int indent)
@@ -41,6 +41,12 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
                 $"{newLine(indent)}{searchablePriceable.GetCategoryPrice(Category)} - {GetTotalDiscount(searchablePriceable)} = {searchablePriceable.GetCategoryPrice(Category) - GetTotalDiscount(searchablePriceable)}" +
                 ExpirationToString(indent) +
                 ConditionToString(indent);
+        }
+        public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
+        {
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return 0;
+            return searchablePriceable.GetCategoryPrice(Category) * PercentageToSubtract / 100;
         }
     }
 }
