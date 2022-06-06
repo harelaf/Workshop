@@ -708,7 +708,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 nameString += DiscountString[DiscountIndex];
                 DiscountIndex++;
             }
-            if (DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
+            if (DiscountIndex >= DiscountString.Length || DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
             {
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
@@ -718,7 +718,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 valueString += DiscountString[DiscountIndex];
                 DiscountIndex++;
             }
-            if (DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
+            if (DiscountIndex >= DiscountString.Length || DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
             {
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
@@ -728,7 +728,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 yearString += DiscountString[DiscountIndex];
                 DiscountIndex++;
             }
-            if (DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
+            if (DiscountIndex >= DiscountString.Length || DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
             {
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
@@ -738,7 +738,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 monthString += DiscountString[DiscountIndex];
                 DiscountIndex++;
             }
-            if (DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
+            if (DiscountIndex >= DiscountString.Length || DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
             {
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
@@ -781,7 +781,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 valueString += DiscountString[DiscountIndex];
                 DiscountIndex++;
             }
-            if (DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
+            if (DiscountIndex >= DiscountString.Length || DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
             {
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
@@ -791,7 +791,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 yearString += DiscountString[DiscountIndex];
                 DiscountIndex++;
             }
-            if (DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
+            if (DiscountIndex >= DiscountString.Length || DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
             {
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }
@@ -801,7 +801,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 monthString += DiscountString[DiscountIndex];
                 DiscountIndex++;
             }
-            if (DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
+            if (DiscountIndex >= DiscountString.Length || DiscountString[DiscountIndex] == ')' || (DiscountIndex > 0 && DiscountString[DiscountIndex - 1] == ')'))
             {
                 throw new Exception($"Parsing discount string failed. At index {DiscountIndex}.");
             }

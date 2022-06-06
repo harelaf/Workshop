@@ -26,7 +26,7 @@
         double totalWithDiscount = 0;
         IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
         <h4>Store: @storeName</h4>
-        <table style="white-space:pre-wrap; width:100%" id="@storeName">
+        <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
             <tr>
                 <th>Product Name</th>
                 <th>Amount</th>
@@ -55,14 +55,16 @@
                         <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
                     </th>
                     <th>
-                        <EditForm Model="@UpdateItemQuantityInCartModel">
-                            <DataAnnotationsValidator/>
-                            <div id="@itemID" class="form-group">
-                                <label>New Quantity</label>
-                                <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
-                            </div>
-                            <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
-                        </EditForm>
+                        <div>
+                            <EditForm Model="@UpdateItemQuantityInCartModel">
+                                <DataAnnotationsValidator/>
+                                <div id="@itemID" class="form-group">
+                                    <label>New Quantity</label>
+                                    <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
+                                </div>
+                                <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
+                            </EditForm>
+                        </div>
                     </th>
                 </tr>
             }

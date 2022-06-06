@@ -1024,7 +1024,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AddStoreDiscount", errorMessage);
                 throw new Exception(errorMessage);
             }
-            Discount discount = new PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, discountString).Parse();
+            Discount discount = new PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, conditionString).Parse();
             _storeManagement.AddStoreDiscount(storeName, discount);
         }
     }
