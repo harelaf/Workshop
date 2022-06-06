@@ -1216,6 +1216,25 @@ namespace MarketWeb.Service
             return response;
         }
 
+        [HttpPost("AddStorePurchasePolicy")]
+        public Response AddStorePurchasePolicy([FromHeader] String Authorization, String storeName, String conditionString)
+        {
+            Response response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Add Store Purchase Policy called with parameters: authToken={authToken}, storeName={storeName}, conditionString={conditionString}.");
+                _market.AddStorePurchasePolicy(authToken, storeName, conditionString);
+                response = new Response();
+                _logger.Info($"SUCCESSFULY executed Add Store Purchase Policy.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+
         [HttpPost("CalcCartActualPrice")]
         public Response<Double> CalcCartActualPrice([FromHeader] String Authorization)
         {

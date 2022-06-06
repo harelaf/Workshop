@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using MarketWeb.Server.Domain.PolicyPackage;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage;
+using MarketWeb.Server.Domain.PurchasePackage.PolicyPackage;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.Domain
@@ -1024,8 +1026,25 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AddStoreDiscount", errorMessage);
                 throw new Exception(errorMessage);
             }
-            Discount discount = new PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, conditionString).Parse();
+            Discount discount = new DiscountParser(discountString, conditionString).Parse();
             _storeManagement.AddStoreDiscount(storeName, discount);
+        }
+
+        public void AddStorePurchasePolicy(string authToken, string storeName, string conditionString)
+        {
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY))
+                errorMessage = "Visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("AddStoreDiscount", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            Condition condition = new ConditionParser(conditionString).Parse();
+            _storeManagement.AddStorePurchasePolicy(storeName, condition);
         }
     }
 }
