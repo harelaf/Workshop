@@ -86,7 +86,10 @@ namespace MarketWeb.Client.Helpers
         {
             var request = new HttpRequestMessage(method, uri);
             if (value != null)
-                request.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
+                request.Content = new StringContent(JsonConvert.SerializeObject(value, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                }), Encoding.UTF8, "application/json");
             return request;
         }
 
@@ -123,7 +126,10 @@ namespace MarketWeb.Client.Helpers
 
             await handleErrors(response);
             string jsonString = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(jsonString);
+            return JsonConvert.DeserializeObject<T>(jsonString, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
         }
 
         private async Task addJwtHeader(HttpRequestMessage request)

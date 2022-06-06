@@ -1,5 +1,5 @@
 ﻿using MarketWeb.Server.DataLayer;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
 using System;
 using System.Collections.Generic;
@@ -17,10 +17,15 @@ namespace MarketWeb.Server.Domain
         }
         public ShoppingBasketDAL BasketDomainToDal(ShoppingBasket basketDomain)
         {
-            IDictionary<ItemDAL, int> items = new Dictionary<ItemDAL, int>();
+            IDictionary<ItemDAL, PurchaseDetailsDAL> items = new Dictionary<ItemDAL, PurchaseDetailsDAL>();
             foreach (Item item in basketDomain._items.Keys)
-                items.Add(ItemDomainToDal(item), basketDomain._items[item]);
+                items.Add(ItemDomainToDal(item), PurchaseDetailsToDal(item.ItemID, basketDomain._items[item]));
             return new ShoppingBasketDAL(StoreDomainToDal(basketDomain._store), items);
+        }
+
+        private PurchaseDetailsDAL PurchaseDetailsToDal(int itemID, DiscountDetails discountDetails)
+        {
+            //todo
         }
 
         private StoreDAL StoreDomainToDal(Store store)
@@ -45,7 +50,17 @@ namespace MarketWeb.Server.Domain
             {
                 managers.Add(StoreManagerDomainToDal(manager));
             }
-            return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state);
+            return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, PrchasePolicyDomainToDal(store.GetPurchasePolicy()), DiscountPolicyDomainToDal(store.GetDiscountPolicy()));
+        }
+
+        private DiscountPolicyDAL DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
+        {
+            //todo
+        }
+
+        private PurchasePolicyDAL PrchasePolicyDomainToDal(PurchasePolicy purchasePolicy)
+        {
+            //todo;
         }
 
         private StockDAL StockDomainToDal(Stock stock)
@@ -97,8 +112,8 @@ namespace MarketWeb.Server.Domain
         public Store StoreDalToDomain(StoreDAL storeDAL)
         {
             Stock stock = StockDalToDomain(storeDAL._stock);
-            PurchasePolicy purchasePolicy = null;// ron&avishi
-            DiscountPolicy discountPolicy = null;// ron&avishi
+            PurchasePolicy purchasePolicy = PurchasePolicyDalToDomain(storeDAL._purchasePolicy);
+            DiscountPolicy discountPolicy = DiscountPolicyDalToDomain(storeDAL._discountPolicy);
             StoreFounder founder = StoreFounderDalToDomain(storeDAL._founder);
             String storeName = storeDAL._storeName;
             StoreState state = storeDAL._state;
@@ -122,6 +137,17 @@ namespace MarketWeb.Server.Domain
             return new Store(stock, purchasePolicy, discountPolicy, messagesToStore, rating
                 , managers, owners, founder,storeName ,state);
         }
+
+        private DiscountPolicy DiscountPolicyDalToDomain(DiscountPolicyDAL discountPolicy)
+        {
+            throw new NotImplementedException();
+        }
+
+        private PurchasePolicy PurchasePolicyDalToDomain(PurchasePolicyDAL purchasePolicy)
+        {
+            throw new NotImplementedException();
+        }
+
         public MessageToStore MessageToStoreDALToDomain(MessageToStoreDAL msg)
         {
             return new MessageToStore(msg._storeName, msg._senderUsername, 
@@ -176,13 +202,19 @@ namespace MarketWeb.Server.Domain
         }
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
-            IDictionary<Item, int> items = new Dictionary<Item, int>();
-            foreach(KeyValuePair<ItemDAL, int> i_a in basketDAL._items)
+            IDictionary<Item, DiscountDetails> items = new Dictionary<Item, DiscountDetails>();
+            foreach(KeyValuePair<ItemDAL, PurchaseDetailsDAL> i_a in basketDAL._items)
             {
-                items.Add(ItemDalToDomain(i_a.Key), i_a.Value);
+                items.Add(ItemDalToDomain(i_a.Key), PurchaseDetailsDALToDomain(i_a.Value));
             }
             return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items);
         }
+
+        private DiscountDetails PurchaseDetailsDALToDomain(PurchaseDetailsDAL value)
+        {
+            //todo
+        }
+
         public Registered RegisteredDALToDomain(RegisteredDAL registeredDAL)
         {
             string username = registeredDAL._username;

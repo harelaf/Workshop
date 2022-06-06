@@ -1,0 +1,278 @@
+﻿@page "/StorePage/{StoreName}/Policies"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+<div class="text-center" id="Title">
+    <h1 class="display-4">@(StoreName)'s Policies Page</h1>
+    <br />
+</div>
+<div id="Discount Policy">
+    <h2>Discount Policies</h2>
+    <p style="font-size:20px">
+        In order to add a new discount policy to your store, please read the following instructions:
+    </p>
+    <br />
+    <h3>Discounts</h3>
+    <div id="Discounts" style="font-size:16px;margin-left:35px;">
+        <p>
+            These are the discount types currently available and their respective formats:
+            <ul>
+                <li>
+                    A percentage off the price of an item.  <b>(ItemPercentage_{ITEM_NAME}_{PERCENTAGE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
+                </li>
+                <li>
+                    A percentage off an entire category.  <b>(CategoryPercentage_{CATEGORY_NAME}_{PERCENTAGE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
+                </li>
+                <li>
+                    A percentage off the shopping basket.  <b>(BasketPercentage_{PERCENTAGE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
+                </li>
+                <li>
+                    Absolute value discount for the shopping basket.  <b>(BasketAbsolute_{VALUE}_{EXP_YEAR}_{EXP_MONTH}_{EXP_DAY})</b>
+                </li>
+            </ul>
+            <br />
+            Logic can be added to discounts by using the following operators:
+            <br />
+            <ul>
+                <li>
+                    PLUS - The discounts value will get summed.
+                </li>
+                <li>
+                    MAX - The discount with the biggest value will be chosen.
+                </li>
+            </ul>
+            <br />
+            In order to add a discount, follow these rules:
+            <br />
+            <ol>
+                <li>
+                    Use the aforementioned formats only.  <font color="red">&#9888;</font> Everything is case sensitive! <font color="red">&#9888;</font>
+                </li>
+                <li>
+                    When the representation contains a '{XXX}', it means you can input a value of your own, or choose one.
+                    <br />
+                    For example,
+                    <br />
+                    <ul>
+                        <li>
+                            {ITEM_NAME}, means you need to input the name of the item.
+                        </li>
+                        <li>
+                            {EXP_YEAR}, means you need input the expiration year for the discount.
+                        </li>
+                    </ul>
+                    <br />
+                    In order to add a 10% discount, which ends next year, on the 'Dairy' category, use the following format:
+                    <br />
+                    <b>CategoryPercentage_Dairy_10_2023_1_1</b>
+                </li>
+                <li>
+                    In order to create composed discounts, use PLUS/MAX in a prefix syntax.
+                    <br />
+                    In a prefix syntax, first put the operator (i.e. MAX), and then the operands (i.e. the discounts).
+                    <br />
+                    In order to add a discount which picks the <b>MAXIMUM</b> between 10% off the 'Dairy' category and 50% off 'White Bread', use the following format:
+                    <br />
+                    <b>(MAX CategoryPercentage_Dairy_10_2023_1_1 ItemPercentage_White Bread_50_2023_1_1)</b>
+                </li>
+            </ol>
+            <br />
+            The following is an example of a discount:
+            <br />
+            <b>(MAX (PLUS CategoryPercentage_Dairy_10_2022_12_30 CategoryPercentage_Pasta_5_2022_11_23 Absolute_5_2022_7_1) ItemPercentage_Bread_50_2029_1_1)</b>
+        </p>
+    </div>
+    <br />
+    <h3>Conditions</h3>
+    <br />
+    <div id="DiscountConditions" style="font-size:16px;margin-left:35px;">
+        <p>
+            Discounts can also be conditioned.
+            <br />
+            These are the currently available conditions and their respective formats:
+            <ul>
+                <li>
+                    Day of the week.  <b>(DayOfWeek_{1-7})</b>
+                </li>
+                <li>
+                    Specific hours.  <b>(Hour_{0-24}_{0-24})</b>
+                </li>
+                <li>
+                    Total price of shopping basket, with 3 options:
+                    <br />
+                    <ol>
+                        <li>
+                            Price in range:  <b>(TotalBasketPriceRange_{FROM}_{TO})</b>
+                        </li>
+                        <li>
+                            Price starts from:  <b>(TotalBasketPriceFrom_{PRICE})</b>
+                        </li>
+                        <li>
+                            Price ends at:  <b>(TotalBasketPriceTo_{PRICE})</b>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    Amount of some item in cart, with 3 options:
+                    <br />
+                    <ol>
+                        <li>
+                            Amount in range:  <b>(ItemTotalAmountInBasketRange_{ITEM_NAME}_{FROM}_{TO})</b>
+                        </li>
+                        <li>
+                            Amount starts from:  <b>(ItemTotalAmountInBasketFrom_{ITEM_NAME}_{AMOUNT})</b>
+                        </li>
+                        <li>
+                            Amount ends at:  <b>(ItemTotalAmountInBasketTo_{ITEM_NAME}_{AMOUNT})</b>
+                        </li>
+                    </ol>
+                </li>
+                <li>
+                    Amount of some category in cart, with 3 options:
+                    <br />
+                    <ol>
+                        <li>
+                            Amount in range:  <b>(CategoryTotalAmountInBasketRange_{CATEGORY_NAME}_{FROM}_{TO})</b>
+                        </li>
+                        <li>
+                            Amount starts from:  <b>(CategoryTotalAmountInBasketFrom_{CATEGORY_NAME}_{AMOUNT})</b>
+                        </li>
+                        <li>
+                            Amount ends at:  <b>(CategoryTotalAmountInBasketTo_{CATEGORY_NAME}_{AMOUNT})</b>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+            The conditions can be composed together using the following logical operations:
+            <ul>
+                <li>
+                    AND - Receives at least one condition.
+                </li>
+                <li>
+                    OR - Receives at least one condition.
+                </li>
+                <li>
+                    NOT - Receives only one condition.
+                </li>
+                <li>
+                    XOR - Receives at least one condition.
+                </li>
+            </ul>
+            <br />
+            In order to add a condition (optional), follow these rules:
+            <br />
+            <ol>
+                <li>
+                    Use the aforementioned formats only.  <font color="red">&#9888;</font> Everything is case sensitive! <font color="red">&#9888;</font>
+                </li>
+                <li>
+                    When the representation contains a '{XXX}', it means you can input a value of your own, or choose one.
+                    <br />
+                    For example,
+                    <br />
+                    <ul>
+                        <li>
+                            {0-24}, means you need choose a number (represents an hour), between 0 and 24.
+                        </li>
+                        <li>
+                            {PRICE}, means you need input your own price there.
+                        </li>
+                    </ul>
+                    <br />
+                    In order to add a condition which states that the price of the cart needs to be between $50 and $100, use the following format:
+                    <br />
+                    <b>TotalBasketPriceRange_50_100</b>
+                </li>
+                <li>
+                    In order to create composed conditions, use AND/OR/XOR/NOT in a prefix syntax.
+                    <br />
+                    In a prefix syntax, first put the operator (i.e. AND), and then the operands (i.e. the conditions).
+                    <br />
+                    In order to a add condition that states the price of the cart is between $50 and $100 <b>and</b> the day of week is Sunday, use the following format:
+                    <br />
+                    <b>(AND TotalBasketPriceRange_50_100 DayOfWeek_1)</b>
+                </li>
+            </ol>
+            <br />
+            Here are a few examples for conditions to help you:
+            <ul>
+                <li>
+                    Hour of day is 20:00 to 22:00 and category 'Food' amount in cart is at least than 23:
+                    <br />
+                    <b>(AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23)</b>
+                </li>
+                <li>
+                    Either the total price of the cart is greater than $45 or the previous bullet:
+                    <br />
+                    <b>(OR TotalBasketPriceFrom_45 (AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23))</b>
+                </li>
+                <li>
+                    Day of week is not Wednesday XOR the previous bullet.
+                    <br />
+                    <b>(XOR (NOT DayOfWeek_4) (OR TotalBasketPriceFrom_45 (AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23)))</b>
+                </li>
+            </ul>
+        </p>
+    </div>
+    <br />
+
+    <h3>Add New Discount</h3>
+    <EditForm Model="@AddingDiscountModel" OnValidSubmit="AddDiscountForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Condition (Optional)</label>
+            <InputText @bind-Value="AddingDiscountModel.ConditionString" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Discount</label>
+            <InputText @bind-Value="AddingDiscountModel.DiscountString" class="form-control" />
+        </div>
+        <button class="btn btn-primary">
+            Add Discount
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public string StoreName { get; set; }
+    Models.AddingDiscountModel AddingDiscountModel = new Models.AddingDiscountModel();
+
+    private async void AddDiscountForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response response = await _marketAPIClient.AddStoreDiscount(StoreName, AddingDiscountModel.ConditionString, AddingDiscountModel.DiscountString);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully added a discount to store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+}
