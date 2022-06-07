@@ -13,10 +13,16 @@ namespace MarketWeb.Server.Domain
         private Dictionary<String, Store> _stores; //<storeName:String, Store>
         private DalTRranslator _translator;
         private DalController _dalController = DalController.GetInstance();
+        private static bool hasInitialized = false;
         public StoreManagement()
         {
             _stores = new Dictionary<String, Store>();
             _translator = new DalTRranslator();
+            if (!hasInitialized)
+            {
+                _stores = _translator.StoreListDalToDomain(_dalController.GetAllActiveStores());
+            }
+
         }
 
         public Store GetActiveStore(String storeName)

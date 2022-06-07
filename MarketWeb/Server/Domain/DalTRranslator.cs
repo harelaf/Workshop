@@ -324,6 +324,13 @@ namespace MarketWeb.Server.Domain
             }
             return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items);
         }
+        public Dictionary<string, Store> StoreListDalToDomain(ICollection<StoreDAL> storeDALs)
+        {
+            Dictionary<string, Store> stores = new Dictionary<string, Store>();
+            foreach (StoreDAL storeDAL in storeDALs)
+                stores.Add(storeDAL._storeName,StoreDalToDomain(storeDAL));
+            return stores;
+        }
         public RegisteredDAL RegisteredDomainToDAL(Registered registered)
         {
             string username = registered.Username;

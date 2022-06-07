@@ -23,7 +23,10 @@ namespace MarketWeb.Server.DataLayer
         }
         public List<StoreDAL> GetAllActiveStores() 
         {
-            return context.StoreDALs.Where(store => store._state == StoreState.Active).ToList();
+            List<StoreDAL> stores= context.StoreDALs.Where(store => store._state == StoreState.Active).ToList();
+            if (stores == null)
+                return new List<StoreDAL>();
+            return stores; 
         }
         public void Register(string Username, string password,string salt,  DateTime dob) 
         {
