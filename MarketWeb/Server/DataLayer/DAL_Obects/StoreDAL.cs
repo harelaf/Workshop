@@ -21,8 +21,10 @@ namespace MarketWeb.Server.DataLayer
         internal StoreFounderDAL _founder;
         [Required]
         internal StoreState _state;
+        internal PurchasePolicyDAL _purchasePolicy;
+        internal DiscountPolicyDAL _discountPolicy;
 
-        public StoreDAL(string storeName, StockDAL stock, List<MessageToStoreDAL> messagesToStore, RatingDAL rating, List<StoreManagerDAL> managers, List<StoreOwnerDAL> owners, StoreFounderDAL founder, StoreState state)
+        public StoreDAL(string storeName, StockDAL stock, List<MessageToStoreDAL> messagesToStore, RatingDAL rating, List<StoreManagerDAL> managers, List<StoreOwnerDAL> owners, StoreFounderDAL founder, StoreState state, PurchasePolicyDAL purchasePolicy, DiscountPolicyDAL discountPolicy)
         {
             _storeName = storeName;
             _stock = stock;
@@ -32,6 +34,8 @@ namespace MarketWeb.Server.DataLayer
             _owners = owners;
             _founder = founder;
             _state = state;
+            _purchasePolicy = purchasePolicy;
+            _discountPolicy = discountPolicy;
         }
 
         public StoreDAL(string storeName, StoreFounderDAL founder, StoreState state)

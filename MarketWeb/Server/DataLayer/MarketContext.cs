@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace MarketWeb.Server.DataLayer
 {
@@ -15,6 +14,7 @@ namespace MarketWeb.Server.DataLayer
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
+            connectionStr = "Data Source = 34.107.116.105;Initial Catalog=supple-lock-352509:europe-west3:bgu-se-workshop-20a; Integrated Security = False; User Id = sqlserver; Password = WorkshopSadna20a; Encrypt = True; TrustServerCertificate = True; MultipleActiveResultSets = True";
             options.UseSqlServer(connectionStr);
         }
     }

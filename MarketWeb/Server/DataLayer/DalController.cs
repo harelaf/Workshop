@@ -81,14 +81,14 @@ namespace MarketWeb.Server.DataLayer
             {
                 if(shoppingBasket._store._storeName == storeName)
                 {
-                    shoppingBasket._items.Add(itemToAdd, amount);
+                    shoppingBasket._items.Add(itemToAdd, //new PurchaseDetailsDAL(itemToAdd._itemID, amount, new List<DiscountDAL>()));
                     hasStoreBasket = true;
                 }
             }
             if (!hasStoreBasket)
             {
-                ShoppingBasketDAL basketDAL = new ShoppingBasketDAL(storeDAL, new Dictionary<ItemDAL, int>());
-                basketDAL._items.Add(itemToAdd, amount);
+                ShoppingBasketDAL basketDAL = new ShoppingBasketDAL(storeDAL, new Dictionary<ItemDAL, PurchaseDetailsDAL>());
+                basketDAL._items.Add(itemToAdd, new PurchaseDetailsDAL(itemToAdd._itemID, amount, new List<AtomicDiscountDAL>()));
             }
             context.SaveChanges();
         }
@@ -104,12 +104,12 @@ namespace MarketWeb.Server.DataLayer
             {
                 if (shoppingBasket._store._storeName == storeName)
                 {
-                    IDictionary<ItemDAL, int> basket = shoppingBasket._items;
+                    IDictionary<ItemDAL, PurchaseDetailsDAL> basket = shoppingBasket._items;
                     foreach (ItemDAL item in basket.Keys)
                     {
                         if (item._itemID == itemID)
                         {
-                            amount = basket[item];
+                            amount = basket[item].amount;
                             itemToRemove = item;
                             break;
                         }
@@ -144,13 +144,13 @@ namespace MarketWeb.Server.DataLayer
             {
                 if (shoppingBasket._store._storeName == storeName)
                 {
-                    IDictionary<ItemDAL, int> basket = shoppingBasket._items;
+                    IDictionary<ItemDAL, PurchaseDetailsDAL> basket = shoppingBasket._items;
                     foreach (ItemDAL item in basket.Keys)
                     {
                         if (item._itemID == itemID)
                         {
-                            amountDiff =newQuantity- basket[item];
-                            basket[item] = newQuantity;
+                            amountDiff = newQuantity - basket[item].amount;
+                            basket[item].amount = newQuantity;
                             break;
                         }
                     }
