@@ -454,8 +454,8 @@ namespace MarketWeb.Server.Domain
         public void FileComplaint(String authToken, int cartID, String message)
         {
             Registered registered = GetRegisteredByToken(authToken);
-            int id = _dalController.FileComplaint(cartID, message, _dalTRranslator.RegisteredDomainToDAL(registered));
-            Complaint complaint = new Complaint(id, registered, cartID, message);
+            int id = _dalController.FileComplaint(cartID, message, registered.Username);
+            Complaint complaint = new Complaint(id, registered.Username, cartID, message);
             registered.FileComplaint(complaint);
         }
 

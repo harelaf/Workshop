@@ -14,7 +14,7 @@ namespace MarketWeb.Server.Domain
         private List<NumericDiscount> _additionalDiscounts;
         public List<NumericDiscount> AdditionalDiscounts => _additionalDiscounts;
 
-        public ShoppingBasket(Store store, IDictionary<Item, int> items) : this(store)
+        public ShoppingBasket(Store store, IDictionary<Item, DiscountDetails> items) : this(store)
         {
             _items = items;
         }

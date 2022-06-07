@@ -176,12 +176,13 @@ namespace MarketWeb.Server.Domain
         }
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
-            IDictionary<Item, int> items = new Dictionary<Item, int>();
+            /*IDictionary<Item, int> items = new Dictionary<Item, int>();
             foreach(KeyValuePair<ItemDAL, int> i_a in basketDAL._items)
             {
                 items.Add(ItemDalToDomain(i_a.Key), i_a.Value);
             }
-            return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items);
+            return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items);*/
+            return new ShoppingBasket(StoreDalToDomain(basketDAL._store), new Dictionary<Item, DiscountDetails>());
         }
         public Registered RegisteredDALToDomain(RegisteredDAL registeredDAL)
         {
@@ -232,7 +233,7 @@ namespace MarketWeb.Server.Domain
         }
         public Complaint ComplaintDalToDomain(ComplaintDAL complaintDAL)
         {//int id, Registered complainer, int cartID, string message
-            return new Complaint(complaintDAL._id, RegisteredDALToDomain(complaintDAL._complainer)
+            return new Complaint(complaintDAL._id,complaintDAL._complainer
                 , complaintDAL._cartID, complaintDAL._message);
         }
         public SystemRole SystemRoleDalToDomain(SystemRoleDAL systemRoleDAL)
@@ -317,12 +318,15 @@ namespace MarketWeb.Server.Domain
         }
         public ShoppingBasketDAL ShoppingBasketDomainToDAL(ShoppingBasket basket)
         {
+            /*
             IDictionary<ItemDAL, int> items = new Dictionary<ItemDAL, int>();
             foreach (KeyValuePair<Item, int> i_a in basket.Items)
             {
                 items.Add(ItemDomainToDal(i_a.Key), i_a.Value);
             }
-            return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items);
+            return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items);*/
+            return new ShoppingBasketDAL(StoreDomainToDal(basket._store), new Dictionary<ItemDAL, int>());
+
         }
         public Dictionary<string, Store> StoreListDalToDomain(ICollection<StoreDAL> storeDALs)
         {
@@ -362,14 +366,14 @@ namespace MarketWeb.Server.Domain
                 adminMessages, notifications, repliedMessages);
             IDictionary<int, ComplaintDAL> filedComplaints = new Dictionary<int, ComplaintDAL>();
             foreach (KeyValuePair<int, Complaint> id_complaint in registered.FiledComplaints)
-                filedComplaints.Add(id_complaint.Key, ComplaintDomainToDal(id_complaint.Value, reg));
+                filedComplaints.Add(id_complaint.Key, ComplaintDomainToDal(id_complaint.Value));
             reg._filedComplaints = filedComplaints;
             return reg;
         }
 
-        public ComplaintDAL ComplaintDomainToDal(Complaint value, RegisteredDAL reg)
+        public ComplaintDAL ComplaintDomainToDal(Complaint value)
         {
-            return new ComplaintDAL(value.ID, reg, value.CartID, value.Message, value.Response);
+            return new ComplaintDAL(value.ID, value._complainer, value.CartID, value.Message, value.Response);
         }
 
         public SystemRoleDAL SystemRoleDomainToDal(SystemRole role)

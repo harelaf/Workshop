@@ -42,7 +42,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void happy_reviewerSendsMessageAndTheMessageArrivesAsExpected()
         {
-            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 8);
+            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody);
             Response<List<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
             if (!response2.ErrorOccured)
             {
@@ -62,7 +62,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void sad_reviewerSendsMessageAndTheRequestsStoreMessages()
         {
-            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 9);
+            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody);
             Response<List<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_reviewer, storeName);
             Assert.IsTrue(response2.ErrorOccured);
         }
@@ -71,7 +71,7 @@ namespace AcceptanceTest
         public void happy_reviewerSendMessageAndTheFounderReply()
         {
             String answerBody = "weare here for you 24/5.5";
-            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody, 80);
+            Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody);
             Response<List<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
             if (!response2.ErrorOccured)
             {

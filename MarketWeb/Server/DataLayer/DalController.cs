@@ -422,7 +422,7 @@ namespace MarketWeb.Server.DataLayer
             context.SaveChanges();
             return msg.mid;
         }
-        public int FileComplaint(int cartID, String message, RegisteredDAL sender)
+        public int FileComplaint(int cartID, String message, string sender)
         {
             ComplaintDAL complaint = new ComplaintDAL(sender, cartID, message);
             context.ComplaintDALs.Add(complaint);
