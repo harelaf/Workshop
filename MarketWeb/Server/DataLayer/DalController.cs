@@ -81,33 +81,17 @@ namespace MarketWeb.Server.DataLayer
            shoppingBasketDALs.Add(shoppingBasket);
             context.SaveChanges();
         }
-        public void RemoveItemFromCart(int itemID, String storeName, string userName)
+        public void RemoveItemFromCart(int itemID, String storeName, string userName, int amount, ShoppingBasketDAL shoppingBasket)
         {
             RegisteredDAL user = context.RegisteredDALs.Find(userName);
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
-            int amount = 0;
             ItemDAL itemToRemove = null;
-            ICollection <ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
-            foreach (ShoppingBasketDAL shoppingBasket in shoppingBasketDALs)
-            {
-                if (shoppingBasket._store._storeName == storeName)
-                {
-                    IDictionary<ItemDAL, PurchaseDetailsDAL> basket = shoppingBasket.ConvertToDictionary();
-                    foreach (ItemDAL item in basket.Keys)
-                    {
-                        if (item._itemID == itemID)
-                        {
-                            amount = basket[item].amount;
-                            itemToRemove = item;
-                            break;
-                        }
-                    }
-                    basket.Remove(itemToRemove);
-                    if(basket.Count <= 0)
-                        shoppingBasketDALs.Remove(shoppingBasket); 
-                }
-            }
+            ICollection<ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
+            if (shoppingBasketDALs.Where(b => b._store._storeName == storeName).Any())
+                shoppingBasketDALs.Remove(shoppingBasketDALs.Where(b => b._store._storeName == storeName).FirstOrDefault());
+            shoppingBasketDALs.Add(shoppingBasket);
+
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
@@ -122,29 +106,17 @@ namespace MarketWeb.Server.DataLayer
             }
             context.SaveChanges();
         }
-        public void UpdateQuantityOfItemInCart(int itemID, String storeName, int newQuantity, string userName)
+        public void UpdateQuantityOfItemInCart(int itemID, String storeName, int newQuantity, string userName, ShoppingBasketDAL shoppingBasketDAL, int amountDiff)
         {
             RegisteredDAL user = context.RegisteredDALs.Find(userName);
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
-            int amountDiff = 0;
+
             ICollection<ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
-            foreach (ShoppingBasketDAL shoppingBasket in shoppingBasketDALs)
-            {
-                if (shoppingBasket._store._storeName == storeName)
-                {
-                    IDictionary<ItemDAL, PurchaseDetailsDAL> basket = shoppingBasket.ConvertToDictionary();
-                    foreach (ItemDAL item in basket.Keys)
-                    {
-                        if (item._itemID == itemID)
-                        {
-                            amountDiff = newQuantity - basket[item].amount;
-                            basket[item].amount = newQuantity;
-                            break;
-                        }
-                    }
-                }
-            }
+            if (shoppingBasketDALs.Where(b => b._store._storeName == storeName).Any())
+                shoppingBasketDALs.Remove(shoppingBasketDALs.Where(b => b._store._storeName == storeName).FirstOrDefault());
+            shoppingBasketDALs.Add(shoppingBasketDAL);
+           
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");

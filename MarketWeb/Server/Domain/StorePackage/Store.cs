@@ -311,6 +311,11 @@ namespace MarketWeb.Server.Domain
             }
         }
 
+        internal void AddConditionToPurchasePolicy(Condition condition)
+        {
+            _purchasePolicy.AddCondition(condition);
+        }
+
         /// <summary>
         /// <para> For Req II.6.2. </para>
         /// <para> Removes Visitor as a manager if he is a manager.</para>

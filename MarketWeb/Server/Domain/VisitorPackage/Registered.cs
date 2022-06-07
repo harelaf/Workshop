@@ -226,6 +226,11 @@ namespace MarketWeb.Server.Domain
         internal void SendNotificationMsg(string storeName, string title, string message, int id)
         {
             _notifications.Add(new NotifyMessage(id, storeName, title, message, _username));
+            SendNotificationMsg(new NotifyMessage(storeName, title, message, _username));
+        }
+        internal void SendNotificationMsg(NotifyMessage notifyMessage)
+        {
+            _notifications.Add(notifyMessage);
         }
 
         internal List<string> GetRegisteredStores()

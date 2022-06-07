@@ -1,9 +1,11 @@
 ﻿
 using MarketWeb.Server.Domain;
+using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -21,6 +23,8 @@ namespace MarketWeb.Service
         //private ILogger<MarketAPI> _logger;
         private int _id;
         private bool testMode = false;
+        private static bool useInitializationFile = true;
+        private static bool useConfigurationFile = true;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             if (market == null)
@@ -32,16 +36,39 @@ namespace MarketWeb.Service
             {
                 _market = market;
             }
-            //_logger = logger;
-            //LoadData();
 
-            // DISCOUNT TESTING
-            String conditionString = "(OR CategoryTotalAmountInBasketFrom_Fruit_2 (AND DayOfWeek_4 (NOT TotalBasketPriceRange_22_33) (XOR Hour_0_24)) CategoryTotalAmountInBasketTo_Krabby Patties_333 (OR CategoryTotalAmountInBasketFrom_Fruit_2))";
-            //conditionString = "";
-            String discountString = "(MAX BasketAbsolute_8_2023_1_1 CategoryPercentage_JOE_22_2222_2_2 (PLUS BasketPercentage_33_3322_2_3 BasketAbsolute_8_2023_1_1))";
-            new MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, conditionString).Parse();
+            if (useConfigurationFile)
+            {
+                useConfigurationFile = false;
+                try
+                {
+                    new ConfigurationFileParser().ParseConfigurationFile();
+                    // TODO
+                    // GET DB CONNECTION? SEND IT TO MARKET?
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.Message);
+                }
+            }
+
+            if (useInitializationFile)
+            {
+                useInitializationFile = false;
+                bool restore = testMode;
+                testMode = true;
+                try
+                {
+                    new InitializationFileParser(this).ParseInitializationFile();
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.Message);
+                }
+                testMode = restore;
+            }
         }
-       
+
         private String parseAutherization(String Authorization)
         {
             if (testMode)
@@ -93,10 +120,11 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
-                
+
                 _logger.Info($"Login called with parameters: authToken={authToken}, username={Username}, password={password}.");
                 // TODO: Transfer cart? Using authToken
                 String loginToken = _market.Login(authToken, Username, password);
+                ConnectedUser.ChangeToken(authToken, loginToken);
                 response = new Response<String>(loginToken);
                 _logger.Info($"SUCCESSFULY executed Login.");
             }
@@ -614,7 +642,7 @@ namespace MarketWeb.Service
         /// <param name="cartID"> The cart ID relevant to the complaint. </param>
         /// <param name="message"> The message detailing the complaint. </param>
         [HttpPost("FileComplaint")]
-        public Response FileComplaint([FromHeader] String Authorization, int cartID,  String message)
+        public Response FileComplaint([FromHeader] String Authorization, int cartID, String message)
         {//II.3.6
             Response response;
             try
@@ -1208,6 +1236,25 @@ namespace MarketWeb.Service
             return response;
         }
 
+        [HttpPost("AddStorePurchasePolicy")]
+        public Response AddStorePurchasePolicy([FromHeader] String Authorization, String storeName, String conditionString)
+        {
+            Response response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Add Store Purchase Policy called with parameters: authToken={authToken}, storeName={storeName}, conditionString={conditionString}.");
+                _market.AddStorePurchasePolicy(authToken, storeName, conditionString);
+                response = new Response();
+                _logger.Info($"SUCCESSFULY executed Add Store Purchase Policy.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+
         [HttpPost("CalcCartActualPrice")]
         public Response<Double> CalcCartActualPrice([FromHeader] String Authorization)
         {
@@ -1265,7 +1312,7 @@ namespace MarketWeb.Service
             }
             return response;
         }
-        
+
 
         [HttpPost("IsStoreActive")]
         public Response IsStoreActive([FromHeader] String Authorization, string storeName, string op)
@@ -1322,7 +1369,7 @@ namespace MarketWeb.Service
             Register(auth2, username2, password2, new DateTime(1992, 8, 4));
             auth2 = "Bearer " + Login(auth2, username2, password2).Value;
             OpenNewStore(auth2, storeName2);
-            
+
             int itemID1 = 1;
             int price1 = 1;
             String itemName1 = "itemName1";
@@ -1344,14 +1391,11 @@ namespace MarketWeb.Service
             String desc3 = "some other other item description goes here.";
             int quantity3 = 300;
             
-            AddItemToStoreStock(auth1, storeName1, itemName1, price1, desc1, category1, quantity1);
-            
-            AddItemToStoreStock(auth1, storeName1, itemName2, price2, desc2, category2, quantity2);
-            AddItemToStoreStock(auth1, storeName1, itemName3, price3, desc3, category3, quantity3);
 
-            AddItemToStoreStock(auth2, storeName2, itemName1, price1, desc1, category1, quantity1);
-            AddItemToStoreStock(auth2, storeName2, itemName2, price2, desc2, category2, quantity2);
-            AddItemToStoreStock(auth2, storeName2, itemName3, price3, desc3, category3, quantity3);
+            AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
+
+            AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
+            AddItemToStoreStock(auth1, storeName1, itemID3, itemName3, price3, desc3, category3, quantity3);
 
             DateTime expiration = DateTime.Today.AddDays(10);
             int minAmount = 5;

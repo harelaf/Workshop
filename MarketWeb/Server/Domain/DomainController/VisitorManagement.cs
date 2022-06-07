@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MarketWeb.Server.DataLayer;
+using MarketWeb.Server.Service;
+using MarketWeb.Service;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.Domain
@@ -29,6 +31,7 @@ namespace MarketWeb.Server.Domain
         private DalTRranslator _dalTRranslator;
         private DalController _dalController = DalController.GetInstance();
 
+        protected NotificationHub _notificationHub;
 
         // ===================================== CONSTRUCTORS =====================================
 
@@ -37,7 +40,7 @@ namespace MarketWeb.Server.Domain
         }
 
         // TODO: There's GOT to be a better way to do these constructors.
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors)
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
         {
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
@@ -50,7 +53,7 @@ namespace MarketWeb.Server.Domain
             AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens)
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens): this(registeredVisitors, loggedinVisitorsTokens, new Dictionary<String, Guest>())
         {
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
@@ -63,7 +66,7 @@ namespace MarketWeb.Server.Domain
             AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Guest> visitorsGuestsTokens)
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Guest> visitorsGuestsTokens) : this(registeredVisitors, new Dictionary<string,Registered>(), visitorsGuestsTokens)
         {
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
@@ -76,11 +79,12 @@ namespace MarketWeb.Server.Domain
             AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens)
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens, NotificationHub notificationHub = null) 
         {
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
+            _notificationHub = notificationHub;
 
             Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
@@ -564,10 +568,18 @@ namespace MarketWeb.Server.Domain
         public int RemoveItemFromCart(String VisitorToken, Item item, Store store)
         {
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
-            return Visitor.RemoveItemFromCart(item, store);
+            int amount= Visitor.RemoveItemFromCart(item, store);
+            if (IsVisitorLoggedin(VisitorToken))
+            {
+                string username = GetRegisteredUsernameByToken(VisitorToken);
+                _dalController.RemoveItemFromCart(item.ItemID, store.StoreName, username, amount,
+                    _dalTRranslator.BasketDomainToDal(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)));
+
+            }
+            return amount;
         }
 
-        public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity)
+        public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity, int amountdiff)
         {
             String errorMessage;
             if (newQuantity <= 0)
@@ -578,6 +590,12 @@ namespace MarketWeb.Server.Domain
             }
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
             Visitor.UpdateItemInCart(store, item, newQuantity);
+            if (IsVisitorLoggedin(VisitorToken))
+            {
+                string username = GetRegisteredUsernameByToken(VisitorToken);
+                _dalController.UpdateQuantityOfItemInCart(item.ItemID, store.StoreName, newQuantity, username,
+                   _dalTRranslator.BasketDomainToDal(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)), amountdiff);
+            }
         }
 
         internal int GetUpdatingQuantityDifference(string VisitorToken, Item item, Store store, int newQuantity)
@@ -683,7 +701,12 @@ namespace MarketWeb.Server.Domain
         internal void SendNotificationMessageToRegistered(string usernameReciever, string storeName, string title, string message, int id)
         {
             Registered registered = GetRegisteredVisitor(usernameReciever);
-            registered.SendNotificationMsg(storeName, title, message, id);
+            NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, usernameReciever);
+            string authToken = GetLoggedInToken(usernameReciever); 
+            if (authToken != null)
+            {
+                _notificationHub.SendNotification(authToken, new DTOtranslator().toDTO(notifyMessage));
+            }
         }
 
         internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string regUserName, string reply)
