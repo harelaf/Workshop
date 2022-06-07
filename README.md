@@ -18,8 +18,8 @@ Follow these steps to run the system:
 6. Run the MarketWeb/Server project.
 7. A default admin user is already initialized into the system. If the configuration file was unchanged: username: admin, password: admin.
 
-### Initialization & Configuration File Formats
-#### Initialization
+## Initialization & Configuration File Formats
+### Initialization
 The basic initialization file in the wiki has the instructions on how to add dummy data.
 Start by using EnterSystem(), and then call the wanted functions from MarketAPI.
 ### Configuration
