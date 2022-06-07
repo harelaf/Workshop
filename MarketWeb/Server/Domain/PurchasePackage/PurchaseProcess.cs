@@ -36,7 +36,14 @@ namespace MarketWeb.Server.Domain
         {
             string errorMessage="";
             //first: should check that shippingSystem willig to provide cart:
-            if(_shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode))
+            foreach(ShoppingBasket basket in cartToPurchase._shoppingBaskets)
+            {
+                if (!basket.checkPurchasePolicy())
+                {
+                    errorMessage = $"Purchase failed: this shop is not approved by '{basket.Store().StoreName}' store purchase policy.";
+                }
+            }
+            if(errorMessage != "" && _shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode))
             {
                 //second: the actual payment:
                 double price = CalculatePrice(cartToPurchase);
@@ -44,12 +51,15 @@ namespace MarketWeb.Server.Domain
                     return;
                 errorMessage = "Purchase failed: paymentSystem refuses.";
             }
-            else
+            else if(errorMessage == "")
             {
                 errorMessage = "Purchase failed: Shipping services refuse to provide your cart.";
             } 
             //relaseCart:
-            cartToPurchase.RelaseItemsOfCart();
+            if(errorMessage != "")
+            {
+                cartToPurchase.RelaseItemsOfCart();
+            }
             LogErrorMessage("Purchase", errorMessage);
             throw new Exception(errorMessage);
         }
