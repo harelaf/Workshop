@@ -28,6 +28,13 @@ namespace MarketWeb.Server.Domain
             _amount = amount;
             DiscountList = new HashSet<AtomicDiscount>();
         }
+
+        public DiscountDetails(int amount, ISet<AtomicDiscount> disList)
+        {
+            Amount = amount;
+            DiscountList = disList;
+        }
+
         public void AddDiscount(AtomicDiscount discount)
         {
             DiscountList.Add(discount);

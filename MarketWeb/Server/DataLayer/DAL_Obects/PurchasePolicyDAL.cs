@@ -6,11 +6,10 @@ namespace MarketWeb.Server.DataLayer
     public class PurchasePolicyDAL
     {
         [Key]
-        internal string storeName;
+        int id;
         internal List<ConditionDAL> conditions;
-        internal PurchasePolicyDAL(string storeName, List<ConditionDAL> conditions)
+        internal PurchasePolicyDAL(List<ConditionDAL> conditions)
         {
-            this.storeName = storeName;
             this.conditions = conditions;
         }
     }

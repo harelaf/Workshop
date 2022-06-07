@@ -25,7 +25,79 @@ namespace MarketWeb.Server.Domain
 
         private PurchaseDetailsDAL PurchaseDetailsToDal(int itemID, DiscountDetails discountDetails)
         {
-            //todo
+            List<AtomicDiscountDAL> disList = new List<AtomicDiscountDAL>();
+            foreach (AtomicDiscount dis in discountDetails.DiscountList)
+                disList.Add(AtomicDiscountDomainToDal(dis));
+            PurchaseDetailsDAL details = new PurchaseDetailsDAL(itemID, discountDetails.Amount, disList);
+            return details;
+        }
+
+        private AtomicDiscountDAL AtomicDiscountDomainToDal(AtomicDiscount dis)
+        {
+            if (dis == null)
+                return null;
+            Type type = dis.GetType();
+            if (type.Equals(typeof(AllProductsDiscount)))
+                return DomainToDal((AllProductsDiscount)dis);
+            if (type.Equals(typeof(CategoryDiscount)))
+                return DomainToDal((CategoryDiscount)dis);
+            if (type.Equals(typeof(ItemDiscount)))
+                return DomainToDal((ItemDiscount)dis);
+            if (type.Equals(typeof(NumericDiscount)))
+                return DomainToDal((NumericDiscount)dis);
+            else throw new NotImplementedException($"need an implementation for {type} discount type.");
+        }
+
+        private DiscountDAL DiscountDomainToDal(Discount dis)
+        {
+            if (dis == null)
+                return null;
+            Type type = dis.GetType();
+            if (type.Equals(typeof(AllProductsDiscount)))
+                return DomainToDal((AllProductsDiscount)dis);
+            if (type.Equals(typeof(CategoryDiscount)))
+                return DomainToDal((CategoryDiscount)dis);
+            if (type.Equals(typeof(ItemDiscount)))
+                return DomainToDal((ItemDiscount)dis);
+            if (type.Equals(typeof(NumericDiscount)))
+                return DomainToDal((NumericDiscount)dis);
+            if (type.Equals(typeof(MaxDiscount)))
+                return DomainToDal((MaxDiscount)dis);
+            if (type.Equals(typeof(PlusDiscount)))
+                return DomainToDal((PlusDiscount)dis);
+            else throw new NotImplementedException($"need an implementation for {type} discount type.");
+        }
+        private AllProductsDiscountDAL DomainToDal(AllProductsDiscount dis)
+        {
+            return new AllProductsDiscountDAL(dis.PercentageToSubtract, dis.Expiration, ConditionDomainToDal(dis.Condition));
+        }
+        private CategoryDiscountDAL DomainToDal(CategoryDiscount dis)
+        {
+            return new CategoryDiscountDAL(dis.Category, dis.PercentageToSubtract, dis.Expiration, ConditionDomainToDal(dis.Condition));
+        }
+        private ItemDiscountDAL DomainToDal(ItemDiscount dis)
+        {
+            return new ItemDiscountDAL(dis.ItemName, dis.PercentageToSubtract, dis.Expiration, ConditionDomainToDal(dis.Condition));
+        }
+        private NumericDiscountDAL DomainToDal(NumericDiscount dis)
+        {
+            return new NumericDiscountDAL(dis.PriceToSubtract, dis.Expiration, ConditionDomainToDal(dis.Condition));
+        }
+        private MaxDiscountDAL DomainToDal(MaxDiscount dis)
+        {
+            List<DiscountDAL> disList = new List<DiscountDAL>();
+            foreach(Discount innerDis in dis.DiscountList)
+                disList.Add(DiscountDomainToDal(innerDis));
+            ConditionDAL cond = ConditionDomainToDal(dis.Condition);
+            return new MaxDiscountDAL(disList, cond);
+        }
+        private PlusDiscountDAL DomainToDal(PlusDiscount dis)
+        {
+            List<DiscountDAL> disList = new List<DiscountDAL>();
+            foreach (Discount innerDis in dis.DiscountList)
+                disList.Add(DiscountDomainToDal(innerDis));
+            ConditionDAL cond = ConditionDomainToDal(dis.Condition);
+            return new PlusDiscountDAL(disList, cond);
         }
 
         private StoreDAL StoreDomainToDal(Store store)
@@ -55,12 +127,92 @@ namespace MarketWeb.Server.Domain
 
         private DiscountPolicyDAL DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
         {
-            //todo
+            List<DiscountDAL> disList = new List<DiscountDAL>();
+            foreach (Discount dis in discountPolicy.Discounts.DiscountList)
+                disList.Add(DiscountDomainToDal(dis));
+            return new DiscountPolicyDAL(disList);
         }
 
         private PurchasePolicyDAL PrchasePolicyDomainToDal(PurchasePolicy purchasePolicy)
         {
-            //todo;
+            List<ConditionDAL> conditions = new List<ConditionDAL>();
+            foreach(Condition cond in purchasePolicy.Conditions.ConditionList)
+                conditions.Add(ConditionDomainToDal(cond));
+            PurchasePolicyDAL ppDal = new PurchasePolicyDAL(conditions);
+            return ppDal;
+        }
+
+        private ConditionDAL ConditionDomainToDal(Condition cond)
+        {
+            if (cond == null)
+                return null;
+            Type type = cond.GetType();
+            if (type.Equals(typeof(AndComposition)))
+                return DomainToDal((AndComposition)cond);
+            if (type.Equals(typeof(DayOnWeekCondition)))
+                return DomainToDal((DayOnWeekCondition)cond);
+            if (type.Equals(typeof(HourCondition)))
+                return DomainToDal((HourCondition)cond);
+            if (type.Equals(typeof(OrComposition)))
+                return DomainToDal((OrComposition)cond);
+            if (type.Equals(typeof(PriceableCondition)))
+                return DomainToDal((PriceableCondition)cond);
+            if (type.Equals(typeof(SearchCategoryCondition)))
+                return DomainToDal((SearchCategoryCondition)cond);
+            if (type.Equals(typeof(SearchItemCondition)))
+                return DomainToDal((SearchItemCondition)cond);
+            if (type.Equals(typeof(XorComposition)))
+                return DomainToDal((XorComposition)cond);
+            else throw new NotImplementedException();
+        }
+
+        private ConditionDAL DomainToDal(AndComposition cond)
+        {
+            List<ConditionDAL> condList = new List<ConditionDAL>();
+            foreach (Condition innerCond in cond.ConditionList)
+                condList.Add(ConditionDomainToDal(innerCond));
+            return new AndCompositionDAL(condList, cond.ToNegative);
+        }
+
+        private DayOnWeekConditionDAL DomainToDal(DayOnWeekCondition cond)
+        {
+            return new DayOnWeekConditionDAL(cond.DayOnWeek, cond.ToNegative);
+        }
+
+        private HourConditionDAL DomainToDal(HourCondition cond)
+        {
+            return new HourConditionDAL(cond.MinHour, cond.MaxHour, cond.ToNegative);
+        }
+
+        private OrCompositionDAL DomainToDal(OrComposition cond)
+        {
+            List<ConditionDAL> condList = new List<ConditionDAL>();
+            foreach (Condition innerCond in cond.ConditionList)
+                condList.Add(ConditionDomainToDal(innerCond));
+            return new OrCompositionDAL(condList, cond.ToNegative);
+        }
+
+        private PriceableConditionDAL DomainToDal(PriceableCondition cond)
+        {
+            return new PriceableConditionDAL(cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private SearchCategoryConditionDAL DomainToDal(SearchCategoryCondition cond)
+        {
+            return new SearchCategoryConditionDAL(cond.KeyWord, cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private SearchItemConditionDAL DomainToDal(SearchItemCondition cond)
+        {
+            return new SearchItemConditionDAL(cond.KeyWord, cond.MinValue, cond.MaxValue, cond.ToNegative);
+        }
+
+        private XorCompositionDAL DomainToDal(XorComposition cond)
+        {
+            List<ConditionDAL> condList = new List<ConditionDAL>();
+            foreach (Condition innerCond in cond.ConditionList)
+                condList.Add(ConditionDomainToDal(innerCond));
+            return new XorCompositionDAL(condList, cond.ToNegative);
         }
 
         private StockDAL StockDomainToDal(Stock stock)
@@ -212,7 +364,161 @@ namespace MarketWeb.Server.Domain
 
         private DiscountDetails PurchaseDetailsDALToDomain(PurchaseDetailsDAL value)
         {
-            //todo
+            ISet<AtomicDiscount> disList = new HashSet<AtomicDiscount>();
+            foreach (AtomicDiscountDAL dis in value.discountList)
+                disList.Add(AtomicDiscountDalToDomain(dis));
+            DiscountDetails details = new DiscountDetails(value.amount, disList);
+            return details;
+        }
+
+        private Discount DiscountDalToDomain(DiscountDAL dis)
+        {
+                if (dis == null)
+                    return null;
+                Type type = dis.GetType();
+                if (type.Equals(typeof(AllProductsDiscountDAL)))
+                    return DalToDomain((AllProductsDiscountDAL)dis);
+                if (type.Equals(typeof(CategoryDiscountDAL)))
+                    return DalToDomain((CategoryDiscountDAL)dis);
+                if (type.Equals(typeof(ItemDiscountDAL)))
+                    return DalToDomain((ItemDiscountDAL)dis);
+                if (type.Equals(typeof(MaxDiscountDAL)))
+                    return DalToDomain((MaxDiscountDAL)dis);
+                if (type.Equals(typeof(NumericDiscountDAL)))
+                    return DalToDomain((NumericDiscountDAL)dis);
+                if (type.Equals(typeof(PlusDiscountDAL)))
+                    return DalToDomain((PlusDiscountDAL)dis);
+                else throw new NotImplementedException($"need an implementation for {type} discount type.");
+        }
+        private AtomicDiscount AtomicDiscountDalToDomain(AtomicDiscountDAL dis)
+        {
+            if (dis == null)
+                return null;
+            Type type = dis.GetType();
+            if (type.Equals(typeof(AllProductsDiscountDAL)))
+                return DalToDomain((AllProductsDiscountDAL)dis);
+            if (type.Equals(typeof(CategoryDiscountDAL)))
+                return DalToDomain((CategoryDiscountDAL)dis);
+            if (type.Equals(typeof(ItemDiscountDAL)))
+                return DalToDomain((ItemDiscountDAL)dis);
+            if (type.Equals(typeof(NumericDiscountDAL)))
+                return DalToDomain((NumericDiscountDAL)dis);
+            else throw new NotImplementedException($"need an implementation for {type} discount type.");
+        }
+
+        private AllProductsDiscount DalToDomain(AllProductsDiscountDAL dis)
+        {
+            Condition cond = ConditionDalToDomain(dis._condition);
+            return new AllProductsDiscount(dis._percents, cond, dis._expiration);
+        }
+
+        private CategoryDiscount DalToDomain(CategoryDiscountDAL dis)
+        {
+            Condition cond = ConditionDalToDomain(dis._condition);
+            return new CategoryDiscount(dis._percents, dis._categoryName, cond, dis._expiration);
+        }
+
+        private AtomicDiscount DalToDomain(ItemDiscountDAL dis)
+        {
+            Condition cond = ConditionDalToDomain(dis._condition);
+            return new CategoryDiscount(dis._percents, dis._itemName, cond, dis._expiration);
+        }
+
+        private MaxDiscount DalToDomain(MaxDiscountDAL dis)
+        {
+            List<Discount> disList = new List<Discount>();
+            foreach(DiscountDAL innerDis in dis._discounts)
+                disList.Add(DiscountDalToDomain(innerDis));
+            Condition cond = ConditionDalToDomain(dis._condition);
+            return new MaxDiscount(disList, cond);
+        }
+
+        private NumericDiscount DalToDomain(NumericDiscountDAL dis)
+        {
+            Condition cond = ConditionDalToDomain(dis._condition);
+            return new NumericDiscount(dis._priceToSubtract, cond, dis._expiration);
+        }
+
+        private PlusDiscount DalToDomain(PlusDiscountDAL dis)
+        {
+            List<Discount> disList = new List<Discount>();
+            foreach (DiscountDAL innerDis in dis._discounts)
+                disList.Add(DiscountDalToDomain(innerDis));
+            Condition cond = ConditionDalToDomain(dis._condition);
+            return new PlusDiscount(disList, cond);
+        }
+
+        private Condition ConditionDalToDomain(ConditionDAL cond)
+        {
+            if (cond == null)
+                return null;
+            Type type = cond.GetType();
+            if (type.Equals(typeof(AndCompositionDAL)))
+                return DalToDomain((AndCompositionDAL)cond);
+            if (type.Equals(typeof(DayOnWeekConditionDAL)))
+                return DalToDomain((DayOnWeekConditionDAL)cond);
+            if (type.Equals(typeof(HourConditionDAL)))
+                return DalToDomain((HourConditionDAL)cond);
+            if (type.Equals(typeof(OrCompositionDAL)))
+                return DalToDomain((OrCompositionDAL)cond);
+            if (type.Equals(typeof(PriceableConditionDAL)))
+                return DalToDomain((PriceableConditionDAL)cond);
+            if (type.Equals(typeof(SearchCategoryConditionDAL)))
+                return DalToDomain((SearchCategoryConditionDAL)cond);
+            if (type.Equals(typeof(SearchItemConditionDAL)))
+                return DalToDomain((SearchItemConditionDAL)cond);
+            if (type.Equals(typeof(XorCompositionDAL)))
+                return DalToDomain((XorCompositionDAL)cond);
+            else throw new NotImplementedException();
+        }
+
+        private AndComposition DalToDomain(AndCompositionDAL cond)
+        {
+            List<Condition> condList = new List<Condition>();
+            foreach (ConditionDAL innerCond in cond._conditionList)
+                condList.Add(ConditionDalToDomain(innerCond));
+            return new AndComposition(cond._negative, condList);
+        }
+
+        private DayOnWeekCondition DalToDomain(DayOnWeekConditionDAL cond)
+        {
+            return new DayOnWeekCondition(cond._day.ToString(), cond._negative);
+        }
+
+        private HourCondition DalToDomain(HourConditionDAL cond)
+        {
+            return new HourCondition(cond._minHour, cond._maxHour, cond._negative);
+        }
+
+        private OrComposition DalToDomain(OrCompositionDAL cond)
+        {
+            List<Condition> condList = new List<Condition>();
+            foreach (ConditionDAL innerCond in cond._conditionList)
+                condList.Add(ConditionDalToDomain(innerCond));
+            return new OrComposition(cond._negative, condList);
+        }
+
+        private PriceableCondition DalToDomain(PriceableConditionDAL cond)
+        {
+            return new PriceableCondition(cond._keyWord, cond._minValue, cond._maxValue, cond._negative);
+        }
+
+        private SearchCategoryCondition DalToDomain(SearchCategoryConditionDAL cond)
+        {
+            return new SearchCategoryCondition(cond._keyWord, cond._minValue, cond._maxValue, cond._negative);
+        }
+
+        private SearchItemCondition DalToDomain(SearchItemConditionDAL cond)
+        {
+            return new SearchItemCondition(cond._keyWord, cond._minValue, cond._maxValue, cond._negative);
+        }
+
+        private XorComposition DalToDomain(XorCompositionDAL cond)
+        {
+            List<Condition> condList = new List<Condition>();
+            foreach (ConditionDAL innerCond in cond._conditionList)
+                condList.Add(ConditionDalToDomain(innerCond));
+            return new XorComposition(cond._negative, condList);
         }
 
         public Registered RegisteredDALToDomain(RegisteredDAL registeredDAL)
