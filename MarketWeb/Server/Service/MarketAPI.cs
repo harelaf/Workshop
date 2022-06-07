@@ -1,6 +1,5 @@
 ﻿
 using MarketWeb.Server.Domain;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
@@ -286,7 +285,7 @@ namespace MarketWeb.Service
             return response;
         }
         [HttpPost("PurchaseMyCart")]
-        public Response PurchaseMyCart([FromHeader] String Authorization, String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
+        public Response PurchaseMyCart([FromHeader] String Authorization, String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {//II.2.5
             Response response;
             try
@@ -294,7 +293,7 @@ namespace MarketWeb.Service
 
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Purchase My Cart called with parameters: authToken={authToken}, address={address}, city={city}, country={country}, zip={zip}, purchaserName={purchaserName}.");
-                _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
+                _market.PurchaseMyCart(authToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
                 response = new Response();
                 _logger.Info($"SUCCESSFULY executed Purchase My Cart.");
             }

@@ -71,10 +71,10 @@ namespace MarketWeb.Server.Domain
             }
             return shoppingBasket.GetAmountOfItem(item);
         }
-        public ShoppingCart PurchaseMyCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
+        public ShoppingCart PurchaseMyCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode,   string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
             ShoppingCart cart = _shoppingCart;
-            PurchaseProcess.GetInstance().Purchase(address, city, country, zip, purchaserName, cart, paymentMethode, shipmentMethode);
+            PurchaseProcess.GetInstance().Purchase(address, city, country, zip, purchaserName, cart, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
             _shoppingCart = new ShoppingCart();
             return cart;
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage;
@@ -624,10 +623,10 @@ namespace MarketWeb.Server.Domain
 			}
         }
 
-        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, String paymentMethode, String shipmentMethode)
+        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, String paymentMethode, String shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {//II.2.5
             CheckIsVisitorAVisitor(VisitorToken, "PurchaseMyCart");
-            ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
+            ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
             if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))

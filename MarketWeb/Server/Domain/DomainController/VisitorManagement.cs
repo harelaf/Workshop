@@ -542,7 +542,7 @@ namespace MarketWeb.Server.Domain
             return newQuantity - old_quantity;
         }
 
-        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode)
+        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
             String errorMessage;
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
@@ -552,7 +552,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("PurchaseMyCart", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
+            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
         }
 
 
@@ -641,7 +641,7 @@ namespace MarketWeb.Server.Domain
             string authToken = GetLoggedInToken(usernameReciever); 
             if (authToken != null)
             {
-                _notificationHub.SendNotification(authToken, DTOtranslator.toDTO(notifyMessage));
+                _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
             }
         }
 

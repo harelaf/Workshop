@@ -32,7 +32,7 @@ namespace MarketWeb.Server.Domain
             _instance._shippingHandlerProxy = shippingHandlerProxy;
             _instance._paymentHandlerProxy = paymentHandlerProxy;
         }
-        public void Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase, string paymentMethode, string shipmentMethode)
+        public async void Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase, string paymentMethode, string shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
             string errorMessage="";
             //first: should check that shippingSystem willig to provide cart:
@@ -40,7 +40,7 @@ namespace MarketWeb.Server.Domain
             {
                 //second: the actual payment:
                 double price = CalculatePrice(cartToPurchase);
-                if (_paymentHandlerProxy.Pay(price, paymentMethode))// payment succseded
+                if (-1 != await _paymentHandlerProxy.Pay(price, paymentMethode, cardNumber, month, year, holder, ccv, id))// payment succseded
                     return;
                 errorMessage = "Purchase failed: paymentSystem refuses.";
             }
