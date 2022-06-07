@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
+using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
+using MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage;
+using MarketWeb.Server.Domain.PurchasePackage.PolicyPackage;
 using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
+using Microsoft.AspNetCore.SignalR;
 using MarketWeb.Server.DataLayer;
 
 namespace MarketWeb.Server.Domain
@@ -16,13 +22,16 @@ namespace MarketWeb.Server.Domain
         private IDictionary<string, Operation> _opNameToOp;
         private DalTRranslator _dalTRranslator;
         private DalController _dalController = DalController.GetInstance();
-        public Market()
+        protected NotificationHub _notificationHub;
+
+        public Market(NotificationHub notificationHub = null)
         {
             _storeManagement = new StoreManagement();
             _VisitorManagement = new VisitorManagement();
             _history = new History();
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
+            _notificationHub = notificationHub;
             _dalTRranslator = new DalTRranslator(); 
         }
         
@@ -917,6 +926,9 @@ namespace MarketWeb.Server.Domain
 
         public List<Store> GetAllActiveStores(String authToken)
         {
+            NotifyMessageDTO notification = new NotifyMessageDTO("Store", "Title", "You did GetAllActiveStores", "ReceiverUsername", 0);
+            log.Info($"Sending notification to :{authToken}");
+            this._notificationHub.SendNotification(authToken, notification);
             String errorMessage = null;
             CheckIsVisitorAVisitor(authToken, "GetAllActiveStores");
             bool isAdmin = true;
@@ -1080,8 +1092,25 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AddStoreDiscount", errorMessage);
                 throw new Exception(errorMessage);
             }
-            Discount discount = new PurchasePackage.DiscountPolicyPackage.DiscountParser(discountString, conditionString).Parse();
+            Discount discount = new DiscountParser(discountString, conditionString).Parse();
             _storeManagement.AddStoreDiscount(storeName, discount);
+        }
+
+        public void AddStorePurchasePolicy(string authToken, string storeName, string conditionString)
+        {
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY))
+                errorMessage = "Visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("AddStoreDiscount", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            Condition condition = new ConditionParser(conditionString).Parse();
+            _storeManagement.AddStorePurchasePolicy(storeName, condition);
         }
     }
 }

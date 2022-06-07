@@ -271,6 +271,11 @@ namespace MarketWeb.Server.Domain
             GetActiveStore(storeName).AddDiscount(discount);
         }
 
+        public void AddStorePurchasePolicy(string storeName, Condition condition)
+        {
+            //GetStore(storeName).AddPurchasePolicy(condition);
+        }
+
         public bool AddStoreManager(StoreManager newManager, string storeName)
         {
             Store store = GetActiveStore(storeName);

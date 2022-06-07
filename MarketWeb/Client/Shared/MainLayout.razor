@@ -1,7 +1,13 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.SignalR.Client
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
 @inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
 @inject NavigationManager NavigationManager
 
 <style>
@@ -41,6 +47,10 @@
 		{
 			<a href="/Administration" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Administration</a>
 		}
+		<div style="float:right">
+			<div class='ikrNoti_Counter'>@notifications.Count()</div>
+			<div class='ikrNoti_Button' @onclick="ToggleNotificationMenu"></div>
+		</div>
 	</div>
 
 	<!-- Navbar on small screens -->
@@ -63,15 +73,38 @@
 			<a href="/Administration" class="w3-bar-item w3-button w3-padding-large">Administration</a>
 		}
 	</div>
+	<div class='ikrNotifications' style="display:@BoxCss !important">
+		<h3> Notifications </h3>
+		<div class="container">
+			@if (notifications.Count() == 0)
+			{
+				<p> No notifications. </p>
+			}
+			else
+			{
+				<div class='ikrNotificationItems'>
+					@foreach (NotifyMessageDTO notification in notifications)
+					{
+						<div class='ikrSingleNotiDiv'>
+							Blegh
+						</div>
+					}
+				</div>
+			}
+		</div>
+
+	</div>
 	<Alert />
 </div>
 <div class="main">
-	<div >
+	<div>
 		<br />
 		<br />
 		<br />
 		<main role="main" class="pb-3">
-			@Body
+			<CascadingValue Value=btn_clicked >
+				@Body
+			</CascadingValue>
 		</main>
 	</div>
 	<footer class="border-top footer text-muted">
@@ -83,6 +116,12 @@
 
 
 @code {
+	private HubConnection? hubConnection;
+
+	private ICollection<NotifyMessageDTO> notifications = new List<NotifyMessageDTO>();
+
+	private string BoxCss = "none";
+
 	bool collapseNavMenu = true;
 
 	string baseMenuClass = "navbar-collapse d-sm-inline-flex flex-sm-row-reverse";
@@ -93,4 +132,75 @@
 	{
 		collapseNavMenu = !collapseNavMenu;
 	}
+
+	private void ToggleNotificationMenu()
+	{
+		if (BoxCss == "none") BoxCss = "block";
+		else BoxCss = "none";
+	}
+
+	EventCallback _btn_clicked = EventCallback.Empty;
+	EventCallback btn_clicked  {
+		get {
+			if (_btn_clicked.Equals(EventCallback.Empty))
+				_btn_clicked = EventCallback.Factory.Create(this, GetNotifications);
+			return _btn_clicked;
+		}
+	}
+
+	public async void GetNotifications()
+	{
+		try
+        {
+			Response<ICollection<NotifyMessageDTO>> response = await marketAPIClient.GetRegisteredMessagesNotofication();
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            notifications = response.Value;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+	}
+
+	public void ClearNotifications()
+	{
+		notifications = new List<NotifyMessageDTO>();
+        StateHasChanged();
+	}
+
+	protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/notificationhub"), options =>
+			{ 
+				options.AccessTokenProvider = () => Task.FromResult(httpService.Token);
+			})
+            .Build();
+
+        hubConnection.On<NotifyMessageDTO>("ReceiveNotification", (notification) =>
+        {
+			notifications.Add(notification);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
 }
