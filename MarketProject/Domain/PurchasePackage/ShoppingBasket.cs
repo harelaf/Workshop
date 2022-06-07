@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketProject.Domain.PurchasePackage.PolicyPackage;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,20 +9,28 @@ namespace MarketProject.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual Store _store { get; set; }
-        public virtual IDictionary<Item, int> _items { get; set; }
-        public IDictionary<Item, int> Items => _items;
+        //public virtual IDictionary<Item, int> _items { get; set; }
+        //public IDictionary<Item, int> Items => _items;
+        private IDictionary<Item, DiscountDetails> _itemDiscounts;
+        public IDictionary<Item, DiscountDetails> ItemDiscounts
+        {
+            get { return _itemDiscounts; }
+            private set { _itemDiscounts = value; }
+        }
+        private DiscountDetails _additionalDiscounts;
+        public DiscountDetails AdditionalDiscounts => _additionalDiscounts;
 
         public ShoppingBasket(Store store)
         {
             _store = store;
-            _items = new Dictionary<Item, int>();
+            ItemDiscounts = new Dictionary<Item, DiscountDetails>();
         }
 
         public void AddItem(Item item, int amount)
         {
             if (isItemInBasket(item))
-                _items[item] = _items[item] + amount;
-            else _items.Add(item, amount);
+                ItemDiscounts[item].AddAmount(amount);
+            else ItemDiscounts[item] = new DiscountDetails(amount);
         }
 
         public virtual int GetAmountOfItem(Item item)
@@ -33,7 +42,7 @@ namespace MarketProject.Domain
                 LogErrorMessage("GetAmountOfItem", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return _items[item];
+            return ItemDiscounts[item].Amount;
         }
 
         //returns the amount that was removed
@@ -42,8 +51,8 @@ namespace MarketProject.Domain
             String errorMessage;
             if (isItemInBasket(item))
             {
-                int amount = _items[item];
-                _items.Remove(item);
+                int amount = ItemDiscounts[item].Amount;
+                ItemDiscounts.Remove(item);
                 return amount;
             }
             errorMessage = "basket doesn't contain the item that was requested to be removed";
@@ -53,14 +62,14 @@ namespace MarketProject.Domain
 
         public bool isItemInBasket(Item item)
         {
-            return _items.ContainsKey(item);
+            return ItemDiscounts.ContainsKey(item);
         }
 
         public bool updateItemQuantity(Item item, int newQuantity)
         {
             if (isItemInBasket(item))
             {
-                _items[item] = newQuantity;
+                ItemDiscounts[item].UpdateAmount(newQuantity);
                 return true;
             }
             return false;
@@ -68,12 +77,12 @@ namespace MarketProject.Domain
 
         public bool IsBasketEmpty()
         {
-            return _items.Count == 0;
+            return ItemDiscounts.Count == 0;
         }
 
         public virtual ICollection<Item> GetItems()
         {
-            return _items.Keys;
+            return ItemDiscounts.Keys;
         }
 
         private void LogErrorMessage(String functionName, String message)
@@ -85,29 +94,19 @@ namespace MarketProject.Domain
         public int SearchItemAmount(string itemName)
         {
             int result = 0;
-            foreach(Item item in _items.Keys)
-            {
+            foreach(Item item in ItemDiscounts.Keys)
                 if(itemName == item.Name)
-                {
-                    result += _items[item];
-                }
-            }
+                    result += ItemDiscounts[item].Amount;
             return result;
         }
-
         public int SearchCategoryAmount(string category)
         {
             int result = 0;
-            foreach (Item item in _items.Keys)
-            {
+            foreach (Item item in ItemDiscounts.Keys)
                 if (category == item.Category)
-                {
-                    result += _items[item];
-                }
-            }
+                    result += ItemDiscounts[item].Amount;
             return result;
         }
-
         public double GetTotalPrice()
         {
             double sum = 0;
@@ -115,43 +114,61 @@ namespace MarketProject.Domain
                 sum += i._price * GetAmountOfItem(i);
             return sum;
         }
-
         internal double getActualPrice()
         {
             double totalDiscount = Store().GetDiscountPolicy().calculateDiscounts(this);
             double totalPrice = GetTotalPrice();
             return totalPrice - totalDiscount;
         }
-
+        public string GetBasketReceipt()
+        {
+            return _store.GetDiscountPolicy().GetActualDiscountString(this);
+        }
         public double GetItemPrice(String itemName)
         {
             double sum = 0;
-            foreach (Item item in _items.Keys)
+            foreach (Item item in ItemDiscounts.Keys)
                 if (itemName == item.Name)
-                    sum += item._price * _items[item];
+                    sum += item._price * ItemDiscounts[item].Amount;
             return sum;
         }
-
         public double GetCategoryPrice(String category)
         {
             double sum = 0;
-            foreach(Item item in _items.Keys)
+            foreach(Item item in ItemDiscounts.Keys)
                 if (category == item.Category)
-                    sum += item._price * _items[item];
+                    sum += item._price * ItemDiscounts[item].Amount;
             return sum;
         }
-
-        internal string GetBasketReceipt()
+        public void SetAllProductsDiscount(AtomicDiscount discount)
         {
-            String receipt = "";
-            foreach(Item item in Items.Keys)
-            {
-                receipt += $"{Items[item]} {item._price} -> {Items[item] * item._price}\n";
-                receipt += _store.GetDiscountPolicy().GetActualDiscountString(this);
-            }
-            return receipt;
+            foreach (Item item in ItemDiscounts.Keys)
+                ItemDiscounts[item].AddDiscount(discount);
         }
-
+        public void SetCategoryDiscount(AtomicDiscount discount, String category)
+        {
+            foreach (Item item in ItemDiscounts.Keys)
+                if (item.Category == category)
+                    ItemDiscounts[item].AddDiscount(discount);
+        }
+        public void SetItemDiscount(AtomicDiscount discount, String itemName)
+        {
+            foreach (Item item in ItemDiscounts.Keys)
+                if (item.Name == itemName)
+                    ItemDiscounts[item].AddDiscount(discount);
+        }
+        public void SetNumericDiscount(AtomicDiscount discount)
+        {
+            AdditionalDiscounts.AddDiscount(discount);
+        }
+        public IDictionary<Item, DiscountDetails> GetDetailsByItem()
+        {
+            return ItemDiscounts;
+        }
+        public DiscountDetails GetAdditionalDiscounts()
+        {
+            return AdditionalDiscounts;
+        }
         public virtual Store Store()
         {
             return _store;

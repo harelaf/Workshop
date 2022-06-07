@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public class MaxDiscount : ComposedDiscount
     {
@@ -35,20 +35,22 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
             }
             return maxDis;
         }
-
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
             double totalDis = 0;
             foreach(Discount dis in DiscountList)
-            {
                 totalDis = Math.Max(totalDis, dis.GetTotalDiscount(searchablePriceable));
-            }
             return totalDis;
         }
-
+        public override void applyDiscount(ISearchablePriceable searchablePriceable)
+        {
+            Discount maxDis = GetMaxDiscount(searchablePriceable);
+            maxDis.applyDiscount(searchablePriceable);
+        }
         public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
         {
             return GetMaxDiscount(searchablePriceable).GetExpirationDate(searchablePriceable);
         }
+
     }
 }

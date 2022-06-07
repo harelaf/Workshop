@@ -71,15 +71,15 @@ namespace AcceptanceTest
             foreach (Tuple<DateTime, ShoppingBasketDTO> item in store_purchasedBasket)
             {
                 ShoppingBasketDTO shoppingBasketDTO = item.Item2;
-                if (shoppingBasketDTO.StoreName== storeName_inSystem)
+                if (shoppingBasketDTO.StoreName == storeName_inSystem)
                 {
-                    IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
+                    IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
                     int item_num = 0;
                     foreach (int itemId in items.Keys)
                     {
                         if (itemId == itemId_inGuestCart)
                         {
-                            Assert.AreEqual(itemAmount_inGuestCart, items[itemId].Item2);
+                            Assert.AreEqual(itemAmount_inGuestCart, items[itemId].Item2.Amount);
                             item_num++;
                             break;
                         }
@@ -182,13 +182,13 @@ namespace AcceptanceTest
                 ShoppingBasketDTO shoppingBasketDTO = item.Item2;
                 if (shoppingBasketDTO.StoreName == storeName_inSystem)
                 {
-                    IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
+                    IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
                     int item_num = 0;
                     foreach (int itemId in items.Keys)
                     {
                         if (itemId == itemId_inRegCart)
                         {
-                            Assert.AreEqual(itemAmount_inRegCart, items[itemId].Item2);
+                            Assert.AreEqual(itemAmount_inRegCart, items[itemId].Item2.Amount);
                             item_num++;
                             break;
                         }
@@ -207,15 +207,15 @@ namespace AcceptanceTest
 
                     foreach(ShoppingBasketDTO shoppingBasketDTO in purchasedCartDTO.Item2.Baskets)
                     {
-                        if (shoppingBasketDTO.StoreName == storeName_inSystem)//
+                        if (shoppingBasketDTO.StoreName == storeName_inSystem)
                         {
-                            IDictionary<int, Tuple<ItemDTO, int>> items = shoppingBasketDTO.Items;
+                            IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
                             int item_num = 0;
                             foreach (int itemId in items.Keys)
                             {
                                 if (itemId == itemId_inRegCart)
                                 {
-                                    Assert.AreEqual(itemAmount_inRegCart, items[itemId].Item2);
+                                    Assert.AreEqual(itemAmount_inRegCart, items[itemId].Item2.Amount);
                                     item_num++;
                                     break;
                                 }

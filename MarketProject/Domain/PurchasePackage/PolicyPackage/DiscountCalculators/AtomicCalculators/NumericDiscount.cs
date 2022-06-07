@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public class NumericDiscount : AtomicDiscount
     {
@@ -25,11 +25,11 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         {
             _price_to_subtract = priceToSubtract;
         }
-        public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
+        public override void applyDiscount(ISearchablePriceable searchablePriceable)
         {
             if(!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
-                return 0;
-            return PriceToSubtract;
+                return;
+            searchablePriceable.SetNumericDiscount(this);
         }
         public override String GetDiscountString(int indent)
         {
@@ -41,6 +41,16 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
         public override String GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
         {
             return GetDiscountString(indent);
+        }
+        public override double calcPriceFromCurrPrice(double currPrice)
+        {
+            return currPrice - PriceToSubtract;
+        }
+        public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
+        {
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return 0;
+            return PriceToSubtract;
         }
     }
 }

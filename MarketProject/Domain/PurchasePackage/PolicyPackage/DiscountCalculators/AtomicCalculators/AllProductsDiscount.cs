@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage
 {
     public class AllProductsDiscount : PercentageDiscount
     {
@@ -23,6 +23,12 @@ namespace MarketProject.Domain.PurchasePackage.DiscountPackage
                 $"{newLine(indent)}{searchablePriceable.GetTotalPrice()} - {GetTotalDiscount(searchablePriceable)} = {searchablePriceable.GetTotalPrice() - GetTotalDiscount(searchablePriceable)}" +
                 ExpirationToString(indent) +
                 ConditionToString(indent);
+        }
+        public override void applyDiscount(ISearchablePriceable searchablePriceable)
+        {
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return;
+            searchablePriceable.SetAllProductsDiscount(this);
         }
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {

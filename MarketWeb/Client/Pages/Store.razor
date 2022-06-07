@@ -34,7 +34,10 @@
         {
             <button class="btn btn-primary" @onclick="() => ViewStoreMessages()">View @(StoreInfo.StoreName) Messages</button>
         }
-
+        @if (CanChangeStoreAndDiscountPolicies)
+        {
+            <button class="btn btn-primary" @onclick="() => ViewPoliciesPage()">View Purchase/Discount Policy Page</button>
+        }
         @if (CanCloseStore && StoreIsActive)
         {
             <button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
@@ -246,10 +249,7 @@
                 <br />
                 <EditForm Model="@AddItemModel" OnValidSubmit="AddItemForm">
                     <DataAnnotationsValidator />
-                    <div class="form-group">
-                        <label>ID</label>
-                        <InputNumber TValue="int" @bind-Value="AddItemModel.Id" class="form-control" />
-                    </div>
+                    
                     <div class="form-group">
                         <label>Name</label>
                         <InputText @bind-Value="AddItemModel.Name" class="form-control" />
@@ -369,6 +369,7 @@ else
     private bool CanViewPurchaseHistory { get; set; } = false;
     private bool CanViewStoreMessages { get; set; } = false;
     private bool CanViewStoreRoles { get; set; } = false;
+    private bool CanChangeStoreAndDiscountPolicies { get; set; } = false;
     private bool StoreIsActive { get; set; } = true;
 
     private async void OnValidSubmit()
@@ -497,6 +498,7 @@ else
             CanViewPurchaseHistory = !(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
             CanViewStoreMessages = !(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
             CanViewStoreRoles = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;//should add new op:
+            CanChangeStoreAndDiscountPolicies = !(await _marketAPIClient.HasPermission(StoreName, "CHANGE_SHOP_AND_DISCOUNT_POLICY")).ErrorOccured;
         }
         catch (Exception ex)
         {
@@ -733,7 +735,6 @@ else
     private async void AddItemForm()
     {
         Response response = await _marketAPIClient.AddItemToStoreStock(StoreName,
-                                                                       AddItemModel.Id,
                                                                        AddItemModel.Name,
                                                                        AddItemModel.Price,
                                                                        AddItemModel.Description,
@@ -767,5 +768,10 @@ else
             NavigationManager.NavigateTo($"StorePage/{StoreName}");
         }
         StateHasChanged();
+    }
+
+    private async void ViewPoliciesPage()
+    {
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/Policies");
     }
 }

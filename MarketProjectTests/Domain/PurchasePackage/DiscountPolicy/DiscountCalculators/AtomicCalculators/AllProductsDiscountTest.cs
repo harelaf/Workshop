@@ -3,9 +3,8 @@ using MarketProject.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using MarketProject.Domain.PurchasePackage.DiscountPackage;
 
-namespace MarketProject.Domain.PurchasePackage.DiscountPackage.Tests
+namespace MarketProject.Domain.PurchasePackage.PolicyPackage.Tests
 {
 	[TestClass]
     public class AllProductsDiscountTest

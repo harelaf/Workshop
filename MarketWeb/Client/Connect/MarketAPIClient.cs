@@ -34,7 +34,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response> AddStoreOwner(String ownerUsername, String storeName);
         public Task<Response> RemoveStoreOwner(String ownerUsername, String storeName);
         public Task<Response> RemoveStoreManager(String managerUsername, String storeName);
-        public Task<Response> AddItemToStoreStock(String storeName, int itemID, String name, double price, String description, String category, int quantity);
+        public Task<Response> AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity);
         public Task<Response> RemoveItemFromStore(String storeName, int itemID);
         public Task<Response> UpdateStockQuantityOfItem(String storeName, int itemID, int newQuantity);
         public Task<Response> EditItemPrice(String storeName, int itemID, double newPrice);
@@ -71,6 +71,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response<ItemDTO>> GetItem(string storeName, int itemId);
         public Task<Response<List<StoreDTO>>> GetStoresOfUser();
         public Task<Response> SendAdminMessage(String receiverUsername, String title, String message);
+        public Task<Response> AddStoreDiscount(String StoreName, String ConditionString, String DiscountString);
     }
 
     public class MarketAPIClient : IMarketAPIClient
@@ -287,12 +288,11 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response> AddItemToStoreStock(string storeName, int itemID, string name, double price, string description, string category, int quantity)
+        public async Task<Response> AddItemToStoreStock(string storeName, string name, double price, string description, string category, int quantity)
         {
             const string url = "api/market/AddItemToStoreStock";
             var param = new Dictionary<string, string>() {
             { "storeName" , storeName },
-                { "itemID" , itemID.ToString()},
                 { "name" , name},
                 { "price", price.ToString()},
                 { "description" , description},
@@ -734,6 +734,19 @@ namespace MarketWeb.Client.Connect
                 { "UsernameReciever", receiverUsername },
                 { "title", title },
                 { "message", message }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+            Response res = await _httpService.Post<Response>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response> AddStoreDiscount(string StoreName, string ConditionString, string DiscountString)
+        {
+            const string url = "api/market/AddStoreDiscount";
+            var param = new Dictionary<string, string>() {
+                { "storeName", StoreName },
+                { "conditionString", ConditionString },
+                { "discountString", DiscountString }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response res = await _httpService.Post<Response>(newUrl, null);

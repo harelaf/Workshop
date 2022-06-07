@@ -22,8 +22,8 @@ namespace MarketWeb.Server.Domain
         /// <summary>
         /// Password is salted and hashed!
         /// </summary>
-        private String _password;
-        private String _salt;
+        internal String _password { get; set; }
+        internal String _salt { get; set; }
         public String Salt => _salt;
 
         public DateTime _birthDate;
@@ -32,7 +32,7 @@ namespace MarketWeb.Server.Domain
         private IDictionary<int,Complaint> _filedComplaints = new Dictionary<int,Complaint>();
         public IDictionary<int, Complaint> FiledComplaints => _filedComplaints;
 
-        public Registered(ICollection<AdminMessageToRegistered> adminMessages, ICollection<NotifyMessage> notifications, ICollection<MessageToStore> repliedMessages, string username, string password, string salt, DateTime birthDate, ICollection<SystemRole> roles, IDictionary<int, Complaint> filedComplaints)
+        public Registered(ICollection<AdminMessageToRegistered> adminMessages, ICollection<NotifyMessage> notifications, ICollection<MessageToStore> repliedMessages, string username, string password, string salt, DateTime birthDate, ICollection<SystemRole> roles, IDictionary<int, Complaint> filedComplaints, ShoppingCart cart): base(cart)
         {
             _adminMessages = adminMessages;
             _notifications = notifications;
@@ -223,12 +223,12 @@ namespace MarketWeb.Server.Domain
             _repliedMessages.Add(msg);  
         }
 
-        internal void SendNotificationMsg(string storeName, string title, string message)
+        internal void SendNotificationMsg(string storeName, string title, string message, int id)
         {
-            _notifications.Add(new NotifyMessage(storeName, title, message, _username));
+            _notifications.Add(new NotifyMessage(id, storeName, title, message, _username));
         }
 
-        internal List<string> GetRegisteredVisitor()
+        internal List<string> GetRegisteredStores()
         {
             List<string> stores = new List<string>();
             foreach(SystemRole role in _roles)
