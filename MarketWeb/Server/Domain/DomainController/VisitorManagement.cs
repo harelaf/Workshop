@@ -688,11 +688,10 @@ namespace MarketWeb.Server.Domain
         {
             Registered registered = GetRegisteredVisitor(usernameReciever);
             NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, usernameReciever);
-            registered.SendNotificationMsg(notifyMessage);
             string authToken = GetLoggedInToken(usernameReciever); 
             if (authToken != null)
             {
-                _notificationHub.SendNotification(authToken, DTOtranslator.toDTO(notifyMessage));
+                _notificationHub.SendNotification(authToken, new DTOtranslator().toDTO(notifyMessage));
             }
         }
 

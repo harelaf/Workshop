@@ -465,7 +465,7 @@ namespace MarketWeb.Server.Service
             String[] args = ParseArgs(args_, MethodName, 5);
             int authIndex = ParseAuthIndex(args[0], MethodName);
             int id = ParseInt(args[4], MethodName);
-            Response response = api.SendMessageToStore(tokens[authIndex - 1], args[1], args[2], args[3], id);
+            Response response = api.SendMessageToStore(tokens[authIndex - 1], args[1], args[2], args[3]);
             if (response.ErrorOccured)
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }

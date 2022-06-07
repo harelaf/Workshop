@@ -1,6 +1,5 @@
 ﻿
 using MarketWeb.Server.Domain;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
@@ -1392,14 +1391,11 @@ namespace MarketWeb.Service
             String desc3 = "some other other item description goes here.";
             int quantity3 = 300;
             
+
             AddItemToStoreStock(auth1, storeName1, itemID1, itemName1, price1, desc1, category1, quantity1);
-            
+
             AddItemToStoreStock(auth1, storeName1, itemID2, itemName2, price2, desc2, category2, quantity2);
             AddItemToStoreStock(auth1, storeName1, itemID3, itemName3, price3, desc3, category3, quantity3);
-
-            AddItemToStoreStock(auth2, storeName2, itemName1, price1, desc1, category1, quantity1);
-            AddItemToStoreStock(auth2, storeName2, itemName2, price2, desc2, category2, quantity2);
-            AddItemToStoreStock(auth2, storeName2, itemName3, price3, desc3, category3, quantity3);
 
             DateTime expiration = DateTime.Today.AddDays(10);
             int minAmount = 5;
