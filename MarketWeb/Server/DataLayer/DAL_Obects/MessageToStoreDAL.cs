@@ -8,17 +8,17 @@ namespace MarketWeb.Server.DataLayer
     public class MessageToStoreDAL
     {
         [Key]
-        internal int mid { get; set; }
+        public int mid { get; set; }
         [Required]
-        internal String _storeName { get; set; }
+        public String _storeName { get; set; }
         [Required]
-        internal String _senderUsername { get; set; }
+        public String _senderUsername { get; set; }
         [Required]
-        internal String _message { get; set; }
+        public String _message { get; set; }
         [Required]
-        internal String _title { get; set; }
-        internal string _reply { get; set; }
-        internal string _replierFromStore { get; set; }
+        public String _title { get; set; }
+        public string _reply { get; set; }
+        public string _replierFromStore { get; set; }
 
         public MessageToStoreDAL(int mid, string storeName, string senderUsername, string message, string title, string reply, string replierFromStore)
         {
@@ -37,6 +37,11 @@ namespace MarketWeb.Server.DataLayer
             _senderUsername = senderUsername;
             _message = message;
             _title = title;
+        }
+
+        public MessageToStoreDAL()
+        {
+            // ???
         }
     }
 }

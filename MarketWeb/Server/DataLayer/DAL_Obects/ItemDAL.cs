@@ -8,16 +8,16 @@ namespace MarketWeb.Server.DataLayer
     public class ItemDAL
     {
         [Key]
-        internal int _itemID { get; set; }
-        internal RatingDAL _rating { get; set; }
+        public int _itemID { get; set; }
+        public RatingDAL _rating { get; set; }
         [Required]
-        internal String _name { get; set; }
+        public String _name { get; set; }
         [Required]
-        internal virtual double _price { get; set; }
+        public virtual double _price { get; set; }
         [Required]
-        internal String _description { get; set; }
+        public String _description { get; set; }
         [Required]
-        internal String _category { get; set; }
+        public String _category { get; set; }
 
         public ItemDAL(RatingDAL rating, string name, double price, string description, string category)
         {
@@ -29,5 +29,10 @@ namespace MarketWeb.Server.DataLayer
         }
 
         //private ICollection<DiscountDAL> _discounts;
+
+        public ItemDAL()
+        {
+            // ???
+        }
     }
 }

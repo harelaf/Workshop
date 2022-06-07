@@ -7,11 +7,18 @@ namespace MarketWeb.Server.DataLayer
 {
     public class RatingDAL
     {
-        internal ICollection<RateDAL> _ratings { get; set; } //ratings =: rating:int, review:String
+        [Key]
+        public int id { get; set; }
+        public ICollection<RateDAL> _ratings { get; set; } //ratings =: rating:int, review:String
 
         public RatingDAL(ICollection<RateDAL> ratings)
         {
             _ratings = ratings;
+        }
+
+        public RatingDAL()
+        {
+            // ???
         }
     }
 }

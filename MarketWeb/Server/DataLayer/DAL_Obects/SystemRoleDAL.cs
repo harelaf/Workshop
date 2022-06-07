@@ -1,31 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.DataLayer
 {
+    public class OperationWrapper
+    {
+        [Key]
+        public int id { get; set; }
+        public Operation op { get; set; }
+
+        public OperationWrapper(Operation op)
+        {
+            this.op = op;
+        }
+
+        public OperationWrapper()
+        {
+            // ???
+        }
+    }
+
     public abstract class SystemRoleDAL
     {
-
-        internal ISet<Operation> _operations { get; set; }
         [Key]
-        internal string _username { get; set; }
-        [Key]
-        internal string _storeName { get; set; } = "";
+        public int id { get; set; }
+        public string _username { get; set; }
+        public string _storeName { get; set; } = "";
+        public List<OperationWrapper> _operationsWrappers { get; set; }
+        [NotMapped]
+        public ICollection<Operation> _operations { get; set; }
         protected SystemRoleDAL(ISet<Operation> operations, string username, string storeName)
         {
             _operations = operations;
+            _operationsWrappers = new List<OperationWrapper>();
+            foreach (Operation op in _operations)
+            {
+                _operationsWrappers.Add(new OperationWrapper(op));
+            }
             _username = username;
-            _storeName = storeName; 
+            _storeName = storeName;
+        }
+        protected SystemRoleDAL()
+        {
+            // ???
+        }
+        public ISet<Operation> ConvertToSet()
+        {
+            ISet<Operation> operations = new HashSet<Operation>();
+            foreach (Operation op in _operations)
+            {
+                operations.Add(op);
+            }
+            return operations;
         }
     }
     public class SystemAdminDAL : SystemRoleDAL
     {
 
         public SystemAdminDAL(string username) : base(getOps(), username, "")
-        {        }
+        { }
 
         public SystemAdminDAL(ISet<Operation> operations, string username, string storeName) : base(operations, username, storeName)
         {
@@ -80,7 +117,7 @@ namespace MarketWeb.Server.DataLayer
     {
 
         [Required]
-        internal string _appointer { get; set; }
+        public string _appointer { get; set; }
 
         public StoreOwnerDAL(string storeName, string appointer, string username) : base(getOps(), username, storeName)
         {
@@ -113,7 +150,7 @@ namespace MarketWeb.Server.DataLayer
     public class StoreManagerDAL : SystemRoleDAL
     {
         [Required]
-        internal string _appointer { get; set; }
+        public string _appointer { get; set; }
 
         public StoreManagerDAL(string storeName, string appointer, string username) : base(getOps(), username, storeName)
         {

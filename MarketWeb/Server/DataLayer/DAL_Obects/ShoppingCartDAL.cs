@@ -8,8 +8,8 @@ namespace MarketWeb.Server.DataLayer
     public class ShoppingCartDAL
     {
         [Key]
-        internal  int scId { get; set; }
-        internal virtual ICollection<ShoppingBasketDAL> _shoppingBaskets { get; set; }
+        public  int scId { get; set; }
+        public virtual ICollection<ShoppingBasketDAL> _shoppingBaskets { get; set; }
 
         public ShoppingCartDAL()
         {

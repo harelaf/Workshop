@@ -216,10 +216,10 @@ namespace MarketWeb.Server.Domain
 
         public StockDAL StockDomainToDal(Stock stock)
         {
-            Dictionary<ItemDAL, int> itemAndAmount = new Dictionary<ItemDAL, int>();
+            ICollection<StockItemDAL> itemAndAmount = new List<StockItemDAL>();
             foreach (KeyValuePair<Item, int> i_a in stock.Items)
             {
-                itemAndAmount.Add(ItemDomainToDal(i_a.Key), i_a.Value);
+                itemAndAmount.Add(new StockItemDAL(ItemDomainToDal(i_a.Key), i_a.Value));
             }
             return new StockDAL(itemAndAmount);
         }
@@ -306,22 +306,22 @@ namespace MarketWeb.Server.Domain
         }
         public StoreFounder StoreFounderDalToDomain(StoreFounderDAL founderDAL)
         {
-            return new StoreFounder(founderDAL._operations ,founderDAL._username, founderDAL._storeName);
+            return new StoreFounder(founderDAL.ConvertToSet(), founderDAL._username, founderDAL._storeName);
         }
         public StoreManager StoreManagerDalToDomain(StoreManagerDAL managerDAL)
         {
-            return new StoreManager(managerDAL._appointer, managerDAL._operations, managerDAL._username, managerDAL._storeName);        
+            return new StoreManager(managerDAL._appointer, managerDAL.ConvertToSet(), managerDAL._username, managerDAL._storeName);        
         }
         public StoreOwner StoreOwnerDalToDomain(StoreOwnerDAL ownerDAL)
         {
-            return new StoreOwner(ownerDAL._appointer, ownerDAL._operations, ownerDAL._username, ownerDAL._storeName);
+            return new StoreOwner(ownerDAL._appointer, ownerDAL.ConvertToSet(), ownerDAL._username, ownerDAL._storeName);
         }
         public Stock StockDalToDomain(StockDAL stockDAL)
         {
             Dictionary<Item, int> itemAndAmount = new Dictionary<Item, int>();  
-            foreach (KeyValuePair<ItemDAL, int> i_a in stockDAL._itemAndAmount)
+            foreach (StockItemDAL stockItem in stockDAL._itemAndAmount)
             {
-                itemAndAmount.Add(ItemDalToDomain(i_a.Key), i_a.Value);
+                itemAndAmount.Add(ItemDalToDomain(stockItem.item), stockItem.amount);
             }
             return new Stock(itemAndAmount);
         }
@@ -354,7 +354,7 @@ namespace MarketWeb.Server.Domain
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
             IDictionary<Item, DiscountDetails> items = new Dictionary<Item, DiscountDetails>();
-            foreach(KeyValuePair<ItemDAL, PurchaseDetailsDAL> i_a in basketDAL._items)
+            foreach(KeyValuePair<ItemDAL, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
             {
                 items.Add(ItemDalToDomain(i_a.Key), PurchaseDetailsDALToDomain(i_a.Value));
             }
@@ -578,22 +578,22 @@ namespace MarketWeb.Server.Domain
             if (systemRoleDAL is SystemAdminDAL)
             {
                 SystemAdminDAL systemAdminDAL = (SystemAdminDAL)systemRoleDAL;
-                return new SystemAdmin(systemAdminDAL._username, systemAdminDAL._operations);
+                return new SystemAdmin(systemAdminDAL._username, systemAdminDAL.ConvertToSet());
             }
             if (systemRoleDAL is StoreFounderDAL)
             {
                 StoreFounderDAL storeFounderDAL = (StoreFounderDAL)systemRoleDAL;
-                return new StoreFounder(storeFounderDAL._operations, storeFounderDAL._username, storeFounderDAL._storeName);
+                return new StoreFounder(storeFounderDAL.ConvertToSet(), storeFounderDAL._username, storeFounderDAL._storeName);
             }
             if(systemRoleDAL is StoreOwnerDAL)
             {
                 StoreOwnerDAL storeOwnerDAL = (StoreOwnerDAL)systemRoleDAL;
-                return new StoreOwner(storeOwnerDAL._appointer, storeOwnerDAL._operations, storeOwnerDAL._username, storeOwnerDAL._storeName);
+                return new StoreOwner(storeOwnerDAL._appointer, storeOwnerDAL.ConvertToSet(), storeOwnerDAL._username, storeOwnerDAL._storeName);
             }
             if (systemRoleDAL is StoreManagerDAL)
             {
                 StoreManagerDAL storeManagerDAL = (StoreManagerDAL)systemRoleDAL;
-                return new StoreManager(storeManagerDAL._appointer, storeManagerDAL._operations, storeManagerDAL._username, storeManagerDAL._storeName);
+                return new StoreManager(storeManagerDAL._appointer, storeManagerDAL.ConvertToSet(), storeManagerDAL._username, storeManagerDAL._storeName);
             }
             else
                 throw new Exception("can;t happen");

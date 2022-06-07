@@ -4,87 +4,135 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MarketWeb.Server.DataLayer
 {
-    internal class DiscountDAL
+    public class DiscountDAL
     {
-        internal ConditionDAL _condition;
-        internal DiscountDAL(ConditionDAL condition)
+        [Key]
+        public int _id { get; set; }
+        public ConditionDAL _condition { get; set; }
+        public DiscountDAL(ConditionDAL condition)
         {
             _condition = condition;
         }
-    }
-    internal abstract class AtomicDiscountDAL : DiscountDAL
-    {
-        [Required]
-        internal DateTime _expiration;
 
-        internal AtomicDiscountDAL(DateTime expiration, ConditionDAL condition) : base(condition)
+        public DiscountDAL()
         {
+            // ???
         }
     }
-    internal abstract class PercentageDiscountDAL : AtomicDiscountDAL
+    public class AtomicDiscountDAL : DiscountDAL
     {
         [Required]
-        internal double _percents;
-        [Required]
-        internal DateTime _expiration;
+        public DateTime _expiration { get; set; }
 
-        internal PercentageDiscountDAL(double percents, DateTime expiration, ConditionDAL condition) : base(expiration, condition)
+        protected AtomicDiscountDAL(DateTime expiration, ConditionDAL condition) : base(condition)
+        {
+        }
+
+        protected AtomicDiscountDAL()
+        {
+            // ???
+        }
+    }
+    public class PercentageDiscountDAL : AtomicDiscountDAL
+    {
+        [Required]
+        public double _percents { get; set; }
+        [Required]
+        public DateTime _expiration { get; set; }
+
+        protected PercentageDiscountDAL(double percents, DateTime expiration, ConditionDAL condition) : base(expiration, condition)
         {
             _percents = percents;
             _expiration = expiration;
         }
-    }
-    internal class AllProductsDiscountDAL : PercentageDiscountDAL
-    {
-        internal AllProductsDiscountDAL(double percentage_to_subtract, DateTime expiration, ConditionDAL condition) : base(percentage_to_subtract, expiration, condition)
+
+        protected PercentageDiscountDAL()
         {
+            // ???
         }
     }
-    internal class CategoryDiscountDAL : PercentageDiscountDAL
+    public class AllProductsDiscountDAL : PercentageDiscountDAL
+    {
+        public AllProductsDiscountDAL(double percentage_to_subtract, DateTime expiration, ConditionDAL condition) : base(percentage_to_subtract, expiration, condition)
+        {
+        }
+
+        public AllProductsDiscountDAL()
+        {
+            // ???
+        }
+    }
+    public class CategoryDiscountDAL : PercentageDiscountDAL
     {
         [Required]
-        internal string _categoryName;
-        internal CategoryDiscountDAL(string categoryName, double percents, DateTime expiration, ConditionDAL condition) : base(percents, expiration, condition)
+        public string _categoryName { get; set; }
+        public CategoryDiscountDAL(string categoryName, double percents, DateTime expiration, ConditionDAL condition) : base(percents, expiration, condition)
         {
             _categoryName = categoryName;
         }
+
+        public CategoryDiscountDAL()
+        {
+            // ???
+        }
     }
-    internal class ItemDiscountDAL : PercentageDiscountDAL
+    public class ItemDiscountDAL : PercentageDiscountDAL
     {
         [Required]
-        internal string _itemName;
-        internal ItemDiscountDAL(string itemName, double percents, DateTime expiration, ConditionDAL condition) : base(percents, expiration, condition)
+        public string _itemName { get; set; }
+        public ItemDiscountDAL(string itemName, double percents, DateTime expiration, ConditionDAL condition) : base(percents, expiration, condition)
         {
             _itemName = itemName;
         }
+
+        public ItemDiscountDAL()
+        {
+            // ???
+        }
     }
-    internal class NumericDiscountDAL : AtomicDiscountDAL
+    public class NumericDiscountDAL : AtomicDiscountDAL
     {
         [Required]
-        internal double _priceToSubtract;
-        internal NumericDiscountDAL(double priceToSubtract, DateTime expiration, ConditionDAL condition) : base(expiration, condition)
+        public double _priceToSubtract { get; set; }
+        public NumericDiscountDAL(double priceToSubtract, DateTime expiration, ConditionDAL condition) : base(expiration, condition)
         {
             _priceToSubtract = priceToSubtract;
         }
+        public NumericDiscountDAL()
+        {
+            // ???
+        }
     }
-    internal abstract class ComposedDiscountDAL : DiscountDAL
+    public class ComposedDiscountDAL : DiscountDAL
     {
-        internal List<DiscountDAL> _discounts;
-        internal ComposedDiscountDAL(List<DiscountDAL> discounts, ConditionDAL condition) : base(condition)
+        public List<DiscountDAL> _discounts { get; set; }
+        protected ComposedDiscountDAL(List<DiscountDAL> discounts, ConditionDAL condition) : base(condition)
         {
             _discounts = discounts;
         }
-    }
-    internal class MaxDiscountDAL : ComposedDiscountDAL
-    {
-        internal MaxDiscountDAL(List<DiscountDAL> discounts, ConditionDAL condition) : base(discounts, condition)
+        protected ComposedDiscountDAL()
         {
+            // ???
         }
     }
-    internal class PlusDiscountDAL : ComposedDiscountDAL
+    public class MaxDiscountDAL : ComposedDiscountDAL
     {
-        internal PlusDiscountDAL(List<DiscountDAL> discounts, ConditionDAL condition) : base(discounts, condition)
+        public MaxDiscountDAL(List<DiscountDAL> discounts, ConditionDAL condition) : base(discounts, condition)
         {
+        }
+        public MaxDiscountDAL()
+        {
+            // ???
+        }
+    }
+    public class PlusDiscountDAL : ComposedDiscountDAL
+    {
+        public PlusDiscountDAL(List<DiscountDAL> discounts, ConditionDAL condition) : base(discounts, condition)
+        {
+        }
+        public PlusDiscountDAL()
+        {
+            // ???
         }
     }
 }

@@ -64,14 +64,14 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            Dictionary<ItemDAL, int> itemsNamunt = storeDAL._stock._itemAndAmount;
+            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
             ItemDAL itemToAdd = null;
-            foreach (ItemDAL item in itemsNamunt.Keys)
+            foreach (StockItemDAL stockItem in itemsNamunt)
             {
-                if (item._itemID == itemID)
+                if (stockItem.item._itemID == itemID)
                 {
-                    itemToAdd = item;
-                    itemsNamunt[item] = itemsNamunt[item] - amount;
+                    itemToAdd = stockItem.item;
+                    stockItem.amount = stockItem.amount - amount;
                 }
                     
             }
@@ -93,7 +93,7 @@ namespace MarketWeb.Server.DataLayer
             {
                 if (shoppingBasket._store._storeName == storeName)
                 {
-                    IDictionary<ItemDAL, PurchaseDetailsDAL> basket = shoppingBasket._items;
+                    IDictionary<ItemDAL, PurchaseDetailsDAL> basket = shoppingBasket.ConvertToDictionary();
                     foreach (ItemDAL item in basket.Keys)
                     {
                         if (item._itemID == itemID)
@@ -111,12 +111,12 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            Dictionary<ItemDAL, int> itemsNamunt = storeDAL._stock._itemAndAmount;
-            foreach (ItemDAL item in itemsNamunt.Keys)
+            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
+            foreach (StockItemDAL stockItem in itemsNamunt)
             {
-                if (item._itemID == itemID)
+                if (stockItem.item._itemID == itemID)
                 {
-                    itemsNamunt[item] = itemsNamunt[item] + amount;
+                    stockItem.amount = stockItem.amount + amount;
                 }
 
             }
@@ -133,7 +133,7 @@ namespace MarketWeb.Server.DataLayer
             {
                 if (shoppingBasket._store._storeName == storeName)
                 {
-                    IDictionary<ItemDAL, PurchaseDetailsDAL> basket = shoppingBasket._items;
+                    IDictionary<ItemDAL, PurchaseDetailsDAL> basket = shoppingBasket.ConvertToDictionary();
                     foreach (ItemDAL item in basket.Keys)
                     {
                         if (item._itemID == itemID)
@@ -148,12 +148,12 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            Dictionary<ItemDAL, int> itemsNamunt = storeDAL._stock._itemAndAmount;
-            foreach (ItemDAL item in itemsNamunt.Keys)
+            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
+            foreach (StockItemDAL stockItem in itemsNamunt)
             {
-                if (item._itemID == itemID)
+                if (stockItem.item._itemID == itemID)
                 {
-                    itemsNamunt[item] = itemsNamunt[item] + amountDiff;
+                    stockItem.amount = stockItem.amount + amountDiff;
                 }
 
             }
@@ -279,7 +279,7 @@ namespace MarketWeb.Server.DataLayer
                 throw new Exception($"store: {storeName} not in system");
             ItemDAL item = new ItemDAL(new RatingDAL(new List<RateDAL>()), name, price,
                 description, category);
-            storeDAL._stock._itemAndAmount.Add(item, quantity);
+            storeDAL._stock._itemAndAmount.Add(new StockItemDAL(item, quantity));
             context.SaveChanges();
             return item._itemID;
         }
@@ -288,11 +288,11 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            foreach (ItemDAL item in storeDAL._stock._itemAndAmount.Keys)
+            foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
             {
-                if(item._itemID == itemID)
+                if(stockItem.item._itemID == itemID)
                 {
-                    storeDAL._stock._itemAndAmount.Remove(item);
+                    storeDAL._stock._itemAndAmount.Remove(stockItem);
                     break;
                 }
             }
@@ -303,11 +303,11 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            foreach (ItemDAL item in storeDAL._stock._itemAndAmount.Keys)
+            foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
             {
-                if (item._itemID == itemID)
+                if (stockItem.item._itemID == itemID)
                 {
-                    storeDAL._stock._itemAndAmount[item] = newQuantity;
+                    stockItem.amount = newQuantity;
                     break;
                 }
             }
@@ -318,11 +318,11 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            foreach (ItemDAL item in storeDAL._stock._itemAndAmount.Keys)
+            foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
             {
-                if (item._itemID == itemID)
+                if (stockItem.item._itemID == itemID)
                 {
-                    item._price = newPrice; 
+                    stockItem.item._price = newPrice; 
                     break;
                 }
             }
@@ -333,11 +333,11 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            foreach (ItemDAL item in storeDAL._stock._itemAndAmount.Keys)
+            foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
             {
-                if (item._itemID == itemID)
+                if (stockItem.item._itemID == itemID)
                 {
-                    item._name = newName;
+                    stockItem.item._name = newName;
                     break;
                 }
             }
@@ -348,11 +348,11 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            foreach (ItemDAL item in storeDAL._stock._itemAndAmount.Keys)
+            foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
             {
-                if (item._itemID == itemID)
+                if (stockItem.item._itemID == itemID)
                 {
-                    item._description = newDescription;
+                    stockItem.item._description = newDescription;
                     break;
                 }
             }
@@ -364,11 +364,11 @@ namespace MarketWeb.Server.DataLayer
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             RateDAL rate = new RateDAL(userName, rating, review);
-            foreach (ItemDAL item in storeDAL._stock._itemAndAmount.Keys)
+            foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
             {
-                if (item._itemID == itemID)
+                if (stockItem.item._itemID == itemID)
                 {
-                    item._rating._ratings.Add(rate);
+                    stockItem.item._rating._ratings.Add(rate);
                     break;
                 }
             }
@@ -394,7 +394,7 @@ namespace MarketWeb.Server.DataLayer
         {
             try
             {
-                return context.StoreDALs.Find(storeName)._stock._itemAndAmount.Keys.Where(i => i._itemID == itemID).First();
+                return context.StoreDALs.Find(storeName)._stock._itemAndAmount.Where(i => i.item._itemID == itemID).First().item;
             }
             catch (Exception ex)
             {

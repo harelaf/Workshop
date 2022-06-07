@@ -6,17 +6,22 @@ namespace MarketWeb.Server.DataLayer
     public class PurchaseDetailsDAL
     {
         [Key]
-        internal int _itemID;
+        public int _itemID { get; set; }
         [Required]
-        internal int amount;
-        [Required]
-        internal List<AtomicDiscountDAL> discountList;
+        public int amount { get; set; }
+        
+        public List<AtomicDiscountDAL> discountList { get; set; }
 
-        internal PurchaseDetailsDAL(int ItemID, int amount, List<AtomicDiscountDAL> discountList)
+        public PurchaseDetailsDAL(int ItemID, int amount, List<AtomicDiscountDAL> discountList)
         {
             _itemID = ItemID;
             this.amount = amount;
             this.discountList = discountList;
+        }
+
+        public PurchaseDetailsDAL()
+        {
+            // ???
         }
     }
 }

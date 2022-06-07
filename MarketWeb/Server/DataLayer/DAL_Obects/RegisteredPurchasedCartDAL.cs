@@ -7,20 +7,25 @@ namespace MarketWeb.Server.DataLayer
     public class RegisteredPurchasedCartDAL
     {
         [Key]
-        internal string userName { get; set; }
+        public string userName { get; set; }
 
         [Required]
-        internal ICollection<PurchasedCartDAL> _PurchasedCarts { get; set; }
+        public ICollection<PurchasedCartDAL> _PurchasedCarts { get; set; }
 
         public RegisteredPurchasedCartDAL(string userName, ICollection<PurchasedCartDAL> purchasedCarts) : this(userName)
         {
             _PurchasedCarts = purchasedCarts;
         }
 
-        public RegisteredPurchasedCartDAL(string userName)
+        public RegisteredPurchasedCartDAL(string username)
         {
-            this.userName = userName;
+            this.userName = username;
             _PurchasedCarts = new List<PurchasedCartDAL>();
+        }
+
+        public RegisteredPurchasedCartDAL()
+        {
+            // Empty constructor for some reason?
         }
     }
 }

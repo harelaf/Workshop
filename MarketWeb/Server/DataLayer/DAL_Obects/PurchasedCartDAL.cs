@@ -6,14 +6,19 @@ namespace MarketWeb.Server.DataLayer
     public class PurchasedCartDAL
     {
         [Key]
-        internal DateTime _purchaseDate { get; set; }
+        public DateTime _purchaseDate { get; set; }
         [Key]
-        internal ShoppingCartDAL _PurchasedCart { get; set; }
+        public ShoppingCartDAL _PurchasedCart { get; set; }
 
         public PurchasedCartDAL(DateTime purchaseDate, ShoppingCartDAL purchasedCart)
         {
             _purchaseDate = purchaseDate;
             _PurchasedCart = purchasedCart;
+        }
+
+        public PurchasedCartDAL()
+        {
+            // Empty constructor for some reason?
         }
     }
 }

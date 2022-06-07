@@ -9,14 +9,14 @@ namespace MarketWeb.Server.DataLayer
     public class ComplaintDAL
     {
         [Key]
-        internal int _id { get; set; }
+        public int _id { get; set; }
         [Required]
-        internal string _complainer { get; set; }
+        public string _complainer { get; set; }
         [Required]
-        internal int _cartID { get; set; }
+        public int _cartID { get; set; }
         [Required]
-        internal String _message { get; set; }
-        internal String _response { get; set; }
+        public String _message { get; set; }
+        public String _response { get; set; }
         public ComplaintStatus Status { get { return _response == null ? ComplaintStatus.Open : ComplaintStatus.Closed; } }
 
         public ComplaintDAL(int id, string complainer, int cartID, string message, string response)

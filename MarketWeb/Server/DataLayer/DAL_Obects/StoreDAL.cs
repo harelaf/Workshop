@@ -11,18 +11,18 @@ namespace MarketWeb.Server.DataLayer
     public class StoreDAL
     {
         [Key]
-        internal String _storeName;
+        public String _storeName { get; set; }
         [Required]
-        internal StockDAL _stock;
-        internal List<MessageToStoreDAL> _messagesToStore;
-        internal RatingDAL _rating;
-        internal List<StoreManagerDAL> _managers;
-        internal List<StoreOwnerDAL> _owners;
-        internal StoreFounderDAL _founder;
+        public StockDAL _stock { get; set; }
+        public List<MessageToStoreDAL> _messagesToStore { get; set; }
+        public RatingDAL _rating { get; set; }
+        public List<StoreManagerDAL> _managers { get; set; }
+        public List<StoreOwnerDAL> _owners { get; set; }
+        public StoreFounderDAL _founder { get; set; }
         [Required]
-        internal StoreState _state;
-        internal PurchasePolicyDAL _purchasePolicy;
-        internal DiscountPolicyDAL _discountPolicy;
+        public StoreState _state { get; set; }
+        public PurchasePolicyDAL _purchasePolicy { get; set; }
+        public DiscountPolicyDAL _discountPolicy { get; set; }
 
         public StoreDAL(string storeName, StockDAL stock, List<MessageToStoreDAL> messagesToStore, RatingDAL rating, List<StoreManagerDAL> managers, List<StoreOwnerDAL> owners, StoreFounderDAL founder, StoreState state, PurchasePolicyDAL purchasePolicy, DiscountPolicyDAL discountPolicy)
         {
@@ -46,13 +46,18 @@ namespace MarketWeb.Server.DataLayer
             _managers = new List<StoreManagerDAL>();
             _owners = new List<StoreOwnerDAL>();
             _messagesToStore = new List<MessageToStoreDAL>();
-            _stock = new StockDAL(new Dictionary<ItemDAL, int>());
+            _stock = new StockDAL(new List<StockItemDAL>());
             _rating = new RatingDAL(new List<RateDAL>());
             _purchasePolicy = new PurchasePolicyDAL(new List<ConditionDAL>());
             _discountPolicy = new DiscountPolicyDAL(new List<DiscountDAL>());
         }
         //private PurchasePolicy _purchasePolicy;
         //private DiscountPolicy _discountPolicy;
+
+        public StoreDAL()
+        {
+            // Empty constructor for some reason?
+        }
 
     }
 }

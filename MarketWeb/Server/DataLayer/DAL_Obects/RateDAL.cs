@@ -8,18 +8,23 @@ namespace MarketWeb.Server.DataLayer
     public class RateDAL
     {
         [Key]
-        internal int rid { get; set; }
+        public int rid { get; set; }
         [Required]
-        internal string username { get; set; }
+        public string username { get; set; }
         [Required]
-        internal int rate { get; set; }
-        internal string review { get; set; }
+        public int rate { get; set; }
+        public string review { get; set; }
 
         public RateDAL(string username, int rate, string review)
         {
             this.username = username;
             this.rate = rate;
             this.review = review;
+        }
+
+        public RateDAL()
+        {
+            // ???
         }
     }
 }

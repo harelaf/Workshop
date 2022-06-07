@@ -8,9 +8,9 @@ namespace MarketWeb.Server.DataLayer
     public class StorePurchasedBasketDAL
     {
         [Key]
-        internal string _storeName { get; set; }
+        public string _storeName { get; set; }
         [Required]
-        internal ICollection<PurchasedBasketDAL> _PurchasedBaskets { get; set; }
+        public ICollection<PurchasedBasketDAL> _PurchasedBaskets { get; set; }
 
         public StorePurchasedBasketDAL(string storeName)
         {
@@ -21,6 +21,11 @@ namespace MarketWeb.Server.DataLayer
         public StorePurchasedBasketDAL(string storeName, ICollection<PurchasedBasketDAL> purchasedBaskets) : this(storeName)
         {
             _PurchasedBaskets = purchasedBaskets;
+        }
+
+        public StorePurchasedBasketDAL()
+        {
+            // Empty constructor for some reason?
         }
     }
 }

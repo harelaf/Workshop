@@ -7,22 +7,26 @@ namespace MarketWeb.Server.DataLayer
 {
     public class RegisteredDAL
     {
-        
         [Key]
-        internal String _username;
+        public String _username { get; set; }
         [Required]
-        internal String _password;
+        public String _password;
         [Required]
-        internal String _salt;
+        public String _salt;
         [Required]
-        internal ShoppingCartDAL _cart;
+        public ShoppingCartDAL _cart;
         [Required]
         public DateTime _birthDate;
-        internal IDictionary<int, ComplaintDAL> _filedComplaints;
-        internal ICollection<SystemRoleDAL> _roles;
-        internal ICollection<AdminMessageToRegisteredDAL> _adminMessages;
-        internal ICollection<NotifyMessageDAL> _notifications;
-        internal ICollection<MessageToStoreDAL> _repliedMessages;
+        public IDictionary<int, ComplaintDAL> _filedComplaints;
+        public ICollection<SystemRoleDAL> _roles;
+        public ICollection<AdminMessageToRegisteredDAL> _adminMessages;
+        public ICollection<NotifyMessageDAL> _notifications;
+        public ICollection<MessageToStoreDAL> _repliedMessages;
+
+        public RegisteredDAL()
+        {
+            // Empty constructor for some reason?
+        }
 
         public RegisteredDAL(string username, string password, string salt, ShoppingCartDAL cart, DateTime birthDate, IDictionary<int, ComplaintDAL> filedComplaints, ICollection<SystemRoleDAL> roles, ICollection<AdminMessageToRegisteredDAL> adminMessages, ICollection<NotifyMessageDAL> notifications, ICollection<MessageToStoreDAL> repliedMessages)
         {

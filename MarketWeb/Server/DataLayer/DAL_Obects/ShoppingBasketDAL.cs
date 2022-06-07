@@ -8,15 +8,34 @@ namespace MarketWeb.Server.DataLayer
     public class ShoppingBasketDAL
     {
         [Key]
-        internal int sbId { get; set; }
+        public int sbId { get; set; }
         [Required]
-        internal virtual StoreDAL _store { get; set; }
-        internal virtual IDictionary<ItemDAL, PurchaseDetailsDAL> _items { get; set; }
+        public virtual StoreDAL _store { get; set; }
+        public virtual ICollection<BasketItemDAL> _items { get; set; }
 
         public ShoppingBasketDAL(StoreDAL store, IDictionary<ItemDAL, PurchaseDetailsDAL> items)
         {
             _store = store;
-            _items = items;
+            _items = new List<BasketItemDAL>();
+            foreach (KeyValuePair<ItemDAL, PurchaseDetailsDAL> i_p in items)
+            {
+                _items.Add(new BasketItemDAL(i_p.Key, i_p.Value));
+            }
+        }
+
+        public IDictionary<ItemDAL, PurchaseDetailsDAL> ConvertToDictionary()
+        {
+            IDictionary<ItemDAL, PurchaseDetailsDAL> dic = new Dictionary<ItemDAL, PurchaseDetailsDAL>();
+            foreach (BasketItemDAL item in _items)
+            {
+                dic[item.item] = item.purchaseDetails;
+            }
+            return dic;
+        }
+
+        public ShoppingBasketDAL()
+        {
+            // Empty constructor for some reason?
         }
     }
 }

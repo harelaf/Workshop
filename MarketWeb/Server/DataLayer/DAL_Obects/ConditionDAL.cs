@@ -4,103 +4,153 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MarketWeb.Server.DataLayer
 {
-    internal abstract class ConditionDAL
+    public class ConditionDAL
     {
+        [Key]
+        public int _id { get; set; }
         [Required]
-        internal bool _negative;
-        internal ConditionDAL(bool negative)
+        public bool _negative;
+        protected ConditionDAL(bool negative)
         {
             _negative = negative;
         }
+        protected ConditionDAL()
+        {
+            // ???
+        }
     }
-    internal abstract class ComposedConditionDAL : ConditionDAL
+    public class ComposedConditionDAL : ConditionDAL
     {
-        internal List<ConditionDAL> _conditionList;
-        internal ComposedConditionDAL(List<ConditionDAL> conditionList, bool negative) : base(negative)
+        public List<ConditionDAL> _conditionList { get; set; }
+        protected ComposedConditionDAL(List<ConditionDAL> conditionList, bool negative) : base(negative)
         {
             if (conditionList == null)
                 _conditionList = new List<ConditionDAL>();
             else _conditionList = conditionList;
         }
-    }
-    internal abstract class AtomicConditionDAL : ConditionDAL
-    {
-        internal AtomicConditionDAL(bool negative) : base(negative)
+        protected ComposedConditionDAL()
         {
+            // ???
         }
     }
-    internal abstract class SearchablePriceableDAL : AtomicConditionDAL
+    public class AtomicConditionDAL : ConditionDAL
+    {
+        protected AtomicConditionDAL(bool negative) : base(negative)
+        {
+        }
+        protected AtomicConditionDAL()
+        {
+            // ???
+        }
+    }
+    public class SearchablePriceableDAL : AtomicConditionDAL
     {
         [Required]
-        internal string _keyWord;
+        public string _keyWord { get; set; }
         [Required] 
-        internal int _minValue;
+        public int _minValue { get; set; }
         [Required] 
-        internal int _maxValue;
+        public int _maxValue { get; set; }
 
-        internal SearchablePriceableDAL(string keyWord, int minValue, int maxValue, bool negative) : base(negative)
+        protected SearchablePriceableDAL(string keyWord, int minValue, int maxValue, bool negative) : base(negative)
         {
             _keyWord = keyWord;
             _minValue = minValue;
             _maxValue = maxValue;
         }
 
-    }
-    internal class SearchItemConditionDAL : SearchablePriceableDAL
-    {
-        internal SearchItemConditionDAL(string keyWord, int minValue, int maxValue, bool negative) : base(keyWord, minValue, maxValue, negative)
+        protected SearchablePriceableDAL()
         {
+            // ???
         }
     }
-    internal class SearchCategoryConditionDAL : SearchablePriceableDAL
+    public class SearchItemConditionDAL : SearchablePriceableDAL
     {
-        internal SearchCategoryConditionDAL(string keyWord, int minValue, int maxValue, bool negative) : base(keyWord, minValue, maxValue, negative)
+        public SearchItemConditionDAL(string keyWord, int minValue, int maxValue, bool negative) : base(keyWord, minValue, maxValue, negative)
         {
         }
-    }
-    internal class PriceableConditionDAL : SearchablePriceableDAL
-    {
-        internal PriceableConditionDAL(int minValue, int maxValue, bool negative) : base("", minValue, maxValue, negative)
+        public SearchItemConditionDAL()
         {
+            // ???
         }
     }
-    internal class HourConditionDAL : AtomicConditionDAL
+    public class SearchCategoryConditionDAL : SearchablePriceableDAL
+    {
+        public SearchCategoryConditionDAL(string keyWord, int minValue, int maxValue, bool negative) : base(keyWord, minValue, maxValue, negative)
+        {
+        }
+        public SearchCategoryConditionDAL()
+        {
+            // ???
+        }
+    }
+    public class PriceableConditionDAL : SearchablePriceableDAL
+    {
+        public PriceableConditionDAL(int minValue, int maxValue, bool negative) : base("", minValue, maxValue, negative)
+        {
+        }
+        public PriceableConditionDAL()
+        {
+            // ???
+        }
+    }
+    public class HourConditionDAL : AtomicConditionDAL
     {
         [Required]
-        internal int _minHour;
+        public int _minHour { get; set; }
         [Required]
-        internal int _maxHour;
-        internal HourConditionDAL(int minHour, int maxHour, bool negative) : base(negative)
+        public int _maxHour { get; set; }
+        public HourConditionDAL(int minHour, int maxHour, bool negative) : base(negative)
         {
             _minHour = minHour;
             _maxHour = maxHour;
         }
+        public HourConditionDAL()
+        {
+            // ???
+        }
     }
-    internal class DayOnWeekConditionDAL : AtomicConditionDAL
+    public class DayOnWeekConditionDAL : AtomicConditionDAL
     {
         [Required]
-        internal DayOfWeek _day;
-        internal DayOnWeekConditionDAL(string day, bool negative) : base(negative)
+        public DayOfWeek _day { get; set; }
+        public DayOnWeekConditionDAL(string day, bool negative) : base(negative)
         {
             _day = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), day);
         }
-    }
-    internal class AndCompositionDAL : ComposedConditionDAL
-    {
-        internal AndCompositionDAL(List<ConditionDAL> conditionList, bool negative) : base(conditionList, negative)
+        public DayOnWeekConditionDAL()
         {
+            // ???
         }
     }
-    internal class OrCompositionDAL : ComposedConditionDAL
+    public class AndCompositionDAL : ComposedConditionDAL
     {
-        internal OrCompositionDAL(List<ConditionDAL> conditionList, bool negative) : base(conditionList, negative)
+        public AndCompositionDAL(List<ConditionDAL> conditionList, bool negative) : base(conditionList, negative)
         {
         }
-    }
-    internal class XorCompositionDAL : ComposedConditionDAL
-    {
-        internal XorCompositionDAL(List<ConditionDAL> conditionList, bool negative) : base(conditionList, negative)
+        public AndCompositionDAL()
         {
+            // ???
+        }
+    }
+    public class OrCompositionDAL : ComposedConditionDAL
+    {
+        public OrCompositionDAL(List<ConditionDAL> conditionList, bool negative) : base(conditionList, negative)
+        {
+        }
+        public OrCompositionDAL()
+        {
+            // ???
+        }
+    }
+    public class XorCompositionDAL : ComposedConditionDAL
+    {
+        public XorCompositionDAL(List<ConditionDAL> conditionList, bool negative) : base(conditionList, negative)
+        {
+        }
+        public XorCompositionDAL()
+        {
+            // ???
         }
     }
 }
