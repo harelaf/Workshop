@@ -25,10 +25,6 @@ namespace MarketWeb.Server.Domain
             _items = new Dictionary<Item, DiscountDetails>();
             _additionalDiscounts = new List<NumericDiscount>();
         }
-        public ShoppingBasket(Store store, IDictionary<Item, DiscountDetails> items) : this(store)
-        {
-            _items = items;
-        }
         public void AddItem(Item item, int amount)
         {
             if (isItemInBasket(item))

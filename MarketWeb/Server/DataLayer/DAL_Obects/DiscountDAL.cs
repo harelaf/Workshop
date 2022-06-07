@@ -28,7 +28,7 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         internal DateTime _expiration;
 
-        internal PercentageDiscountDAL(int percents, DateTime expiration, ConditionDAL condition) : base(expiration, condition)
+        internal PercentageDiscountDAL(double percents, DateTime expiration, ConditionDAL condition) : base(expiration, condition)
         {
             _percents = percents;
             _expiration = expiration;

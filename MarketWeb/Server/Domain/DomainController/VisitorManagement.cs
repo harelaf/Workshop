@@ -553,6 +553,12 @@ namespace MarketWeb.Server.Domain
         {
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
             Visitor.AddItemToCart(store, item, amount);
+            if (IsVisitorLoggedin(VisitorToken))
+            {
+                string username = GetRegisteredUsernameByToken(VisitorToken);
+                ShoppingBasket shoppingBasket = Visitor.ShoppingCart.GetShoppingBasket(store.StoreName);
+                _dalController.AddItemToCart(_dalTRranslator.BasketDomainToDal(shoppingBasket), store.StoreName, username, item.ItemID, amount);
+            }
         }
 
         public int RemoveItemFromCart(String VisitorToken, Item item, Store store)

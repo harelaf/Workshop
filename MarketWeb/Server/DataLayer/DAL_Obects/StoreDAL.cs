@@ -48,7 +48,8 @@ namespace MarketWeb.Server.DataLayer
             _messagesToStore = new List<MessageToStoreDAL>();
             _stock = new StockDAL(new Dictionary<ItemDAL, int>());
             _rating = new RatingDAL(new List<RateDAL>());
-            
+            _purchasePolicy = new PurchasePolicyDAL(new List<ConditionDAL>());
+            _discountPolicy = new DiscountPolicyDAL(new List<DiscountDAL>());
         }
         //private PurchasePolicy _purchasePolicy;
         //private DiscountPolicy _discountPolicy;

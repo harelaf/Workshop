@@ -66,11 +66,7 @@ namespace MarketWeb.Server.Domain
                 {
                     Item item = _storeManagement.ReserveItemFromStore(storeName, itemID, amount);
                     _VisitorManagement.AddItemToVisitorCart(VisitorToken, store, item, amount);
-                    if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))
-                    {
-                        string username = _VisitorManagement.GetRegisteredUsernameByToken(VisitorToken);
-                        _dalController.AddItemToCart(itemID, storeName, amount, username);
-                    }
+                    
                 }
             }
 

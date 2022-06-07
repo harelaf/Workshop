@@ -55,7 +55,7 @@ namespace MarketWeb.Server.DataLayer
             else
                 throw new Exception("no such register in db");
         }
-        public void AddItemToCart(int itemID, String storeName, int amount, string userName)
+        public void AddItemToCart(ShoppingBasketDAL shoppingBasket ,String storeName,string userName, int itemID, int amount)
         {
             string errMsg = "";
             RegisteredDAL user = context.RegisteredDALs.Find(userName);
@@ -75,21 +75,10 @@ namespace MarketWeb.Server.DataLayer
                 }
                     
             }
-            bool hasStoreBasket = false;
             ICollection<ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
-            foreach (ShoppingBasketDAL shoppingBasket in shoppingBasketDALs)
-            {
-                if(shoppingBasket._store._storeName == storeName)
-                {
-                    shoppingBasket._items.Add(itemToAdd, //new PurchaseDetailsDAL(itemToAdd._itemID, amount, new List<DiscountDAL>()));
-                    hasStoreBasket = true;
-                }
-            }
-            if (!hasStoreBasket)
-            {
-                ShoppingBasketDAL basketDAL = new ShoppingBasketDAL(storeDAL, new Dictionary<ItemDAL, PurchaseDetailsDAL>());
-                basketDAL._items.Add(itemToAdd, new PurchaseDetailsDAL(itemToAdd._itemID, amount, new List<AtomicDiscountDAL>()));
-            }
+            if (shoppingBasketDALs.Where(b => b._store._storeName == storeName).Any())
+                shoppingBasketDALs.Remove(shoppingBasketDALs.Where(b => b._store._storeName == storeName).FirstOrDefault());
+           shoppingBasketDALs.Add(shoppingBasket);
             context.SaveChanges();
         }
         public void RemoveItemFromCart(int itemID, String storeName, string userName)
@@ -676,6 +665,9 @@ namespace MarketWeb.Server.DataLayer
         {
             return context.ComplaintDALs.Find(id);
         }
+        //add pp
+        //add dp
+        //add d
 
     }
 }
