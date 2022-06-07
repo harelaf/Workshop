@@ -7,7 +7,7 @@ namespace MarketWeb.Server.Domain
 {
     public class StoreOwner : SystemRole
     {
-        private string _appointer;
+        internal string _appointer { get; set; }
         public string Appointer => _appointer;
         public StoreOwner(string Username, string storeName, string appointer) : base(getOps(), Username, storeName)
         {

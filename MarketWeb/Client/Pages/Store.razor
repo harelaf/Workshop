@@ -249,10 +249,7 @@
                 <br />
                 <EditForm Model="@AddItemModel" OnValidSubmit="AddItemForm">
                     <DataAnnotationsValidator />
-                    <div class="form-group">
-                        <label>ID</label>
-                        <InputNumber TValue="int" @bind-Value="AddItemModel.Id" class="form-control" />
-                    </div>
+                    
                     <div class="form-group">
                         <label>Name</label>
                         <InputText @bind-Value="AddItemModel.Name" class="form-control" />
@@ -738,7 +735,6 @@ else
     private async void AddItemForm()
     {
         Response response = await _marketAPIClient.AddItemToStoreStock(StoreName,
-                                                                       AddItemModel.Id,
                                                                        AddItemModel.Name,
                                                                        AddItemModel.Price,
                                                                        AddItemModel.Description,

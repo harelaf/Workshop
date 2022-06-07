@@ -43,6 +43,12 @@ namespace MarketWeb.Server.DataLayer
             _storeName = storeName;
             _founder = founder;
             _state = state;
+            _managers = new List<StoreManagerDAL>();
+            _owners = new List<StoreOwnerDAL>();
+            _messagesToStore = new List<MessageToStoreDAL>();
+            _stock = new StockDAL(new Dictionary<ItemDAL, int>());
+            _rating = new RatingDAL(new List<RateDAL>());
+            
         }
         //private PurchasePolicy _purchasePolicy;
         //private DiscountPolicy _discountPolicy;

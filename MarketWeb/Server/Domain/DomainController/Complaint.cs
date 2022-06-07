@@ -8,12 +8,12 @@ namespace MarketWeb.Server.Domain
     {
         private readonly int _id;
         public int ID { get { return _id; } }
-        private Registered _complainer;
-        private int _cartID;
+        internal Registered _complainer { get; set; }
+        internal int _cartID { get; set; }
         public int CartID { get { return _cartID; } }
-        private String _message;
+        internal String _message { get; set; }
         public String Message { get { return _message; } }
-        private String _response;
+        internal String _response { get; set; }
         public String Response { get { return _response; } }
         public ComplaintStatus Status { get { return _response == null ? ComplaintStatus.Open : ComplaintStatus.Closed; } }
         public Complaint(int id, Registered complainer, int cartID, string message)

@@ -6,11 +6,11 @@ namespace MarketWeb.Server.Domain
 {
     public class AdminMessageToRegistered
     {
-        private int id { get; set; }
-        private String _receiverUsername { get; set; }
-        private String _senderUsername { get; set; }
-        private String _title { get; set; }
-        private String _message { get; set; }
+        internal int id { get; set; }
+        internal String _receiverUsername { get; set; }
+        internal String _senderUsername { get; set; }
+        internal String _title { get; set; }
+        internal String _message { get; set; }
 
         public AdminMessageToRegistered(String _Username, String senderUsername, String title, String message)
         {
