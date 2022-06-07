@@ -564,10 +564,18 @@ namespace MarketWeb.Server.Domain
         public int RemoveItemFromCart(String VisitorToken, Item item, Store store)
         {
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
-            return Visitor.RemoveItemFromCart(item, store);
+            int amount= Visitor.RemoveItemFromCart(item, store);
+            if (IsVisitorLoggedin(VisitorToken))
+            {
+                string username = GetRegisteredUsernameByToken(VisitorToken);
+                _dalController.RemoveItemFromCart(item.ItemID, store.StoreName, username, amount,
+                    _dalTRranslator.BasketDomainToDal(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)));
+
+            }
+            return amount;
         }
 
-        public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity)
+        public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity, int amountdiff)
         {
             String errorMessage;
             if (newQuantity <= 0)
@@ -578,6 +586,12 @@ namespace MarketWeb.Server.Domain
             }
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
             Visitor.UpdateItemInCart(store, item, newQuantity);
+            if (IsVisitorLoggedin(VisitorToken))
+            {
+                string username = GetRegisteredUsernameByToken(VisitorToken);
+                _dalController.UpdateQuantityOfItemInCart(item.ItemID, store.StoreName, newQuantity, username,
+                   _dalTRranslator.BasketDomainToDal(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)), amountdiff);
+            }
         }
 
         internal int GetUpdatingQuantityDifference(string VisitorToken, Item item, Store store, int newQuantity)

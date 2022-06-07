@@ -93,11 +93,7 @@ namespace MarketWeb.Server.Domain
                 lock (store.Stock)
                 {
                     _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
-                    if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))
-                    {
-                        string username = _VisitorManagement.GetRegisteredUsernameByToken(VisitorToken);
-                        _dalController.RemoveItemFromCart(itemID, storeName, username);
-                    }
+                   
                 }
                 return item;
             }
@@ -133,12 +129,8 @@ namespace MarketWeb.Server.Domain
                         _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
                     else//remove item from cart and add to store stock
                         _storeManagement.UnreserveItemInStore(storeName, item, -1 * amount_differnce);
-                    _VisitorManagement.UpdateItemInVisitorCart(VisitorToken, store, item, newQuantity);
-                    if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))
-                    {
-                        string username = _VisitorManagement.GetRegisteredUsernameByToken(VisitorToken);
-                        _dalController.UpdateQuantityOfItemInCart(itemID, storeName,newQuantity, username);
-                    }
+                    _VisitorManagement.UpdateItemInVisitorCart(VisitorToken, store, item, newQuantity, amount_differnce);
+                   
                 }
             }
         }
