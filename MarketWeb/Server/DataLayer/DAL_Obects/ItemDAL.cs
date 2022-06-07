@@ -1,5 +1,4 @@
-﻿using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;

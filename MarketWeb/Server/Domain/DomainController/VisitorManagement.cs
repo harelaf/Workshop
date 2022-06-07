@@ -285,6 +285,7 @@ namespace MarketWeb.Server.Domain
             }
 
             Registered newRegistered = new Registered(Username, password, birthDate);
+            _dalController.Register(Username, newRegistered._password, newRegistered.Salt, birthDate);
         }
         private bool IsUsernameExists(string username)
         {
