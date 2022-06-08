@@ -70,5 +70,27 @@ namespace MarketProjectTests.Domain.PurchasePackage.DiscountPolicy.DiscountCalcu
 			Assert.AreEqual(amount * price - amount_to_subtract, basket.GetTotalPrice() - basket.GetAdditionalDiscountsPrice());
 			Assert.AreEqual(expected, actual);
 		}
+
+		[TestMethod]
+		public void GetTotalDiscount_withCondition_fail()
+		{
+			double amount_to_subtract = 10;
+			int amount = 2;
+			ComposedCondition andCondition = new AndComposition(false);
+			Condition categoryCondition = new SearchCategoryCondition(category, 10, 20, false);
+			Condition hourCondition = new HourCondition((DateTime.Now.Hour + 23) % 24, (DateTime.Now.Hour + 1) % 24, false);
+			andCondition.AddConditionToComposition(categoryCondition);
+			andCondition.AddConditionToComposition(hourCondition);
+			NumericDiscount dis = new NumericDiscount(amount_to_subtract, andCondition, expiration);
+			store.AddDiscount(dis);
+			basket.AddItem(new Item(2, itemName, price, "desc", "otherCategory"), amount);
+
+			//act
+			double expected = 0;
+			double actual = dis.GetTotalDiscount(basket);
+
+			//Assert
+			Assert.AreEqual(expected, actual);
+		}
 	}
 }
