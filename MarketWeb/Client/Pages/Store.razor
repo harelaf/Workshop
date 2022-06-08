@@ -125,24 +125,66 @@
                 </button>
             </EditForm>
             <h5>Manage Permission of Store Manager: </h5>
-            <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="ModifyManagerPermissionsForm">
-                <DataAnnotationsValidator />
-                <div class="form-group">
-                    <label>Username</label>
-                    <InputText @bind-Value="ModifyStoreManagerPermissionsModel.Username" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>Receive information and Reply</label>
-                    <input id="ReceiveInfoAndReply" @bind-value="ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply" name="ReciveInfoAndReply" type="checkbox" />
-                </div>
-                <div class="form-group">
-                    <label>Receive Store Purchase History</label>
-                    <input id="ReceiveStorePurchaseHistory" @bind-value="ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory" name="ReceiveStorePurchaseHistory" type="checkbox" />
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    Modify Permissions
-                </button>
-            </EditForm>
+            <p>
+                List of available permissions:
+                <br />
+                MANAGE_INVENTORY - Add/Remove items.
+                <br />
+                CHANGE_SHOP_AND_DISCOUNT_POLICY - Allows to change store policies.
+                <br />
+                APPOINT_OWNER - Allows appointing of owners.
+                <br />
+                REMOVE_OWNER - Allows removing of owners.
+                <br />
+                APPOINT_MANAGER - Allows appointing of managers.
+                <br />
+                REMOVE_MANAGER - Allows removing of managers.
+                <br />
+                CHANGE_MANAGER_PREMISSIONS - Allows changing manager permissions.
+                <br />
+                STORE_WORKERS_INFO - Can view store staff information.
+                <br />
+                RECEIVE_AND_REPLY_STORE_MESSAGE - Can view and reply to store messages.
+                <br />
+                STORE_HISTORY_INFO - Can view store purchase history.
+                <br />
+                STOCK_EDITOR - Can edit stock.
+                <br />
+            </p>
+            <div id="AddPermission">
+                <h6>Add Permission</h6>
+                <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="AddManagerPermissionsForm">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label>Username</label>
+                        <InputText @bind-Value="ModifyStoreManagerPermissionsModel.Username" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Permission</label>
+                        <input id="Permission" @bind-value="ModifyStoreManagerPermissionsModel.Permission" name="Permission" type="text" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Add Permission
+                    </button>
+                </EditForm>
+            </div>
+            <div id="RemovePermission">
+                <h6>Remove Permission</h6>
+                <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="RemoveManagerPermissionsForm">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label>Username</label>
+                        <InputText @bind-Value="ModifyStoreManagerPermissionsModel.Username" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Permission</label>
+                        <input id="Permission" @bind-value="ModifyStoreManagerPermissionsModel.Permission" name="Permission" type="text" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Remove Permission
+                    </button>
+                </EditForm>
+            </div>
         }
     </div>
     <br />
@@ -330,7 +372,7 @@
                 <div class="form-group">
                     <label>Rating</label>
                     <div>
-                        <input type="range" @bind-value="@(RateStoreModel.rating)" id="rating" name="rating" title="rating" min="0" max="10" oninput="this.nextElementSibling.value = this.value"/>
+                        <input type="range" @bind-value="@(RateStoreModel.rating)" id="rating" name="rating" title="rating" min="0" max="10" oninput="this.nextElementSibling.value = this.value" />
                         <output>5</output>
                     </div>
                 </div>
@@ -514,46 +556,45 @@ else
         //return view;
     }
 
-    private async void ModifyManagerPermissionsForm()
+    private async void AddManagerPermissionsForm()
     {
         // reset alerts on submit
         AlertService.Clear();
-        bool askHistoryPermission = ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory;
-        bool askMsgPermission = ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply;
+
         string managerUserName = ModifyStoreManagerPermissionsModel.Username;
+        string permission = ModifyStoreManagerPermissionsModel.Permission;
         ModifyStoreManagerPermissionsModel = new Models.ModifyStoreManagerPermissionsModel();
         try
         {
-            string feedback = "";
-            if (!askHistoryPermission)
-            {//remove history permmision
-                Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
-                if (response.ErrorOccured)
-                    throw new Exception(response.ErrorMessage);
-                feedback += "remove history permssion from store manager: " + managerUserName + " ; ";
-            }
-            if (askHistoryPermission)
-            {//add history permmision
-                Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
-                if (response.ErrorOccured)
-                    throw new Exception(response.ErrorMessage);
-                feedback += "add history permssion to store manager: " + managerUserName + " ; ";
-            }
-            if (!askMsgPermission)
-            {//remove msg permmision
-                Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
-                if (response.ErrorOccured)
-                    throw new Exception(response.ErrorMessage);
-                feedback += "remove msg permssion from store manager: " + managerUserName + " ; ";
-            }
-            if (askMsgPermission)
-            {//add msg permmision
-                Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
-                if (response.ErrorOccured)
-                    throw new Exception(response.ErrorMessage);
-                feedback += "add msg permssion to store manager: " + managerUserName + " ; ";
-            }
-            AlertService.Info(feedback);
+            Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, permission);
+            if (response.ErrorOccured)
+                throw new Exception(response.ErrorMessage);
+            AlertService.Info("Successfully added permission to manager!");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void RemoveManagerPermissionsForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        string managerUserName = ModifyStoreManagerPermissionsModel.Username;
+        string permission = ModifyStoreManagerPermissionsModel.Permission;
+        ModifyStoreManagerPermissionsModel = new Models.ModifyStoreManagerPermissionsModel();
+        try
+        {
+            Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, permission);
+            if (response.ErrorOccured)
+                throw new Exception(response.ErrorMessage);
+            AlertService.Info("Successfully removed permission to manager!");
         }
         catch (Exception ex)
         {

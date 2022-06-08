@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MarketProject.Domain.PurchasePackage.PolicyPackage;
+using MarketWeb.Server.Domain;
+using MarketWeb.Server.Domain.PolicyPackage;
 
 namespace MarketProject.Domain.Tests
 {

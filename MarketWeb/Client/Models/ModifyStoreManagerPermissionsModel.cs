@@ -7,8 +7,7 @@ namespace MarketWeb.Client.Models
         [Required]
         public string Username { get; set; }
 
-        public bool ReceiveInfoAndReply { get; set; }
-
-        public bool ReceiveStorePurchaseHistory { get; set; }
+        [Required]
+        public string Permission { get; set; }
     }
 }
