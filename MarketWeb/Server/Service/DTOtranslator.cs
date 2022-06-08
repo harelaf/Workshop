@@ -197,8 +197,8 @@ namespace MarketWeb.Service
                 return translate((ItemDiscountDTO)dis);
             if (type.Equals(typeof(MaxDiscountDTO)))
                 return translate((MaxDiscountDTO)dis);
-            if (type.Equals(typeof(NumericDiscountDTO)))
-                return translate((NumericDiscountDTO)dis);
+            //if (type.Equals(typeof(NumericDiscountDTO)))
+            //    return translate((NumericDiscountDTO)dis);
             if (type.Equals(typeof(PlusDiscountDTO)))
                 return translate((PlusDiscountDTO)dis);
             else throw new NotImplementedException($"need an implementation for {type} discount type.");
@@ -253,13 +253,13 @@ namespace MarketWeb.Service
             Condition condition = translateCondition(discount_dto.Condition);
             return new MaxDiscount(discount_list, condition);
         }
-        public Discount translate(NumericDiscountDTO discount_dto)
-        {
-            double priceToSubtract = discount_dto.PriceToSubtract;
-            Condition condition = translateCondition(discount_dto.Condition);
-            DateTime expiration = discount_dto.Expiration;
-            return new NumericDiscount(priceToSubtract, condition, expiration);
-        }
+        //public Discount translate(NumericDiscountDTO discount_dto)
+        //{
+        //    double priceToSubtract = discount_dto.PriceToSubtract;
+        //    Condition condition = translateCondition(discount_dto.Condition);
+        //    DateTime expiration = discount_dto.Expiration;
+        //    return new NumericDiscount(priceToSubtract, condition, expiration);
+        //}
         public Discount translate(PlusDiscountDTO discount_dto)
         {
             List<Discount> discounts = new List<Discount>();
@@ -344,19 +344,19 @@ namespace MarketWeb.Service
 
         public ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {
-            Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = new Dictionary<int ,Tuple<ItemDTO, DiscountDetailsDTO>>();
+            Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = new Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>>();
             List<NumericDiscountDTO> additionalDiscounts = new List<NumericDiscountDTO>();
-            foreach (KeyValuePair<Item, DiscountDetails> entry in shoppingBasket.Items)
+            foreach (KeyValuePair<Item, DiscountDetails<AtomicDiscount>> entry in shoppingBasket.Items)
             {
                 ItemDTO dto = toDTO(entry.Key, shoppingBasket.Store().StoreName);
                 items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(entry.Value, entry.Key._price));
             }
-            foreach(NumericDiscount dis in shoppingBasket.GetAdditionalDiscounts())
+            foreach (NumericDiscount dis in shoppingBasket.AdditionalDiscounts.DiscountList)
                 additionalDiscounts.Add(toDTO(dis));
             return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts);
         }
 
-        public DiscountDetailsDTO toDTO(DiscountDetails discountDetails, double itemPrice)
+        public DiscountDetailsDTO toDTO(DiscountDetails<AtomicDiscount> discountDetails, double itemPrice)
         {
             List<String> disList = new List<String>();
             foreach (AtomicDiscount discount in discountDetails.DiscountList)

@@ -69,6 +69,26 @@
                 </tr>
             }
         </table>
+        double sumAdditionalDiscounts = 0;
+        @if(shoppingBasketDTO.AdditionalDiscounts.Count > 0)
+        {
+            <h2>Discount On Entire Basket</h2>
+            <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
+                <tr>
+                    <th>Discount Description</th>
+                    <th>price to reduct</th>
+                </tr>
+                @foreach (NumericDiscountDTO dis in shoppingBasketDTO.AdditionalDiscounts)
+                {
+                    sumAdditionalDiscounts += dis.PriceToSubtract;
+                    <tr>
+                        <th>@StringFormatter.discountToString(dis)</th>
+                        <th>@dis.PriceToSubtract</th>
+                    </tr>
+                }
+            </table>    
+        }
+        totalWithDiscount -= sumAdditionalDiscounts;
         <h4>Your total (without discounts) is: $@totalNoDiscount</h4>
         <h4>Your total (with discounts) is: $@totalWithDiscount</h4>
     }

@@ -9,23 +9,23 @@ namespace MarketWeb.Server.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual Store _store { get; set; }
-        public virtual IDictionary<Item, DiscountDetails> _items { get; set; }
-        public IDictionary<Item, DiscountDetails> Items => _items;
-        private List<NumericDiscount> _additionalDiscounts;
-        public List<NumericDiscount> AdditionalDiscounts => _additionalDiscounts;
+        public virtual IDictionary<Item, DiscountDetails<AtomicDiscount>> _items { get; set; }
+        public IDictionary<Item, DiscountDetails<AtomicDiscount>> Items => _items;
+        private DiscountDetails<NumericDiscount> _additionalDiscounts;
+        public DiscountDetails<NumericDiscount> AdditionalDiscounts => _additionalDiscounts;
 
         public ShoppingBasket(Store store)
         {
             _store = store;
-            _items = new Dictionary<Item, DiscountDetails>();
-            _additionalDiscounts = new List<NumericDiscount>();
+            _items = new Dictionary<Item, DiscountDetails<AtomicDiscount>>();
+            _additionalDiscounts = new DiscountDetails<NumericDiscount>(0);
         }
 
         public void AddItem(Item item, int amount)
         {
             if (isItemInBasket(item))
                 _items[item].AddAmount(amount);
-            else _items[item] = new DiscountDetails(amount);
+            else _items[item] = new DiscountDetails<AtomicDiscount>(amount);
             resetDiscounts();
             _store.GetDiscountPolicy().ApplyDiscounts(this);
         }
@@ -78,9 +78,9 @@ namespace MarketWeb.Server.Domain
 
         private void resetDiscounts()
         {
-            foreach (DiscountDetails detail in Items.Values)
+            foreach (DiscountDetails<AtomicDiscount> detail in Items.Values)
                 detail.resetDiscounts();
-            AdditionalDiscounts.Clear();
+            AdditionalDiscounts.resetDiscounts();
         }
 
         public bool IsBasketEmpty()
@@ -182,20 +182,20 @@ namespace MarketWeb.Server.Domain
         }
         public void SetNumericDiscount(NumericDiscount discount)
         {
-            AdditionalDiscounts.Add(discount);
+            AdditionalDiscounts.AddDiscount(discount);
         }
-        public IDictionary<Item, DiscountDetails> GetDetailsByItem()
+        public IDictionary<Item, DiscountDetails<AtomicDiscount>> GetDetailsByItem()
         {
             return Items;
         }
-        public List<NumericDiscount> GetAdditionalDiscounts()
+        public ISet<NumericDiscount> GetAdditionalDiscounts()
         {
-            return AdditionalDiscounts;
+            return AdditionalDiscounts.DiscountList;
         }
         public double GetAdditionalDiscountsPrice()
         {
             double sum = 0;
-            foreach (NumericDiscount discount in AdditionalDiscounts)
+            foreach (NumericDiscount discount in AdditionalDiscounts.DiscountList)
                 sum += discount.PriceToSubtract;
             return sum;
         }
