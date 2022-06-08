@@ -114,16 +114,16 @@ else
         Response response = await marketAPIClient.UpdateQuantityOfItemInCart(itemID, storeName, UpdateItemQuantityInCartModel.NewQuantity);
         if (response.ErrorOccured)
         {
-            AlertService.Error(response.ErrorMessage);
             NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Error(response.ErrorMessage);
             StateHasChanged();
         }
         else
         {
-            AlertService.Info("Item quantity updated.");
             NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Info("Item quantity updated.");
         }
         UpdateItemQuantityInCartModel = new Models.UpdateItemQuantityInCartModel();
     }
@@ -144,15 +144,15 @@ else
         Response response = await marketAPIClient.RemoveItemFromCart(ItemID, StoreName);
         if (response.ErrorOccured)
         {
-            AlertService.Error(response.ErrorMessage);
             NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Error(response.ErrorMessage);
         }
         else
         {
-            AlertService.Info("Successfully removed item.");
             NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Info("Successfully removed item.");
         }
     }
 
