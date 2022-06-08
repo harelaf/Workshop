@@ -40,7 +40,9 @@ namespace AcceptanceTest
             double price = 1;
             int quantity = 100;
             String desc = "an item";
+
             String dis = $"ItemPercentage_{itemName}_{percentage_to_subtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            
             String cond = "";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, cond, dis);

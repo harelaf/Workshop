@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MarketProject.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -37,7 +36,7 @@ namespace MarketProject.Domain.PurchasePackage.PolicyPackage.Tests
 			double percentage_to_subtract = 10;
 			int amount = 10;
 			CategoryDiscount dis = new CategoryDiscount(percentage_to_subtract, category, expiration);
-			//store.AddDiscount(dis);
+			store.AddDiscount(dis);
 			basket.AddItem(item, amount);
 
 			//act
@@ -45,7 +44,7 @@ namespace MarketProject.Domain.PurchasePackage.PolicyPackage.Tests
 			double actual = dis.GetTotalDiscount(basket);
 
 			//Assert
-			//Assert.AreEqual(basket.GetCategoryPrice(category), 10);
+			Assert.AreEqual(basket.GetCategoryPrice(category), 10);
 			Assert.AreEqual(expected, actual);
 		}
 		[TestMethod]

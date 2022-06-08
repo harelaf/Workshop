@@ -262,11 +262,11 @@
         <EditForm Model="@AddingPurchasePolicyModel" OnValidSubmit="AddPurchasePolicyForm">
             <DataAnnotationsValidator />
             <div class="form-group">
-                <label>Conditions (Use the AND operator)</label>
+                <label>Condition</label>
                 <InputText @bind-Value="AddingPurchasePolicyModel.ConditionString" class="form-control" />
             </div>
             <button class="btn btn-primary">
-                Add Purchase Policy
+                Add Purchase Condition
             </button>
         </EditForm>
     </div>
@@ -357,12 +357,6 @@
     {
         // reset alerts on submit
         AlertService.Clear();
-
-        if (!AddingPurchasePolicyModel.ConditionString.Trim().StartsWith("(AND"))
-        {
-            AlertService.Error("Use the AND operation please.");
-            return;
-        }
 
         try
         {

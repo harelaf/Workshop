@@ -25,7 +25,7 @@ namespace MarketWeb.Server.Domain
         {
             if (isItemInBasket(item))
             {
-                updateItemQuantity(item, amount);
+                updateItemQuantity(item, amount + Items[item].Amount);
                 return;
             }
             else _items[item] = new DiscountDetails<AtomicDiscount>(amount);
