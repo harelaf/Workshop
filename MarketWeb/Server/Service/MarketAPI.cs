@@ -1411,7 +1411,7 @@ namespace MarketWeb.Service
             IConditionDTO andCondition = new AndCompositionDTO(false, condLst);
             ItemDiscountDTO itemDis = new ItemDiscountDTO(percentageToSubtract, itemName1, andCondition, expiration);
             IConditionDTO categoryCond = new SearchCategoryConditionDTO(category1, minAmount, maxAmount, false);
-            NumericDiscountDTO numDis = new NumericDiscountDTO(priceToSubtract, categoryCond, expiration);
+            NumericDiscountDTO numDis = new NumericDiscountDTO(priceToSubtract, null, expiration);
             List<IDiscountDTO> disLst = new List<IDiscountDTO>();
             disLst.Add(itemDis);
             disLst.Add(numDis);

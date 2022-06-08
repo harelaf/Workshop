@@ -23,7 +23,7 @@ namespace MarketWeb.Server.Domain
             return new ShoppingBasketDAL(StoreDomainToDal(basketDomain._store), items);
         }
 
-        private PurchaseDetailsDAL PurchaseDetailsToDal(int itemID, DiscountDetails discountDetails)
+        private PurchaseDetailsDAL PurchaseDetailsToDal(int itemID, DiscountDetails<AtomicDiscount> discountDetails)
         {
             List<AtomicDiscountDAL> disList = new List<AtomicDiscountDAL>();
             foreach (AtomicDiscount dis in discountDetails.DiscountList)
@@ -353,7 +353,7 @@ namespace MarketWeb.Server.Domain
         }
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
-            IDictionary<Item, DiscountDetails> items = new Dictionary<Item, DiscountDetails>();
+            IDictionary<Item, DiscountDetails<AtomicDiscount>> items = new Dictionary<Item, DiscountDetails<AtomicDiscount>>();
             foreach(KeyValuePair<ItemDAL, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
             {
                 items.Add(ItemDalToDomain(i_a.Key), PurchaseDetailsDALToDomain(i_a.Value));
@@ -361,12 +361,12 @@ namespace MarketWeb.Server.Domain
             return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items);
         }
 
-        private DiscountDetails PurchaseDetailsDALToDomain(PurchaseDetailsDAL value)
+        private DiscountDetails<AtomicDiscount> PurchaseDetailsDALToDomain(PurchaseDetailsDAL value)
         {
             ISet<AtomicDiscount> disList = new HashSet<AtomicDiscount>();
             foreach (AtomicDiscountDAL dis in value.discountList)
                 disList.Add(AtomicDiscountDalToDomain(dis));
-            DiscountDetails details = new DiscountDetails(value.amount, disList);
+            DiscountDetails<AtomicDiscount> details = new DiscountDetails<AtomicDiscount>(value.amount, disList);
             return details;
         }
 
@@ -655,14 +655,14 @@ namespace MarketWeb.Server.Domain
         public ShoppingBasketDAL ShoppingBasketDomainToDAL(ShoppingBasket basket)
         {
             IDictionary<ItemDAL, PurchaseDetailsDAL> items = new Dictionary<ItemDAL, PurchaseDetailsDAL>();
-            foreach (KeyValuePair<Item, DiscountDetails> i_a in basket.Items)
+            foreach (KeyValuePair<Item, DiscountDetails<AtomicDiscount>> i_a in basket.Items)
             {
                 items.Add(ItemDomainToDal(i_a.Key), PurchaseDetailsDomainToDal(i_a.Key.ItemID, i_a.Value));
             }
             return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items);
         }
 
-        private PurchaseDetailsDAL PurchaseDetailsDomainToDal(int itemID, DiscountDetails value)
+        private PurchaseDetailsDAL PurchaseDetailsDomainToDal(int itemID, DiscountDetails<AtomicDiscount> value)
         {
             List<AtomicDiscountDAL> disList = new List<AtomicDiscountDAL>();
             foreach (AtomicDiscount dis in value.DiscountList)

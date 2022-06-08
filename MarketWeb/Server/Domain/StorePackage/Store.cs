@@ -337,7 +337,21 @@ namespace MarketWeb.Server.Domain
         {
             StoreOwner owner = GetOwner(Username);
             if (owner != null)
-                _owners.Remove(owner);
+            {
+                if (_owners.Remove(owner))
+                {
+                    foreach(StoreManager manager in _managers)
+                    {
+                        if (manager.Appointer == Username)
+                            _managers.Remove(manager);
+                    }
+                    foreach (StoreOwner owner2 in _owners)
+                    {
+                        if (owner2.Appointer == Username)
+                            _owners.Remove(owner2);
+                    }
+                }
+            }
         }
 
         public Tuple<List<string>, List<string>> RemoveStoreOwner(string ownerUsername, String appointerUsername)
