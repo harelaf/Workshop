@@ -285,6 +285,7 @@
         try
         {
             Response response = await _marketAPIClient.AddStoreDiscount(StoreName, AddingDiscountModel.ConditionString, AddingDiscountModel.DiscountString);
+            AddingDiscountModel = new Models.AddingDiscountModel();
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);
@@ -316,6 +317,7 @@
         try
         {
             Response response = await _marketAPIClient.AddStorePurchasePolicy(StoreName, AddingPurchasePolicyModel.ConditionString);
+            AddingPurchasePolicyModel = new Models.AddingPurchasePolicyModel();
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);
