@@ -271,6 +271,16 @@
         </EditForm>
     </div>
 </div>
+<div id="Discount Policy">
+    <br />
+    <h2>Reset Purchase and Discount Policy</h2>
+    <button class="btn btn-primary" @onclick="() => ResetPurchasePolicy()">
+        Reset Purchase Policy
+    </button>
+    <button class="btn btn-primary" @onclick="() => ResetDiscountPolicy()">
+        Reset Discount Policy
+    </button>
+</div>
 
 @code {
     [Parameter] public string StoreName { get; set; }
@@ -303,7 +313,7 @@
         }
     }
 
-    private async void ResetPurchasePolicyForm()
+    private async void ResetPurchasePolicy()
     {
         // reset alerts on submit
         AlertService.Clear();
@@ -328,7 +338,7 @@
         }
     }
 
-    private async void ResetDiscountPolicyForm()
+    private async void ResetDiscountPolicy()
     {
         // reset alerts on submit
         AlertService.Clear();
