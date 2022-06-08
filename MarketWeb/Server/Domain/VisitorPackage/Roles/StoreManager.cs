@@ -26,7 +26,11 @@ namespace MarketWeb.Server.Domain
                 throw new Exception("the store name is incorrect.");
             if (!_appointer.Equals(grantor))
                 throw new Exception("store-manager permissions can be changed by appointer only.");
-            if (!(op.Equals(Operation.STORE_HISTORY_INFO) || op.Equals(Operation.RECEIVE_AND_REPLY_STORE_MESSAGE)))
+            if (op.Equals(Operation.PERMENENT_CLOSE_STORE) || 
+                op.Equals(Operation.CANCEL_SUBSCRIPTION) ||
+                op.Equals(Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE) ||
+                op.Equals(Operation.SYSTEM_STATISTICS) ||
+                op.Equals(Operation.APPOINT_SYSTEM_ADMIN))
                 throw new Exception("the operation you wish to permit is illegal for store manager.");
             lock (operations)
             {

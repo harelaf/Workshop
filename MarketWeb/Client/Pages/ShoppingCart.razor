@@ -115,6 +115,8 @@ else
         if (response.ErrorOccured)
         {
             AlertService.Error(response.ErrorMessage);
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/ShoppingCart");
             StateHasChanged();
         }
         else

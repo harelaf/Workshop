@@ -822,7 +822,7 @@ namespace MarketWeb.Server.Domain
                 op = _opNameToOp[op_name];
             }
             else
-                throw new Exception("Manager can only have permiisions: 4.12: RECEIVE_AND_REPLY_STORE_MESSAGE or 4.13:STORE_HISTORY_INFO");
+                throw new Exception("Unknown Permission!");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
 			if (!_VisitorManagement.IsRegistered(managerUsername))
 			{
