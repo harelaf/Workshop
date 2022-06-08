@@ -241,10 +241,41 @@
         </button>
     </EditForm>
 </div>
+<br />
+<div id="Discount Policy">
+    <h2>Purchase Policies</h2>
+    <p style="font-size:20px">
+        In order to add a new purchase policy to your store, please read the following instructions:
+    </p>
+    <br />
+    <div id="PurchasePolicyDiv" style="font-size:16px;margin-left:35px;">
+        <p>
+            Purchase policies are comprised of conditions. The operation between them is AND.
+            <br />
+            Please read the aforementioned instructions on how to add instructions.
+            <br />
+            Example:
+            <br />
+            <b>(AND Hour_20_22 CategoryTotalAmountInBasketFrom_Food_23)</b>
+        </p>
+        <h3>Add New Purchase Policy</h3>
+        <EditForm Model="@AddingPurchasePolicyModel" OnValidSubmit="AddPurchasePolicyForm">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Conditions (Use the AND operator)</label>
+                <InputText @bind-Value="AddingPurchasePolicyModel.ConditionString" class="form-control" />
+            </div>
+            <button class="btn btn-primary">
+                Add Purchase Policy
+            </button>
+        </EditForm>
+    </div>
+</div>
 
 @code {
     [Parameter] public string StoreName { get; set; }
     Models.AddingDiscountModel AddingDiscountModel = new Models.AddingDiscountModel();
+    Models.AddingPurchasePolicyModel AddingPurchasePolicyModel = new Models.AddingPurchasePolicyModel();
 
     private async void AddDiscountForm()
     {
@@ -259,6 +290,37 @@
                 throw new Exception(response.ErrorMessage);
             }
             AlertService.Info("Successfully added a discount to store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void AddPurchasePolicyForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        if (!AddingPurchasePolicyModel.ConditionString.Trim().StartsWith("(AND"))
+        {
+            AlertService.Error("Use the AND operation please.");
+            return;
+        }
+
+        try
+        {
+            Response response = await _marketAPIClient.AddStorePurchasePolicy(StoreName, AddingPurchasePolicyModel.ConditionString);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully added a purchase policy to store.");
         }
         catch (Exception ex)
         {

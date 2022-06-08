@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Server.Service;
+using MarketWeb.Service;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.Domain
@@ -27,6 +29,7 @@ namespace MarketWeb.Server.Domain
         private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
         private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
 
+        protected NotificationHub _notificationHub;
 
 
         // ===================================== CONSTRUCTORS =====================================
@@ -34,50 +37,24 @@ namespace MarketWeb.Server.Domain
         public VisitorManagement() : this(new Dictionary<String, Registered>()) { }
 
         // TODO: There's GOT to be a better way to do these constructors.
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors)
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
         {
-            _registeredVisitors = registeredVisitors;
-            _loggedinVisitorsTokens = new Dictionary<String, Registered>();
-            _visitorsGuestsTokens = new Dictionary<String, Guest>();
-
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
-            defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
-            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens)
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens): this(registeredVisitors, loggedinVisitorsTokens, new Dictionary<String, Guest>())
         {
-            _registeredVisitors = registeredVisitors;
-            _loggedinVisitorsTokens = loggedinVisitorsTokens;
-            _visitorsGuestsTokens = new Dictionary<String, Guest>();
-
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
-            defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
-            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Guest> visitorsGuestsTokens)
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Guest> visitorsGuestsTokens) : this(registeredVisitors, new Dictionary<string,Registered>(), visitorsGuestsTokens)
         {
-            _registeredVisitors = registeredVisitors;
-            _loggedinVisitorsTokens = new Dictionary<String, Registered>();
-            _visitorsGuestsTokens = visitorsGuestsTokens;
-
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
-            defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
-            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens)
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens, NotificationHub notificationHub = null) 
         {
             _registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
+            _notificationHub = notificationHub;
 
             Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
@@ -659,7 +636,13 @@ namespace MarketWeb.Server.Domain
         internal void SendNotificationMessageToRegistered(string usernameReciever, string storeName, string title, string message)
         {
             Registered registered = GetRegisteredVisitor(usernameReciever);
-            registered.SendNotificationMsg(storeName, title, message);
+            NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, usernameReciever);
+            registered.SendNotificationMsg(notifyMessage);
+            string authToken = GetLoggedInToken(usernameReciever); 
+            if (authToken != null)
+            {
+                _notificationHub.SendNotification(authToken, DTOtranslator.toDTO(notifyMessage));
+            }
         }
 
         internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string regUserName, string reply)

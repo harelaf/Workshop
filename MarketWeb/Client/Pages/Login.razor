@@ -38,6 +38,9 @@
     private Models.Account.LoginModel model = new Models.Account.LoginModel();
     private bool loading;
 
+    [CascadingParameter]
+    public EventCallback btn_clicked { get; set; }
+
     private async void OnValidSubmit()
     {
         // reset alerts on submit
@@ -52,6 +55,7 @@
                 throw new Exception(response.ErrorMessage);
             }
             // var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
+            await btn_clicked.InvokeAsync(null);
             var returnUrl = "";
             NavigationManager.NavigateTo(returnUrl);
         }
