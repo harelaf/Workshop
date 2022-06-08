@@ -218,7 +218,7 @@ namespace AcceptanceTest
             String desc = "an item";
 
             String item_condition = $"(NOT ItemTotalAmountInBasketFrom_{itemName}_{100})";
-            String day_condition = $"DayOfWeek_{(int)DateTime.Now.DayOfWeek + 1}";
+            String day_condition = $"DayOfWeek_{((int)DateTime.Now.DayOfWeek + 1) % 7}";
             String basket_price_condition = $"TotalBasketPriceFrom_{5}";
             String item_amount_condition = $"ItemTotalAmountInBasketRange_{itemName}_{5}_{10}"; // True
             String and_condition = $"(AND {item_condition} {day_condition})";
@@ -256,12 +256,12 @@ namespace AcceptanceTest
             int quantity = 100;
             String desc = "an item";
 
-            String item_condition = $"(NOT ItemTotalAmountInBasketFrom_{itemName}_{100})";
+            String item_condition = $"(NOT ItemTotalAmountInBasketFrom_{itemName}_{100})"; //True
 
             String category_percentage1 = $"CategoryPercentage_{category}_{percentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
-            String category_percentage2 = $"CategoryPercentage_{category}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String category_percentage2 = $"CategoryPercentage_{category}_{percentageToSubtract + 10}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
             String absolute_discount = $"BasketAbsolute_{priceToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
-            String big_item_discount = $"ItemPercentage_{itemName}_{50}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String big_item_discount = $"ItemPercentage_{itemName}_{bigpercentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
             String plus_discount = $"(PLUS {category_percentage1} {category_percentage2} {absolute_discount})";
             String max_discount = $"(MAX {plus_discount} {big_item_discount})";
 
@@ -275,6 +275,132 @@ namespace AcceptanceTest
 
             //act
             double expected = 5.0;
+            Response<double> response = marketAPI.CalcCartActualPrice(guest_VisitorToken);
+            Assert.IsFalse(response.ErrorOccured, "response " + response.ErrorMessage);
+            double actual = response.Value;
+
+            //Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void GetTotalDiscount_ComplicatedDiscount_failure()
+        {
+            double percentageToSubtract = 10;
+            double bigpercentageToSubtract = 50;
+            double priceToSubtract = 2;
+            int amount = 10;
+            double price = 1;
+            int quantity = 100;
+            String desc = "an item";
+
+            String item_condition = $"(NOT ItemTotalAmountInBasketFrom_{itemName}_{100})"; //False
+
+            String category_percentage1 = $"CategoryPercentage_{category}_{percentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String category_percentage2 = $"CategoryPercentage_{category}_{percentageToSubtract + 10}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String absolute_discount = $"BasketAbsolute_{priceToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String big_item_discount = $"ItemPercentage_{itemName}_{bigpercentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String plus_discount = $"(PLUS {category_percentage1} {category_percentage2} {absolute_discount})";
+            String max_discount = $"(MAX {plus_discount} {big_item_discount})";
+
+            Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, item_condition, max_discount);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
+
+            Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
+            Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
+            Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
+
+            //act
+            double expected = 10.0;
+            Response<double> response = marketAPI.CalcCartActualPrice(guest_VisitorToken);
+            Assert.IsFalse(response.ErrorOccured, "response " + response.ErrorMessage);
+            double actual = response.Value;
+
+            //Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void GetTotalDiscount_ComplicatedDiscountAndCondition_success()
+        {
+            double percentageToSubtract = 10;
+            double bigpercentageToSubtract = 50;
+            double priceToSubtract = 2;
+            int amount = 10;
+            double price = 1;
+            int quantity = 100;
+            String desc = "an item";
+
+            String item_condition = $"(NOT ItemTotalAmountInBasketFrom_{itemName}_{100})";
+            String day_condition = $"DayOfWeek_{((int)DateTime.Now.DayOfWeek + 1) % 7}";
+            String basket_price_condition = $"TotalBasketPriceFrom_{5}";
+            String item_amount_condition = $"ItemTotalAmountInBasketRange_{itemName}_{1}_{2}"; // False
+            String and_condition = $"(AND {item_condition} {day_condition})";
+            String or_condition = $"(OR {and_condition} {basket_price_condition})";
+            String xor_condition = $"(XOR {or_condition} {item_amount_condition})";
+
+            String category_percentage1 = $"CategoryPercentage_{category}_{percentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String category_percentage2 = $"CategoryPercentage_{category}_{percentageToSubtract + 10}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String absolute_discount = $"BasketAbsolute_{priceToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String big_item_discount = $"ItemPercentage_{itemName}_{bigpercentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String plus_discount = $"(PLUS {category_percentage1} {category_percentage2} {absolute_discount})";
+            String max_discount = $"(MAX {plus_discount} {big_item_discount})";
+
+            Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, xor_condition, max_discount);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
+
+            Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
+            Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
+            Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
+
+            //act
+            double expected = 5.0;
+            Response<double> response = marketAPI.CalcCartActualPrice(guest_VisitorToken);
+            Assert.IsFalse(response.ErrorOccured, "response " + response.ErrorMessage);
+            double actual = response.Value;
+
+            //Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void GetTotalDiscount_ComplicatedDiscountAndCondition_failure()
+        {
+            double percentageToSubtract = 10;
+            double bigpercentageToSubtract = 50;
+            double priceToSubtract = 2;
+            int amount = 10;
+            double price = 1;
+            int quantity = 100;
+            String desc = "an item";
+
+            String item_condition = $"(NOT ItemTotalAmountInBasketFrom_{itemName}_{100})";
+            String day_condition = $"DayOfWeek_{((int)DateTime.Now.DayOfWeek + 1) % 7}";
+            String basket_price_condition = $"TotalBasketPriceFrom_{5}";
+            String item_amount_condition = $"ItemTotalAmountInBasketRange_{itemName}_{5}_{10}"; // True
+            String and_condition = $"(AND {item_condition} {day_condition})";
+            String or_condition = $"(OR {and_condition} {basket_price_condition})";
+            String xor_condition = $"(XOR {or_condition} {item_amount_condition})";
+
+            String category_percentage1 = $"CategoryPercentage_{category}_{percentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String category_percentage2 = $"CategoryPercentage_{category}_{percentageToSubtract + 10}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String absolute_discount = $"BasketAbsolute_{priceToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String big_item_discount = $"ItemPercentage_{itemName}_{bigpercentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
+            String plus_discount = $"(PLUS {category_percentage1} {category_percentage2} {absolute_discount})";
+            String max_discount = $"(MAX {plus_discount} {big_item_discount})";
+
+            Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, xor_condition, max_discount);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
+
+            Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
+            Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
+            Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
+
+            //act
+            double expected = 10.0;
             Response<double> response = marketAPI.CalcCartActualPrice(guest_VisitorToken);
             Assert.IsFalse(response.ErrorOccured, "response " + response.ErrorMessage);
             double actual = response.Value;

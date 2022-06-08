@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AcceptanceTest
 {
-    internal class DiscountHandlingTests
+    internal class PurchasePolicyTests
     {
     }
 }
