@@ -349,19 +349,19 @@ namespace MarketWeb.Service
             foreach (KeyValuePair<Item, DiscountDetails<AtomicDiscount>> entry in shoppingBasket.Items)
             {
                 ItemDTO dto = toDTO(entry.Key, shoppingBasket.Store().StoreName);
-                items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(entry.Value, entry.Key._price));
+                items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(shoppingBasket, entry.Value, entry.Key._price));
             }
             foreach (NumericDiscount dis in shoppingBasket.AdditionalDiscounts.DiscountList)
                 additionalDiscounts.Add(toDTO(dis));
             return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts);
         }
 
-        public DiscountDetailsDTO toDTO(DiscountDetails<AtomicDiscount> discountDetails, double itemPrice)
+        public DiscountDetailsDTO toDTO(ISearchablePriceable searchablePriceable, DiscountDetails<AtomicDiscount> discountDetails, double itemPrice)
         {
             List<String> disList = new List<String>();
             foreach (AtomicDiscount discount in discountDetails.DiscountList)
                 disList.Add(discount.GetDiscountString(0));
-            double actualPrice = discountDetails.calcPriceFromCurrPrice(itemPrice);
+            double actualPrice = discountDetails.calcPriceFromCurrPrice(searchablePriceable, itemPrice);
             return new DiscountDetailsDTO(
                 discountDetails.Amount,
                 disList,

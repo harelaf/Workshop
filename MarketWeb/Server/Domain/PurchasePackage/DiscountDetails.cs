@@ -39,11 +39,11 @@ namespace MarketWeb.Server.Domain
         {
             DiscountList.Add(discount);
         }
-        public double calcPriceFromCurrPrice(double currPrice)
+        public double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
         {
             double price = currPrice * Amount;
             foreach (T discount in DiscountList)
-                price = discount.calcPriceFromCurrPrice(price);
+                price = discount.calcPriceFromCurrPrice(searchablePriceable, price);
             return price;
         }
         public void AddAmount(int amount)

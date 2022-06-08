@@ -12,10 +12,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
-            double sumDis = 0;
+            double totalPrice = searchablePriceable.GetTotalPrice();
+            double totalPriceAfterDiscount = totalPrice;
             foreach(Discount dis in DiscountList)
-                sumDis += dis.GetTotalDiscount(searchablePriceable);
-            return sumDis;
+                totalPriceAfterDiscount = dis.calcPriceFromCurrPrice(searchablePriceable, totalPriceAfterDiscount);
+            return totalPrice - totalPriceAfterDiscount;
         }
         public override void applyDiscount(ISearchablePriceable searchablePriceable)
         {
@@ -62,6 +63,14 @@ namespace MarketWeb.Server.Domain.PolicyPackage
                 str += $"{pad2}{++index}. {discount.GetActualDiscountString(searchablePriceable, indent + 1)}";
             }
             return str;
+        }
+        public override double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
+        {
+            if (!CheckCondition(searchablePriceable))
+                return currPrice;
+            foreach (Discount dis in DiscountList)
+                currPrice = dis.calcPriceFromCurrPrice(searchablePriceable, currPrice);
+            return currPrice;
         }
     }
 }

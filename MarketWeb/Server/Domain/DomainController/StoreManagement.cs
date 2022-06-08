@@ -239,7 +239,7 @@ namespace MarketWeb.Server.Domain
 
         public void AddStorePurchasePolicy(string storeName, Condition condition)
         {
-            //GetStore(storeName).AddPurchasePolicy(condition);
+            GetStore(storeName).AddConditionToPurchasePolicy(condition);
         }
 
         public bool AddStoreManager(StoreManager newManager, string storeName)

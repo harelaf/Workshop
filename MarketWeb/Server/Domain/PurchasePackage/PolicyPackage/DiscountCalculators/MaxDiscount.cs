@@ -50,6 +50,12 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             return GetMaxDiscount(searchablePriceable).GetExpirationDate(searchablePriceable);
         }
-
+        public override double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
+        {
+            if (!CheckCondition(searchablePriceable))
+                return currPrice;
+            Discount dis = GetMaxDiscount(searchablePriceable);
+            return dis.calcPriceFromCurrPrice(searchablePriceable, currPrice);
+        }
     }
 }

@@ -24,8 +24,16 @@ namespace MarketWeb.Server.Domain
         public void AddItem(Item item, int amount)
         {
             if (isItemInBasket(item))
-                _items[item].AddAmount(amount);
+            {
+                updateItemQuantity(item, amount);
+                return;
+            }
             else _items[item] = new DiscountDetails<AtomicDiscount>(amount);
+            if (!_store.GetPurchasePolicy().checkPolicyConditions(this))
+            {
+                _items.Remove(item);
+                throw new ArgumentException("this purchase is not compatible with the store's purchase policy.");
+            }
             resetDiscounts();
             _store.GetDiscountPolicy().ApplyDiscounts(this);
         }
@@ -42,6 +50,10 @@ namespace MarketWeb.Server.Domain
             return _items[item].Amount;
         }
 
+        internal bool checkPurchasePolicy()
+        {
+            return _store.GetPurchasePolicy().checkPolicyConditions(this);
+        }
         //returns the amount that was removed
         public int RemoveItem(Item item)
         {
@@ -68,7 +80,16 @@ namespace MarketWeb.Server.Domain
         {
             if (isItemInBasket(item))
             {
+                int oldAmount = _items[item].Amount;
                 _items[item].Amount = newQuantity;
+                if (!_store.GetPurchasePolicy().checkPolicyConditions(this))
+                {
+                    if (oldAmount < newQuantity)
+                    {
+                        _items[item].Amount = oldAmount;
+                    }
+                    throw new ArgumentException("this purchase is not compatible with the store's purchase policy.");
+                }
                 resetDiscounts();
                 _store.GetDiscountPolicy().ApplyDiscounts(this);
                 return true;

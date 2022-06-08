@@ -253,6 +253,11 @@ namespace MarketWeb.Server.Domain
             _stock.RemoveItem(itemId);
         }
 
+        internal void AddConditionToPurchasePolicy(Condition condition)
+        {
+            _purchasePolicy.AddCondition(condition);
+        }
+
         public void AddMessage(MessageToStore message)
         {
 

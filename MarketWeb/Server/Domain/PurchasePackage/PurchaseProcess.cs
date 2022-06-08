@@ -34,9 +34,16 @@ namespace MarketWeb.Server.Domain
         }
         public void Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase, string paymentMethode, string shipmentMethode)
         {
-            string errorMessage="";
+            string errorMessage = "";
+            foreach (ShoppingBasket basket in cartToPurchase._shoppingBaskets)
+            {
+                if (!basket.checkPurchasePolicy())
+                {
+                    errorMessage = $"Purchase failed: this shop is not approved by '{basket.Store().StoreName}' store purchase policy.";
+                }
+            }
             //first: should check that shippingSystem willig to provide cart:
-            if(_shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode))
+            if (errorMessage != "" && _shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode))
             {
                 //second: the actual payment:
                 double price = CalculatePrice(cartToPurchase);
