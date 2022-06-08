@@ -73,6 +73,8 @@ namespace MarketWeb.Client.Connect
         public Task<Response> SendAdminMessage(String receiverUsername, String title, String message);
         public Task<Response> AddStoreDiscount(String StoreName, String ConditionString, String DiscountString);
         public Task<Response> AddStorePurchasePolicy(String StoreName, String ConditionString);
+        public Task<Response> ResetStoreDiscountPolicy(String StoreName);
+        public Task<Response> ResetStorePurchasePolicy(String StoreName);
     }
 
     public class MarketAPIClient : IMarketAPIClient
@@ -761,6 +763,26 @@ namespace MarketWeb.Client.Connect
             var param = new Dictionary<string, string>() {
                 { "storeName", StoreName },
                 { "conditionString", ConditionString }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+            Response res = await _httpService.Post<Response>(newUrl, null);
+            return res;
+        }
+        public async Task<Response> ResetStoreDiscountPolicy(String StoreName)
+        {
+            const string url = "api/market/ResetStoreDiscountPolicy";
+            var param = new Dictionary<string, string>() {
+                { "storeName", StoreName }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+            Response res = await _httpService.Post<Response>(newUrl, null);
+            return res;
+        }
+        public async Task<Response> ResetStorePurchasePolicy(String StoreName)
+        {
+            const string url = "api/market/ResetStorePurchasePolicy";
+            var param = new Dictionary<string, string>() {
+                { "storeName", StoreName }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response res = await _httpService.Post<Response>(newUrl, null);

@@ -1218,6 +1218,43 @@ namespace MarketWeb.Service
             return response;
         }
 
+        [HttpPost("ResetStoreDiscountPolicy")]
+        public Response ResetStoreDiscountPolicy([FromHeader] String Authorization, String storeName)
+        {
+            Response response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Reset Store Discount Policy called with parameters: authToken={authToken}, storeName={storeName}.");
+                _market.ResetStoreDiscountPolicy(authToken, storeName);
+                response = new Response();
+                _logger.Info($"SUCCESSFULY executed Reset Store Discount Policy.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        [HttpPost("ResetStorePurchasePolicy")]
+        public Response ResetStorePurchasePolicy([FromHeader] String Authorization, String storeName)
+        {
+            Response response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Reset Store Purchase Policy called with parameters: authToken={authToken}, storeName={storeName}.");
+                _market.ResetStorePurchasePolicy(authToken, storeName);
+                response = new Response();
+                _logger.Info($"SUCCESSFULY executed Reset Store Purchase Policy.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+
         [HttpPost("AddStorePurchasePolicy")]
         public Response AddStorePurchasePolicy([FromHeader] String Authorization, String storeName, String conditionString)
         {

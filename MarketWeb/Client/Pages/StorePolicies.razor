@@ -88,7 +88,7 @@
             <br />
             The following is an example of a discount:
             <br />
-            <b>(MAX (PLUS CategoryPercentage_Dairy_10_2022_12_30 CategoryPercentage_Pasta_5_2022_11_23 Absolute_5_2022_7_1) ItemPercentage_Bread_50_2029_1_1)</b>
+            <b>(MAX (PLUS CategoryPercentage_Dairy_10_2022_12_30 CategoryPercentage_Pasta_5_2022_11_23 BasketAbsolute_5_2022_7_1) ItemPercentage_Bread_50_2029_1_1)</b>
         </p>
     </div>
     <br />
@@ -290,6 +290,56 @@
                 throw new Exception(response.ErrorMessage);
             }
             AlertService.Info("Successfully added a discount to store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void ResetPurchasePolicyForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response response = await _marketAPIClient.ResetStorePurchasePolicy(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully reset the purchase policy of this store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void ResetDiscountPolicyForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response response = await _marketAPIClient.ResetStoreDiscountPolicy(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully reset the discount policy of this store.");
         }
         catch (Exception ex)
         {

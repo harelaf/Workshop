@@ -33,5 +33,10 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             Discounts.applyDiscount(searchablePriceable);
         }
+
+        internal void Reset()
+        {
+            Discounts.DiscountList.Clear();
+        }
     }
 }

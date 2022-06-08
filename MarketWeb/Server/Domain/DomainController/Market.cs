@@ -1054,6 +1054,37 @@ namespace MarketWeb.Server.Domain
             Condition condition = new ConditionParser(conditionString).Parse();
             _storeManagement.AddStorePurchasePolicy(storeName, condition);
         }
+
+        internal void ResetStoreDiscountPolicy(string authToken, string storeName)
+        {
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY))
+                errorMessage = "Visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("ResetStoreDiscountPolicy", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            _storeManagement.ResetStoreDiscountPolicy(storeName);
+        }
+        internal void ResetStorePurchasePolicy(string authToken, string storeName)
+        {
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.CHANGE_SHOP_AND_DISCOUNT_POLICY))
+                errorMessage = "Visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("ResetStorePurchasePolicy", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            _storeManagement.ResetStorePurchasePolicy(storeName);
+        }
     }
 }
 

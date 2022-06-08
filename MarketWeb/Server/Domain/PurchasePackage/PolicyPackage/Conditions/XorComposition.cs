@@ -32,11 +32,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
                 }
             }
             result = found;
-            if (ToNegative)
-            {
-                return !result;
-            }
-            return result;
+            return checkNegative(result);
         }
         public override String GetConditionString(int indent)
         {

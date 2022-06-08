@@ -384,7 +384,6 @@ namespace MarketWeb.Server.Domain
             LogErrorMessage("RemoveStoreManager", errorMessage);
             throw new Exception(errorMessage);
         }
-
         internal List<StoreManager> GetManagers()
         {
             return _managers;
@@ -434,6 +433,14 @@ namespace MarketWeb.Server.Domain
         public virtual PurchasePolicy GetPurchasePolicy()
         {
             return this._purchasePolicy;
+        }
+        public void ResetDiscountPolicy()
+        {
+            _discountPolicy.Reset();
+        }
+        internal void ResetPurchasePolicy()
+        {
+            _purchasePolicy.Reset();
         }
     }
 }

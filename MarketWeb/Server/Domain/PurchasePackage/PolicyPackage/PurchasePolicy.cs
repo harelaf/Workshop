@@ -24,5 +24,10 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             return _conditions.Check(searchablePriceable);
         }
+
+        internal void Reset()
+        {
+            Conditions.ConditionList.Clear();
+        }
     }
 }
