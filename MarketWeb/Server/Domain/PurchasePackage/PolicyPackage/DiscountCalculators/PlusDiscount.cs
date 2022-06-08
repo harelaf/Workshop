@@ -39,7 +39,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
         {
-            DateTime ans = DateTime.MinValue;
+            DateTime ans = DateTime.MaxValue;
             foreach (Discount dis in DiscountList)
             {
                 if (dis.GetTotalDiscount(searchablePriceable) > 0)
