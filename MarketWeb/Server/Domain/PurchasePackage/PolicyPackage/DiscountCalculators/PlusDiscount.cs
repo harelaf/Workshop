@@ -12,6 +12,8 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return 0;
             double totalPrice = searchablePriceable.GetTotalPrice();
             double totalPriceAfterDiscount = totalPrice;
             foreach(Discount dis in DiscountList)

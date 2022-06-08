@@ -36,6 +36,8 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
+            if(!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return 0;
             double totalDis = 0;
             foreach(Discount dis in DiscountList)
                 totalDis = Math.Max(totalDis, dis.GetTotalDiscount(searchablePriceable));

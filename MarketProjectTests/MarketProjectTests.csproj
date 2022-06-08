@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MarketWeb\Server\MarketWeb.Server.csproj" />
+	<!--<ProjectReference Include="..\MarketWeb\Server\MarketWeb.Shared.csproj" />-->
   </ItemGroup>
 
 </Project>
