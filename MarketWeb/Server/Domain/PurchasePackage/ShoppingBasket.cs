@@ -29,13 +29,13 @@ namespace MarketWeb.Server.Domain
                 return;
             }
             else _items[item] = new DiscountDetails<AtomicDiscount>(amount);
-            if (!_store.GetPurchasePolicy().checkPolicyConditions(this))
+            if (!Store().GetPurchasePolicy().checkPolicyConditions(this))
             {
                 _items.Remove(item);
                 throw new ArgumentException("this purchase is not compatible with the store's purchase policy.");
             }
             resetDiscounts();
-            _store.GetDiscountPolicy().ApplyDiscounts(this);
+            Store().GetDiscountPolicy().ApplyDiscounts(this);
         }
 
         public virtual int GetAmountOfItem(Item item)
@@ -52,7 +52,7 @@ namespace MarketWeb.Server.Domain
 
         internal bool checkPurchasePolicy()
         {
-            return _store.GetPurchasePolicy().checkPolicyConditions(this);
+            return Store().GetPurchasePolicy().checkPolicyConditions(this);
         }
         //returns the amount that was removed
         public int RemoveItem(Item item)
@@ -63,7 +63,7 @@ namespace MarketWeb.Server.Domain
                 int amount = _items[item].Amount;
                 _items.Remove(item);
                 resetDiscounts();
-                _store.GetDiscountPolicy().ApplyDiscounts(this);
+                Store().GetDiscountPolicy().ApplyDiscounts(this);
                 return amount;
             }
             errorMessage = "basket doesn't contain the item that was requested to be removed";
@@ -82,7 +82,7 @@ namespace MarketWeb.Server.Domain
             {
                 int oldAmount = _items[item].Amount;
                 _items[item].Amount = newQuantity;
-                if (!_store.GetPurchasePolicy().checkPolicyConditions(this))
+                if (!Store().GetPurchasePolicy().checkPolicyConditions(this))
                 {
                     if (oldAmount < newQuantity)
                     {
@@ -91,7 +91,7 @@ namespace MarketWeb.Server.Domain
                     throw new ArgumentException("this purchase is not compatible with the store's purchase policy.");
                 }
                 resetDiscounts();
-                _store.GetDiscountPolicy().ApplyDiscounts(this);
+                Store().GetDiscountPolicy().ApplyDiscounts(this);
                 return true;
             }
             return false;
@@ -151,7 +151,7 @@ namespace MarketWeb.Server.Domain
             foreach(Item item in Items.Keys)
             {
                 receipt += $"{Items[item]} {item._price} -> {Items[item].Amount * item._price}\n";
-                receipt += _store.GetDiscountPolicy().GetActualDiscountString(this);
+                receipt += Store().GetDiscountPolicy().GetActualDiscountString(this);
             }
             return receipt;
         }

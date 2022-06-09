@@ -43,7 +43,7 @@ namespace MarketWeb.Server.Domain
                 }
             }
             //first: should check that shippingSystem willig to provide cart:
-            if (errorMessage != "" && _shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode))
+            if (errorMessage == "" && _shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode))
             {
                 //second: the actual payment:
                 double price = CalculatePrice(cartToPurchase);
@@ -51,10 +51,10 @@ namespace MarketWeb.Server.Domain
                     return;
                 errorMessage = "Purchase failed: paymentSystem refuses.";
             }
-            else
+            else if(errorMessage == "")
             {
                 errorMessage = "Purchase failed: Shipping services refuse to provide your cart.";
-            } 
+            }
             //relaseCart:
             cartToPurchase.RelaseItemsOfCart();
             LogErrorMessage("Purchase", errorMessage);

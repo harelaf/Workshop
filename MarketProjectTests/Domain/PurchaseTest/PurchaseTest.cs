@@ -47,6 +47,7 @@ namespace MarketProject.Domain.Tests
             basketMoq1.Setup(x => x.Store()).Returns(storeMoq1.Object);
             basketMoq2.Setup(x => x.Store()).Returns(storeMoq2.Object);
 
+
             shoppingBaskets = new List<ShoppingBasket>();
             items1 = new List<Item>();
             items2 = new List<Item>();
@@ -86,14 +87,28 @@ namespace MarketProject.Domain.Tests
             //arrange
             paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(true);
             shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-            discountMoq.Setup(x => x.calculateDiscounts(It.IsAny<ShoppingBasket>())).Returns(0);
+            discountMoq.Setup(x => x.calculateDiscounts(It.IsAny<ISearchablePriceable>())).Returns(0);
+            purchaseMoq.Setup(x => x.checkPolicyConditions(It.IsAny<ISearchablePriceable>())).Returns(true);
             //action
             //calculateDiscounts
             try
             {
-                purchase.Purchase("adr","", "", "","", cartMoq.Object, "", "");
+                purchase.Purchase("adr", "", "", "", "", cartMoq.Object, "", "");
             }
             catch (Exception ex) { Assert.Fail(ex.Message); }
+        }
+
+        [TestMethod]
+        public void TestPurchase_PaymentNShippingAproved_PurchasePolicyNotApproved()
+        {
+            //arrange
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(true);
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            discountMoq.Setup(x => x.calculateDiscounts(It.IsAny<ISearchablePriceable>())).Returns(0);
+            purchaseMoq.Setup(x => x.checkPolicyConditions(It.IsAny<ISearchablePriceable>())).Returns(false);
+            //action
+            //calculateDiscounts
+            Assert.ThrowsException<Exception>(() => purchase.Purchase("adr", "", "", "", "", cartMoq.Object, "", ""));
         }
 
         [TestMethod]
