@@ -29,5 +29,13 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             Conditions.ConditionList.Clear();
         }
+
+        internal List<string> GetConditionsStrings()
+        {
+            List<string> conditionsStrings = new List<string>();
+            foreach(Condition cond in _conditions.ConditionList)
+                conditionsStrings.Add(cond.GetConditionString(0));
+            return conditionsStrings;
+        }
     }
 }

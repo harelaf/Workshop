@@ -16,10 +16,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         public override String GetDiscountString(int indent)
         {
             String pad2 = newLine(indent + 1);
-            String str = "apply the maximal discount out of the following:\n";
+            String str = "apply the maximal discount out of the following:";
             int index = 0;
             foreach (Discount discount in DiscountList)
-                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 1)}";
+                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 2)}";
+            str += ConditionToString(indent);
             return str;
         }
         private Discount GetMaxDiscount(ISearchablePriceable searchablePriceable)

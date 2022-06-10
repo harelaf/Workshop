@@ -384,6 +384,17 @@ namespace MarketWeb.Server.Domain
             LogErrorMessage("RemoveStoreManager", errorMessage);
             throw new Exception(errorMessage);
         }
+
+        internal List<string> GetPurchasePolicyStrings()
+        {
+            return _purchasePolicy.GetConditionsStrings();
+        }
+
+        internal List<string> GetDiscountPolicyStrings()
+        {
+            return _discountPolicy.GetDiscountsStrings();
+        }
+
         internal List<StoreManager> GetManagers()
         {
             return _managers;

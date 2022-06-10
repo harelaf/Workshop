@@ -1085,6 +1085,36 @@ namespace MarketWeb.Server.Domain
             }
             _storeManagement.ResetStorePurchasePolicy(storeName);
         }
+
+        internal List<string> GetDiscountPolicyStrings(string authToken, string storeName)
+        {
+            String errorMessage = null;
+            if (!_VisitorManagement.IsVisitorAVisitor(authToken))
+                errorMessage = "only visitors are entitled to execute this operation. enter system properly.";
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("GetDiscountPolicyStrings", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return _storeManagement.GetDiscountPolicyStrings(storeName);
+        }
+
+        internal List<string> GetPurchasePolicyStrings(string authToken, string storeName)
+        {
+            String errorMessage = null;
+            if (!_VisitorManagement.IsVisitorAVisitor(authToken))
+                errorMessage = "only visitors are entitled to execute this operation. enter system properly.";
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("GetPurchasePolicyStrings", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return _storeManagement.GetPurchasePolicyStrings(storeName);
+        }
     }
 }
 

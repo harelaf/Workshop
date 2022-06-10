@@ -38,5 +38,13 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             Discounts.DiscountList.Clear();
         }
+
+        internal List<string> GetDiscountsStrings()
+        {
+            List<string> discountsStrings = new List<string>();
+            foreach (Discount dis in _discounts.DiscountList)
+                discountsStrings.Add(dis.GetDiscountString(0));
+            return discountsStrings;
+        }
     }
 }

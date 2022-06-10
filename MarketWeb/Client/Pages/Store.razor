@@ -386,6 +386,49 @@
             </EditForm>
         </div>
     }
+    <div id="Discount Policy">
+        <br />
+        <h2>Display Policies</h2>
+        <button class="btn btn-primary" @onclick="() => DisplayPurchasePolicy()">
+            Display Purchase Policy
+        </button>
+        <button class="btn btn-primary" @onclick="() => DisplayDiscountPolicy()">
+            Display Discount Policy
+        </button>
+        <br />
+        @if(discountStrList != null && discountStrList.Count > 0)
+        {
+            <table class="table" style="white-space:pre-wrap; width:100%">
+                <tr>
+                    <th></th>
+                    <th>Discount</th>
+                </tr>
+                @for(int index = 0 ; index < discountStrList.Count ; index++)
+                {
+                    <tr>
+                        <th>@(index + 1)</th>
+                        <th>@discountStrList[index]</th>
+                    </tr>
+                }
+            </table>
+        }
+        @if(purchaseStrList != null && purchaseStrList.Count > 0)
+        {
+            <table class="table" style="white-space:pre-wrap; width:100%">
+                <tr>
+                    <th></th>
+                    <th>Condition</th>
+                </tr>
+                @for(int index = 0 ; index < purchaseStrList.Count ; index++)
+                {
+                    <tr>
+                        <th>@(index + 1)</th>
+                        <th>@purchaseStrList[index]</th>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
 }
 else
 {
@@ -416,6 +459,8 @@ else
     private bool CanViewStoreRoles { get; set; } = false;
     private bool CanChangeStoreAndDiscountPolicies { get; set; } = false;
     private bool StoreIsActive { get; set; } = true;
+    List<String> discountStrList = new List<String>();
+    List<String> purchaseStrList = new List<String>();
 
     private async void OnValidSubmit()
     {
@@ -813,6 +858,58 @@ else
             NavigationManager.NavigateTo($"StorePage/{StoreName}");
         }
         StateHasChanged();
+    }
+
+    private async void DisplayPurchasePolicy()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        discountStrList.Clear();
+        try
+        {
+            Response<List<String>> response = await _marketAPIClient.GetPurchasePolicyStrings(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            purchaseStrList = response.Value;
+            AlertService.Info("Successfully display the purchase policy of this store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void DisplayDiscountPolicy()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        purchaseStrList.Clear();
+        try
+        {
+            Response<List<String>> response = await _marketAPIClient.GetDiscountPolicyStrings(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            discountStrList = response.Value;
+            AlertService.Info("Successfully display the discount policy of this store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
     private async void ViewPoliciesPage()

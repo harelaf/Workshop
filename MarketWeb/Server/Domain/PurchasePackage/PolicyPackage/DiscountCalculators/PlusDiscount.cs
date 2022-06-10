@@ -29,12 +29,13 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             String pad = newLine(indent);
             String pad2 = newLine(indent + 1);
-            String str = pad + "sum all of the following:\n";
+            String str = pad + "sum all of the following:";
             int index = 0;
             foreach(Discount discount in DiscountList)
             {
-                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 1)}";
+                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 2)}";
             }
+            str += ConditionToString(indent);
             return str;
         }
         public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)

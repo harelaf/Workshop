@@ -363,5 +363,15 @@ namespace MarketWeb.Server.Domain
         {
             GetStore(storeName).ResetPurchasePolicy();
         }
+
+        internal List<string> GetDiscountPolicyStrings(string storeName)
+        {
+            return GetStore(storeName).GetDiscountPolicyStrings();
+        }
+
+        internal List<string> GetPurchasePolicyStrings(string storeName)
+        {
+            return GetStore(storeName).GetPurchasePolicyStrings();
+        }
     }
 }

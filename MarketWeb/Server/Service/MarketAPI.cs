@@ -1236,7 +1236,7 @@ namespace MarketWeb.Service
             }
             return response;
         }
-        [HttpPost("ResetStorePurchasePolicy")]
+        [HttpGet("ResetStorePurchasePolicy")]
         public Response ResetStorePurchasePolicy([FromHeader] String Authorization, String storeName)
         {
             Response response;
@@ -1254,7 +1254,40 @@ namespace MarketWeb.Service
             }
             return response;
         }
-
+        [HttpPost("GetDiscountPolicyStrings")]
+        public Response<List<String>> GetDiscountPolicyStrings([FromHeader] String Authorization, String storeName)
+        {
+            Response<List<String>> response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Get Store Discount Policy called with parameters: authToken={authToken}, storeName={storeName}.");
+                response = new Response<List<String>>(_market.GetDiscountPolicyStrings(authToken, storeName));
+                _logger.Info($"SUCCESSFULY executed Get Store Discount Policy.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<String>>(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        [HttpPost("GetPurchasePolicyStrings")]
+        public Response<List<String>> GetPurchasePolicyStrings([FromHeader] String Authorization, String storeName)
+        {
+            Response<List<String>> response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Get Store Purchase Policy called with parameters: authToken={authToken}, storeName={storeName}.");
+                response = new Response<List<String>>(_market.GetPurchasePolicyStrings(authToken, storeName));
+                _logger.Info($"SUCCESSFULY executed Get Store Purchase Policy.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<String>>(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
         [HttpPost("AddStorePurchasePolicy")]
         public Response AddStorePurchasePolicy([FromHeader] String Authorization, String storeName, String conditionString)
         {
