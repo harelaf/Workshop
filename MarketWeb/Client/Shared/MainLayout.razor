@@ -86,7 +86,9 @@
 					@foreach (NotifyMessageDTO notification in notifications)
 					{
 						<div class='ikrSingleNotiDiv'>
-							Blegh
+							<h3>@notification.StoreName</h3>
+							<h4>@notification.Title</h4>
+							<p>@notification.Message</p>
 						</div>
 					}
 				</div>
