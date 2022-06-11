@@ -373,5 +373,25 @@ namespace MarketWeb.Server.Domain
         {
             return GetStore(storeName).GetPurchasePolicyStrings();
         }
+
+        internal void BidItemInStore(string storeName, int itemId, double newPrice, string bidder)
+        {
+            GetStore(storeName).BidItem(itemId, newPrice, bidder);
+        }
+
+        internal bool AcceptBid(string storeName, string acceptor, int itemId, string bidder)
+        {
+            return GetStore(storeName).AcceptBid(acceptor, itemId, bidder);
+        }
+
+        internal bool CounterOfferBid(string storeName, string acceptor, int itemId, string bidder, double counterOffer)
+        {
+            return GetStore(storeName).CounterOfferBid(acceptor, itemId, bidder, counterOffer);
+        }
+
+        internal void RejectBid(string storeName, string rejector, int itemId, string bidder)
+        {
+            GetStore(storeName).RejectBid(rejector, itemId, bidder);
+        }
     }
 }

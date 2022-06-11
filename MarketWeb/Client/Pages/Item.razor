@@ -31,7 +31,7 @@
 <br />
 
 <div>
-    <h1 > Add to Cart</h1>
+    <h1>Add to Cart</h1>
     <EditForm Model="@AddToCartModel" OnValidSubmit="AddToCartForm">
         <DataAnnotationsValidator />
         <div class="form-group">
@@ -42,7 +42,20 @@
     </EditForm>
 </div>
 <br />
-
+<br />
+<div>
+    <h1>Add Bid</h1>
+    <EditForm Model="@AddBidModel" OnValidSubmit="AddBidForm">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label>Amount</label>
+            <InputNumber @bind-Value="AddBidModel.Amount" class="form-control" />
+            <label>Price per unit</label>
+            <InputNumber @bind-Value="AddBidModel.PricePerUnit" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Add new bid</button>
+    </EditForm>
+</div>
 <br />
 <br />
 
@@ -99,6 +112,7 @@ else
     [Parameter] public int ItemID { get; set; }
     ItemDTO item = new ItemDTO(0, "", 0, "", "", new RatingDTO(new Dictionary<string, Tuple<int, string>>()), "");
     private Models.AddToCartModel AddToCartModel = new Models.AddToCartModel();
+    private Models.AddBidModel AddBidModel = new Models.AddBidModel();
     private Models.AddReviewModel AddReviewModel = new Models.AddReviewModel();
 
     private async void AddToCartForm()
@@ -107,6 +121,22 @@ else
         AlertService.Clear();
 
         Response response = await marketAPIClient.AddItemToCart(ItemID, StoreName, AddToCartModel.Amount);
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            AlertService.Info("Successfully added item to cart.");
+        }
+    }
+
+    private async void AddBidForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.BidItemInStore(ItemID, StoreName, AddToCartModel.Amount, AddBidModel.PricePerUnit);
         if (response.ErrorOccured)
         {
             AlertService.Error(response.ErrorMessage);

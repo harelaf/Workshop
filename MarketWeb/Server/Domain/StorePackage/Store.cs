@@ -25,9 +25,10 @@ namespace MarketWeb.Server.Domain
         private StoreFounder _founder;
         private String _storeName;
         private StoreState _state;
+        // bidder (if registered -> username, else -> authentication token) to bids
+        private IDictionary<String, List<Bid>> _biddedItems;
 
         public String StoreName => _storeName;
-
         public StoreState State => _state;
 
         public bool isActive()
@@ -47,6 +48,7 @@ namespace MarketWeb.Server.Domain
             _owners = new List<StoreOwner>();
             _founder = founder;
             _state = StoreState.Active;
+            _biddedItems = new Dictionary<String, List<Bid>>();
         }
 
         public Item ReserveItem(int itemID, int amount)
@@ -388,6 +390,78 @@ namespace MarketWeb.Server.Domain
         internal List<string> GetPurchasePolicyStrings()
         {
             return _purchasePolicy.GetConditionsStrings();
+        }
+
+        internal void BidItem(int itemId, double biddedPrice, string bidder)
+        {
+            if (!_biddedItems.ContainsKey(bidder))
+                _biddedItems.Add(bidder, new List<Bid>());
+            _biddedItems[bidder].Add(new Bid(itemId, biddedPrice));
+        }
+
+        /// <summary>
+        /// records that this role-holder accepted this bid
+        /// </summary>
+        /// <param name="acceptor"></param>
+        /// <param name="itemId"></param>
+        /// <param name="bidder"></param>
+        /// <returns>true when all parties accepted the bid. false otherwise.</returns>
+        /// <exception cref="Exception"></exception>
+        internal bool AcceptBid(string acceptor, int itemId, string bidder)
+        {
+            Bid bid = GetBid(itemId, bidder);
+            if (bid == null)
+                throw new Exception("no such bid to accept.");
+            bid.AcceptBid(acceptor);
+            return CheckBidAcceptance(bid);
+        }
+
+        internal bool CounterOfferBid(string acceptor, int itemId, string bidder, double counterOffer)
+        {
+            Bid bid = GetBid(itemId, bidder);
+            if (bid == null)
+                throw new Exception("no such bid to counter-offer.");
+            bid.CounterOfferBid(acceptor, counterOffer);
+            return CheckBidAcceptance(bid);
+        }
+
+        internal void RejectBid(string rejector, int itemId, string bidder)
+        {
+            if(GetOwner(rejector) == null && _founder.Username != rejector)
+            {
+                StoreManager manager = GetManager(rejector);
+                if(manager == null || !manager.hasAccess(StoreName, Operation.MANAGE_INVENTORY)) 
+                {
+                    throw new Exception("this visitor has no permission for this operation.");
+                }
+            }
+            Bid bid = GetBid(itemId, bidder);
+            if (bid == null)
+                throw new Exception("no such bid to reject.");
+            _biddedItems[bidder].Remove(bid);
+            if(_biddedItems.Count == 0)
+                _biddedItems.Remove(bidder);
+        }
+
+        internal Bid GetBid(int itemId, string bidder)
+        {
+            foreach (Bid bid in _biddedItems[bidder])
+                if (bid.ItemId == itemId)
+                    return bid;
+            return null;
+        }
+
+        internal bool CheckBidAcceptance(Bid bid)
+        {
+            if (!bid.Acceptors.Contains(_founder.Username))
+                return false;
+            foreach (StoreOwner owner in _owners)
+                if (!bid.Acceptors.Contains(owner.Username))
+                    return false;
+            foreach (StoreManager manger in _managers)
+                if (manger.hasAccess(StoreName, Operation.STOCK_EDITOR) && !bid.Acceptors.Contains(manger.Username))
+                    return false;
+            return true;
         }
 
         internal List<string> GetDiscountPolicyStrings()

@@ -25,6 +25,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response> Register(string Username, string password, DateTime dob);
         public Task<Response> RemoveRegisteredVisitorAsync(String usr_toremove);
         public Task<Response> AddItemToCart(int itemID, String storeName, int amount);
+        public Task<Response> BidItemInStore(int ItemID, String StoreName, int Amount, double PricePerUnit);
         public Task<Response> RemoveItemFromCart(int itemID, String storeName);
         public Task<Response> UpdateQuantityOfItemInCart(int itemID, String storeName, int newQuantity);
         public Task<Response<ShoppingCartDTO>> ViewMyCart();
@@ -194,6 +195,16 @@ namespace MarketWeb.Client.Connect
         {
             const string url = "api/market/AddItemToCart";
             var param = new Dictionary<string, string>() { { "itemID", itemID.ToString() }, { "storeName", storeName }, { "amount", amount.ToString() } };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+
+            Response res = await _httpService.Post<Response>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response> BidItemInStore(int itemID, String storeName, int amount, double pricePerUnit)
+        {
+            const string url = "api/market/BidItemInStore";
+            var param = new Dictionary<string, string>() { { "itemID", itemID.ToString() }, { "storeName", storeName }, { "amount", amount.ToString() }, { "newPrice", pricePerUnit.ToString() } };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);
@@ -797,7 +808,7 @@ namespace MarketWeb.Client.Connect
                 { "storeName", StoreName }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
-            Response<List<String>> res = await _httpService.Post<Response<List<String>>>(newUrl, null);
+            Response<List<String>> res = await _httpService.Get<Response<List<String>>>(newUrl);
             return res;
         }
         public async Task<Response<List<String>>> GetPurchasePolicyStrings(String StoreName)
@@ -807,7 +818,7 @@ namespace MarketWeb.Client.Connect
                 { "storeName", StoreName }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
-            Response<List<String>> res = await _httpService.Post<Response<List<String>>>(newUrl, null);
+            Response<List<String>> res = await _httpService.Get<Response<List<String>>>(newUrl);
             return res;
         }
     }

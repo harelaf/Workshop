@@ -29,8 +29,8 @@ namespace MarketWeb.Server.Domain
             setOPerationDictionary();
             _notificationHub = notificationHub;
         }
-        
-       
+
+
         /// <summary>
         /// <para> For Req I.1. </para>
         /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
@@ -183,11 +183,11 @@ namespace MarketWeb.Server.Domain
             {
                 if (_storeManagement.isStoreActive(storeName))
                     return _storeManagement.GetStoreInformation(storeName);
-                
+
                 else
                 {
                     String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-                    if ( _VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_INFORMATION))
+                    if (_VisitorManagement.CheckAccess(Username, storeName, Operation.STORE_INFORMATION))
                         return _storeManagement.GetStoreInformation(storeName);
                     errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
                     LogErrorMessage("GetStoreInformation", errorMessage);
@@ -509,19 +509,19 @@ namespace MarketWeb.Server.Domain
                 errorMessage = "Visitor " + UsernameReciever + " not found in system";
             else
             {
-                senderUsername= _VisitorManagement.GetRegisteredUsernameByToken(userToken);
+                senderUsername = _VisitorManagement.GetRegisteredUsernameByToken(userToken);
                 if (!_VisitorManagement.CheckAccess(senderUsername, null, Operation.RECEIVE_AND_REPLY_ADMIN_MESSAGE))
                 {
                     errorMessage = "User " + senderUsername + " doesn't have permission to preform this operation.";
                 }
             }
-            
+
             if (errorMessage != null)
             {
                 LogErrorMessage("SendMessageToRegisterd", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever,senderUsername, title, message);
+            _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever, senderUsername, title, message);
         }
         private void SendNotification(string storeName, string usernameReciever, String title, String message)
         {
@@ -535,12 +535,12 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("SendMessageToRegisterd", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendNotificationMessageToRegistered(usernameReciever, storeName ,title, message);
+            _VisitorManagement.SendNotificationMessageToRegistered(usernameReciever, storeName, title, message);
         }
         //1. admin: sender, reciver, msg, title
         //2. notify:reciver, msg, title, store,
         //4. complaint: send recive
-        public void AnswerStoreMesseage(string authToken, string receiverUsername, int msgID, string storeName,  string reply)
+        public void AnswerStoreMesseage(string authToken, string receiverUsername, int msgID, string storeName, string reply)
         {
             String errorMessage = null;
             MessageToStore msg = null;
@@ -561,13 +561,13 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AnswerStoreMesseage", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername ,reply);
+            _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername, reply);
         }
 
         public List<MessageToStore> GetStoreMessages(String authToken, String storeName)
         {
             String username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            if(_VisitorManagement.CheckAccess(username, storeName, Operation.RECEIVE_AND_REPLY_STORE_MESSAGE))
+            if (_VisitorManagement.CheckAccess(username, storeName, Operation.RECEIVE_AND_REPLY_STORE_MESSAGE))
                 return _storeManagement.GetStoreMessages(storeName);
             return null;
         }
@@ -578,18 +578,18 @@ namespace MarketWeb.Server.Domain
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_MANAGER))
             {
-				if (!_VisitorManagement.IsRegistered(managerUsername))
-				{
+                if (!_VisitorManagement.IsRegistered(managerUsername))
+                {
                     throw new Exception("there is no register user in system with username: " + managerUsername + ". you can only appoint register user to store role.");
-				}
+                }
                 StoreManager newManager = new StoreManager(managerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreManager(newManager, storeName))
-                    _VisitorManagement.AddRole(managerUsername, newManager); 
+                    _VisitorManagement.AddRole(managerUsername, newManager);
             }
-			else
-			{
+            else
+            {
                 throw new Exception("you dont have accses to appoint users to this stores");
-			}
+            }
         }
 
         public ICollection<AdminMessageToRegistered> GetRegisteredMessagesFromAdmin(string authToken)
@@ -617,10 +617,10 @@ namespace MarketWeb.Server.Domain
                 if (_storeManagement.AddStoreOwner(newOwner, storeName))
                     _VisitorManagement.AddRole(ownerUsername, newOwner);
             }
-			else
-			{
+            else
+            {
                 throw new Exception("you don't have access to fire owner in store.");
-			}
+            }
         }
 
         public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, String paymentMethode, String shipmentMethode)
@@ -653,13 +653,13 @@ namespace MarketWeb.Server.Domain
             Tuple<List<string>, List<string>> owners_managers = _storeManagement.RemoveStoreOwner(ownerApointee, storeName, appointer);
             _VisitorManagement.RemoveRole(ownerApointee, storeName);
             List<string> managers = owners_managers.Item2;
-            foreach(string manager in managers)
+            foreach (string manager in managers)
             {
                 if (_storeManagement.RemoveStoreManager(manager, storeName, ownerApointee))
                     _VisitorManagement.RemoveRole(manager, storeName);
             }
             List<string> owners = owners_managers.Item1;
-            foreach(string owner in owners)
+            foreach (string owner in owners)
             {
                 RecRemoveStoreOwner(ownerApointee, owner, storeName);
             }
@@ -688,7 +688,7 @@ namespace MarketWeb.Server.Domain
         internal void AppointSystemAdmin(String authToken, String adminUsername)
         {
             String registered = _VisitorManagement.GetRegisteredUsernameByToken(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
-            if (_VisitorManagement.CheckAccess(registered,null, Operation.APPOINT_SYSTEM_ADMIN))
+            if (_VisitorManagement.CheckAccess(registered, null, Operation.APPOINT_SYSTEM_ADMIN))
                 _VisitorManagement.AppointSystemAdmin(adminUsername);
         }
 
@@ -789,12 +789,12 @@ namespace MarketWeb.Server.Domain
         public void RemoveRegisteredVisitor(String authToken, String usr_toremove)
         {
             String errorMessage = null;
-            if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), null,  Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
+            if (_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(authToken), null, Operation.CANCEL_SUBSCRIPTION)) // TODO: fix when checkAccess properly implemented
             {
                 Registered registeredToRemove = _VisitorManagement.GetRegisteredVisitor(usr_toremove);
-               
+
                 _VisitorManagement.RemoveRegisteredVisitor(usr_toremove);
-                
+
             }
             else
             {
@@ -824,16 +824,16 @@ namespace MarketWeb.Server.Domain
             else
                 throw new Exception("Unknown Permission!");
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-			if (!_VisitorManagement.IsRegistered(managerUsername))
-			{
+            if (!_VisitorManagement.IsRegistered(managerUsername))
+            {
                 throw new Exception("there is no such user in system as: " + managerUsername);
-			}
+            }
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
-			else
-			{
+            else
+            {
                 throw new Exception("you don't have permission to modify manager permission...");
-			}
+            }
         }
         public void HasPermission(string userToken, string storeName, string op_name)
         {
@@ -847,7 +847,7 @@ namespace MarketWeb.Server.Domain
             if (!_VisitorManagement.CheckAccess(_VisitorManagement.GetRegisteredUsernameByToken(userToken), storeName, op))
                 throw new Exception("Access denied!");
         }
-        
+
         public List<Store> GetStoresOfUser(String authToken)
         {
             String errorMessage = null;
@@ -862,7 +862,7 @@ namespace MarketWeb.Server.Domain
                 isAdmin = false;
             }
             string username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            List<string> stores =_VisitorManagement.GetStoresOfUser(username);
+            List<string> stores = _VisitorManagement.GetStoresOfUser(username);
             return _storeManagement.GetStoresByName(stores);
         }
 
@@ -876,7 +876,7 @@ namespace MarketWeb.Server.Domain
             bool isAdmin = true;
             try
             {
-                HasPermission(authToken,null,  "PERMENENT_CLOSE_STORE");
+                HasPermission(authToken, null, "PERMENENT_CLOSE_STORE");
             }
             catch (Exception e)
             {
@@ -897,10 +897,10 @@ namespace MarketWeb.Server.Domain
             }
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
                 _VisitorManagement.RemoveManagerPermission(appointerUsername, managerUsername, storeName, op);
-			else
-			{
+            else
+            {
                 throw new Exception("no permission to remove manager permission.");
-			}
+            }
         }
         /// <summary>
         /// <para> For Req II.1.3. </para>
@@ -1007,9 +1007,9 @@ namespace MarketWeb.Server.Domain
             _opNameToOp.Add("APPOINT_SYSTEM_ADMIN", Operation.APPOINT_SYSTEM_ADMIN);
         }
 
-        public Item GetItem(string token,string storeName, int itemId)
+        public Item GetItem(string token, string storeName, int itemId)
         {
-            string errorMessage=null;
+            string errorMessage = null;
             CheckIsVisitorAVisitor(token, "GetItem");
             if (!_storeManagement.isStoreActive(storeName))
                 errorMessage = $"Store '{storeName}' is currently inactive.";
@@ -1114,6 +1114,104 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             return _storeManagement.GetPurchasePolicyStrings(storeName);
+        }
+
+        internal void BidItemInStore(string authToken, string storeName, int itemId, double newPrice)
+        {
+            String errorMessage = null;
+            if (!_VisitorManagement.IsVisitorAVisitor(authToken))
+                errorMessage = "only visitors are entitled to execute this operation. enter system properly.";
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("BidItemInStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            String bidder = _VisitorManagement.IsVisitorLoggedin(authToken) ? _VisitorManagement.GetRegisteredUsernameByToken(authToken) : authToken;
+            _storeManagement.BidItemInStore(storeName, itemId, newPrice, bidder);
+            String title = $"A New Bid In '{storeName}'!";
+            String message = $"a visitor entered a new bid for item id '{itemId}' at the '{storeName}' store.";
+            StoreFounder founder = _storeManagement.getStoreFounder(storeName);
+            _VisitorManagement.SendNotificationMessageToRegistered(founder.Username, storeName, title, message);
+            List<StoreOwner> owners = _storeManagement.getStoreOwners(storeName);
+            foreach (StoreOwner owner in owners)
+                _VisitorManagement.SendNotificationMessageToRegistered(owner.Username, storeName, title, message);
+            List<StoreManager> managers = _storeManagement.getStoreManagers(storeName);
+            foreach (StoreManager manager in managers)
+                if(manager.hasAccess(storeName, Operation.MANAGE_INVENTORY))
+                    _VisitorManagement.SendNotificationMessageToRegistered(manager.Username, storeName, title, message);
+        }
+
+        internal bool AcceptBid(string authToken, string storeName, string acceptor, int itemId, string bidder)
+        {
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
+                errorMessage = "this visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("AcceptBid", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            if(_storeManagement.AcceptBid(storeName, acceptor, itemId, bidder))
+            {
+                String title = $"Your Bid Got Respond!";
+                String message = $"your bid for item id '{itemId}' at the '{storeName}' store has an answer.";
+                if(_VisitorManagement.IsRegistered(bidder))
+                    _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message);
+                else _VisitorManagement.SendNotificationMessageToVisitor(bidder, storeName, title, message);
+                return true;
+            }
+            else return false;
+        }
+
+        internal bool CounterOfferBid(string authToken, string storeName, string acceptor, int itemId, string bidder, double counterOffer)
+        {
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
+                errorMessage = "this visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("CounterOfferBid", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            if (_storeManagement.CounterOfferBid(storeName, acceptor, itemId, bidder, counterOffer))
+            {
+                String title = $"Your Bid Got Respond!";
+                String message = $"your bid for item id '{itemId}' at the '{storeName}' store has an answer.";
+                if (_VisitorManagement.IsRegistered(bidder))
+                    _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message);
+                else _VisitorManagement.SendNotificationMessageToVisitor(bidder, storeName, title, message);
+                return true;
+            }
+            else return false;
+        }
+
+        internal void RejectBid(string authToken, string storeName, string rejector, int itemId, string bidder)
+        {
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
+                errorMessage = "this visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("RejectBid", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            _storeManagement.RejectBid(storeName, rejector, itemId, bidder);
+            String title = $"Your Bid Got Rejected!";
+            String message = $"your bid for item id '{itemId}' at the '{storeName}' store is not approved.";
+            if (_VisitorManagement.IsRegistered(bidder))
+                _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message);
+            else _VisitorManagement.SendNotificationMessageToVisitor(bidder, storeName, title, message);
         }
     }
 }
