@@ -12,9 +12,17 @@ namespace MarketWeb.Server.Service
 
         public static void ChangeToken(string oldToken, string newToken)
         {
-            string connectionId = ConnectedUser.TokenToConnectionId[oldToken];
-            ConnectedUser.TokenToConnectionId.Remove(oldToken);
-            ConnectedUser.TokenToConnectionId.Add(newToken, connectionId);
+            if (!TokenToConnectionId.ContainsKey(oldToken))
+            {
+                oldToken = "Bearer " + oldToken;
+            }
+            if (TokenToConnectionId.ContainsKey(oldToken))
+            {
+                string connectionId = ConnectedUser.TokenToConnectionId[oldToken];
+                ConnectedUser.TokenToConnectionId.Remove(oldToken);
+                ConnectedUser.TokenToConnectionId.Add(newToken, connectionId);
+            }
+
         }
     }
 
