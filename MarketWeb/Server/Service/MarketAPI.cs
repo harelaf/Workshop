@@ -1,6 +1,5 @@
 ﻿
 using MarketWeb.Server.Domain;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;

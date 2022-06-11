@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MarketWeb.Server.Domain.PurchasePackage.DiscountPackage;
 using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage;
@@ -29,6 +28,7 @@ namespace MarketWeb.Server.Domain
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
             _notificationHub = notificationHub;
+            _VisitorManagement.SetNotificationHub(notificationHub);
         }
         
        
