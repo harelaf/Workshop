@@ -164,9 +164,7 @@ namespace MarketWeb.Server.Domain
         }
         internal double getActualPrice()
         {
-            double totalDiscount = Store().GetDiscountPolicy().calculateDiscounts(this);
-            double totalPrice = GetTotalPrice();
-            return totalPrice - totalDiscount;
+            return Store().GetDiscountPolicy().calcActualPrice(this);
         }
         public double GetItemPrice(String itemName)
         {

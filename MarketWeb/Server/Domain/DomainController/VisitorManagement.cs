@@ -63,6 +63,11 @@ namespace MarketWeb.Server.Domain
             AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
         }
 
+        public void SetNotificationHub (NotificationHub notificationHub)
+        {
+            _notificationHub = notificationHub;
+        }
+
 
 
         // ===================================== GETTERS =====================================
@@ -641,13 +646,13 @@ namespace MarketWeb.Server.Domain
             string authToken = GetLoggedInToken(usernameReciever); 
             if (authToken != null)
             {
-                _notificationHub.SendNotification(authToken, new DTOtranslator().toDTO(notifyMessage));
+                _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
             }
         }
         internal void SendNotificationMessageToVisitor(string authToken, string storeName, string title, string message)
         {
             NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, "visitor");
-            _notificationHub.SendNotification(authToken, new DTOtranslator().toDTO(notifyMessage));
+            _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
         }
 
         internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string regUserName, string reply)

@@ -22,7 +22,9 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public override void applyDiscount(ISearchablePriceable searchablePriceable)
         {
-            foreach(Discount dis in DiscountList)
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return;
+            foreach (Discount dis in DiscountList)
                 dis.applyDiscount(searchablePriceable);
         }
         public override String GetDiscountString(int indent)

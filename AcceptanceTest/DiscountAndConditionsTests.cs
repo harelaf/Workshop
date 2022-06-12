@@ -133,7 +133,7 @@ namespace AcceptanceTest
         {
             double percentageToSubtract = 10;
             double priceToSubtract = 2;
-            int amount = 10;
+            int amount = 17;
             double price = 1;
             int quantity = 100;
             String desc = "an item";
@@ -156,7 +156,7 @@ namespace AcceptanceTest
             Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
 
             //act
-            double expected = 8.0;
+            double expected = 15.0;
             Response<double> response = marketAPI.CalcCartActualPrice(guest_VisitorToken);
             Assert.IsFalse(response.ErrorOccured, "response " + response.ErrorMessage);
             double actual = response.Value;
@@ -290,7 +290,7 @@ namespace AcceptanceTest
             int quantity = 100;
             String desc = "an item";
 
-            String item_condition = $"(NOT ItemTotalAmountInBasketFrom_{itemName}_{100})"; //False
+            String item_condition = $"(NOT ItemTotalAmountInBasketFrom_{itemName}_{10})"; //False
 
             String category_percentage1 = $"CategoryPercentage_{category}_{percentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
             String category_percentage2 = $"CategoryPercentage_{category}_{percentageToSubtract + 10}_{expiration.Year}_{expiration.Month}_{expiration.Day}";

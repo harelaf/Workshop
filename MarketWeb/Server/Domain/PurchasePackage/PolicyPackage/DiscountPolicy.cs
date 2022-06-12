@@ -24,6 +24,10 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             return _discounts.GetTotalDiscount(searchablePriceable);
         }
+        public virtual double calcActualPrice(ISearchablePriceable searchablePriceable)
+        {
+            return _discounts.calcPriceFromCurrPrice(searchablePriceable, searchablePriceable.GetTotalPrice());
+        }
         public string GetActualDiscountString(ISearchablePriceable searchablePriceable)
         {
             return _discounts.GetActualDiscountString(searchablePriceable, 0);

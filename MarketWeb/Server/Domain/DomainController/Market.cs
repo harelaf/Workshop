@@ -28,6 +28,7 @@ namespace MarketWeb.Server.Domain
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
             _notificationHub = notificationHub;
+            _VisitorManagement.SetNotificationHub(notificationHub);
         }
 
 

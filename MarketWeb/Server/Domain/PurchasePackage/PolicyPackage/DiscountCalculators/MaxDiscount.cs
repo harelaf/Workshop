@@ -46,6 +46,8 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public override void applyDiscount(ISearchablePriceable searchablePriceable)
         {
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return;
             Discount maxDis = GetMaxDiscount(searchablePriceable);
             maxDis.applyDiscount(searchablePriceable);
         }
