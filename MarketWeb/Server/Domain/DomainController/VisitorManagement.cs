@@ -655,7 +655,10 @@ namespace MarketWeb.Server.Domain
             string authToken = GetLoggedInToken(usernameReciever); 
             if (authToken != null)
             {
-                _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
+                if (_notificationHub != null)
+                {
+                    _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
+                }
             }
         }
         internal void SendNotificationMessageToVisitor(string authToken, string storeName, string title, string message)
