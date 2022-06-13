@@ -76,13 +76,15 @@ namespace MarketWeb.Server.Domain
                 _storePurchaseHistory[storeName].Add(new Tuple<DateTime, ShoppingBasket>(DateTime.Now, shoppingBasket));
 
                 // Send notification to store owner that a purchase was made.
-                List<String> names = _market._storeManagement.GetStoreRolesByName(storeName);
-                String title = $"Store: {storeName} is temporarily closing down: [{DateTime.Now.ToString()}].";
-                String message = $"I am sad to inform you that {storeName} is temporarily closing down. " +
-                    $"Your roles in the store will remain until we decide permanently close down." +
-                    $"Yours Truly," +
-                    $"{Username}.";
-                foreach (String name in names)
+                List<StoreOwner> storeOwners = _market._storeManagement.getStoreOwners(storeName);
+                List<String> storeOwnerNames = new List<String>();
+                for (int i = 0; i < storeOwners.Count; i++)
+                {
+                    storeOwnerNames.Add(storeOwners[i].Username);
+                }
+                String title = $"Store: {storeName} - Purchase: [{DateTime.Now}].";
+                String message = $"A purchase was made for {shoppingBasket.getActualPrice():.2f}$";
+                foreach (String name in storeOwnerNames)
                 {
                     _market.SendNotification(storeName, name, title, message);
                 }
