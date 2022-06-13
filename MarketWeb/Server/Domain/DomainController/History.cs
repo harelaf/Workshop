@@ -9,11 +9,12 @@ namespace MarketWeb.Server.Domain
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private IDictionary<String, List<Tuple<DateTime, ShoppingBasket>>> _storePurchaseHistory; //storeName:String
         private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //Username:String
-
-        public History()
+        private Market _market;
+        public History(Market market)
         {
             _storePurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingBasket>>>();
             _registeredPurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingCart>>>();
+            _market = market;
         }
 
         public bool CheckIfVisitorPurchasedInStore(String Username, String storeName)
@@ -72,7 +73,19 @@ namespace MarketWeb.Server.Domain
                 String storeName = shoppingBasket.Store().GetName();
                 if (!_storePurchaseHistory.ContainsKey(storeName))
                     _storePurchaseHistory.Add(storeName, new List<Tuple<DateTime, ShoppingBasket>>());
-                _storePurchaseHistory[storeName].Add(new Tuple<DateTime, ShoppingBasket>(DateTime.Now, shoppingBasket));              
+                _storePurchaseHistory[storeName].Add(new Tuple<DateTime, ShoppingBasket>(DateTime.Now, shoppingBasket));
+
+                // Send notification to store owner that a purchase was made.
+                List<String> names = _market._storeManagement.GetStoreRolesByName(storeName);
+                String title = $"Store: {storeName} is temporarily closing down: [{DateTime.Now.ToString()}].";
+                String message = $"I am sad to inform you that {storeName} is temporarily closing down. " +
+                    $"Your roles in the store will remain until we decide permanently close down." +
+                    $"Yours Truly," +
+                    $"{Username}.";
+                foreach (String name in names)
+                {
+                    _market.SendNotification(storeName, name, title, message);
+                }
             }
         }
         public void AddRegisterPurchases(ShoppingCart shoppingCart, String Username)

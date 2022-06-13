@@ -14,7 +14,7 @@ namespace MarketWeb.Server.Domain
     public class Market
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private StoreManagement _storeManagement;
+        public StoreManagement _storeManagement;
         private VisitorManagement _VisitorManagement;
         private History _history;
         private IDictionary<string, Operation> _opNameToOp;
@@ -24,7 +24,7 @@ namespace MarketWeb.Server.Domain
         {
             _storeManagement = new StoreManagement();
             _VisitorManagement = new VisitorManagement();
-            _history = new History();
+            _history = new History(this);
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
             _notificationHub = notificationHub;
@@ -524,7 +524,7 @@ namespace MarketWeb.Server.Domain
             }
             _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever,senderUsername, title, message);
         }
-        private void SendNotification(string storeName, string usernameReciever, String title, String message)
+        public void SendNotification(string storeName, string usernameReciever, String title, String message)
         {
             String errorMessage = null;
             if (!_VisitorManagement.IsRegistered(usernameReciever))
