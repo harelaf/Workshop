@@ -16,10 +16,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         public override String GetDiscountString(int indent)
         {
             String pad2 = newLine(indent + 1);
-            String str = "apply the maximal discount out of the following:\n";
+            String str = "apply the maximal discount out of the following:";
             int index = 0;
             foreach (Discount discount in DiscountList)
-                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 1)}";
+                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 2)}";
+            str += ConditionToString(indent);
             return str;
         }
         private Discount GetMaxDiscount(ISearchablePriceable searchablePriceable)
@@ -36,6 +37,8 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
+            if(!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return 0;
             double totalDis = 0;
             foreach(Discount dis in DiscountList)
                 totalDis = Math.Max(totalDis, dis.GetTotalDiscount(searchablePriceable));
@@ -43,6 +46,8 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public override void applyDiscount(ISearchablePriceable searchablePriceable)
         {
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return;
             Discount maxDis = GetMaxDiscount(searchablePriceable);
             maxDis.applyDiscount(searchablePriceable);
         }
@@ -50,6 +55,12 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             return GetMaxDiscount(searchablePriceable).GetExpirationDate(searchablePriceable);
         }
-
+        public override double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
+        {
+            if (!CheckCondition(searchablePriceable))
+                return currPrice;
+            Discount dis = GetMaxDiscount(searchablePriceable);
+            return dis.calcPriceFromCurrPrice(searchablePriceable, currPrice);
+        }
     }
 }

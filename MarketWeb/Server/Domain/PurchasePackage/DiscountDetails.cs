@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MarketWeb.Server.Domain
 {
-    public class DiscountDetails
+    public class DiscountDetails<T> where T : AtomicDiscount
     {
         private int _amount;
         public int Amount
@@ -17,8 +17,8 @@ namespace MarketWeb.Server.Domain
                 else throw new ArgumentException("Amount cannot be negative.");
             }
         }
-        private ISet<AtomicDiscount> _discountList;
-        public ISet<AtomicDiscount> DiscountList
+        private ISet<T> _discountList;
+        public ISet<T> DiscountList
         {
             get { return _discountList; }
             private set { _discountList = value; }
@@ -26,17 +26,24 @@ namespace MarketWeb.Server.Domain
         public DiscountDetails(int amount)
         {
             _amount = amount;
-            DiscountList = new HashSet<AtomicDiscount>();
+            DiscountList = new HashSet<T>();
         }
-        public void AddDiscount(AtomicDiscount discount)
+
+        public DiscountDetails(int amount, ISet<T> disList)
+        {
+            Amount = amount;
+            DiscountList = disList;
+        }
+
+        public void AddDiscount(T discount)
         {
             DiscountList.Add(discount);
         }
-        public double calcPriceFromCurrPrice(double currPrice)
+        public double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
         {
             double price = currPrice * Amount;
-            foreach(AtomicDiscount discount in DiscountList)
-                price = discount.calcPriceFromCurrPrice(price);
+            foreach (T discount in DiscountList)
+                price = discount.calcPriceFromCurrPrice(searchablePriceable, price);
             return price;
         }
         public void AddAmount(int amount)

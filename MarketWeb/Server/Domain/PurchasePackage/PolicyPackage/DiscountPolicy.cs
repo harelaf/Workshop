@@ -24,6 +24,10 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             return _discounts.GetTotalDiscount(searchablePriceable);
         }
+        public virtual double calcActualPrice(ISearchablePriceable searchablePriceable)
+        {
+            return _discounts.calcPriceFromCurrPrice(searchablePriceable, searchablePriceable.GetTotalPrice());
+        }
         public string GetActualDiscountString(ISearchablePriceable searchablePriceable)
         {
             return _discounts.GetActualDiscountString(searchablePriceable, 0);
@@ -32,6 +36,19 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         public void ApplyDiscounts(ISearchablePriceable searchablePriceable)
         {
             Discounts.applyDiscount(searchablePriceable);
+        }
+
+        internal void Reset()
+        {
+            Discounts.DiscountList.Clear();
+        }
+
+        internal List<string> GetDiscountsStrings()
+        {
+            List<string> discountsStrings = new List<string>();
+            foreach (Discount dis in _discounts.DiscountList)
+                discountsStrings.Add(dis.GetDiscountString(0));
+            return discountsStrings;
         }
     }
 }

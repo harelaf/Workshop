@@ -134,7 +134,8 @@ namespace MarketWeb.Client.Helpers
 
         public static String specificDiscountToString(NumericDiscountDTO dis)
         {
-            return $"{dis.PriceToSubtract}% off the total price\nexpired on: {dis.Expiration}\ncondition: {conditionToString(dis.Condition)}";
+            String cond = dis.Condition != null ? $"\ncondition: {conditionToString(dis.Condition)}" : "";
+            return $"{dis.PriceToSubtract}$ off the total price\nexpired on: {dis.Expiration}";
         }
     }
 }

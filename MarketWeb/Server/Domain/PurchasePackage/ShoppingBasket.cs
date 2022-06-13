@@ -9,39 +9,94 @@ namespace MarketWeb.Server.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual Store _store { get; set; }
-        public virtual IDictionary<Item, DiscountDetails> _items { get; set; }
-        public IDictionary<Item, DiscountDetails> Items => _items;
-        private List<NumericDiscount> _additionalDiscounts;
-        public List<NumericDiscount> AdditionalDiscounts => _additionalDiscounts;
+        public virtual IDictionary<Item, DiscountDetails<AtomicDiscount>> _items { get; set; }
+        public IDictionary<Item, DiscountDetails<AtomicDiscount>> Items => _items;
+        private List<Bid> _biddedItems;
+        public List<Bid> BiddedItems => _biddedItems;
+        private DiscountDetails<NumericDiscount> _additionalDiscounts;
+        public DiscountDetails<NumericDiscount> AdditionalDiscounts => _additionalDiscounts;
 
         public ShoppingBasket(Store store)
         {
             _store = store;
-            _items = new Dictionary<Item, DiscountDetails>();
-            _additionalDiscounts = new List<NumericDiscount>();
+            _items = new Dictionary<Item, DiscountDetails<AtomicDiscount>>();
+            _additionalDiscounts = new DiscountDetails<NumericDiscount>(0);
+            _biddedItems = new List<Bid>();
         }
 
         public void AddItem(Item item, int amount)
         {
             if (isItemInBasket(item))
-                _items[item].AddAmount(amount);
-            else _items[item] = new DiscountDetails(amount);
+            {
+                //updateItemQuantity(item, amount + Items[GetItem(item.ItemID)].Amount);
+                updateItemQuantity(item, amount + Items[item].Amount);
+                return;
+            }
+            else _items[item] = new DiscountDetails<AtomicDiscount>(amount);
+            if (!Store().GetPurchasePolicy().checkPolicyConditions(this))
+            {
+                _items.Remove(item);
+                throw new ArgumentException("this purchase is not compatible with the store's purchase policy.");
+            }
             resetDiscounts();
-            _store.GetDiscountPolicy().ApplyDiscounts(this);
+            Store().GetDiscountPolicy().ApplyDiscounts(this);
         }
 
         public virtual int GetAmountOfItem(Item item)
         {
             String errorMessage;
-            if (!isItemInBasket(item))
+            int amount = Items[item].Amount;
+            foreach(Bid bid in BiddedItems)
+            {
+                if(bid.ItemID == item.ItemID)
+                {
+                    amount += bid.Amount;
+                }
+            }
+            if (amount == 0)
             {
                 errorMessage = "item doesn't exist in basket";
                 LogErrorMessage("GetAmountOfItem", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return _items[item].Amount;
+            return amount;
+        }
+        public virtual int GetAmountOfItemNoBids(Item item)
+        {
+            String errorMessage;
+            int amount = Items[item].Amount;
+            if (amount == 0)
+            {
+                errorMessage = "item doesn't exist in basket";
+                LogErrorMessage("GetAmountOfItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return amount;
         }
 
+        internal int RemoveAcceptedBid(int itemID)
+        {
+            int amount = 0;
+            Bid myBid = null;
+            foreach(Bid bid in BiddedItems)
+            {
+                if(bid.ItemID == itemID)
+                {
+                    myBid = bid;   
+                }
+            }
+            if(myBid != null)
+            {
+                amount = myBid.Amount;
+                BiddedItems.Remove(myBid);
+            }
+            return amount;
+        }
+
+        internal bool checkPurchasePolicy()
+        {
+            return Store().GetPurchasePolicy().checkPolicyConditions(this);
+        }
         //returns the amount that was removed
         public int RemoveItem(Item item)
         {
@@ -51,7 +106,7 @@ namespace MarketWeb.Server.Domain
                 int amount = _items[item].Amount;
                 _items.Remove(item);
                 resetDiscounts();
-                _store.GetDiscountPolicy().ApplyDiscounts(this);
+                Store().GetDiscountPolicy().ApplyDiscounts(this);
                 return amount;
             }
             errorMessage = "basket doesn't contain the item that was requested to be removed";
@@ -61,6 +116,14 @@ namespace MarketWeb.Server.Domain
 
         public bool isItemInBasket(Item item)
         {
+            //foreach(Item i in Items.Keys)
+            //{
+            //    if(i.ItemID == item.ItemID)
+            //    {
+            //        return true;
+            //    }
+            //}
+            //return false;
             return _items.ContainsKey(item);
         }
 
@@ -68,24 +131,38 @@ namespace MarketWeb.Server.Domain
         {
             if (isItemInBasket(item))
             {
+                int oldAmount = _items[item].Amount;
                 _items[item].Amount = newQuantity;
+                if (!Store().GetPurchasePolicy().checkPolicyConditions(this))
+                {
+                    if (oldAmount < newQuantity)
+                    {
+                        _items[item].Amount = oldAmount;
+                    }
+                    throw new ArgumentException("this purchase is not compatible with the store's purchase policy.");
+                }
                 resetDiscounts();
-                _store.GetDiscountPolicy().ApplyDiscounts(this);
+                Store().GetDiscountPolicy().ApplyDiscounts(this);
                 return true;
             }
-            return false;
+            throw new Exception("there is no option to change amount of bidded bargain. you may add items from the store's page.");
+        }
+
+        internal void AddAcceptedBid(int itemId, int amount, double price)
+        {
+            _biddedItems.Add(new Bid("", itemId, amount, price));
         }
 
         private void resetDiscounts()
         {
-            foreach (DiscountDetails detail in Items.Values)
+            foreach (DiscountDetails<AtomicDiscount> detail in Items.Values)
                 detail.resetDiscounts();
-            AdditionalDiscounts.Clear();
+            AdditionalDiscounts.resetDiscounts();
         }
 
         public bool IsBasketEmpty()
         {
-            return _items.Count == 0;
+            return _items.Count == 0 && BiddedItems.Count == 0;
         }
 
         public virtual ICollection<Item> GetItems()
@@ -130,7 +207,7 @@ namespace MarketWeb.Server.Domain
             foreach(Item item in Items.Keys)
             {
                 receipt += $"{Items[item]} {item._price} -> {Items[item].Amount * item._price}\n";
-                receipt += _store.GetDiscountPolicy().GetActualDiscountString(this);
+                receipt += Store().GetDiscountPolicy().GetActualDiscountString(this);
             }
             return receipt;
         }
@@ -138,14 +215,12 @@ namespace MarketWeb.Server.Domain
         {
             double sum = 0;
             foreach (Item i in GetItems())
-                sum += i._price * GetAmountOfItem(i);
+                sum += i._price * Items[i].Amount;
             return sum;
         }
         internal double getActualPrice()
         {
-            double totalDiscount = Store().GetDiscountPolicy().calculateDiscounts(this);
-            double totalPrice = GetTotalPrice();
-            return totalPrice - totalDiscount;
+            return Store().GetDiscountPolicy().calcActualPrice(this);
         }
         public double GetItemPrice(String itemName)
         {
@@ -182,26 +257,38 @@ namespace MarketWeb.Server.Domain
         }
         public void SetNumericDiscount(NumericDiscount discount)
         {
-            AdditionalDiscounts.Add(discount);
+            AdditionalDiscounts.AddDiscount(discount);
         }
-        public IDictionary<Item, DiscountDetails> GetDetailsByItem()
+        public IDictionary<Item, DiscountDetails<AtomicDiscount>> GetDetailsByItem()
         {
             return Items;
         }
-        public List<NumericDiscount> GetAdditionalDiscounts()
+        public ISet<NumericDiscount> GetAdditionalDiscounts()
         {
-            return AdditionalDiscounts;
+            return AdditionalDiscounts.DiscountList;
         }
         public double GetAdditionalDiscountsPrice()
         {
             double sum = 0;
-            foreach (NumericDiscount discount in AdditionalDiscounts)
+            foreach (NumericDiscount discount in AdditionalDiscounts.DiscountList)
                 sum += discount.PriceToSubtract;
             return sum;
         }
         public virtual Store Store()
         {
             return _store;
+        }
+
+        private Item GetItem(int itemId, double price)
+        {
+            foreach(Item item in Items.Keys)
+            {
+                if(item.ItemID == itemId && item._price == price)
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
     }

@@ -1,9 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MarketProject.Domain;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using MarketProject.Domain.PurchasePackage.PolicyPackage;
+using MarketWeb.Server.Domain;
+using MarketWeb.Server.Domain.PolicyPackage;
 
 namespace MarketProject.Domain.Tests
 {
@@ -319,9 +317,15 @@ namespace MarketProject.Domain.Tests
             string storeOwner = "amos";
             bool add = _storeManagement.AddStoreOwner(new StoreOwner(storeOwner, storeName, founder), storeName);
 
-            bool actual = _storeManagement.RemoveStoreOwner(storeOwner, storeName, founder);
+            try
+            {
+                _storeManagement.RemoveStoreOwner(storeOwner, storeName, founder);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
             Assert.IsTrue(add);
-            Assert.IsTrue(actual);
         }
         [TestMethod()]
         public void RemoveStoreOwner_removeFounder_returnsfalse()

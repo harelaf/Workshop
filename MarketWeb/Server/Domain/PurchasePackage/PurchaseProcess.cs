@@ -44,9 +44,16 @@ namespace MarketWeb.Server.Domain
         }
         public async Task Purchase(String address, String city, String country, String zip, String purchaserName, ShoppingCart cartToPurchase, string paymentMethode, string shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
-            string errorMessage="";
+            string errorMessage = "";
+            foreach (ShoppingBasket basket in cartToPurchase._shoppingBaskets)
+            {
+                if (!basket.checkPurchasePolicy())
+                {
+                    errorMessage = $"Purchase failed: this shop is not approved by '{basket.Store().StoreName}' store purchase policy.";
+                }
+            }
             //first: should check that shippingSystem willig to provide cart:
-            if(await _shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode) != -1)
+            if(errorMessage == "" && await _shippingHandlerProxy.ShippingApproval(address, city, country, zip, purchaserName, shipmentMethode) != -1)
             {
                 //second: the actual payment:
                 double price = CalculatePrice(cartToPurchase);
@@ -54,10 +61,10 @@ namespace MarketWeb.Server.Domain
                     return;
                 errorMessage = "Purchase failed: paymentSystem refuses.";
             }
-            else
+            else if(errorMessage == "")
             {
                 errorMessage = "Purchase failed: Shipping services refuse to provide your cart.";
-            } 
+            }
             //relaseCart:
             cartToPurchase.RelaseItemsOfCart();
             LogErrorMessage("Purchase", errorMessage);
