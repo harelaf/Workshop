@@ -65,7 +65,7 @@ namespace MarketWeb.Server.Domain
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
-
+            _dalTRranslator = new DalTRranslator();
             if (!hasInitialized)
             {
                 SetAdmin();
@@ -79,6 +79,7 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
             _notificationHub = notificationHub;
+            _dalTRranslator = new DalTRranslator();
             if (!hasInitialized)
             {
                 SetAdmin();

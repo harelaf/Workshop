@@ -15,32 +15,25 @@ namespace MarketWeb.Server.DataLayer
         public String _salt { get; set; }
         public ShoppingCartDAL _cart { get; set; }
         public DateTime _birthDate { get; set; }
-        public ICollection<ComplaintItemDAL> filedComplaints { get; set; }
+        public ICollection<ComplaintDAL> _filedComplaints { get; set; }
         public ICollection<SystemRoleDAL> _roles { get; set; }
         public ICollection<AdminMessageToRegisteredDAL> _adminMessages { get; set; }
         public ICollection<NotifyMessageDAL> _notifications { get; set; }
         public ICollection<MessageToStoreDAL> _repliedMessages { get; set; }
-        [NotMapped]
-        public IDictionary<int, ComplaintDAL> _filedComplaints { get; set; }
 
         public RegisteredDAL()
         {
             // Empty constructor for some reason?
         }
 
-        public RegisteredDAL(string username, string password, string salt, ShoppingCartDAL cart, DateTime birthDate, IDictionary<int, ComplaintDAL> _filedComplaints, ICollection<SystemRoleDAL> roles, ICollection<AdminMessageToRegisteredDAL> adminMessages, ICollection<NotifyMessageDAL> notifications, ICollection<MessageToStoreDAL> repliedMessages)
+        public RegisteredDAL(string username, string password, string salt, ShoppingCartDAL cart, DateTime birthDate, ICollection<ComplaintDAL> filedComplaints, ICollection<SystemRoleDAL> roles, ICollection<AdminMessageToRegisteredDAL> adminMessages, ICollection<NotifyMessageDAL> notifications, ICollection<MessageToStoreDAL> repliedMessages)
         {
             _username = username;
             _password = password;
             _salt = salt;
             _cart = cart;
             _birthDate = birthDate;
-            this._filedComplaints = _filedComplaints;
-            filedComplaints = new List<ComplaintItemDAL>();
-            foreach (KeyValuePair<int, ComplaintDAL> kv in this._filedComplaints)
-            {
-                filedComplaints.Add(new ComplaintItemDAL(kv.Key, kv.Value));
-            }
+            _filedComplaints = filedComplaints;
             _roles = roles;
             _adminMessages = adminMessages;
             _notifications = notifications;
@@ -54,8 +47,7 @@ namespace MarketWeb.Server.DataLayer
             _salt = salt;
             _birthDate = birthDate;
             _cart = new ShoppingCartDAL();
-            _filedComplaints = new Dictionary<int, ComplaintDAL>();
-            filedComplaints = new List<ComplaintItemDAL>();
+            _filedComplaints = new List<ComplaintDAL>();
             _roles = new List<SystemRoleDAL>();
             _adminMessages = new List<AdminMessageToRegisteredDAL>();
             _notifications = new List<NotifyMessageDAL>();

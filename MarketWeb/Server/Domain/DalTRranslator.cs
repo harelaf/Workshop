@@ -551,7 +551,7 @@ namespace MarketWeb.Server.Domain
             foreach (ComplaintDAL id_complaint in registeredDAL._filedComplaints)
                 filedComplaints.Add(id_complaint._id, ComplaintDalToDomain(id_complaint));
             return new Registered(adminMessages, notifications, repliedMessages, username, password, 
-                salt, birthDate,roles,  filedComplaints, cart);
+                salt, birthDate,roles, filedComplaints, cart);
         }
 
         public AdminMessageToRegistered AdminMessageDalToDomain(AdminMessageToRegisteredDAL msgDal)
