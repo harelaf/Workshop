@@ -28,7 +28,9 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int id { get; set; }
+        [ForeignKey("RegisteredDAL")]
         public string _username { get; set; }
+        [ForeignKey("StoreDAL")]
         public string _storeName { get; set; } = "";
         public List<OperationWrapper> _operationsWrappers { get; set; }
         [NotMapped]
@@ -117,7 +119,7 @@ namespace MarketWeb.Server.DataLayer
     public class StoreOwnerDAL : SystemRoleDAL
     {
 
-        [Required]
+        [ForeignKey("RegisteredDAL")]
         public string _appointer { get; set; }
 
         public StoreOwnerDAL(string storeName, string appointer, string username) : base(getOps(), username, storeName)
@@ -150,7 +152,7 @@ namespace MarketWeb.Server.DataLayer
     }
     public class StoreManagerDAL : SystemRoleDAL
     {
-        [Required]
+        [ForeignKey("RegisteredDAL")]
         public string _appointer { get; set; }
 
         public StoreManagerDAL(string storeName, string appointer, string username) : base(getOps(), username, storeName)

@@ -32,8 +32,8 @@ namespace MarketWeb.Server.DataLayer
                 if (st._managers == null)
                     st._managers = new List<StoreManagerDAL>();
                 st._founder = context.StoreDALs.Find(st._storeName)._founder;
-                if (st._founder == null)
-                    st._founder = new StoreFounderDAL(st._storeName, "testsssssss");
+                //if (st._founder == null)
+                //    st._founder = new StoreFounderDAL(st._storeName, "testsssssss");
                 st._owners = context.StoreDALs.Find(st._storeName)._owners;
                 if(st._owners == null)
                     st._owners = new List<StoreOwnerDAL>();
