@@ -26,6 +26,33 @@ namespace MarketWeb.Server.DataLayer
             List<StoreDAL> stores= context.StoreDALs.Where(store => store._state == StoreState.Active).ToList();
             if (stores == null)
                 return new List<StoreDAL>();
+            foreach (StoreDAL st in stores)
+            {
+                st._managers = context.StoreDALs.Find(st._storeName)._managers;
+                if (st._managers == null)
+                    st._managers = new List<StoreManagerDAL>();
+                st._founder = context.StoreDALs.Find(st._storeName)._founder;
+                if (st._founder == null)
+                    st._founder = new StoreFounderDAL(st._storeName, "testsssssss");
+                st._owners = context.StoreDALs.Find(st._storeName)._owners;
+                if(st._owners == null)
+                    st._owners = new List<StoreOwnerDAL>();
+                st._rating = context.StoreDALs.Find(st._storeName)._rating;
+                if(st._rating == null)
+                    st._rating = new RatingDAL();
+                st._messagesToStore = context.StoreDALs.Find(st._storeName)._messagesToStore;
+                if(st._messagesToStore == null)
+                    st._messagesToStore = new List<MessageToStoreDAL>();
+                st._purchasePolicy = context.StoreDALs.Find(st._storeName)._purchasePolicy;
+                if(st._purchasePolicy == null)
+                    st._purchasePolicy = new PurchasePolicyDAL();
+                st._discountPolicy = context.StoreDALs.Find(st._storeName)._discountPolicy;
+                if(st._discountPolicy == null)
+                    st._discountPolicy = new DiscountPolicyDAL();
+                st._stock = context.StoreDALs.Find(st._storeName)._stock;
+                if(st._stock == null)
+                    st._stock = new StockDAL();
+            }
             return stores; 
         }
         public void Register(string Username, string password,string salt,  DateTime dob) 
