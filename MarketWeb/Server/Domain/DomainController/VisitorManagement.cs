@@ -45,7 +45,7 @@ namespace MarketWeb.Server.Domain
         private void SetAdmin()
         {
             Register(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            AddRole(DEFAULT_ADMIN_USERNAME, new SystemAdmin(DEFAULT_ADMIN_USERNAME));
+            _dalController.AppointSystemAdmin(DEFAULT_ADMIN_USERNAME);
         }
         // TODO: There's GOT to be a better way to do these constructors.
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
