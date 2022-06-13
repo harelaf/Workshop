@@ -548,8 +548,8 @@ namespace MarketWeb.Server.Domain
                 roles.Add(SystemRoleDalToDomain(role));
             }
             IDictionary<int, Complaint> filedComplaints = new Dictionary<int, Complaint>();
-            foreach (KeyValuePair<int, ComplaintDAL> id_complaint in registeredDAL._filedComplaints)
-                filedComplaints.Add(id_complaint.Key, ComplaintDalToDomain(id_complaint.Value));
+            foreach (ComplaintDAL id_complaint in registeredDAL._filedComplaints)
+                filedComplaints.Add(id_complaint._id, ComplaintDalToDomain(id_complaint));
             return new Registered(adminMessages, notifications, repliedMessages, username, password, 
                 salt, birthDate,roles,  filedComplaints, cart);
         }
@@ -706,9 +706,9 @@ namespace MarketWeb.Server.Domain
             }
             RegisteredDAL reg = new RegisteredDAL(username, password, salt, cart, birthDate, null, roles, 
                 adminMessages, notifications, repliedMessages);
-            IDictionary<int, ComplaintDAL> filedComplaints = new Dictionary<int, ComplaintDAL>();
+            ICollection<ComplaintDAL> filedComplaints = new List<ComplaintDAL>();
             foreach (KeyValuePair<int, Complaint> id_complaint in registered.FiledComplaints)
-                filedComplaints.Add(id_complaint.Key, ComplaintDomainToDal(id_complaint.Value));
+                filedComplaints.Add(ComplaintDomainToDal(id_complaint.Value));
             reg._filedComplaints = filedComplaints;
             return reg;
         }
