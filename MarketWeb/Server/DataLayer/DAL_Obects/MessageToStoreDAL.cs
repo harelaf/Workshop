@@ -10,8 +10,6 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public int mid { get; set; }
         [Required]
-        public String _storeName { get; set; }
-        [Required]
         public String _senderUsername { get; set; }
         [Required]
         public String _message { get; set; }
@@ -20,10 +18,9 @@ namespace MarketWeb.Server.DataLayer
         public string _reply { get; set; }
         public string _replierFromStore { get; set; }
 
-        public MessageToStoreDAL(int mid, string storeName, string senderUsername, string message, string title, string reply, string replierFromStore)
+        public MessageToStoreDAL(int mid, string senderUsername, string message, string title, string reply, string replierFromStore)
         {
             this.mid = mid;
-            _storeName = storeName;
             _senderUsername = senderUsername;
             _message = message;
             _title = title;
@@ -31,9 +28,8 @@ namespace MarketWeb.Server.DataLayer
             _replierFromStore = replierFromStore;
         }
 
-        public MessageToStoreDAL(string storeName, string senderUsername, string message, string title)
+        public MessageToStoreDAL(string senderUsername, string message, string title)
         {
-            _storeName = storeName;
             _senderUsername = senderUsername;
             _message = message;
             _title = title;

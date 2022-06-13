@@ -10,8 +10,6 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public int mid { get; set; }
         [Required]
-        public String _receiverUsername { get; set; }
-        [Required]
         public String _senderUsername { get; set; }
         [Required]
         public String _title { get; set; }

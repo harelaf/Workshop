@@ -12,6 +12,7 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public int _id { get; set; }
         [Required]
+        [ForeignKey("RegisteredDAL")]
         public string _complainer { get; set; }
         [Required]
         public int _cartID { get; set; }
