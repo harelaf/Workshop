@@ -30,7 +30,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response> RemoveAcceptedBidFromCart(int itemID, string storeName);
         public Task<Response> UpdateQuantityOfItemInCart(int itemID, String storeName, int newQuantity);
         public Task<Response<ShoppingCartDTO>> ViewMyCart();
-        public Task<Response> PurchaseMyCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode);
+        public Task<Response> PurchaseMyCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode, int cardNumber, int month, int year, int ccv, string id);
         public Task<Response> OpenNewStore(String storeName);
         public Task<Response> AddStoreManager(String managerUsername, String storeName);
         public Task<Response> AddStoreOwner(String ownerUsername, String storeName);
@@ -75,6 +75,8 @@ namespace MarketWeb.Client.Connect
         public Task<Response> SendAdminMessage(String receiverUsername, String title, String message);
         public Task<Response> AddStoreDiscount(String StoreName, String ConditionString, String DiscountString);
         public Task<Response> AddStorePurchasePolicy(String StoreName, String ConditionString);
+        public Task<Response<List<string>>> GetPaymentMethods();
+        public Task<Response<List<string>>> GetShipmentMethods();
         public Task<Response> ResetStoreDiscountPolicy(String StoreName);
         public Task<Response> ResetStorePurchasePolicy(String StoreName);
         public Task<Response<List<String>>> GetDiscountPolicyStrings(String StoreName);
@@ -261,7 +263,7 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response> PurchaseMyCart(string address, string city, string country, string zip, string purchaserName, string paymentMethode, string shipmentMethode)
+        public async Task<Response> PurchaseMyCart(string address, string city, string country, string zip, string purchaserName, string paymentMethode, string shipmentMethode, int cardNumber, int month, int year, int ccv, string id)
         {
             const string url = "api/market/PurchaseMyCart";
             var param = new Dictionary<string, string>() {
@@ -271,7 +273,12 @@ namespace MarketWeb.Client.Connect
                 { "zip", zip},
                 { "purchaserName", purchaserName},
                 { "paymentMethode",  paymentMethode},
-                { "shipmentMethode",  shipmentMethode}};
+                { "shipmentMethode",  shipmentMethode},
+                { "cardNumber", cardNumber.ToString()},
+                { "month",  month.ToString()},
+                { "year",  year.ToString()},
+                { "ccv",  ccv.ToString()},
+                { "id", id} };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);
@@ -805,6 +812,17 @@ namespace MarketWeb.Client.Connect
             Response res = await _httpService.Post<Response>(newUrl, null);
             return res;
         }
+
+        public async Task<Response<List<string>>> GetPaymentMethods()
+        {
+            const string url = "api/market/GetPaymentMethods";
+            Response<List<string>> res = await _httpService.Get<Response<List<string>>>(url);
+            return res;
+        }
+        public async Task<Response<List<string>>> GetShipmentMethods()
+        {
+            const string url = "api/market/GetShipmentMethods";
+            Response<List<string>> res = await _httpService.Get<Response<List<string>>>(url);
         public async Task<Response> ResetStoreDiscountPolicy(String StoreName)
         {
             const string url = "api/market/ResetStoreDiscountPolicy";

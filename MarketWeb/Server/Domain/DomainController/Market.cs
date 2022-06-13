@@ -8,13 +8,15 @@ using MarketWeb.Server.Domain.PurchasePackage.PolicyPackage;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
 using Microsoft.AspNetCore.SignalR;
+using MarketWeb.Server.Domain.PurchasePackage;
+using System.Threading.Tasks;
 
 namespace MarketWeb.Server.Domain
 {
     public class Market
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private StoreManagement _storeManagement;
+        public StoreManagement _storeManagement;
         private VisitorManagement _VisitorManagement;
         private History _history;
         private IDictionary<string, Operation> _opNameToOp;
@@ -24,11 +26,13 @@ namespace MarketWeb.Server.Domain
         {
             _storeManagement = new StoreManagement();
             _VisitorManagement = new VisitorManagement();
-            _history = new History();
+            _history = new History(this);
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
             _notificationHub = notificationHub;
             _VisitorManagement.SetNotificationHub(notificationHub);
+
+            RestartSystem("admin", "admin", "https://cs-bgu-wsep.herokuapp.com/", "https://cs-bgu-wsep.herokuapp.com/");
         }
 
 
@@ -41,7 +45,8 @@ namespace MarketWeb.Server.Domain
             _VisitorManagement.AdminStart(adminUsername, adminPassword);
 
             // Do starting system stuff with IPs
-
+            PurchaseProcess.GetInstance().AddPaymentMethod("WSIE", new WSIEPaymentHandler(ipPaymentService));
+            PurchaseProcess.GetInstance().AddShipmentMethod("WSEP", new WSEPShippingHandler(ipShippingService));
         }
 
         /// add\update basket eof store with item and amount.
@@ -589,7 +594,7 @@ namespace MarketWeb.Server.Domain
             }
             _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever, senderUsername, title, message);
         }
-        private void SendNotification(string storeName, string usernameReciever, String title, String message)
+        public void SendNotification(string storeName, string usernameReciever, String title, String message)
         {
             String errorMessage = null;
             if (!_VisitorManagement.IsRegistered(usernameReciever))
@@ -689,10 +694,10 @@ namespace MarketWeb.Server.Domain
             }
         }
 
-        public void PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, String paymentMethode, String shipmentMethode)
+        public async Task PurchaseMyCartAsync(String VisitorToken, String address, String city, String country, String zip, String purchaserName, String paymentMethode, String shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {//II.2.5
             CheckIsVisitorAVisitor(VisitorToken, "PurchaseMyCart");
-            ShoppingCart shoppingCartToDocument = _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
+            ShoppingCart shoppingCartToDocument = await _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
             if (_VisitorManagement.IsVisitorLoggedin(VisitorToken))
@@ -936,7 +941,7 @@ namespace MarketWeb.Server.Domain
         {
             NotifyMessageDTO notification = new NotifyMessageDTO("Store", "Title", "You did GetAllActiveStores", "ReceiverUsername", 0);
             log.Info($"Sending notification to :{authToken}");
-            this._notificationHub.SendNotification(authToken, notification);
+            //this._notificationHub.SendNotification(authToken, notification);
             String errorMessage = null;
             CheckIsVisitorAVisitor(authToken, "GetAllActiveStores");
             bool isAdmin = true;
@@ -1121,6 +1126,16 @@ namespace MarketWeb.Server.Domain
             Condition condition = new ConditionParser(conditionString).Parse();
             _storeManagement.AddStorePurchasePolicy(storeName, condition);
         }
+
+
+        internal List<string> GetPaymentMethods()
+        {
+            return PurchaseProcess.GetInstance()._paymentHandlerProxy.GetPaymentMethods();
+        }
+
+        internal List<string> GetShipmentMethods()
+        {
+            return PurchaseProcess.GetInstance()._shippingHandlerProxy.GetShipmentMethods();
 
         internal void ResetStoreDiscountPolicy(string authToken, string storeName)
         {

@@ -1,0 +1,158 @@
+﻿@page "/purchase"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@inject IMarketAPIClient MarketAPIClient
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+<div class="card">
+	<h4 class="card-header">Purchase</h4>
+	<div class="card-body">
+		<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+			<DataAnnotationsValidator />
+			<div class="form-group">
+				<label>Address- street and house number:</label>
+				<InputText @bind-Value="model.address" class="form-control" />
+				<ValidationMessage For="@(() => model.address)" />
+			</div>
+			<div class="form-group">
+				<label>City:</label>
+				<InputText @bind-Value="model.city" class="form-control" />
+				<ValidationMessage For="@(() => model.city)" />
+			</div>
+			<div class="form-group">
+				<label>Country:</label>
+				<InputText @bind-Value="model.country" class="form-control" />
+				<ValidationMessage For="@(() => model.country)" />
+			</div>
+			<div class="form-group">
+				<label>Zip code:</label>
+				<InputText @bind-Value="model.zip" class="form-control" />
+				<ValidationMessage For="@(() => model.zip)" />
+			</div>
+			<div class="form-group">
+				<label>Full Name:</label>
+				<InputText @bind-Value="model.purchaserName" class="form-control" />
+				<ValidationMessage For="@(() => model.purchaserName)" />
+			</div>
+			<div class="form-group">
+				<label>Payment Method:</label>
+				<InputSelect @bind-Value="model.paymentMethod" class="form-control">
+					<option value="">Select payment method ...</option>
+					@foreach (var paymentMethod in paymentMethods)
+					{
+						<option Value="@paymentMethod">@paymentMethod</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="@(() => model.paymentMethod)" />
+			</div>
+			<div class="form-group">
+				<label>Shipment Method:</label>
+				<InputSelect @bind-Value="model.shipmentMethod" class="form-control">
+					<option value="">Select shipment method ...</option>
+					@foreach (var shipmentMethod in shipmentMethods)
+					{
+						<option Value="@shipmentMethod">@shipmentMethod</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="@(() => model.shipmentMethod)" />
+			</div>
+			<div class="container">
+				<div class="form-group">
+					<label>Card Number:</label>
+					<InputNumber @bind-Value="model.CardNumber" class="form-control" />
+					<ValidationMessage For="@(() => model.CardNumber)" />
+				</div>
+				<div class="form-group">
+					<label>Month</label>
+					<InputNumber @bind-Value="model.Month" class="form-control" />
+					<ValidationMessage For="@(() => model.Month)" />
+				</div>
+				<div class="form-group">
+					<label>Year</label>
+					<InputNumber @bind-Value="model.Year" class="form-control" />
+					<ValidationMessage For="@(() => model.Year)" />
+				</div>
+				<div class="form-group">
+					<label>CCV</label>
+					<InputNumber @bind-Value="model.CCV" class="form-control" />
+					<ValidationMessage For="@(() => model.CCV)" />
+				</div>
+				<div class="form-group">
+					<label>ID</label>
+					<InputText @bind-Value="model.ID" class="form-control" />
+					<ValidationMessage For="@(() => model.ID)" />
+				</div>
+			</div>
+			<button disabled="@loading" class="btn btn-primary">
+				@if (loading)
+				{
+					<span class="spinner-border spinner-border-sm mr-1"></span>
+				}
+				Make Payment
+			</button>
+		</EditForm>
+	</div>
+</div>
+
+@code {
+	private Models.PurchaseModel model = new Models.PurchaseModel();
+	private bool loading;
+	private ICollection<String> paymentMethods = new List<String>();
+	private ICollection<String> shipmentMethods = new List<String>();
+
+	private async void OnValidSubmit()
+	{
+		// reset alerts on submit
+		AlertService.Clear();
+		//String purchaseDet = "address: "+model.address+", city: "+ model.city+", country: "+model.country+", zip: "+model.zip+", purchaserName: "+model.purchaserName;
+		loading = true;
+		try
+		{
+			Response response = await MarketAPIClient.PurchaseMyCart(model.address, model.city, model.country, model.zip, model.purchaserName, model.paymentMethod, model.shipmentMethod, model.CardNumber, model.Month, model.Year, model.CCV, model.ID);
+			if (response.ErrorOccured)
+			{
+				throw new Exception(response.ErrorMessage);
+			}
+			AlertService.Success("Purchase successful!");
+			// var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
+			var returnUrl = "/";// index page
+			NavigationManager.NavigateTo(returnUrl);
+		}
+		catch (Exception ex)
+		{
+			AlertService.Error(ex.Message);
+			loading = false;
+			StateHasChanged();
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		Response<List<String>> response = await MarketAPIClient.GetPaymentMethods();
+		if (response.ErrorOccured)
+		{
+			AlertService.Error(response.ErrorMessage);
+			StateHasChanged();
+		}
+		else
+		{
+			paymentMethods = response.Value;
+			StateHasChanged();
+		}
+
+		response = await MarketAPIClient.GetShipmentMethods();
+		if (response.ErrorOccured)
+		{
+			AlertService.Error(response.ErrorMessage);
+			StateHasChanged();
+		}
+		else
+		{
+			shipmentMethods = response.Value;
+			StateHasChanged();
+		}
+	}
+}
