@@ -8,15 +8,19 @@ namespace MarketWeb.Server.DataLayer
     public class AdminMessageToRegisteredDAL
     {
         [Key]
-        internal int mid { get; set; }
+        public int mid { get; set; }
         [Required]
-        internal String _receiverUsername { get; set; }
+        public String _receiverUsername { get; set; }
         [Required]
-        internal String _senderUsername { get; set; }
+        public String _senderUsername { get; set; }
         [Required]
-        internal String _title { get; set; }
+        public String _title { get; set; }
         [Required]
-        internal String _message { get; set; }
+        public String _message { get; set; }
+
+        public AdminMessageToRegisteredDAL()
+        {
+        }
 
         public AdminMessageToRegisteredDAL(int mid, string receiverUsername, string senderUsername, string title, string message)
         {

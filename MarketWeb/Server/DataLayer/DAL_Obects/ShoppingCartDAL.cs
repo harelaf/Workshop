@@ -9,7 +9,7 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public  int scId { get; set; }
-        public virtual ICollection<ShoppingBasketDAL> _shoppingBaskets { get; set; }
+        public ICollection<ShoppingBasketDAL> _shoppingBaskets { get; set; }
 
         public ShoppingCartDAL()
         {

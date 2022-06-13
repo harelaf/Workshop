@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace MarketWeb.Server.DataLayer
@@ -17,7 +18,12 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public String _message { get; set; }
         public String _response { get; set; }
+        [NotMapped]
         public ComplaintStatus Status { get { return _response == null ? ComplaintStatus.Open : ComplaintStatus.Closed; } }
+
+        public ComplaintDAL()
+        {
+        }
 
         public ComplaintDAL(int id, string complainer, int cartID, string message, string response)
         {

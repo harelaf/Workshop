@@ -19,7 +19,6 @@ namespace MarketWeb.Server.DataLayer
         public List<StoreManagerDAL> _managers { get; set; }
         public List<StoreOwnerDAL> _owners { get; set; }
         public StoreFounderDAL _founder { get; set; }
-        [Required]
         public StoreState _state { get; set; }
         public PurchasePolicyDAL _purchasePolicy { get; set; }
         public DiscountPolicyDAL _discountPolicy { get; set; }
