@@ -823,6 +823,8 @@ namespace MarketWeb.Client.Connect
         {
             const string url = "api/market/GetShipmentMethods";
             Response<List<string>> res = await _httpService.Get<Response<List<string>>>(url);
+            return res;
+        }
         public async Task<Response> ResetStoreDiscountPolicy(String StoreName)
         {
             const string url = "api/market/ResetStoreDiscountPolicy";

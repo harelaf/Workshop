@@ -1136,6 +1136,7 @@ namespace MarketWeb.Server.Domain
         internal List<string> GetShipmentMethods()
         {
             return PurchaseProcess.GetInstance()._shippingHandlerProxy.GetShipmentMethods();
+        }
 
         internal void ResetStoreDiscountPolicy(string authToken, string storeName)
         {
