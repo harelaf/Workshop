@@ -55,6 +55,7 @@ namespace MarketWeb.Server.DataLayer
             _birthDate = birthDate;
             _cart = new ShoppingCartDAL();
             _filedComplaints = new Dictionary<int, ComplaintDAL>();
+            filedComplaints = new List<ComplaintItemDAL>();
             _roles = new List<SystemRoleDAL>();
             _adminMessages = new List<AdminMessageToRegisteredDAL>();
             _notifications = new List<NotifyMessageDAL>();

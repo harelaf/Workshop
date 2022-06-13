@@ -10,8 +10,8 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public int sbId { get; set; }
         [Required]
-        public virtual StoreDAL _store { get; set; }
-        public virtual ICollection<BasketItemDAL> _items { get; set; }
+        public StoreDAL _store { get; set; }
+        public ICollection<BasketItemDAL> _items { get; set; }
 
         public ShoppingBasketDAL(StoreDAL store, IDictionary<ItemDAL, PurchaseDetailsDAL> items)
         {

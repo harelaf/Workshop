@@ -9,7 +9,7 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public int _id { get; set; }
         [Required]
-        public bool _negative;
+        public bool _negative { get; set; }
         protected ConditionDAL(bool negative)
         {
             _negative = negative;
