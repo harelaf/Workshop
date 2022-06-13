@@ -443,16 +443,15 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(managerUsername);
             if (registeredDAL == null)
                 throw new Exception($"there is no such user {managerUsername} in system");
-
-            foreach (StoreManagerDAL managerDAL in storeDAL._managers)
-            {
-                if(managerDAL._username == managerUsername)
-                {
-                    if (managerDAL._operations.Contains(op))
-                        managerDAL._operations.Remove(op);
-                    break;
-                }
-            }
+            List<int> storeRolesID = storeDAL._managers.Select(x => x.id).ToList();
+            List<int> userRolesID = registeredDAL._roles.Select(x => x.id).ToList();
+            List<int> res = storeRolesID.Where(x => userRolesID.Contains(x)).ToList();
+            if (res.Count < 1 || res.Count > 1)
+                throw new Exception("user ahould have wxactly one role in store");
+            int roleID = res[0];
+            StoreManagerDAL manager = storeDAL._managers.Where(x => x.id == roleID).FirstOrDefault();
+            manager._operations.Remove(op);
+            manager._operationsWrappers.Remove(manager._operationsWrappers.Find(x => x.op.Equals(op)));
             context.SaveChanges();
             //since both register and store holds ptr to the same manager Obj, the removal will be seen in both.
         }
@@ -461,16 +460,18 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(managerUsername);
             if (storeDAL == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
-
-            foreach (StoreManagerDAL managerDAL in storeDAL._managers)
-            {
-                if (managerDAL._username == managerUsername)
-                {
-                    if (!managerDAL._operations.Contains(op))
-                        managerDAL._operations.Add(op);
-                    break;
-                }
-            }
+            RegisteredDAL registeredDAL = context.RegisteredDALs.Find(managerUsername);
+            if (registeredDAL == null)
+                throw new Exception($"there is no such user {managerUsername} in system");
+            List<int> storeRolesID = storeDAL._managers.Select(x => x.id).ToList();
+            List<int> userRolesID = registeredDAL._roles.Select(x => x.id).ToList();
+            List<int> res = storeRolesID.Where(x => userRolesID.Contains(x)).ToList();
+            if (res.Count < 1 || res.Count > 1)
+                throw new Exception("user ahould have wxactly one role in store");
+            int roleID = res[0];
+            StoreManagerDAL manager = storeDAL._managers.Where(x => x.id == roleID).FirstOrDefault();
+            manager._operations.Add(op);
+            manager._operationsWrappers.Add(new OperationWrapper(op));
             context.SaveChanges();
             //since both register and store holds ptr to the same manager Obj, the addition will be seen in both.
         }
@@ -585,7 +586,7 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(adminUsername);
             if (registeredDAL == null)
                 throw new Exception($"there is no user with username: {adminUsername} in db");
-            registeredDAL._roles.Add(new SystemAdminDAL(adminUsername));
+            registeredDAL._roles.Add(new SystemAdminDAL());
             context.SaveChanges();
         }
         public List<StoreDAL> GetStoresOfUser(string username)
@@ -593,10 +594,17 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(username);
             if (registeredDAL == null)
                 throw new Exception($"there is no user with username: {username} in db");
-            List<string> storesNames = registeredDAL._roles.Select(role => role._storeName).ToList();
+            List<int> userRolesID = registeredDAL._roles.Select(x => x.id).ToList();
             List<StoreDAL> stores = new List<StoreDAL>();
-            foreach (string storeName in storesNames)
-                stores.Add(context.StoreDALs.Find(storeName));
+            foreach (StoreDAL store in context.StoreDALs)
+            {
+                List<int> storeOwnersID = store._owners.Select(x => x.id).ToList();
+                List<int> storeManagersID = store._managers.Select(x => x.id).ToList();
+                int storeFounderID = store._founder.id;
+                if(userRolesID.Contains(storeFounderID) || CommonVarInLists<int>(userRolesID, storeOwnersID) ||
+                    CommonVarInLists<int>(userRolesID, storeManagersID))
+                    stores.Add(store);
+            }          
             return stores;
         }
         public int SendAdminMessage(String receiverUsername, string senderUsername, String title, String message)
@@ -619,7 +627,7 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL reg = context.RegisteredDALs.Find(usernameReciever);
             if (usernameReciever == null)
                 throw new Exception($"there is no such user with uaername: {usernameReciever}");
-            NotifyMessageDAL notifyMessageDAL = new NotifyMessageDAL(storeName, title, message, usernameReciever);
+            NotifyMessageDAL notifyMessageDAL = new NotifyMessageDAL(title, message, usernameReciever);
             reg._notifications.Add(notifyMessageDAL);
             context.SaveChanges();
             return notifyMessageDAL.mid;
@@ -627,6 +635,13 @@ namespace MarketWeb.Server.DataLayer
         public ComplaintDAL GetComplaint(int id)
         {
             return context.ComplaintDALs.Find(id);
+        }
+
+
+        private bool CommonVarInLists<T>(List<T> l1, List<T> l2)
+        {
+            List<T> res = l1.Where(x => l2.Contains(x)).ToList();
+            return res.Any();       
         }
         //add pp
         //add dp
