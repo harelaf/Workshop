@@ -26,37 +26,6 @@ namespace MarketWeb.Server.DataLayer
             List<StoreDAL> stores= context.StoreDALs.Where(store => store._state == StoreState.Active).ToList();
             if (stores == null)
                 return new List<StoreDAL>();
-<<<<<<< HEAD
-            foreach (StoreDAL st in stores)
-            {
-                st._managers = context.StoreDALs.Find(st._storeName)._managers;
-                if (st._managers == null)
-                    st._managers = new List<StoreManagerDAL>();
-                st._founder = context.StoreDALs.Find(st._storeName)._founder;
-                //if (st._founder == null)
-                //    st._founder = new StoreFounderDAL(st._storeName, "testsssssss");
-                st._owners = context.StoreDALs.Find(st._storeName)._owners;
-                if(st._owners == null)
-                    st._owners = new List<StoreOwnerDAL>();
-                st._rating = context.StoreDALs.Find(st._storeName)._rating;
-                if(st._rating == null)
-                    st._rating = new RatingDAL();
-                st._messagesToStore = context.StoreDALs.Find(st._storeName)._messagesToStore;
-                if(st._messagesToStore == null)
-                    st._messagesToStore = new List<MessageToStoreDAL>();
-                st._purchasePolicy = context.StoreDALs.Find(st._storeName)._purchasePolicy;
-                if(st._purchasePolicy == null)
-                    st._purchasePolicy = new PurchasePolicyDAL();
-                st._discountPolicy = context.StoreDALs.Find(st._storeName)._discountPolicy;
-                if(st._discountPolicy == null)
-                    st._discountPolicy = new DiscountPolicyDAL();
-                st._stock = context.StoreDALs.Find(st._storeName)._stock;
-                if(st._stock == null)
-                    st._stock = new StockDAL();
-            }
-=======
-           
->>>>>>> bc78147aa69ac000ebda40f4f73d447aabd10d42
             return stores; 
         }
         public void Register(string Username, string password,string salt,  DateTime dob) 
@@ -662,6 +631,20 @@ namespace MarketWeb.Server.DataLayer
         //add pp
         //add dp
         //add d
+        public String GetRoleUsername(int roleid)
+        {
+            foreach (StoreDAL store in context.StoreDALs)
+            {
+                List<int> ownersIDs = store._owners.Select(x => x.id).ToList();
+                List<int> managersIDs = store._managers.Select(x => x.id).ToList();
+                int founderID = store._founder.id;
+                List<int> userRolesID = registeredDAL._roles.Select(x => x.id).ToList();
+                List<int> res = storeRolesID.Where(x => userRolesID.Contains(x)).ToList();
+                if (res.Count < 1 || res.Count > 1)
+                    throw new Exception("user ahould have wxactly one role in store");
 
+            }
+            
+        }
     }
 }

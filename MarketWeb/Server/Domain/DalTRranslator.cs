@@ -226,22 +226,21 @@ namespace MarketWeb.Server.Domain
 
         public StoreManagerDAL StoreManagerDomainToDal(StoreManager manager)
         {
-            return new StoreManagerDAL(manager.StoreName, manager.Appointer, manager.Username);
+            return new StoreManagerDAL(manager.Appointer);
         }
 
         public StoreOwnerDAL StoreOwnerDomainToDal(StoreOwner owner)
         {
-            return new StoreOwnerDAL(owner.StoreName, owner.Appointer, owner.Username);
+            return new StoreOwnerDAL(owner.Appointer);
         }
         public StoreFounderDAL StoreFounderDomainToDal(StoreFounder founder)
         {
-            return new StoreFounderDAL(founder.StoreName, founder.Username);
+            return new StoreFounderDAL();
         }
         public MessageToStoreDAL MessageToStoreDomainToDAL(MessageToStore messageToStore)
         {
-            return new MessageToStoreDAL(messageToStore.Id, messageToStore.StoreName,
-                messageToStore.SenderUsername, messageToStore.Message, 
-                messageToStore.Title, messageToStore.Reply, messageToStore.Replier);
+            return new MessageToStoreDAL(messageToStore.Id, messageToStore.SenderUsername, 
+                messageToStore.Message, messageToStore.Title, messageToStore.Reply, messageToStore.Replier);
         }
 
         public ItemDAL ItemDomainToDal(Item itemDomain)
@@ -584,7 +583,6 @@ namespace MarketWeb.Server.Domain
         }
         public SystemRole SystemRoleDalToDomain(SystemRoleDAL systemRoleDAL)
         {
-
             if (systemRoleDAL is SystemAdminDAL)
             {
                 SystemAdminDAL systemAdminDAL = (SystemAdminDAL)systemRoleDAL;
@@ -733,22 +731,22 @@ namespace MarketWeb.Server.Domain
             if (role is SystemAdmin)
             {
                 SystemAdmin systemAdmin = (SystemAdmin)role;
-                return new SystemAdminDAL(systemAdmin.operations, systemAdmin.Username,  "");
+                return new SystemAdminDAL();
             }
             if (role is StoreFounder)
             {
                 StoreFounder storeFounder = (StoreFounder)role;
-                return new StoreFounderDAL(storeFounder.operations, storeFounder.Username, storeFounder.StoreName); ;
+                return new StoreFounderDAL();
             }
             if (role is StoreOwner)
             {
                 StoreOwner storeOwner = (StoreOwner)role;
-                return new StoreOwnerDAL(storeOwner.operations, storeOwner.Username, storeOwner.StoreName, storeOwner.Appointer);
+                return new StoreOwnerDAL(storeOwner.Appointer);
             }
             if (role is StoreManager)
             {
                 StoreManager storeManager = (StoreManager)role;
-                return new StoreManagerDAL(storeManager.operations, storeManager.Username, storeManager.StoreName, storeManager.Appointer);
+                return new StoreManagerDAL(storeManager.Appointer);
             }
             else
                 throw new Exception("can;t happen");
@@ -756,14 +754,14 @@ namespace MarketWeb.Server.Domain
 
         public MessageToStoreDAL MessageToStoreDomainToDal(MessageToStore repliedMessage)
         {
-            return new MessageToStoreDAL(repliedMessage.Id, repliedMessage.StoreName, repliedMessage.SenderUsername,
+            return new MessageToStoreDAL(repliedMessage.Id, repliedMessage.SenderUsername,
                 repliedMessage.Message, repliedMessage.Title, repliedMessage.Reply, repliedMessage.Replier);
         }
 
         public NotifyMessageDAL NotifyMessageDomainToDal(NotifyMessage notification)
         {
             return new NotifyMessageDAL(notification.Id, notification.StoreName, notification.Title,
-                notification.Message, notification.ReceiverUsername);
+                notification.Message);
         }
 
         public AdminMessageToRegisteredDAL AdminMessageDomainToDal(AdminMessageToRegistered adminMessage)
