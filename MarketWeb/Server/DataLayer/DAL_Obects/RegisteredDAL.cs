@@ -25,6 +25,12 @@ namespace MarketWeb.Server.DataLayer
 
         public RegisteredDAL()
         {
+            _filedComplaints = new List<ComplaintDAL>();
+            _roles = new List<SystemRoleDAL>();
+            _adminMessages = new List<AdminMessageToRegisteredDAL>();
+            _notifications = new List<NotifyMessageDAL>();
+            _repliedMessages = new List<MessageToStoreDAL>();
+            _cart = new ShoppingCartDAL();
             // Empty constructor for some reason?
         }
 

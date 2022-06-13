@@ -32,7 +32,7 @@ namespace MarketWeb.Server.DataLayer
 
         public ItemDAL()
         {
-            // ???
+            _rating = new RatingDAL(); 
         }
     }
 }

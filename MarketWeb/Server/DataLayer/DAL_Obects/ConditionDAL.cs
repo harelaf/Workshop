@@ -30,7 +30,7 @@ namespace MarketWeb.Server.DataLayer
         }
         protected ComposedConditionDAL()
         {
-            // ???
+            _conditionList = new List<ConditionDAL>();
         }
     }
     public class AtomicConditionDAL : ConditionDAL
