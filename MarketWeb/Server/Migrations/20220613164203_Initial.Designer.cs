@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketWeb.Server.Migrations
 {
     [DbContext(typeof(MarketContext))]
-    [Migration("20220612153224_Initial")]
+    [Migration("20220613164203_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,39 @@ namespace MarketWeb.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.AdminMessageToRegisteredDAL", b =>
+                {
+                    b.Property<int>("mid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("RegisteredDAL_username")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("_message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_receiverUsername")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_senderUsername")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("mid");
+
+                    b.HasIndex("RegisteredDAL_username");
+
+                    b.ToTable("AdminMessageToRegisteredDAL");
+                });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.BasketItemDAL", b =>
                 {
@@ -84,11 +117,36 @@ namespace MarketWeb.Server.Migrations
                     b.Property<int?>("PurchasePolicyDALid")
                         .HasColumnType("int");
 
+                    b.Property<bool>("_negative")
+                        .HasColumnType("bit");
+
                     b.HasKey("_id");
 
                     b.HasIndex("PurchasePolicyDALid");
 
                     b.ToTable("ConditionDAL");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.DAL_Obects.ComplaintItemDAL", b =>
+                {
+                    b.Property<int>("complaintID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("RegisteredDAL_username")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("complaint_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("complaintID");
+
+                    b.HasIndex("RegisteredDAL_username");
+
+                    b.HasIndex("complaint_id");
+
+                    b.ToTable("ComplaintItemDAL");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountDAL", b =>
@@ -170,6 +228,9 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("RegisteredDAL_username")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("StoreDAL_storeName")
                         .HasColumnType("nvarchar(450)");
 
@@ -197,9 +258,44 @@ namespace MarketWeb.Server.Migrations
 
                     b.HasKey("mid");
 
+                    b.HasIndex("RegisteredDAL_username");
+
                     b.HasIndex("StoreDAL_storeName");
 
                     b.ToTable("MessageToStoreDAL");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.NotifyMessageDAL", b =>
+                {
+                    b.Property<int>("mid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("RegisteredDAL_username")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("_message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_receiverUsername")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_storeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("mid");
+
+                    b.HasIndex("RegisteredDAL_username");
+
+                    b.ToTable("NotifyMessageDAL");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.OperationWrapper", b =>
@@ -209,13 +305,7 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("StoreFounderDALid")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StoreManagerDALid")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StoreOwnerDALid")
+                    b.Property<int?>("SystemRoleDALid")
                         .HasColumnType("int");
 
                     b.Property<int>("op")
@@ -223,11 +313,7 @@ namespace MarketWeb.Server.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("StoreFounderDALid");
-
-                    b.HasIndex("StoreManagerDALid");
-
-                    b.HasIndex("StoreOwnerDALid");
+                    b.HasIndex("SystemRoleDALid");
 
                     b.ToTable("OperationWrapper");
                 });
@@ -343,7 +429,21 @@ namespace MarketWeb.Server.Migrations
                     b.Property<string>("_username")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("_birthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("_cartscId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("_password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_salt")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("_username");
+
+                    b.HasIndex("_cartscId");
 
                     b.ToTable("RegisteredDALs");
                 });
@@ -467,78 +567,6 @@ namespace MarketWeb.Server.Migrations
                     b.ToTable("StoreDALs");
                 });
 
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreFounderDAL", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("_storeName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("_username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("StoreFounderDAL");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreManagerDAL", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("StoreDAL_storeName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("_appointer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("_storeName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("_username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("StoreDAL_storeName");
-
-                    b.ToTable("StoreManagerDAL");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreOwnerDAL", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("StoreDAL_storeName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("_appointer")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("_storeName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("_username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("StoreDAL_storeName");
-
-                    b.ToTable("StoreOwnerDAL");
-                });
-
             modelBuilder.Entity("MarketWeb.Server.DataLayer.StorePurchasedBasketDAL", b =>
                 {
                     b.Property<string>("_storeName")
@@ -547,6 +575,35 @@ namespace MarketWeb.Server.Migrations
                     b.HasKey("_storeName");
 
                     b.ToTable("StorePurchaseHistory");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.SystemRoleDAL", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegisteredDAL_username")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("_storeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("RegisteredDAL_username");
+
+                    b.ToTable("SystemRoleDAL");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("SystemRoleDAL");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.AtomicDiscountDAL", b =>
@@ -562,6 +619,54 @@ namespace MarketWeb.Server.Migrations
                     b.HasIndex("PurchaseDetailsDAL_itemID");
 
                     b.HasDiscriminator().HasValue("AtomicDiscountDAL");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreFounderDAL", b =>
+                {
+                    b.HasBaseType("MarketWeb.Server.DataLayer.SystemRoleDAL");
+
+                    b.HasDiscriminator().HasValue("StoreFounderDAL");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreManagerDAL", b =>
+                {
+                    b.HasBaseType("MarketWeb.Server.DataLayer.SystemRoleDAL");
+
+                    b.Property<string>("StoreDAL_storeName")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("StoreManagerDAL_StoreDAL_storeName");
+
+                    b.Property<string>("_appointer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("StoreManagerDAL__appointer");
+
+                    b.HasIndex("StoreDAL_storeName");
+
+                    b.HasDiscriminator().HasValue("StoreManagerDAL");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreOwnerDAL", b =>
+                {
+                    b.HasBaseType("MarketWeb.Server.DataLayer.SystemRoleDAL");
+
+                    b.Property<string>("StoreDAL_storeName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("_appointer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasIndex("StoreDAL_storeName");
+
+                    b.HasDiscriminator().HasValue("StoreOwnerDAL");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.AdminMessageToRegisteredDAL", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.RegisteredDAL", null)
+                        .WithMany("_adminMessages")
+                        .HasForeignKey("RegisteredDAL_username");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.BasketItemDAL", b =>
@@ -590,6 +695,21 @@ namespace MarketWeb.Server.Migrations
                         .HasForeignKey("PurchasePolicyDALid");
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.DAL_Obects.ComplaintItemDAL", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.RegisteredDAL", null)
+                        .WithMany("filedComplaints")
+                        .HasForeignKey("RegisteredDAL_username");
+
+                    b.HasOne("MarketWeb.Server.DataLayer.ComplaintDAL", "complaint")
+                        .WithMany()
+                        .HasForeignKey("complaint_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("complaint");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountDAL", b =>
                 {
                     b.HasOne("MarketWeb.Server.DataLayer.DiscountPolicyDAL", null)
@@ -614,24 +734,27 @@ namespace MarketWeb.Server.Migrations
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.MessageToStoreDAL", b =>
                 {
+                    b.HasOne("MarketWeb.Server.DataLayer.RegisteredDAL", null)
+                        .WithMany("_repliedMessages")
+                        .HasForeignKey("RegisteredDAL_username");
+
                     b.HasOne("MarketWeb.Server.DataLayer.StoreDAL", null)
                         .WithMany("_messagesToStore")
                         .HasForeignKey("StoreDAL_storeName");
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.NotifyMessageDAL", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.RegisteredDAL", null)
+                        .WithMany("_notifications")
+                        .HasForeignKey("RegisteredDAL_username");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.OperationWrapper", b =>
                 {
-                    b.HasOne("MarketWeb.Server.DataLayer.StoreFounderDAL", null)
+                    b.HasOne("MarketWeb.Server.DataLayer.SystemRoleDAL", null)
                         .WithMany("_operationsWrappers")
-                        .HasForeignKey("StoreFounderDALid");
-
-                    b.HasOne("MarketWeb.Server.DataLayer.StoreManagerDAL", null)
-                        .WithMany("_operationsWrappers")
-                        .HasForeignKey("StoreManagerDALid");
-
-                    b.HasOne("MarketWeb.Server.DataLayer.StoreOwnerDAL", null)
-                        .WithMany("_operationsWrappers")
-                        .HasForeignKey("StoreOwnerDALid");
+                        .HasForeignKey("SystemRoleDALid");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchasedBasketDAL", b =>
@@ -665,6 +788,15 @@ namespace MarketWeb.Server.Migrations
                     b.HasOne("MarketWeb.Server.DataLayer.RatingDAL", null)
                         .WithMany("_ratings")
                         .HasForeignKey("RatingDALid");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.RegisteredDAL", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.ShoppingCartDAL", "_cart")
+                        .WithMany()
+                        .HasForeignKey("_cartscId");
+
+                    b.Navigation("_cart");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.ShoppingBasketDAL", b =>
@@ -726,6 +858,20 @@ namespace MarketWeb.Server.Migrations
                     b.Navigation("_stock");
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.SystemRoleDAL", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.RegisteredDAL", null)
+                        .WithMany("_roles")
+                        .HasForeignKey("RegisteredDAL_username");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.AtomicDiscountDAL", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", null)
+                        .WithMany("discountList")
+                        .HasForeignKey("PurchaseDetailsDAL_itemID");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreManagerDAL", b =>
                 {
                     b.HasOne("MarketWeb.Server.DataLayer.StoreDAL", null)
@@ -738,13 +884,6 @@ namespace MarketWeb.Server.Migrations
                     b.HasOne("MarketWeb.Server.DataLayer.StoreDAL", null)
                         .WithMany("_owners")
                         .HasForeignKey("StoreDAL_storeName");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.AtomicDiscountDAL", b =>
-                {
-                    b.HasOne("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", null)
-                        .WithMany("discountList")
-                        .HasForeignKey("PurchaseDetailsDAL_itemID");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountPolicyDAL", b =>
@@ -765,6 +904,19 @@ namespace MarketWeb.Server.Migrations
             modelBuilder.Entity("MarketWeb.Server.DataLayer.RatingDAL", b =>
                 {
                     b.Navigation("_ratings");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.RegisteredDAL", b =>
+                {
+                    b.Navigation("_adminMessages");
+
+                    b.Navigation("_notifications");
+
+                    b.Navigation("_repliedMessages");
+
+                    b.Navigation("_roles");
+
+                    b.Navigation("filedComplaints");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.RegisteredPurchasedCartDAL", b =>
@@ -796,24 +948,14 @@ namespace MarketWeb.Server.Migrations
                     b.Navigation("_owners");
                 });
 
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreFounderDAL", b =>
-                {
-                    b.Navigation("_operationsWrappers");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreManagerDAL", b =>
-                {
-                    b.Navigation("_operationsWrappers");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreOwnerDAL", b =>
-                {
-                    b.Navigation("_operationsWrappers");
-                });
-
             modelBuilder.Entity("MarketWeb.Server.DataLayer.StorePurchasedBasketDAL", b =>
                 {
                     b.Navigation("_PurchasedBaskets");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.SystemRoleDAL", b =>
+                {
+                    b.Navigation("_operationsWrappers");
                 });
 #pragma warning restore 612, 618
         }

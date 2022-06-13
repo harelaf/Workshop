@@ -18,10 +18,6 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public String _receiverUsername { get; set; }
 
-        public NotifyMessageDAL()
-        {
-        }
-
         public NotifyMessageDAL(string storeName, string title, string message, string receiverUsername)
         {
             _storeName = storeName;
@@ -37,6 +33,11 @@ namespace MarketWeb.Server.DataLayer
             _title = title;
             _message = message;
             _receiverUsername = receiverUsername;
+        }
+
+        public NotifyMessageDAL()
+        {
+            // ???
         }
     }
 }

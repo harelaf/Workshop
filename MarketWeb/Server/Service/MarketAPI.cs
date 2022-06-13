@@ -23,8 +23,8 @@ namespace MarketWeb.Service
         //private ILogger<MarketAPI> _logger;
         private int _id;
         private bool testMode = false;
-        private static bool useInitializationFile = true;
-        private static bool useConfigurationFile = true;
+        private static bool useInitializationFile = false;
+        private static bool useConfigurationFile = false;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             if (market == null)

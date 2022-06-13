@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using MarketWeb.Server.DataLayer.DAL_Obects;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.DataLayer
@@ -9,19 +11,15 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public String _username { get; set; }
-        [Required]
         public String _password { get; set; }
-        [Required]
         public String _salt { get; set; }
-        [Required]
         public ShoppingCartDAL _cart { get; set; }
-        [Required]
         public DateTime _birthDate { get; set; }
         public ICollection<ComplaintDAL> _filedComplaints { get; set; }
         public ICollection<SystemRoleDAL> _roles { get; set; }
         public ICollection<AdminMessageToRegisteredDAL> _adminMessages { get; set; }
         public ICollection<NotifyMessageDAL> _notifications { get; set; }
-        public ICollection<MessageToStoreDAL> _repliedMessages  { get; set; }
+        public ICollection<MessageToStoreDAL> _repliedMessages { get; set; }
 
         public RegisteredDAL()
         {

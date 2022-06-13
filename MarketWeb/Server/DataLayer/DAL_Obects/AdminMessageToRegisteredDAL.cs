@@ -18,10 +18,6 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public String _message { get; set; }
 
-        public AdminMessageToRegisteredDAL()
-        {
-        }
-
         public AdminMessageToRegisteredDAL(int mid, string receiverUsername, string senderUsername, string title, string message)
         {
             this.mid = mid;
@@ -37,6 +33,11 @@ namespace MarketWeb.Server.DataLayer
             _senderUsername = senderUsername;
             _title = title;
             _message = message;
+        }
+
+        public AdminMessageToRegisteredDAL()
+        {
+            // ???
         }
     }
 }
