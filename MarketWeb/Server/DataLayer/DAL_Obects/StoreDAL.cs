@@ -50,8 +50,6 @@ namespace MarketWeb.Server.DataLayer
             _purchasePolicy = new PurchasePolicyDAL(new List<ConditionDAL>());
             _discountPolicy = new DiscountPolicyDAL(new List<DiscountDAL>());
         }
-        //private PurchasePolicy _purchasePolicy;
-        //private DiscountPolicy _discountPolicy;
 
         public StoreDAL()
         {
@@ -60,7 +58,7 @@ namespace MarketWeb.Server.DataLayer
             _rating = new RatingDAL();
             _managers = new List<StoreManagerDAL>();
             _owners = new List<StoreOwnerDAL>();
-            //_founder = new StoreFounderDAL();
+            //_founder = new StoreFounderDAL("test", "test");
             _purchasePolicy = new PurchasePolicyDAL();
             _discountPolicy = new DiscountPolicyDAL();
         }
