@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using MarketWeb.Server.DataLayer.DAL_Obects;
 using MarketWeb.Shared;
 
 namespace MarketWeb.Server.DataLayer
@@ -9,33 +11,36 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public String _username { get; set; }
-        [Required]
-        public String _password;
-        [Required]
-        public String _salt;
-        [Required]
-        public ShoppingCartDAL _cart;
-        [Required]
-        public DateTime _birthDate;
-        public IDictionary<int, ComplaintDAL> _filedComplaints;
-        public ICollection<SystemRoleDAL> _roles;
-        public ICollection<AdminMessageToRegisteredDAL> _adminMessages;
-        public ICollection<NotifyMessageDAL> _notifications;
-        public ICollection<MessageToStoreDAL> _repliedMessages;
+        public String _password { get; set; }
+        public String _salt { get; set; }
+        public ShoppingCartDAL _cart { get; set; }
+        public DateTime _birthDate { get; set; }
+        public ICollection<ComplaintItemDAL> filedComplaints { get; set; }
+        public ICollection<SystemRoleDAL> _roles { get; set; }
+        public ICollection<AdminMessageToRegisteredDAL> _adminMessages { get; set; }
+        public ICollection<NotifyMessageDAL> _notifications { get; set; }
+        public ICollection<MessageToStoreDAL> _repliedMessages { get; set; }
+        [NotMapped]
+        public IDictionary<int, ComplaintDAL> _filedComplaints { get; set; }
 
         public RegisteredDAL()
         {
             // Empty constructor for some reason?
         }
 
-        public RegisteredDAL(string username, string password, string salt, ShoppingCartDAL cart, DateTime birthDate, IDictionary<int, ComplaintDAL> filedComplaints, ICollection<SystemRoleDAL> roles, ICollection<AdminMessageToRegisteredDAL> adminMessages, ICollection<NotifyMessageDAL> notifications, ICollection<MessageToStoreDAL> repliedMessages)
+        public RegisteredDAL(string username, string password, string salt, ShoppingCartDAL cart, DateTime birthDate, IDictionary<int, ComplaintDAL> _filedComplaints, ICollection<SystemRoleDAL> roles, ICollection<AdminMessageToRegisteredDAL> adminMessages, ICollection<NotifyMessageDAL> notifications, ICollection<MessageToStoreDAL> repliedMessages)
         {
             _username = username;
             _password = password;
             _salt = salt;
             _cart = cart;
             _birthDate = birthDate;
-            _filedComplaints = filedComplaints;
+            this._filedComplaints = _filedComplaints;
+            filedComplaints = new List<ComplaintItemDAL>();
+            foreach (KeyValuePair<int, ComplaintDAL> kv in this._filedComplaints)
+            {
+                filedComplaints.Add(new ComplaintItemDAL(kv.Key, kv.Value));
+            }
             _roles = roles;
             _adminMessages = adminMessages;
             _notifications = notifications;
