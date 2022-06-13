@@ -30,15 +30,23 @@ namespace MarketWeb.Server.Domain
         private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
         private DalTRranslator _dalTRranslator;
         private DalController _dalController = DalController.GetInstance();
-
         protected NotificationHub _notificationHub;
+        private static bool hasInitialized = false;
 
         // ===================================== CONSTRUCTORS =====================================
 
         public VisitorManagement() : this(new Dictionary<String, Registered>()) { 
             _dalTRranslator = new DalTRranslator();
+            if (!hasInitialized)
+            {
+                SetAdmin();
+            }
         }
-
+        private void SetAdmin()
+        {
+            Register(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
+            AddRole(DEFAULT_ADMIN_USERNAME, new SystemAdmin(DEFAULT_ADMIN_USERNAME));
+        }
         // TODO: There's GOT to be a better way to do these constructors.
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
         {
@@ -46,11 +54,10 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
             _dalTRranslator= new DalTRranslator();
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
-            defaultAdmin.AddRole(defaultAdminRole);
-            //_registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
-            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            if (!hasInitialized)
+            {
+                SetAdmin();
+            }
         }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens): this(registeredVisitors, loggedinVisitorsTokens, new Dictionary<String, Guest>())
@@ -59,25 +66,12 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
-            defaultAdmin.AddRole(defaultAdminRole);
-            //_registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
-            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            if (!hasInitialized)
+            {
+                SetAdmin();
+            }
         }
 
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Guest> visitorsGuestsTokens) : this(registeredVisitors, new Dictionary<string,Registered>(), visitorsGuestsTokens)
-        {
-            //_registeredVisitors = registeredVisitors;
-            _loggedinVisitorsTokens = new Dictionary<String, Registered>();
-            _visitorsGuestsTokens = visitorsGuestsTokens;
-
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
-            defaultAdmin.AddRole(defaultAdminRole);
-            //_registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
-            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
-        }
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens, NotificationHub notificationHub = null) 
         {
@@ -85,12 +79,10 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
             _notificationHub = notificationHub;
-
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
-            defaultAdmin.AddRole(defaultAdminRole);
-            //_registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
-            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            if (!hasInitialized)
+            {
+                SetAdmin();
+            }
         }
 
 
