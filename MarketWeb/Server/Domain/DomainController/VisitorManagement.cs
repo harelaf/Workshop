@@ -44,8 +44,11 @@ namespace MarketWeb.Server.Domain
         }
         private void SetAdmin()
         {
-            Register(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            _dalController.AppointSystemAdmin(DEFAULT_ADMIN_USERNAME);
+            if (!_dalController.IsUsernameExists(DEFAULT_ADMIN_USERNAME))
+            {
+                Register(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
+                _dalController.AppointSystemAdmin(DEFAULT_ADMIN_USERNAME);
+            }
             hasInitialized = true;
         }
         // TODO: There's GOT to be a better way to do these constructors.

@@ -15,7 +15,8 @@ namespace MarketWeb.Server.DataLayer
 
         public PurchasePolicyDAL()
         {
-            // ???
+            conditions = new List<ConditionDAL>();
+
         }
     }
 }

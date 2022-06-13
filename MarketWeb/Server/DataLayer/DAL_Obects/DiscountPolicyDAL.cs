@@ -16,7 +16,7 @@ namespace MarketWeb.Server.DataLayer
 
         public DiscountPolicyDAL()
         {
-            // ???
+            _discounts = new List<DiscountDAL>();
         }
     }
 }
