@@ -310,20 +310,20 @@ namespace MarketWeb.Server.Domain
 
         public MessageToStore MessageToStoreDALToDomain(MessageToStoreDAL msg)
         {
-            return new MessageToStore(msg._storeName, msg._senderUsername, 
+            return new MessageToStore(DalController.GetInstance().GetStoreNameOfMessageToStore(msg.mid), msg._senderUsername, 
                 msg._title, msg._message, msg._reply, msg._replierFromStore, msg.mid);
         }
         public StoreFounder StoreFounderDalToDomain(StoreFounderDAL founderDAL)
         {
-            return new StoreFounder(founderDAL.ConvertToSet(), founderDAL._username, founderDAL._storeName);
+            return new StoreFounder(founderDAL.ConvertToSet(), DalController.GetInstance().GetRoleUsername(founderDAL.id), DalController.GetInstance().GetRoleStoreName(founderDAL.id));
         }
         public StoreManager StoreManagerDalToDomain(StoreManagerDAL managerDAL)
         {
-            return new StoreManager(managerDAL._appointer, managerDAL.ConvertToSet(), managerDAL._username, managerDAL._storeName);        
+            return new StoreManager(managerDAL._appointer, managerDAL.ConvertToSet(), DalController.GetInstance().GetRoleUsername(managerDAL.id), DalController.GetInstance().GetRoleStoreName(managerDAL.id));        
         }
         public StoreOwner StoreOwnerDalToDomain(StoreOwnerDAL ownerDAL)
         {
-            return new StoreOwner(ownerDAL._appointer, ownerDAL.ConvertToSet(), ownerDAL._username, ownerDAL._storeName);
+            return new StoreOwner(ownerDAL._appointer, ownerDAL.ConvertToSet(), DalController.GetInstance().GetRoleUsername(ownerDAL.id), DalController.GetInstance().GetRoleStoreName(ownerDAL.id));
         }
         public Stock StockDalToDomain(StockDAL stockDAL)
         {
@@ -565,15 +565,15 @@ namespace MarketWeb.Server.Domain
 
         public AdminMessageToRegistered AdminMessageDalToDomain(AdminMessageToRegisteredDAL msgDal)
         {
-           return new AdminMessageToRegistered(msgDal.mid,msgDal._receiverUsername, msgDal._senderUsername, msgDal._title, msgDal._message);
+           return new AdminMessageToRegistered(msgDal.mid, DalController.GetInstance().GetReceiverOfAdminMessage(msgDal.mid), msgDal._senderUsername, msgDal._title, msgDal._message);
         }
         public NotifyMessage NotifyMessageDalToDomain(NotifyMessageDAL notifyDAL)
         {
-            return new NotifyMessage(notifyDAL.mid, notifyDAL._storeName, notifyDAL._title, notifyDAL._message, notifyDAL._receiverUsername);
+            return new NotifyMessage(notifyDAL.mid, notifyDAL._storeName, notifyDAL._title, notifyDAL._message, DalController.GetInstance().GetReceiverOfNotificationMessage(notifyDAL.mid));
         }
         public MessageToStore MessageToStoreDalToDomain(MessageToStoreDAL msgDAL)
         {
-            return new MessageToStore(msgDAL._storeName, msgDAL._senderUsername, msgDAL._title,
+            return new MessageToStore(DalController.GetInstance().GetStoreNameOfMessageToStore(msgDAL.mid), msgDAL._senderUsername, msgDAL._title,
                 msgDAL._message, msgDAL._reply, msgDAL._replierFromStore, msgDAL.mid);
         }
         public Complaint ComplaintDalToDomain(ComplaintDAL complaintDAL)
@@ -586,22 +586,22 @@ namespace MarketWeb.Server.Domain
             if (systemRoleDAL is SystemAdminDAL)
             {
                 SystemAdminDAL systemAdminDAL = (SystemAdminDAL)systemRoleDAL;
-                return new SystemAdmin(systemAdminDAL._username, systemAdminDAL.ConvertToSet());
+                return new SystemAdmin(DalController.GetInstance().GetRoleUsername(systemAdminDAL.id), systemAdminDAL.ConvertToSet());
             }
             if (systemRoleDAL is StoreFounderDAL)
             {
                 StoreFounderDAL storeFounderDAL = (StoreFounderDAL)systemRoleDAL;
-                return new StoreFounder(storeFounderDAL.ConvertToSet(), storeFounderDAL._username, storeFounderDAL._storeName);
+                return new StoreFounder(storeFounderDAL.ConvertToSet(), DalController.GetInstance().GetRoleUsername(storeFounderDAL.id), DalController.GetInstance().GetRoleStoreName(storeFounderDAL.id));
             }
             if(systemRoleDAL is StoreOwnerDAL)
             {
                 StoreOwnerDAL storeOwnerDAL = (StoreOwnerDAL)systemRoleDAL;
-                return new StoreOwner(storeOwnerDAL._appointer, storeOwnerDAL.ConvertToSet(), storeOwnerDAL._username, storeOwnerDAL._storeName);
+                return new StoreOwner(storeOwnerDAL._appointer, storeOwnerDAL.ConvertToSet(), DalController.GetInstance().GetRoleUsername(storeOwnerDAL.id), DalController.GetInstance().GetRoleStoreName(storeOwnerDAL.id));
             }
             if (systemRoleDAL is StoreManagerDAL)
             {
                 StoreManagerDAL storeManagerDAL = (StoreManagerDAL)systemRoleDAL;
-                return new StoreManager(storeManagerDAL._appointer, storeManagerDAL.ConvertToSet(), storeManagerDAL._username, storeManagerDAL._storeName);
+                return new StoreManager(storeManagerDAL._appointer, storeManagerDAL.ConvertToSet(), DalController.GetInstance().GetRoleUsername(storeManagerDAL.id), DalController.GetInstance().GetRoleStoreName(storeManagerDAL.id));
             }
             else
                 throw new Exception("can;t happen");

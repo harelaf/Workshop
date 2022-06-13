@@ -19,7 +19,6 @@ namespace MarketWeb.Server.DataLayer
         public AdminMessageToRegisteredDAL(int mid, string receiverUsername, string senderUsername, string title, string message)
         {
             this.mid = mid;
-            _receiverUsername = receiverUsername;
             _senderUsername = senderUsername;
             _title = title;
             _message = message;
@@ -27,7 +26,6 @@ namespace MarketWeb.Server.DataLayer
 
         public AdminMessageToRegisteredDAL(string receiverUsername, string senderUsername, string title, string message)
         {
-            _receiverUsername = receiverUsername;
             _senderUsername = senderUsername;
             _title = title;
             _message = message;
