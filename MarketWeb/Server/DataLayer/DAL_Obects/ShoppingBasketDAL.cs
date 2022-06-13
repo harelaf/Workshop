@@ -35,7 +35,7 @@ namespace MarketWeb.Server.DataLayer
 
         public ShoppingBasketDAL()
         {
-            // Empty constructor for some reason?
+            _items = new List<BasketItemDAL>();
         }
     }
 }

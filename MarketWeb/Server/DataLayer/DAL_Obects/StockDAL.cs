@@ -18,7 +18,7 @@ namespace MarketWeb.Server.DataLayer
 
         public StockDAL()
         {
-            // ???
+            _itemAndAmount = new List<StockItemDAL>();
         }
     }
 }

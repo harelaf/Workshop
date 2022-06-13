@@ -46,7 +46,8 @@ namespace MarketWeb.Server.DataLayer
         }
         protected SystemRoleDAL()
         {
-            // ???
+            _operationsWrappers = new List<OperationWrapper>();
+            _operations = new List<Operation>();
         }
         public ISet<Operation> ConvertToSet()
         {

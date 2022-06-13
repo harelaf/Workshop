@@ -25,7 +25,7 @@ namespace MarketWeb.Server.DataLayer
 
         public StorePurchasedBasketDAL()
         {
-            // Empty constructor for some reason?
+            _PurchasedBaskets = new List<PurchasedBasketDAL>();
         }
     }
 }

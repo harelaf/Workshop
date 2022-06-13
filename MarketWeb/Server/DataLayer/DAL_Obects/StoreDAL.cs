@@ -55,7 +55,14 @@ namespace MarketWeb.Server.DataLayer
 
         public StoreDAL()
         {
-            // Empty constructor for some reason?
+            _stock = new StockDAL();
+            _messagesToStore = new List<MessageToStoreDAL>();
+            _rating = new RatingDAL();
+            _managers = new List<StoreManagerDAL>();
+            _owners = new List<StoreOwnerDAL>();
+            //_founder = new StoreFounderDAL();
+            _purchasePolicy = new PurchasePolicyDAL();
+            _discountPolicy = new DiscountPolicyDAL();
         }
 
     }

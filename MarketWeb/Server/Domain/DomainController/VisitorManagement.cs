@@ -31,7 +31,7 @@ namespace MarketWeb.Server.Domain
         private DalTRranslator _dalTRranslator;
         private DalController _dalController = DalController.GetInstance();
         protected NotificationHub _notificationHub;
-        private static bool hasInitialized = false;
+        private static bool hasInitialized = true;
 
         // ===================================== CONSTRUCTORS =====================================
 
@@ -46,6 +46,7 @@ namespace MarketWeb.Server.Domain
         {
             Register(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
             _dalController.AppointSystemAdmin(DEFAULT_ADMIN_USERNAME);
+            hasInitialized = true;
         }
         // TODO: There's GOT to be a better way to do these constructors.
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
