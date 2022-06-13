@@ -26,6 +26,7 @@ namespace MarketWeb.Server.DataLayer
             List<StoreDAL> stores= context.StoreDALs.Where(store => store._state == StoreState.Active).ToList();
             if (stores == null)
                 return new List<StoreDAL>();
+<<<<<<< HEAD
             foreach (StoreDAL st in stores)
             {
                 st._managers = context.StoreDALs.Find(st._storeName)._managers;
@@ -53,6 +54,9 @@ namespace MarketWeb.Server.DataLayer
                 if(st._stock == null)
                     st._stock = new StockDAL();
             }
+=======
+           
+>>>>>>> bc78147aa69ac000ebda40f4f73d447aabd10d42
             return stores; 
         }
         public void Register(string Username, string password,string salt,  DateTime dob) 
@@ -187,7 +191,7 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL reg = context.RegisteredDALs.Find(founderName);
             if(reg == null)
                 throw new Exception($"user: {founderName} not in system");
-            StoreFounderDAL founder = new StoreFounderDAL(storeName, founderName);
+            StoreFounderDAL founder = new StoreFounderDAL();
             StoreDAL store = new StoreDAL(storeName, founder, StoreState.Active);
             context.StoreDALs.Add(store);
             reg._roles.Add(founder);
@@ -201,7 +205,7 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(managerUsername);
             if (registeredDAL == null)
                 throw new Exception($"user: {managerUsername} not in system");
-            StoreManagerDAL storeManager = new StoreManagerDAL(storeName, appointer, managerUsername);
+            StoreManagerDAL storeManager = new StoreManagerDAL(appointer);
             storeDAL._managers.Add(storeManager);
             registeredDAL._roles.Add(storeManager);
             context.SaveChanges();  
@@ -214,7 +218,7 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(ownerUsername);
             if (registeredDAL == null)
                 throw new Exception($"user: {ownerUsername} not in system");
-            StoreOwnerDAL storeOwner = new StoreOwnerDAL(storeName, appointer, ownerUsername);
+            StoreOwnerDAL storeOwner = new StoreOwnerDAL(appointer);
             storeDAL._owners.Add(storeOwner);
             registeredDAL._roles.Add(storeOwner);
             context.SaveChanges();
@@ -224,51 +228,39 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            foreach (StoreOwnerDAL owner in storeDAL._owners)
-            {
-                if (owner._username == ownerUsername)
-                {
-                    storeDAL._owners.Remove(owner);
-                    break;
-                }
-            }
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(ownerUsername);
             if (registeredDAL == null)
                 throw new Exception($"user: {ownerUsername} not in system");
-            foreach (SystemRoleDAL role in registeredDAL._roles)
-            {
-                if (role._storeName == storeName)
-                {
-                    registeredDAL._roles.Remove(role);
-                    break;
-                }
-            }
+            List<int> storeRolesID = storeDAL._owners.Select(x => x.id).ToList();
+            List<int> userRolesID = registeredDAL._roles.Select(x => x.id).ToList();
+            List<int> res = storeRolesID.Where(x => userRolesID.Contains(x)).ToList();
+            if (res.Count < 1 || res.Count > 1)
+                throw new Exception("user ahould have wxactly one role in store");
+            int roleID = res[0];
+            StoreOwnerDAL owner = storeDAL._owners.Where(x => x.id == roleID).FirstOrDefault();
+            storeDAL._owners.Remove(owner);
+            registeredDAL._roles.Remove(owner); // relies on that both store and reg referance the same role instance
+
             context.SaveChanges();
         }
         public void RemoveStoreManager(String managerUsername, String storeName)
         {
             StoreDAL storeDAL = context.StoreDALs.Find(storeName);
             if (storeDAL == null)
-                throw new Exception($"store: {storeName} not in system");
-            foreach (StoreManagerDAL manager in storeDAL._managers)
-            {
-                if (manager._username == managerUsername)
-                {
-                    storeDAL._managers.Remove(manager);
-                    break;
-                }
-            }
+                throw new Exception($"store: {storeName} not in system"); 
             RegisteredDAL registeredDAL = context.RegisteredDALs.Find(managerUsername);
             if (registeredDAL == null)
                 throw new Exception($"user: {managerUsername} not in system");
-            foreach (SystemRoleDAL role in registeredDAL._roles)
-            {
-                if (role._storeName == storeName)
-                {
-                    registeredDAL._roles.Remove(role);
-                    break;
-                }
-            }
+            List<int> storeRolesID = storeDAL._managers.Select(x => x.id).ToList();
+            List<int> userRolesID = registeredDAL._roles.Select(x => x.id).ToList();
+            List<int> res = storeRolesID.Where(x => userRolesID.Contains(x)).ToList();
+            if (res.Count < 1 || res.Count > 1)
+                throw new Exception("user ahould have wxactly one role in store");
+            int roleID = res[0];
+            StoreManagerDAL manager = storeDAL._managers.Where(x => x.id == roleID).FirstOrDefault();
+            storeDAL._managers.Remove(manager);
+            registeredDAL._roles.Remove(manager); // relies on that both store and reg referance the same role instance
+
             context.SaveChanges();
         }
         public int AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity)
@@ -405,7 +397,7 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL store = context.StoreDALs.Find(storeName);
             if (store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
-            MessageToStoreDAL msg = new MessageToStoreDAL(storeName, sender, message, title);
+            MessageToStoreDAL msg = new MessageToStoreDAL(sender, message, title);
             store._messagesToStore.Add(msg);
             context.SaveChanges();
             return msg.mid;
@@ -479,6 +471,9 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL storeDAL = context.StoreDALs.Find(managerUsername);
             if (storeDAL == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
+            RegisteredDAL registeredDAL = context.RegisteredDALs.Find(managerUsername);
+            if (registeredDAL == null)
+                throw new Exception($"there is no such user {managerUsername} in system");
 
             foreach (StoreManagerDAL managerDAL in storeDAL._managers)
             {
