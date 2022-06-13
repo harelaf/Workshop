@@ -136,14 +136,14 @@ else
         // reset alerts on submit
         AlertService.Clear();
 
-        Response response = await marketAPIClient.BidItemInStore(ItemID, StoreName, AddToCartModel.Amount, AddBidModel.PricePerUnit);
+        Response response = await marketAPIClient.BidItemInStore(ItemID, StoreName, AddBidModel.Amount, AddBidModel.PricePerUnit);
         if (response.ErrorOccured)
         {
             AlertService.Error(response.ErrorMessage);
         }
         else
         {
-            AlertService.Info("Successfully added item to cart.");
+            AlertService.Info("Successfully added a new bid.");
         }
     }
 

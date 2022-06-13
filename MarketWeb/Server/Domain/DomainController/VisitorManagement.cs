@@ -68,8 +68,6 @@ namespace MarketWeb.Server.Domain
             _notificationHub = notificationHub;
         }
 
-
-
         // ===================================== GETTERS =====================================
 
         /// <summary>
@@ -101,6 +99,7 @@ namespace MarketWeb.Server.Domain
             return _loggedinVisitorsTokens[token].Username;
         }
 
+
         /// <summary>
         /// Returns the Registered associated with a token.
         /// </summary>
@@ -116,6 +115,12 @@ namespace MarketWeb.Server.Domain
                 throw new ArgumentException(errorMessage);
             }
             return _loggedinVisitorsTokens[token];
+        }
+
+        internal void AddAcceptedBidToCart(string visitorToken, Store store, int itemId, int amount, double price)
+        {
+            Visitor Visitor = GetVisitorVisitor(visitorToken);
+            Visitor.AddAcceptedBidToCart(store, itemId, amount, price);
         }
 
         /// <summary>
@@ -171,8 +176,6 @@ namespace MarketWeb.Server.Domain
             }
             return null;
         }
-
-
 
         // ===================================== Req I.1 - RESTART SYSTEM =====================================
 
@@ -525,6 +528,12 @@ namespace MarketWeb.Server.Domain
         {
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
             return Visitor.RemoveItemFromCart(item, store);
+        }
+
+        internal int RemoveAcceptedBidFromCart(string authToken, int itemID, String storeName)
+        {
+            Visitor Visitor = GetVisitorVisitor(authToken);
+            return Visitor.RemoveAcceptedBidFromCart(itemID, storeName);
         }
 
         public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity)

@@ -40,8 +40,6 @@
             {
                 List<String> dislist = items[itemID].Item2.DiscountList;
                 String detailsString = dislist == null || dislist.Count == 0 ? "no discount" : String.Join("\n", items[itemID].Item2.DiscountList);//"kkklll";//
-                //detailsString = detailsString.Replace("\\n", "\n").Replace("\\t", "\t");
-                //String detailsString = StringFormatter.discountDetailsToString(items[itemID].Item2);//"kkklll";//
                 totalNoDiscount += items[itemID].Item1.Price * items[itemID].Item2.Amount;
                 totalWithDiscount += items[itemID].Item2.ActualPrice;
                 totalAllBasketsWithDiscount += items[itemID].Item2.ActualPrice;
@@ -69,6 +67,36 @@
                 </tr>
             }
         </table>
+        @if(shoppingBasketDTO.BiddedItems.Count > 0)
+        {
+            <h2>Bids in '@shoppingBasketDTO.StoreName'</h2>
+            <br />
+            <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
+                <tr>
+                    <th>Product ID</th>
+                    <th>Amount</th>
+                    <th>Price Per Unit</th>
+                    <th>Actual Price Per All Items</th>
+                    <th>Remove Item</th>
+                </tr>
+                @foreach (BidDTO bid in shoppingBasketDTO.BiddedItems)
+                {
+                    totalNoDiscount += bid.BiddedPrice * bid.Amount;
+                    totalWithDiscount += bid.BiddedPrice * bid.Amount;
+                    totalAllBasketsWithDiscount += bid.BiddedPrice * bid.Amount;
+                    <tr>
+                        <th>@bid.ItemID</th>
+                        <th>@bid.Amount</th>
+                        <th>$@bid.BiddedPrice</th>
+                        <th>@(bid.BiddedPrice * bid.Amount)</th>
+                        <th>
+                            <button class="btn btn-primary" @onclick="() => RemoveAcceptedBidFromCart(bid.ItemID, shoppingBasketDTO.StoreName)">Remove Item</button>
+                        </th>
+                    </tr>
+                }
+            </table>    
+        }
+        
         double sumAdditionalDiscounts = 0;
         @if(shoppingBasketDTO.AdditionalDiscounts.Count > 0)
         {
@@ -142,6 +170,26 @@ else
         AlertService.Clear();
 
         Response response = await marketAPIClient.RemoveItemFromCart(ItemID, StoreName);
+        if (response.ErrorOccured)
+        {
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Info("Successfully removed item.");
+        }
+    }
+
+    private async void RemoveAcceptedBidFromCart(int itemID, string storeName)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.RemoveAcceptedBidFromCart(itemID, storeName);
         if (response.ErrorOccured)
         {
             NavigationManager.NavigateTo("");

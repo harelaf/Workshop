@@ -11,6 +11,8 @@ namespace MarketWeb.Server.Domain
         public virtual Store _store { get; set; }
         public virtual IDictionary<Item, DiscountDetails<AtomicDiscount>> _items { get; set; }
         public IDictionary<Item, DiscountDetails<AtomicDiscount>> Items => _items;
+        private List<Bid> _biddedItems;
+        public List<Bid> BiddedItems => _biddedItems;
         private DiscountDetails<NumericDiscount> _additionalDiscounts;
         public DiscountDetails<NumericDiscount> AdditionalDiscounts => _additionalDiscounts;
 
@@ -19,12 +21,14 @@ namespace MarketWeb.Server.Domain
             _store = store;
             _items = new Dictionary<Item, DiscountDetails<AtomicDiscount>>();
             _additionalDiscounts = new DiscountDetails<NumericDiscount>(0);
+            _biddedItems = new List<Bid>();
         }
 
         public void AddItem(Item item, int amount)
         {
             if (isItemInBasket(item))
             {
+                //updateItemQuantity(item, amount + Items[GetItem(item.ItemID)].Amount);
                 updateItemQuantity(item, amount + Items[item].Amount);
                 return;
             }
@@ -41,13 +45,52 @@ namespace MarketWeb.Server.Domain
         public virtual int GetAmountOfItem(Item item)
         {
             String errorMessage;
-            if (!isItemInBasket(item))
+            int amount = Items[item].Amount;
+            foreach(Bid bid in BiddedItems)
+            {
+                if(bid.ItemID == item.ItemID)
+                {
+                    amount += bid.Amount;
+                }
+            }
+            if (amount == 0)
             {
                 errorMessage = "item doesn't exist in basket";
                 LogErrorMessage("GetAmountOfItem", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return _items[item].Amount;
+            return amount;
+        }
+        public virtual int GetAmountOfItemNoBids(Item item)
+        {
+            String errorMessage;
+            int amount = Items[item].Amount;
+            if (amount == 0)
+            {
+                errorMessage = "item doesn't exist in basket";
+                LogErrorMessage("GetAmountOfItem", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return amount;
+        }
+
+        internal int RemoveAcceptedBid(int itemID)
+        {
+            int amount = 0;
+            Bid myBid = null;
+            foreach(Bid bid in BiddedItems)
+            {
+                if(bid.ItemID == itemID)
+                {
+                    myBid = bid;   
+                }
+            }
+            if(myBid != null)
+            {
+                amount = myBid.Amount;
+                BiddedItems.Remove(myBid);
+            }
+            return amount;
         }
 
         internal bool checkPurchasePolicy()
@@ -73,6 +116,14 @@ namespace MarketWeb.Server.Domain
 
         public bool isItemInBasket(Item item)
         {
+            //foreach(Item i in Items.Keys)
+            //{
+            //    if(i.ItemID == item.ItemID)
+            //    {
+            //        return true;
+            //    }
+            //}
+            //return false;
             return _items.ContainsKey(item);
         }
 
@@ -94,7 +145,12 @@ namespace MarketWeb.Server.Domain
                 Store().GetDiscountPolicy().ApplyDiscounts(this);
                 return true;
             }
-            return false;
+            throw new Exception("there is no option to change amount of bidded bargain. you may add items from the store's page.");
+        }
+
+        internal void AddAcceptedBid(int itemId, int amount, double price)
+        {
+            _biddedItems.Add(new Bid("", itemId, amount, price));
         }
 
         private void resetDiscounts()
@@ -106,7 +162,7 @@ namespace MarketWeb.Server.Domain
 
         public bool IsBasketEmpty()
         {
-            return _items.Count == 0;
+            return _items.Count == 0 && BiddedItems.Count == 0;
         }
 
         public virtual ICollection<Item> GetItems()
@@ -159,7 +215,7 @@ namespace MarketWeb.Server.Domain
         {
             double sum = 0;
             foreach (Item i in GetItems())
-                sum += i._price * GetAmountOfItem(i);
+                sum += i._price * Items[i].Amount;
             return sum;
         }
         internal double getActualPrice()
@@ -221,6 +277,18 @@ namespace MarketWeb.Server.Domain
         public virtual Store Store()
         {
             return _store;
+        }
+
+        private Item GetItem(int itemId, double price)
+        {
+            foreach(Item item in Items.Keys)
+            {
+                if(item.ItemID == itemId && item._price == price)
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
     }

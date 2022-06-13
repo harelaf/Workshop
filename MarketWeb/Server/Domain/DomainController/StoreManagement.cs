@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
+using MarketWeb.Shared.DTO;
 
 namespace MarketWeb.Server.Domain
 {
@@ -142,6 +143,11 @@ namespace MarketWeb.Server.Domain
             }
             Store store = GetStore(storeName);
             store.UnReserveItem(item, amount_to_add);
+        }
+
+        internal void markAcceptedBidAsUsed(string bidder, string storeName, int itemID)
+        {
+            GetStore(storeName).markAcceptedBidAsUsed(bidder, itemID);
         }
 
         public void OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
@@ -374,9 +380,9 @@ namespace MarketWeb.Server.Domain
             return GetStore(storeName).GetPurchasePolicyStrings();
         }
 
-        internal void BidItemInStore(string storeName, int itemId, double newPrice, string bidder)
+        internal void BidItemInStore(string storeName, int itemId, int amount, double newPrice, string bidder)
         {
-            GetStore(storeName).BidItem(itemId, newPrice, bidder);
+            GetStore(storeName).BidItem(itemId, amount, newPrice, bidder);
         }
 
         internal bool AcceptBid(string storeName, string acceptor, int itemId, string bidder)
@@ -392,6 +398,32 @@ namespace MarketWeb.Server.Domain
         internal void RejectBid(string storeName, string rejector, int itemId, string bidder)
         {
             GetStore(storeName).RejectBid(rejector, itemId, bidder);
+        }
+
+        internal double GetBidAcceptedPrice(string bidder, string storeName, int itemID, int amount)
+        {
+            return GetStore(storeName).GetBidAcceptedPrice(bidder, itemID, amount);
+        }
+
+        internal List<string> GetUsernamesWithPermissionInStore(string storeName, Operation op)
+        {
+            return GetStore(storeName).GetUsernamesWithPermission(op);
+        }
+
+        internal List<Bid> GetBidsForStore(string storeName)
+        {
+            return GetStore(storeName).GetBids();
+        }
+
+        internal List<Bid> GetVisitorBidsAtStore(string storeName, string bidder)
+        {
+            String errorMessage = "";
+            List<Bid> bids = GetStore(storeName).GetVisitorBids(bidder);
+            if (bids != null)
+                return bids;
+            errorMessage = "this visitor has no bids at store '" + storeName + "'.";
+            LogErrorMessage("GetVisitorBidsAtStore", errorMessage);
+            throw new Exception(errorMessage);
         }
     }
 }

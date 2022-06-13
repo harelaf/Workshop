@@ -32,7 +32,6 @@ namespace MarketWeb.Shared.DTO
             _price = price;
             _description = description;
             _category = category;
-            _storeName = null;
             _storeName = storeName;
         }
     }

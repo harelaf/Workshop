@@ -346,6 +346,9 @@ namespace MarketWeb.Service
         {
             Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = new Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>>();
             List<NumericDiscountDTO> additionalDiscounts = new List<NumericDiscountDTO>();
+            List<BidDTO> biddedItems = new List<BidDTO>();
+            foreach (Bid bid in shoppingBasket.BiddedItems)
+                biddedItems.Add(toDTO(bid, shoppingBasket.Store().GetItem(bid.ItemID)._price));
             foreach (KeyValuePair<Item, DiscountDetails<AtomicDiscount>> entry in shoppingBasket.Items)
             {
                 ItemDTO dto = toDTO(entry.Key, shoppingBasket.Store().StoreName);
@@ -353,7 +356,7 @@ namespace MarketWeb.Service
             }
             foreach (NumericDiscount dis in shoppingBasket.AdditionalDiscounts.DiscountList)
                 additionalDiscounts.Add(toDTO(dis));
-            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts);
+            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts, biddedItems);
         }
 
         public DiscountDetailsDTO toDTO(ISearchablePriceable searchablePriceable, DiscountDetails<AtomicDiscount> discountDetails, double itemPrice)
@@ -465,6 +468,18 @@ namespace MarketWeb.Service
             //foreach (Discount dis in discounts.DiscountList)
             //    discountDTOs.Add(toDTO(dis));
             return null;
+        }
+        public BidDTO toDTO(Bid bid, double originalPrice)
+        {
+            return new BidDTO(
+                bid.Bidder,
+                bid.ItemID,
+                bid.Amount,
+                bid.BiddedPrice,
+                bid.CounterOffer,
+                bid.Acceptors,
+                originalPrice,
+                bid.AccepttedByAll);
         }
     }
 }

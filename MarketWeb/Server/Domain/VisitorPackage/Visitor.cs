@@ -39,6 +39,21 @@ namespace MarketWeb.Server.Domain
                 _shoppingCart.RemoveBasketFromCart(basket);
             return amount;
         }
+        internal int RemoveAcceptedBidFromCart(int itemID, String storeName)
+        {
+            String errorMessage;
+            ShoppingBasket basket = _shoppingCart.GetShoppingBasket(storeName);
+            if (basket == null)
+            {
+                errorMessage = "your cart doesnt contain any basket with the given store";
+                LogErrorMessage("RemoveItemFromCart", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            int amount = basket.RemoveAcceptedBid(itemID);
+            if (basket.IsBasketEmpty())
+                _shoppingCart.RemoveBasketFromCart(basket);
+            return amount;
+        }
         public void UpdateItemInCart(Store store, Item item, int newQuantity)
         {
             String errorMessage = null;
@@ -69,7 +84,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("GetQuantityOfItemInCart", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return shoppingBasket.GetAmountOfItem(item);
+            return shoppingBasket.GetAmountOfItemNoBids(item);
         }
         public ShoppingCart PurchaseMyCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode)
         {
@@ -82,6 +97,17 @@ namespace MarketWeb.Server.Domain
         private void LogErrorMessage(String functionName, String message)
         {
             log.Error($"Exception thrown in Visitor.{functionName}. Cause: {message}.");
+        }
+
+        internal void AddAcceptedBidToCart(Store store, int itemId, int amount, double price)
+        {
+            ShoppingBasket basket = _shoppingCart.GetShoppingBasket(store.StoreName);
+            if (basket == null)
+            {
+                basket = new ShoppingBasket(store);
+                _shoppingCart.AddShoppingBasket(basket);
+            }
+            basket.AddAcceptedBid(itemId, amount, price);
         }
     }
 }

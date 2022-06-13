@@ -163,6 +163,12 @@ namespace MarketWeb.Server.Domain
             return _stock.GetItemsByName(itemName);
         }
 
+        internal void markAcceptedBidAsUsed(string bidder, int itemID)
+        {
+            Bid bid = GetBid(itemID, bidder);
+            _biddedItems[bidder].Remove(bid);
+        }
+
         public List<String> GetStoreRolesByName()
         {
             List<String> names = new List<String>();
@@ -392,11 +398,13 @@ namespace MarketWeb.Server.Domain
             return _purchasePolicy.GetConditionsStrings();
         }
 
-        internal void BidItem(int itemId, double biddedPrice, string bidder)
+        internal void BidItem(int itemId, int amount, double biddedPrice, string bidder)
         {
             if (!_biddedItems.ContainsKey(bidder))
                 _biddedItems.Add(bidder, new List<Bid>());
-            _biddedItems[bidder].Add(new Bid(itemId, biddedPrice));
+            if (GetBid(itemId, bidder) == null)
+                _biddedItems[bidder].Add(new Bid(bidder, itemId, amount, biddedPrice));
+            else throw new Exception("this visitor already bid this item.");
         }
 
         /// <summary>
@@ -414,6 +422,33 @@ namespace MarketWeb.Server.Domain
                 throw new Exception("no such bid to accept.");
             bid.AcceptBid(acceptor);
             return CheckBidAcceptance(bid);
+        }
+
+        internal List<Bid> GetBids()
+        {
+            List<Bid> bids = new List<Bid>();
+            foreach (List<Bid> bidList in _biddedItems.Values)
+                bids.AddRange(bidList);
+            return bids;
+        }
+
+        internal List<Bid> GetVisitorBids(String bidder)
+        {
+            if (_biddedItems.ContainsKey(bidder))
+                return _biddedItems[bidder];
+            else return null;
+        }
+
+        internal List<string> GetUsernamesWithPermission(Operation op)
+        {
+            List<string> usernames = new List<string>();
+            usernames.Add(_founder.Username);
+            foreach(StoreOwner owner in _owners)
+                usernames.Add(owner.Username);
+            foreach (StoreManager manager in _managers)
+                if (manager.hasAccess(StoreName, op))
+                    usernames.Add(manager.Username);
+            return usernames;
         }
 
         internal bool CounterOfferBid(string acceptor, int itemId, string bidder, double counterOffer)
@@ -446,13 +481,27 @@ namespace MarketWeb.Server.Domain
         internal Bid GetBid(int itemId, string bidder)
         {
             foreach (Bid bid in _biddedItems[bidder])
-                if (bid.ItemId == itemId)
+                if (bid.ItemID == itemId)
                     return bid;
             return null;
         }
 
+        internal double GetBidAcceptedPrice(string bidder, int itemID, int amount)
+        {
+            Bid bid = GetBid(itemID, bidder);
+            if (bid == null)
+                throw new Exception("this bid does not exist."); 
+            if (!CheckBidAcceptance(bid))
+                throw new Exception("this bid is not yet accepted");
+            if (bid.Amount != amount)
+                throw new Exception($"the amount on wich the bid was accepted is {bid.Amount}.");
+            return bid.GetFinalPrice();
+        }
+
         internal bool CheckBidAcceptance(Bid bid)
         {
+            if (bid == null)
+                throw new Exception("this bid does not exist.");
             if (!bid.Acceptors.Contains(_founder.Username))
                 return false;
             foreach (StoreOwner owner in _owners)
@@ -461,6 +510,7 @@ namespace MarketWeb.Server.Domain
             foreach (StoreManager manger in _managers)
                 if (manger.hasAccess(StoreName, Operation.STOCK_EDITOR) && !bid.Acceptors.Contains(manger.Username))
                     return false;
+            bid.AccepttedByAll = true;
             return true;
         }
 
