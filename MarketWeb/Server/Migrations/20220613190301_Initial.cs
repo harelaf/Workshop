@@ -8,22 +8,6 @@ namespace MarketWeb.Server.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ComplaintDALs",
-                columns: table => new
-                {
-                    _id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    _complainer = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    _cartID = table.Column<int>(type: "int", nullable: false),
-                    _message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    _response = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ComplaintDALs", x => x._id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DiscountPolicyDAL",
                 columns: table => new
                 {
@@ -315,25 +299,22 @@ namespace MarketWeb.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ComplaintItemDAL",
+                name: "ComplaintDALs",
                 columns: table => new
                 {
-                    complaintID = table.Column<int>(type: "int", nullable: false)
+                    _id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    complaint_id = table.Column<int>(type: "int", nullable: false),
+                    _complainer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    _cartID = table.Column<int>(type: "int", nullable: false),
+                    _message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    _response = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RegisteredDAL_username = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ComplaintItemDAL", x => x.complaintID);
+                    table.PrimaryKey("PK_ComplaintDALs", x => x._id);
                     table.ForeignKey(
-                        name: "FK_ComplaintItemDAL_ComplaintDALs_complaint_id",
-                        column: x => x.complaint_id,
-                        principalTable: "ComplaintDALs",
-                        principalColumn: "_id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ComplaintItemDAL_RegisteredDALs_RegisteredDAL_username",
+                        name: "FK_ComplaintDALs_RegisteredDALs_RegisteredDAL_username",
                         column: x => x.RegisteredDAL_username,
                         principalTable: "RegisteredDALs",
                         principalColumn: "_username",
@@ -599,13 +580,8 @@ namespace MarketWeb.Server.Migrations
                 column: "ShoppingBasketDALsbId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComplaintItemDAL_complaint_id",
-                table: "ComplaintItemDAL",
-                column: "complaint_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComplaintItemDAL_RegisteredDAL_username",
-                table: "ComplaintItemDAL",
+                name: "IX_ComplaintDALs_RegisteredDAL_username",
+                table: "ComplaintDALs",
                 column: "RegisteredDAL_username");
 
             migrationBuilder.CreateIndex(
@@ -785,7 +761,7 @@ namespace MarketWeb.Server.Migrations
                 name: "BasketItemDAL");
 
             migrationBuilder.DropTable(
-                name: "ComplaintItemDAL");
+                name: "ComplaintDALs");
 
             migrationBuilder.DropTable(
                 name: "DiscountDAL");
@@ -810,9 +786,6 @@ namespace MarketWeb.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "StockItemDAL");
-
-            migrationBuilder.DropTable(
-                name: "ComplaintDALs");
 
             migrationBuilder.DropTable(
                 name: "ConditionDAL");

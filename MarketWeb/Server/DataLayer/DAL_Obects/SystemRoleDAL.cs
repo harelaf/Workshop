@@ -28,7 +28,6 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int id { get; set; }
-
         [ForeignKey("RegisterdDAL")]
         public string _appointer { get; set; }
         public List<OperationWrapper> _operationsWrappers { get; set; }
@@ -125,7 +124,6 @@ namespace MarketWeb.Server.DataLayer
     }
     public class StoreOwnerDAL : SystemRoleDAL
     {
-
         public StoreOwnerDAL(string appointer) : base(getOps(),appointer)
         {
             _appointer = appointer;
@@ -155,7 +153,6 @@ namespace MarketWeb.Server.DataLayer
     }
     public class StoreManagerDAL : SystemRoleDAL
     {
-
         public StoreManagerDAL(string appointer) : base(getOps(), appointer)
         {        }
 

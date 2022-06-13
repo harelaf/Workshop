@@ -26,7 +26,6 @@ namespace MarketWeb.Server.DataLayer
             List<StoreDAL> stores= context.StoreDALs.Where(store => store._state == StoreState.Active).ToList();
             if (stores == null)
                 return new List<StoreDAL>();
-           
             return stores; 
         }
         public void Register(string Username, string password,string salt,  DateTime dob) 
@@ -647,6 +646,81 @@ namespace MarketWeb.Server.DataLayer
         //add pp
         //add dp
         //add d
+        public String GetRoleUsername(int roleid)
+        {
+            foreach (RegisteredDAL registered in context.RegisteredDALs)
+            {
+                List<int> rolesID = registered._roles.Select(x => x.id).ToList();
 
+                if (rolesID.Contains(roleid))
+                {
+                    return registered._username;
+                }
+            }
+            throw new Exception($"role id {roleid} was not found in the database.");
+        }
+
+        public String GetRoleStoreName(int roleid)
+        {
+            foreach (StoreDAL store in context.StoreDALs)
+            {
+                List<int> storeOwnersID = store._owners.Select(x => x.id).ToList();
+                List<int> storeManagersID = store._managers.Select(x => x.id).ToList();
+                int storeFounderID = store._founder.id;
+                if (roleid == storeFounderID || storeOwnersID.Contains(roleid) ||
+                    storeManagersID.Contains(roleid))
+                    return store._storeName;
+            }
+            throw new Exception($"role id {roleid} was not found in the database.");
+        }
+
+        public String GetReceiverOfAdminMessage(int mid)
+        {
+            foreach (RegisteredDAL registered in context.RegisteredDALs)
+            {
+                List<int> messagesIDs = registered._adminMessages.Select(x => x.mid).ToList();
+
+                if (messagesIDs.Contains(mid))
+                {
+                    return registered._username;
+                }
+            }
+            throw new Exception($"message id {mid} was not found in the database.");
+        }
+
+        public String GetReceiverOfNotificationMessage(int mid)
+        {
+            foreach (RegisteredDAL registered in context.RegisteredDALs)
+            {
+                List<int> messagesIDs = registered._notifications.Select(x => x.mid).ToList();
+
+                if (messagesIDs.Contains(mid))
+                {
+                    return registered._username;
+                }
+            }
+            throw new Exception($"message id {mid} was not found in the database.");
+        }
+
+        public String GetStoreNameOfMessageToStore(int mid)
+        {
+            foreach (StoreDAL store in context.StoreDALs)
+            {
+                List<int> messagesIDs = store._messagesToStore.Select(x => x.mid).ToList();
+                if (messagesIDs.Contains(mid))
+                {
+                    return store._storeName;
+                }
+            }
+            foreach (RegisteredDAL registered in context.RegisteredDALs)
+            {
+                List<int> messagesIDs = registered._repliedMessages.Select(x => x.mid).ToList();
+                if (messagesIDs.Contains(mid))
+                {
+                    return registered._username;
+                }
+            }
+            throw new Exception($"message id {mid} was not found in the database.");
+        }
     }
 }

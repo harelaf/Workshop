@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketWeb.Server.Migrations
 {
     [DbContext(typeof(MarketContext))]
-    [Migration("20220613164203_Initial")]
+    [Migration("20220613190301_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,6 +88,9 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("RegisteredDAL_username")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("_cartID")
                         .HasColumnType("int");
 
@@ -103,6 +106,8 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("_id");
+
+                    b.HasIndex("RegisteredDAL_username");
 
                     b.ToTable("ComplaintDALs");
                 });
@@ -125,28 +130,6 @@ namespace MarketWeb.Server.Migrations
                     b.HasIndex("PurchasePolicyDALid");
 
                     b.ToTable("ConditionDAL");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.DAL_Obects.ComplaintItemDAL", b =>
-                {
-                    b.Property<int>("complaintID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("RegisteredDAL_username")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("complaint_id")
-                        .HasColumnType("int");
-
-                    b.HasKey("complaintID");
-
-                    b.HasIndex("RegisteredDAL_username");
-
-                    b.HasIndex("complaint_id");
-
-                    b.ToTable("ComplaintItemDAL");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountDAL", b =>
@@ -637,7 +620,6 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnName("StoreManagerDAL_StoreDAL_storeName");
 
                     b.Property<string>("_appointer")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("StoreManagerDAL__appointer");
 
@@ -654,7 +636,6 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("_appointer")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasIndex("StoreDAL_storeName");
@@ -688,26 +669,18 @@ namespace MarketWeb.Server.Migrations
                     b.Navigation("purchaseDetails");
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.ComplaintDAL", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.RegisteredDAL", null)
+                        .WithMany("_filedComplaints")
+                        .HasForeignKey("RegisteredDAL_username");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.ConditionDAL", b =>
                 {
                     b.HasOne("MarketWeb.Server.DataLayer.PurchasePolicyDAL", null)
                         .WithMany("conditions")
                         .HasForeignKey("PurchasePolicyDALid");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.DAL_Obects.ComplaintItemDAL", b =>
-                {
-                    b.HasOne("MarketWeb.Server.DataLayer.RegisteredDAL", null)
-                        .WithMany("filedComplaints")
-                        .HasForeignKey("RegisteredDAL_username");
-
-                    b.HasOne("MarketWeb.Server.DataLayer.ComplaintDAL", "complaint")
-                        .WithMany()
-                        .HasForeignKey("complaint_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("complaint");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountDAL", b =>
@@ -910,13 +883,13 @@ namespace MarketWeb.Server.Migrations
                 {
                     b.Navigation("_adminMessages");
 
+                    b.Navigation("_filedComplaints");
+
                     b.Navigation("_notifications");
 
                     b.Navigation("_repliedMessages");
 
                     b.Navigation("_roles");
-
-                    b.Navigation("filedComplaints");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.RegisteredPurchasedCartDAL", b =>
