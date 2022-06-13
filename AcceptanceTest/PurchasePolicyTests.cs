@@ -65,7 +65,7 @@ namespace AcceptanceTest
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
 
             Response res2 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, 5);
-            Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
+            Assert.IsTrue(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
 
             Response res3 = marketAPI.PurchaseMyCart(guest_VisitorToken, address, city, country, zip, name, paymentMethod, shipmentMethod);
             Assert.IsTrue(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
@@ -80,7 +80,7 @@ namespace AcceptanceTest
             policy = $"ItemTotalAmountInBasketFrom_{itemName}_{4}";
             res1 = marketAPI.AddStorePurchasePolicy(store_founder_token, storeName, policy);
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
-            policy = $"(AND DayOfWeek_{((int)DateTime.Now.Day + 1) % 7} Hour_{(DateTime.Now.Hour + 23) % 24}_{(DateTime.Now.Hour + 1) % 24})";
+            policy = $"(AND DayOfWeek_{((int)DateTime.Now.DayOfWeek + 1) % 7} Hour_0_24)";
             res1 = marketAPI.AddStorePurchasePolicy(store_founder_token, storeName, policy);
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
             policy = $"(OR TotalBasketPriceTo_{75})";
@@ -111,7 +111,7 @@ namespace AcceptanceTest
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
 
             Response res2 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, 5);
-            Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
+            Assert.IsTrue(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
 
             Response res3 = marketAPI.PurchaseMyCart(guest_VisitorToken, address, city, country, zip, name, paymentMethod, shipmentMethod);
             Assert.IsTrue(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
