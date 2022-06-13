@@ -82,8 +82,10 @@ namespace MarketWeb.Server.Domain
                 {
                     storeOwnerNames.Add(storeOwners[i].Username);
                 }
+                StoreFounder storeFounder = _market._storeManagement.getStoreFounder(storeName);
+                storeOwnerNames.Add(storeFounder.Username);
                 String title = $"Store: {storeName} - Purchase: [{DateTime.Now}].";
-                String message = $"A purchase was made for {shoppingBasket.getActualPrice():.2f}$";
+                String message = $"A purchase was made for {shoppingBasket.getActualPrice()}$";
                 foreach (String name in storeOwnerNames)
                 {
                     _market.SendNotification(storeName, name, title, message);

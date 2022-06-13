@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using MarketWeb.Server.Service;
 using MarketWeb.Service;
 using MarketWeb.Shared;
@@ -547,7 +548,7 @@ namespace MarketWeb.Server.Domain
             return newQuantity - old_quantity;
         }
 
-        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode)
+        public async Task<ShoppingCart> PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
             String errorMessage;
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
@@ -557,7 +558,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("PurchaseMyCart", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
+            return await Visitor.PurchaseMyCartAsync(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
         }
 
 
