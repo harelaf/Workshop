@@ -38,14 +38,24 @@
                 <ValidationMessage For="@(() => model.purchaserName)" />
             </div>
              <div class="form-group">
-                <label>Payment Methode:</label>
-                <InputText @bind-Value="model.paymentMethode" class="form-control" />
-                <ValidationMessage For="@(() => model.paymentMethode)" />
+                <label>Payment Method:</label>
+                <InputSelect @bind-Value="model.paymentMethod" class="form-control" >
+                    @foreach (var paymentMethod in paymentMethods)
+                    {
+                        <option value="@paymentMethod">@paymentMethod</option>
+                    }
+                 </InputSelect>
+                <ValidationMessage For="@(() => model.paymentMethod)" />
             </div>
              <div class="form-group">
-                <label>Shipment Methode:</label>
-                <InputText @bind-Value="model.shipmentMethode" class="form-control" />
-                <ValidationMessage For="@(() => model.shipmentMethode)" />
+                <label>Shipment Method:</label>
+                <InputSelect @bind-Value="model.shipmentMethod" class="form-control" >
+                    @foreach (var shipmentMethod in shipmentMethods)
+                    {
+                        <option value="@shipmentMethod">@shipmentMethod</option>
+                    }
+                 </InputSelect>
+                <ValidationMessage For="@(() => model.shipmentMethod)" />
             </div>
             <button disabled="@loading" class="btn btn-primary">
                 @if (loading) 
@@ -61,6 +71,8 @@
 @code {
     private Models.PurchaseModel model =new Models.PurchaseModel();
     private bool loading;
+    private ICollection<String> paymentMethods = new List<String>();
+    private ICollection<String> shipmentMethods = new List<String>();
 
     private async void OnValidSubmit()
     {
@@ -70,7 +82,7 @@
         loading = true;
         try
         {
-            Response response = await MarketAPIClient.PurchaseMyCart(model.address, model.city,  model.country,  model.zip,  model.purchaserName,  model.paymentMethode,  model.shipmentMethode);
+            Response response = await MarketAPIClient.PurchaseMyCart(model.address, model.city,  model.country,  model.zip,  model.purchaserName,  model.paymentMethod,  model.shipmentMethod);
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);
@@ -83,6 +95,33 @@
         {
             AlertService.Error(ex.Message);
             loading = false;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Response<List<String>> response = await MarketAPIClient.GetPaymentMethods();
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            paymentMethods = response.Value;
+            StateHasChanged();
+        }
+
+        response = await MarketAPIClient.GetShipmentMethods();
+        if (response.ErrorOccured)
+        {
+            AlertService.Error(response.ErrorMessage);
+            StateHasChanged();
+        }
+        else
+        {
+            shipmentMethods = response.Value;
             StateHasChanged();
         }
     }

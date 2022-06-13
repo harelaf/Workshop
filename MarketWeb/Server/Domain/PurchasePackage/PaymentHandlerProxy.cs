@@ -29,5 +29,10 @@ namespace MarketWeb.Server.Domain
         {
             throw new NotImplementedException();
         }
+
+        public List<String> GetPaymentMethods()
+        {
+            return new List<string>(_paymentServices_name_ip.Keys);
+        }
     }
 }

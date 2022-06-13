@@ -1055,6 +1055,16 @@ namespace MarketWeb.Server.Domain
             Condition condition = new ConditionParser(conditionString).Parse();
             _storeManagement.AddStorePurchasePolicy(storeName, condition);
         }
+
+        internal List<string> GetPaymentMethods()
+        {
+            return PurchaseProcess.GetInstance()._paymentHandlerProxy.GetPaymentMethods();
+        }
+
+        internal List<string> GetShipmentMethods()
+        {
+            return PurchaseProcess.GetInstance()._shippingHandlerProxy.GetShipmentMethods();
+        }
     }
 }
 

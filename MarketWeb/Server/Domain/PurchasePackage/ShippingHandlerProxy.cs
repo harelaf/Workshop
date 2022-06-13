@@ -30,5 +30,10 @@ namespace MarketWeb.Server.Domain
         {
             throw new NotImplementedException();
         }
+
+        internal List<string> GetShipmentMethods()
+        {
+            return new List<string>(_shipmentServices_name_ip.Keys);
+        }
     }
 }

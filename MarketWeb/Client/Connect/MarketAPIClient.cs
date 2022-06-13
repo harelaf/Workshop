@@ -73,6 +73,8 @@ namespace MarketWeb.Client.Connect
         public Task<Response> SendAdminMessage(String receiverUsername, String title, String message);
         public Task<Response> AddStoreDiscount(String StoreName, String ConditionString, String DiscountString);
         public Task<Response> AddStorePurchasePolicy(String StoreName, String ConditionString);
+        public Task<Response<List<string>>> GetPaymentMethods();
+        public Task<Response<List<string>>> GetShipmentMethods();
     }
 
     public class MarketAPIClient : IMarketAPIClient
@@ -764,6 +766,19 @@ namespace MarketWeb.Client.Connect
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response res = await _httpService.Post<Response>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response<List<string>>> GetPaymentMethods()
+        {
+            const string url = "api/market/GetPaymentMethods";
+            Response<List<string>> res = await _httpService.Get<Response<List<string>>>(url);
+            return res;
+        }
+        public async Task<Response<List<string>>> GetShipmentMethods()
+        {
+            const string url = "api/market/GetShipmentMethods";
+            Response<List<string>> res = await _httpService.Get<Response<List<string>>>(url);
             return res;
         }
     }

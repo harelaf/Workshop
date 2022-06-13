@@ -1331,6 +1331,38 @@ namespace MarketWeb.Service
             }
             return response;
         }
+        [HttpGet("GetPaymentMethods")]
+        public Response<List<String>> GetPaymentMethods()
+        {
+            Response<List<String>> response;
+            try
+            {
+
+                List<String> paymentMethods = _market.GetPaymentMethods();
+                response = new Response<List<String>>(paymentMethods);
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<String>>(null, e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        [HttpGet("GetShipmentMethods")]
+        public Response<List<String>> GetShipmentMethods()
+        {
+            Response<List<String>> response;
+            try
+            {
+
+                List<String> paymentMethods = _market.GetShipmentMethods();
+                response = new Response<List<String>>(paymentMethods);
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<String>>(null, e); _logger.Error(e.Message);
+            }
+            return response;
+        }
         public void LoadData()
         {
             String username1 = "username1";
