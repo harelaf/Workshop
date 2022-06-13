@@ -291,12 +291,22 @@ namespace MarketWeb.Server.Domain
 
         private DiscountPolicy DiscountPolicyDalToDomain(DiscountPolicyDAL discountPolicy)
         {
-            throw new NotImplementedException();
+            DiscountPolicy policy = new DiscountPolicy();
+            foreach (DiscountDAL discount in discountPolicy._discounts)
+            {
+                policy.AddDiscount(DiscountDalToDomain(discount));
+            }
+            return policy;
         }
 
         private PurchasePolicy PurchasePolicyDalToDomain(PurchasePolicyDAL purchasePolicy)
         {
-            throw new NotImplementedException();
+            PurchasePolicy policy = new PurchasePolicy();
+            foreach (ConditionDAL condition in purchasePolicy.conditions)
+            {
+                policy.AddCondition(ConditionDalToDomain(condition));
+            }
+            return policy;
         }
 
         public MessageToStore MessageToStoreDALToDomain(MessageToStoreDAL msg)
