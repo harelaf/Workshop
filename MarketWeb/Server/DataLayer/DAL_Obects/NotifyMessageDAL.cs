@@ -8,31 +8,31 @@ namespace MarketWeb.Server.DataLayer
     public class NotifyMessageDAL
     {
         [Key]
-        internal int mid { get; set; }
+        public int mid { get; set; }
         [Required]
-        internal String _storeName { get; set; }
+        public String _storeName { get; set; }
         [Required]
-        internal String _title { get; set; }
+        public String _title { get; set; }
         [Required]
-        internal String _message { get; set; }
-        [Required]
-        internal String _receiverUsername { get; set; }
-
-        public NotifyMessageDAL(string storeName, string title, string message, string receiverUsername)
+        public String _message { get; set; }
+        public NotifyMessageDAL(string storeName, string title, string message)
         {
             _storeName = storeName;
             _title = title;
             _message = message;
-            _receiverUsername = receiverUsername;
         }
 
-        public NotifyMessageDAL(int mid, string storeName, string title, string message, string receiverUsername)
+        public NotifyMessageDAL(int mid, string storeName, string title, string message)
         {
             this.mid = mid;
             _storeName = storeName;
             _title = title;
             _message = message;
-            _receiverUsername = receiverUsername;
+        }
+
+        public NotifyMessageDAL()
+        {
+            // ???
         }
     }
 }

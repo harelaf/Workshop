@@ -19,7 +19,6 @@ namespace MarketWeb.Server.DataLayer
         public List<StoreManagerDAL> _managers { get; set; }
         public List<StoreOwnerDAL> _owners { get; set; }
         public StoreFounderDAL _founder { get; set; }
-        [Required]
         public StoreState _state { get; set; }
         public PurchasePolicyDAL _purchasePolicy { get; set; }
         public DiscountPolicyDAL _discountPolicy { get; set; }
@@ -51,13 +50,17 @@ namespace MarketWeb.Server.DataLayer
             _purchasePolicy = new PurchasePolicyDAL(new List<ConditionDAL>());
             _discountPolicy = new DiscountPolicyDAL(new List<DiscountDAL>());
         }
-        //private PurchasePolicy _purchasePolicy;
-        //private DiscountPolicy _discountPolicy;
 
         public StoreDAL()
         {
-            // Empty constructor for some reason?
+            //_stock = new StockDAL();
+            //_messagesToStore = new List<MessageToStoreDAL>();
+            //_rating = new RatingDAL();
+            //_managers = new List<StoreManagerDAL>();
+            //_owners = new List<StoreOwnerDAL>();
+            //_founder = new StoreFounderDAL("test", "test");
+            //_purchasePolicy = new PurchasePolicyDAL();
+            //_discountPolicy = new DiscountPolicyDAL();
         }
-
     }
 }

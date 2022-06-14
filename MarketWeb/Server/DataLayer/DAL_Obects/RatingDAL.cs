@@ -18,7 +18,7 @@ namespace MarketWeb.Server.DataLayer
 
         public RatingDAL()
         {
-            // ???
+            _ratings = new List<RateDAL>();
         }
     }
 }

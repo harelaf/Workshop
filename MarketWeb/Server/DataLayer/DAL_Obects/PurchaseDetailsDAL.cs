@@ -21,7 +21,7 @@ namespace MarketWeb.Server.DataLayer
 
         public PurchaseDetailsDAL()
         {
-            // ???
+            discountList = new List<AtomicDiscountDAL>();
         }
     }
 }
