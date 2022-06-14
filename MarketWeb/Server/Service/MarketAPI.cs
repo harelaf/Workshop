@@ -24,8 +24,8 @@ namespace MarketWeb.Service
         //private ILogger<MarketAPI> _logger;
         private int _id;
         private bool testMode = false;
-        private static bool useInitializationFile = false;
-        private static bool useConfigurationFile = false;
+        private static bool useInitializationFile = true;
+        private static bool useConfigurationFile = true;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             if (market == null)
@@ -44,13 +44,13 @@ namespace MarketWeb.Service
                 try
                 {
                     Dictionary<String, String> configurations = new ConfigurationFileParser().ParseConfigurationFile();
-                    _market.RestartSystem(configurations["admin_username"], configurations["admin_password"], configurations["external_shipping"], configurations["external_payment"]);
+                    _market.RestartSystem(configurations["admin_username"], configurations["admin_password"], configurations["external_shipping"], configurations["external_payment"]).Wait();
                 }
                 catch (Exception e)
                 {
                     _logger.Error(e.Message);
                     _logger.Error("Unable to load configuration properly, exiting system.");
-                    Environment.Exit(1);
+                    Environment.Exit(-1);
                 }
             }
 

@@ -82,8 +82,6 @@ namespace MarketProject.Domain.Tests
             cartMoq.Setup(x => x.RelaseItemsOfCart());
         }
 
-        // COMMENTED EVERYTHING OUT BECAUSE PURCHASE CHANGED, NEED TO REVISE ==================================================================================
-
         [TestMethod]
         public void TestPurchase_PaymentNShippingAproved()
         {

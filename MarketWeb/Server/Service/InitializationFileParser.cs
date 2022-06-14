@@ -90,7 +90,7 @@ namespace MarketWeb.Server.Service
             {
                 if (LineNumber == -1)
                 {
-                    if (fileline == "ignore_file")
+                    if (fileline.Trim().Equals("ignore_file"))
                     {
                         return;
                     }
