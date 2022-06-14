@@ -14,13 +14,13 @@ Follow these steps to run the system:
 2. Download the "Initialization-File.txt" and "Configuration-File.txt" from the wiki pages to the following directory:
    MarketWeb/Server/bin/Debug/netcoreapp3.1
 4. You may change the initialization file and configuration file, please read the formats for these files specified later in this README. 
-5. If you wish to use the Initialization file, open the MarketWeb/Server/Service/MarketAPI.cs file in a text editor, and change "useInitializationFile" to "true".
-6. Run the MarketWeb/Server project.
-7. A default admin user is already initialized into the system. If the configuration file was unchanged: username: admin, password: admin.
+5. Run the MarketWeb/Server project.
+6. If the configuration file was unchanged the default admin is: username: admin, password: admin.
 
 ## Initialization & Configuration File Formats
 ### Initialization
 The basic initialization file in the wiki has the instructions on how to add dummy data.
+If you would like the system to ignore the file, the first line should be: "ignore_file true".
 Start by using EnterSystem(), and then call the wanted functions from MarketAPI.
 ### Configuration
 The format for this file is:
@@ -31,12 +31,11 @@ The allowed parameters are:
 * admin_username - the username of the initial admin.
 * admin_password - the password of the initial admin.
 * db_ip - the ip of the database.
-* db_name - the name of the database.
-* db_fullname - the full name of the database.
+* db_initial_catalog - the database name.
+* db_username - the username of a user of the database.
 * db_password - the password of the database.
-* db_connection_string - the connection string for the database.
-* external_stock - the ip/url of the external stock system.
-* external_purchase - the ip/url of the external purchase processing system.
+* external_shipping - the ip/url of the external shipping system.
+* external_payment - the ip/url of the external payment system.
 
 ## Colaborators
 - Harel Afriat 211980776
