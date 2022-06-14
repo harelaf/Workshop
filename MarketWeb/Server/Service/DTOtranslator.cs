@@ -431,7 +431,7 @@ namespace MarketWeb.Service
         }
         public StoreFounderDTO toDTO(StoreFounder storeFounder)
         {
-            return new StoreFounderDTO(storeFounder.StoreName, storeFounder.Username);
+            return new StoreFounderDTO(storeFounder.Username, storeFounder.StoreName);
         }
         public StoreManagerDTO toDTO(StoreManager storeManager)
         {

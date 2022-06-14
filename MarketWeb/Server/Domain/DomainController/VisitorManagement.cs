@@ -31,7 +31,7 @@ namespace MarketWeb.Server.Domain
         private DalTRranslator _dalTRranslator;
         private DalController _dalController = DalController.GetInstance();
         protected NotificationHub _notificationHub;
-        private static bool hasInitialized = true;
+        private static bool hasInitialized = false;
 
         // ===================================== CONSTRUCTORS =====================================
 

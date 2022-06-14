@@ -22,7 +22,7 @@ namespace MarketWeb.Server.Domain
             {
                 _stores = _translator.StoreListDalToDomain(_dalController.GetAllActiveStores());
             }
-
+            hasInitialized = true;
         }
 
         public Store GetActiveStore(String storeName)
