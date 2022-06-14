@@ -26,50 +26,53 @@
         double totalWithDiscount = 0;
         IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
         <h4>Store: @storeName</h4>
-        <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
-            <tr>
-                <th>Product Name</th>
-                <th>Amount</th>
-                <th>Price Per Unit</th>
-                <th>Applied Discounts</th>
-                <th>Actual Price Per All Items</th>
-                <th>Remove Item</th>
-                <th>Update Quantity</th>
-            </tr>
-            @foreach (int itemID in items.Keys)
-            {
-                List<String> dislist = items[itemID].Item2.DiscountList;
-                String detailsString = dislist == null || dislist.Count == 0 ? "no discount" : String.Join("\n", items[itemID].Item2.DiscountList);//"kkklll";//
-                totalNoDiscount += items[itemID].Item1.Price * items[itemID].Item2.Amount;
-                totalWithDiscount += items[itemID].Item2.ActualPrice;
-                totalAllBasketsWithDiscount += items[itemID].Item2.ActualPrice;
-                <tr id="@(items[itemID].Item1.Name + storeName)">
-                    <th>@items[itemID].Item1.Name</th>
-                    <th>@items[itemID].Item2.Amount</th>
-                    <th>$@items[itemID].Item1.Price</th>
-                    <th>@detailsString</th>
-                    <th>@items[itemID].Item2.ActualPrice</th>
-                    <th>
-                        <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
-                    </th>
-                    <th>
-                        <div>
-                            <EditForm Model="@UpdateItemQuantityInCartModel">
-                                <DataAnnotationsValidator/>
-                                <div id="@itemID" class="form-group">
-                                    <label>New Quantity</label>
-                                    <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
-                                </div>
-                                <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
-                            </EditForm>
-                        </div>
-                    </th>
+        @if (shoppingBasketDTO.Items.Count > 0)
+        {
+            <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Amount</th>
+                    <th>Price Per Unit</th>
+                    <th>Applied Discounts</th>
+                    <th>Actual Price Per All Items</th>
+                    <th>Remove Item</th>
+                    <th>Update Quantity</th>
                 </tr>
-            }
-        </table>
+                @foreach (int itemID in items.Keys)
+                {
+                    List<String> dislist = items[itemID].Item2.DiscountList;
+                    String detailsString = dislist == null || dislist.Count == 0 ? "no discount" : String.Join("\n", items[itemID].Item2.DiscountList);//"kkklll";//
+                    totalNoDiscount += items[itemID].Item1.Price * items[itemID].Item2.Amount;
+                    totalWithDiscount += items[itemID].Item2.ActualPrice;
+                    totalAllBasketsWithDiscount += items[itemID].Item2.ActualPrice;
+                    <tr id="@(items[itemID].Item1.Name + storeName)">
+                        <th>@items[itemID].Item1.Name</th>
+                        <th>@items[itemID].Item2.Amount</th>
+                        <th>$@items[itemID].Item1.Price</th>
+                        <th>@detailsString</th>
+                        <th>@items[itemID].Item2.ActualPrice</th>
+                        <th>
+                            <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
+                        </th>
+                        <th>
+                            <div>
+                                <EditForm Model="@UpdateItemQuantityInCartModel">
+                                    <DataAnnotationsValidator/>
+                                    <div id="@itemID" class="form-group">
+                                        <label>New Quantity</label>
+                                        <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
+                                    </div>
+                                    <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
+                                </EditForm>
+                            </div>
+                        </th>
+                    </tr>
+                }
+            </table>
+        }
         @if(shoppingBasketDTO.BiddedItems.Count > 0)
         {
-            <h2>Bids in '@shoppingBasketDTO.StoreName'</h2>
+            <h4>Bids in '@shoppingBasketDTO.StoreName'</h4>
             <br />
             <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
                 <tr>

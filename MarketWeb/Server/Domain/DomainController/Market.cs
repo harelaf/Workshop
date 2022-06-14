@@ -1215,8 +1215,6 @@ namespace MarketWeb.Server.Domain
             _storeManagement.BidItemInStore(storeName, itemId, amount, newPrice, bidder);
             String title = $"A New Bid In '{storeName}'!";
             String message = $"a visitor entered a new bid for item id '{itemId}' at the '{storeName}' store.";
-            StoreFounder founder = _storeManagement.getStoreFounder(storeName);
-            _VisitorManagement.SendNotificationMessageToRegistered(founder.Username, storeName, title, message);
             List<String> involvedUsernames = _storeManagement.GetUsernamesWithPermissionInStore(storeName, Operation.STOCK_EDITOR);
             foreach (String username in involvedUsernames)
                 _VisitorManagement.SendNotificationMessageToRegistered(username, storeName, title, message);

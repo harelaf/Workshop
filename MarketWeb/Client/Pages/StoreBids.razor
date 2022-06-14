@@ -39,6 +39,7 @@
                 <th>Counter Offer</th>
                 <th>Respond</th>
                 <th>Status</th>
+                <th>View Status</th>
             </tr>
         </thead>
         <tbody>
@@ -46,6 +47,7 @@
             {
                 foreach(BidDTO bid in bids)
                 {
+                    String status = bid.AcceptedByAll ? "ACCEPTED BY ALL" : "IN PROGRESS";
                     <tr>
                         <th>@bid.ItemID</th>
                         <th>@bid.Amount</th>
@@ -55,6 +57,7 @@
                         <th>
                             <button class="btn btn-primary" @onclick="() => AllowResponseToBid(bid)">Respond</button>
                         </th>
+                        <th>@status</th>
                         @if (CanViewStoreRoles)
                         {
                             <th>
@@ -170,6 +173,9 @@
                 throw new Exception(response.ErrorMessage);
             }
             focusedBid = null;
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreBids");
+            AlertService.Info("Successfully set bid counter offer.");
         }
         catch (Exception ex)
         {
@@ -195,6 +201,9 @@
                 throw new Exception(response.ErrorMessage);
             }
             focusedBid = null;
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreBids");
+            AlertService.Info("Successfully accepted bid.");
         }
         catch (Exception ex)
         {
@@ -220,6 +229,9 @@
                 throw new Exception(response.ErrorMessage);
             }
             focusedBid = null;
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreBids");
+            AlertService.Info("Successfully rejected bid.");
         }
         catch (Exception ex)
         {
