@@ -23,15 +23,14 @@ namespace MarketWeb.Server.Service
             configurations["admin_username"] = "";
             configurations["admin_password"] = "";
             configurations["db_ip"] = "";
-            configurations["db_name"] = "";
-            configurations["db_fullname"] = "";
+            configurations["db_initial_catalog"] = "";
+            configurations["db_username"] = "";
             configurations["db_password"] = "";
-            configurations["db_connection_string"] = "";
-            configurations["external_stock"] = "";
-            configurations["external_purchase"] = "";
+            configurations["external_shipping"] = "";
+            configurations["external_payment"] = "";
         }
 
-        public void ParseConfigurationFile()
+        public Dictionary<String, String> ParseConfigurationFile()
         {
             if (!File.Exists(FILE_PATH))
                 throw new FileNotFoundException("CONFIG: File not found.");
@@ -54,36 +53,21 @@ namespace MarketWeb.Server.Service
                 }
             }
 
-            if (configurations["external_purchase"] == "" || configurations["external_stock"] == "")
+            if (configurations["external_shipping"] == "" || configurations["external_payment"] == "")
                 throw new Exception("CONFIG: External systems are not specified in the configuration file.");
-            // CHECK IF PURCHASE AND STOCK SYSTEMS ARE CORRECT, ELSE THROW EXCEPTION.
+            if (configurations["db_ip"] == "" || configurations["db_initial_catalog"] == "" || configurations["db_username"] == "" || configurations["db_password"] == "")
+                throw new Exception("CONFIG: DB values are missing (ip, initial_catalog, username, password).");
 
-            // CREATE DB BY SENDING THE VALUES OF DB:
-            // configurations["db_ip"] = "";
-            // configurations["db_name"] = "";
-            // configurations["db_fullname"] = "";
-            // configurations["db_password"] = "";
-            // configurations["db_connection_string"] = "";
+            if (configurations["admin_username"] == "")
+            {
+                configurations["admin_username"] = "admin";
+            }
+            if (configurations["admin_password"] == "")
+            {
+                configurations["admin_password"] = "admin";
+            }
 
-            // TODO
-            // REMEMBER TO REMOVE ADMIN INITIALIZATION IN VisitorManagement
-            // TODO
-            if (configurations["admin_username"] == "" || configurations["admin_password"] == "")
-            {
-                // Call DB and add new registered user:
-                // username = admin
-                // password = admin
-                // dob = 1.1.2000
-                // Add role SystemAdmin
-            }
-            else
-            {
-                // Call DB and add new registered user:
-                // username = configurations["admin_username"]
-                // password = configurations["admin_password"]
-                // dob = 1.1.2000
-                // Add role SystemAdmin
-            }
+            return configurations;
         }
 
         private void ParseLine(String line, int LineNumber)

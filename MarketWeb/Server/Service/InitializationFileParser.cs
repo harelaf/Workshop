@@ -88,6 +88,13 @@ namespace MarketWeb.Server.Service
             int LineNumber = -1;
             foreach (string fileline in File.ReadLines(FILE_PATH))
             {
+                if (LineNumber == -1)
+                {
+                    if (fileline == "ignore_file")
+                    {
+                        return;
+                    }
+                }
                 LineNumber++;
                 String line = fileline.Trim();
                 if (line.Length == 0)

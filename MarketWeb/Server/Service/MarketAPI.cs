@@ -43,9 +43,8 @@ namespace MarketWeb.Service
                 useConfigurationFile = false;
                 try
                 {
-                    new ConfigurationFileParser().ParseConfigurationFile();
-                    // TODO
-                    // GET DB CONNECTION? SEND IT TO MARKET?
+                    Dictionary<String, String> configurations = new ConfigurationFileParser().ParseConfigurationFile();
+                    _market.RestartSystem(configurations["admin_username"], configurations["admin_password"], configurations["external_shipping"], configurations["external_payment"]);
                 }
                 catch (Exception e)
                 {

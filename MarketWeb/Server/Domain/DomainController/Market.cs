@@ -32,9 +32,8 @@ namespace MarketWeb.Server.Domain
             _notificationHub = notificationHub;
             _VisitorManagement.SetNotificationHub(notificationHub);
 
-            RestartSystem("admin", "admin", "https://cs-bgu-wsep.herokuapp.com/", "https://cs-bgu-wsep.herokuapp.com/");
+            // Calling RestartSystem after creating this object is important.
         }
-
 
         /// <summary>
         /// <para> For Req I.1. </para>
