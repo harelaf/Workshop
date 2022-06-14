@@ -39,13 +39,19 @@ namespace MarketWeb.Server.Domain
         /// <para> For Req I.1. </para>
         /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
         /// </summary>
-        public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
+        public async void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
             _VisitorManagement.AdminStart(adminUsername, adminPassword);
 
             // Do starting system stuff with IPs
-            PurchaseProcess.GetInstance().AddPaymentMethod("WSIE", new WSIEPaymentHandler(ipPaymentService));
-            PurchaseProcess.GetInstance().AddShipmentMethod("WSEP", new WSEPShippingHandler(ipShippingService));
+            WSIEPaymentHandler paymentHandler = new WSIEPaymentHandler(ipPaymentService);
+            if (!(await paymentHandler.Handshake()))
+                throw new Exception("CONFIG: Payment method wasn't available.");
+            PurchaseProcess.GetInstance().AddPaymentMethod("WSIE", paymentHandler);
+            WSEPShippingHandler shippingHandler = new WSEPShippingHandler(ipShippingService);
+            if (!(await shippingHandler.Handshake()))
+                throw new Exception("CONFIG: Shipping method wasn't available.");
+            PurchaseProcess.GetInstance().AddShipmentMethod("WSEP", shippingHandler);
         }
 
         /// add\update basket eof store with item and amount.
