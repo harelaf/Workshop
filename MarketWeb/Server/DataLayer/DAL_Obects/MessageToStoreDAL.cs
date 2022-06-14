@@ -19,16 +19,17 @@ namespace MarketWeb.Server.DataLayer
         [ForeignKey("RegisterdeDAL")]
         public String _senderUsername { get; set; }
         [ForeignKey("StoreDAL")]
-        public string _storeName;
+        public string _storeName { get; set; }
         [Required]
         public String _message { get; set; }
         [Required]
         public String _title { get; set; }
         public string _reply { get; set; }
         public string _replierFromStore { get; set; }
-        [NotMapped]
-        public StoreMessageStatus Status { get { return _reply == null ? StoreMessageStatus.Open : StoreMessageStatus.Closed; } }
+        //[NotMapped]
+        // StoreMessageStatus Status { get { return _reply == null ? StoreMessageStatus.Open : StoreMessageStatus.Closed; } }
 
+        public StoreMessageStatus Status() { return _reply == null ? StoreMessageStatus.Open : StoreMessageStatus.Closed; }
 
         public MessageToStoreDAL(int mid, string senderUsername, string message, string title, string reply, string replierFromStore, string storename)
         {
