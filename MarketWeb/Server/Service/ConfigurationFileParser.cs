@@ -7,6 +7,7 @@ namespace MarketWeb.Server.Service
 {
     public class ConfigurationFileParser
     {
+        private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Dictionary<String, String> configurations;
         private readonly String FILE_PATH = "";
 
@@ -26,6 +27,8 @@ namespace MarketWeb.Server.Service
             configurations["db_fullname"] = "";
             configurations["db_password"] = "";
             configurations["db_connection_string"] = "";
+            configurations["external_stock"] = "";
+            configurations["external_purchase"] = "";
         }
 
         public void ParseConfigurationFile()
@@ -41,8 +44,19 @@ namespace MarketWeb.Server.Service
                     continue;
                 else if (line.StartsWith("//"))
                     continue;
-                ParseLine(line, LineNumber);
+                try
+                {
+                    ParseLine(line, LineNumber);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.Message);
+                }
             }
+
+            if (configurations["external_purchase"] == "" || configurations["external_stock"] == "")
+                throw new Exception("CONFIG: External systems are not specified in the configuration file.");
+            // CHECK IF PURCHASE AND STOCK SYSTEMS ARE CORRECT, ELSE THROW EXCEPTION.
 
             // CREATE DB BY SENDING THE VALUES OF DB:
             // configurations["db_ip"] = "";

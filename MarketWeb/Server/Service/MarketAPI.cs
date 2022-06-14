@@ -50,6 +50,8 @@ namespace MarketWeb.Service
                 catch (Exception e)
                 {
                     _logger.Error(e.Message);
+                    _logger.Error("Unable to load configuration properly, exiting system.");
+                    Environment.Exit(1);
                 }
             }
 
