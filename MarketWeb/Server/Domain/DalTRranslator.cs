@@ -226,16 +226,16 @@ namespace MarketWeb.Server.Domain
 
         public StoreManagerDAL StoreManagerDomainToDal(StoreManager manager)
         {
-            return new StoreManagerDAL(manager.Appointer);
+            return new StoreManagerDAL(manager.Appointer, manager.Username, manager.StoreName);
         }
 
         public StoreOwnerDAL StoreOwnerDomainToDal(StoreOwner owner)
         {
-            return new StoreOwnerDAL(owner.Appointer);
+            return new StoreOwnerDAL(owner.Appointer, owner.Username, owner.StoreName);
         }
         public StoreFounderDAL StoreFounderDomainToDal(StoreFounder founder)
         {
-            return new StoreFounderDAL();
+            return new StoreFounderDAL(founder.Username, founder.StoreName);
         }
         public MessageToStoreDAL MessageToStoreDomainToDAL(MessageToStore messageToStore)
         {
@@ -264,7 +264,8 @@ namespace MarketWeb.Server.Domain
             Stock stock = StockDalToDomain(storeDAL._stock);
             PurchasePolicy purchasePolicy = PurchasePolicyDalToDomain(storeDAL._purchasePolicy);
             DiscountPolicy discountPolicy = DiscountPolicyDalToDomain(storeDAL._discountPolicy);
-            StoreFounder founder = StoreFounderDalToDomain(storeDAL._founder);
+            StoreFounderDAL founderDAL = DalController.GetInstance().GetStoreFounder(storeDAL._storeName);
+            StoreFounder founder = StoreFounderDalToDomain(founderDAL);
             String storeName = storeDAL._storeName;
             StoreState state = storeDAL._state;
             Rating rating = RatingDalToDomain(storeDAL._rating);
@@ -274,13 +275,15 @@ namespace MarketWeb.Server.Domain
             {
                 messagesToStore.Add(MessageToStoreDALToDomain(messageToStoreDAL));
             }
+            List<StoreManagerDAL> storeManagerDALs= DalController.GetInstance().GetStoreManagers(storeDAL._storeName); ;
             List<StoreManager> managers = new List<StoreManager>();
-            foreach (StoreManagerDAL manager in storeDAL._managers)
+            foreach (StoreManagerDAL manager in storeManagerDALs)
             {
                 managers.Add(StoreManagerDalToDomain(manager));
             }
+            List<StoreOwnerDAL> ownersDAL = DalController.GetInstance().GetStoreOwners(storeDAL._storeName); ;
             List<StoreOwner> owners = new List<StoreOwner>();
-            foreach (StoreOwnerDAL owner in storeDAL._owners)
+            foreach (StoreOwnerDAL owner in ownersDAL)
             {
                 owners.Add(StoreOwnerDalToDomain(owner));
             }
@@ -553,8 +556,9 @@ namespace MarketWeb.Server.Domain
             {
                 repliedMessages.Add(MessageToStoreDalToDomain(repliedMessage));
             }
+            ICollection<SystemRoleDAL> rolesDAL = DalController.GetInstance().GetRegisteredRolesByUsername(registeredDAL._username);
             ICollection<SystemRole> roles = new List<SystemRole>();
-            foreach(SystemRoleDAL role in registeredDAL._roles)
+            foreach(SystemRoleDAL role in rolesDAL)
             {
                 roles.Add(SystemRoleDalToDomain(role));
             }
@@ -733,22 +737,22 @@ namespace MarketWeb.Server.Domain
             if (role is SystemAdmin)
             {
                 SystemAdmin systemAdmin = (SystemAdmin)role;
-                return new SystemAdminDAL();
+                return new SystemAdminDAL(systemAdmin.Username);
             }
             if (role is StoreFounder)
             {
                 StoreFounder storeFounder = (StoreFounder)role;
-                return new StoreFounderDAL();
+                return new StoreFounderDAL(storeFounder.Username, storeFounder.StoreName);
             }
             if (role is StoreOwner)
             {
                 StoreOwner storeOwner = (StoreOwner)role;
-                return new StoreOwnerDAL(storeOwner.Appointer);
+                return new StoreOwnerDAL(storeOwner.Appointer, storeOwner.Username, storeOwner.StoreName);
             }
             if (role is StoreManager)
             {
                 StoreManager storeManager = (StoreManager)role;
-                return new StoreManagerDAL(storeManager.Appointer);
+                return new StoreManagerDAL(storeManager.Appointer, storeManager.Username, storeManager.StoreName);
             }
             else
                 throw new Exception("can;t happen");

@@ -29,24 +29,44 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public int id { get; set; }
         [ForeignKey("RegisterdDAL")]
+        public string _username { get; set; }
+
+        [ForeignKey("StoreDAL")]
+        public string _storeName { get; set; }
+
+        [ForeignKey("RegisterdDAL")]
         public string _appointer { get; set; }
+
         public List<OperationWrapper> _operationsWrappers { get; set; }
         [NotMapped]
         public ICollection<Operation> _operations { get; set; }
 
-        protected SystemRoleDAL(ISet<Operation> operations)
+        protected SystemRoleDAL(string username)
         {
-            _operations = operations;
+            _username = username;
+            _operations = getOps();
             _operationsWrappers = new List<OperationWrapper>();
             foreach (Operation op in _operations)
             {
                 _operationsWrappers.Add(new OperationWrapper(op));
             }
         }
-        protected SystemRoleDAL(ISet<Operation> operations, string appointer)
+        protected SystemRoleDAL(string username, string storename)
         {
+            _storeName = storename;
+            _username = username;
+            _operations = getOps();
+            _operationsWrappers = new List<OperationWrapper>();
+            foreach (Operation op in _operations)
+            {
+                _operationsWrappers.Add(new OperationWrapper(op));
+            }
+        }
+        protected SystemRoleDAL(string appointer, string username, string storename)
+        {
+            _username=username;
             _appointer = appointer;
-            _operations = operations;
+            _operations = getOps();
             _operationsWrappers = new List<OperationWrapper>();
             foreach (Operation op in _operations)
             {
@@ -55,8 +75,12 @@ namespace MarketWeb.Server.DataLayer
         }
         protected SystemRoleDAL()
         {
+            _operations = getOps();
             _operationsWrappers = new List<OperationWrapper>();
-            _operations = new List<Operation>();
+            foreach (Operation op in _operations)
+            {
+                _operationsWrappers.Add(new OperationWrapper(op));
+            }
         }
         public ISet<Operation> ConvertToSet()
         {
@@ -67,18 +91,19 @@ namespace MarketWeb.Server.DataLayer
             }
             return operations;
         }
+        protected abstract ISet<Operation> getOps();
     }
     public class SystemAdminDAL : SystemRoleDAL
     {
 
-        public SystemAdminDAL() : base(getOps())
+        public SystemAdminDAL() : base()
         { }
 
-        public SystemAdminDAL(ISet<Operation> operations) : base(operations)
+        public SystemAdminDAL(string username) : base(username)
         {
         }
 
-        private static ISet<Operation> getOps()
+        protected override ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();
             roles.Add(Operation.PERMENENT_CLOSE_STORE);
@@ -89,19 +114,21 @@ namespace MarketWeb.Server.DataLayer
             roles.Add(Operation.STORE_INFORMATION);
             return roles;
         }
+
+
     }
     public class StoreFounderDAL : SystemRoleDAL
     {
 
-        public StoreFounderDAL() : base(getOps())
+        public StoreFounderDAL() : base()
         {
         }
 
-        public StoreFounderDAL(ISet<Operation> operations) : base(operations)
+        public StoreFounderDAL(string username, string storename) : base(username, storename)
         {
         }
 
-        private static ISet<Operation> getOps()
+        protected override ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();
             roles.Add(Operation.MANAGE_INVENTORY);
@@ -124,16 +151,13 @@ namespace MarketWeb.Server.DataLayer
     }
     public class StoreOwnerDAL : SystemRoleDAL
     {
-        public StoreOwnerDAL(string appointer) : base(getOps(),appointer)
-        {
-            _appointer = appointer;
-        }
+        public StoreOwnerDAL(string appointer, string username, string storename) : base(appointer, username, storename) { }
 
-        public StoreOwnerDAL(ISet<Operation> operations, string appointer) : base(operations, appointer)
+        public StoreOwnerDAL() : base()
         {
         }
 
-        private static ISet<Operation> getOps()
+        protected override ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();
             roles.Add(Operation.MANAGE_INVENTORY);
@@ -153,13 +177,12 @@ namespace MarketWeb.Server.DataLayer
     }
     public class StoreManagerDAL : SystemRoleDAL
     {
-        public StoreManagerDAL(string appointer) : base(getOps(), appointer)
-        {        }
+        public StoreManagerDAL(string appointer, string username, string storename) : base(appointer, username, storename) { }
 
-        public StoreManagerDAL(ISet<Operation> operations, string appointer) : base(operations, appointer)
+        public StoreManagerDAL() : base()
         {
         }
-        private static ISet<Operation> getOps()
+        protected override ISet<Operation> getOps()
         {
             ISet<Operation> roles = new HashSet<Operation>();
             roles.Add(Operation.RECEIVE_AND_REPLY_STORE_MESSAGE);

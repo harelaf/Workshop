@@ -11,6 +11,7 @@ namespace MarketWeb.Server.DataLayer
         public DbSet<StorePurchasedBasketDAL> StorePurchaseHistory { get; set; }
         public DbSet<RegisteredPurchasedCartDAL> RegisteredPurchaseHistory { get; set; }
         public DbSet<MessageToStoreDAL> MessageToStoreDALs { get; set; }
+        public DbSet<SystemRoleDAL> SystemRoleDALs { get; set; }
         public string connectionStr { get; set; } = "Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
 
         // The following configures EF to create a Sqlite database file in the
