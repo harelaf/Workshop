@@ -184,7 +184,7 @@ namespace MarketWeb.Server.DataLayer
         public void addStorePurchse(ShoppingBasketDAL basket, DateTime date, string storename)
         {
             PurchasedBasketDAL PurchasedBasket = new PurchasedBasketDAL(date, basket);
-            StorePurchasedBasketDAL storePurchasedBasketDAL = context.StorePurchaseHistory.Find(storename);
+            StorePurchasedBasketDAL storePurchasedBasketDAL = context.StorePurchaseHistory.Include(x => x._PurchasedBaskets).FirstOrDefault(s => s._storeName == storename);
             if (storePurchasedBasketDAL == null)
                 storePurchasedBasketDAL = new StorePurchasedBasketDAL(storename);
             storePurchasedBasketDAL._PurchasedBaskets.Add(PurchasedBasket);
@@ -199,7 +199,7 @@ namespace MarketWeb.Server.DataLayer
             if (registeredDAL == null)
                 throw new Exception($"user: {userName} not in system");
             PurchasedCartDAL PurchasedCart = new PurchasedCartDAL(date, registeredDAL._cart);
-            RegisteredPurchasedCartDAL registeredPurchasedCartDAL = context.RegisteredPurchaseHistory.Find(userName);
+            RegisteredPurchasedCartDAL registeredPurchasedCartDAL = context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).FirstOrDefault(s => s.userName == userName);
             if (registeredPurchasedCartDAL == null)
                 registeredPurchasedCartDAL = new RegisteredPurchasedCartDAL(userName);
 
@@ -553,6 +553,7 @@ namespace MarketWeb.Server.DataLayer
         public int FileComplaint(int cartID, String message, string sender)
         {
             ComplaintDAL complaint = new ComplaintDAL(sender, cartID, message);
+
             context.ComplaintDALs.Add(complaint);
             context.SaveChanges();
             return complaint._id;
@@ -560,7 +561,7 @@ namespace MarketWeb.Server.DataLayer
         public List<Tuple<DateTime, ShoppingCartDAL>> GetMyPurchasesHistory(string userName)
         {
             List<Tuple<DateTime, ShoppingCartDAL>> history = new List<Tuple<DateTime, ShoppingCartDAL>>();
-            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Find(userName);
+            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).FirstOrDefault(s => s.userName == userName);
             if (reg_history == null)
                 return null;
             foreach (PurchasedCartDAL cart in reg_history._PurchasedCarts)
@@ -572,7 +573,7 @@ namespace MarketWeb.Server.DataLayer
         public List<Tuple<DateTime, ShoppingBasketDAL>> GetRegisterPurchasesInStore(string userName, string storeName)
         {
             List<Tuple<DateTime, ShoppingBasketDAL>> history = new List<Tuple<DateTime, ShoppingBasketDAL>>();
-            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Find(userName);
+            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).FirstOrDefault(s => s.userName == userName);
             if (reg_history == null)
                 return null;
             foreach (PurchasedCartDAL purchasedCart in reg_history._PurchasedCarts)
@@ -588,7 +589,7 @@ namespace MarketWeb.Server.DataLayer
         }
         public bool DidRegisterPurchasedInStore(string userName, string storeName)
         {
-            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Find(userName);
+            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).FirstOrDefault(s => s.userName == userName);
 
             if (reg_history == null)
                 return false;
@@ -794,7 +795,7 @@ namespace MarketWeb.Server.DataLayer
         public List<Tuple<DateTime, ShoppingBasketDAL>> GetStorePurchasesHistory(String storeName)
         {
             List<Tuple<DateTime, ShoppingBasketDAL>> history = new List<Tuple<DateTime, ShoppingBasketDAL>>();
-            StorePurchasedBasketDAL store_basket = context.StorePurchaseHistory.Find(storeName);
+            StorePurchasedBasketDAL store_basket = context.StorePurchaseHistory.Include(x => x._PurchasedBaskets).FirstOrDefault(s => s._storeName == storeName);
             if (store_basket == null)
                 return null;
             foreach (PurchasedBasketDAL basket in store_basket._PurchasedBaskets)
