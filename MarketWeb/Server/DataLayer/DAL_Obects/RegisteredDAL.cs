@@ -14,21 +14,15 @@ namespace MarketWeb.Server.DataLayer
         public String _salt { get; set; }
         public ShoppingCartDAL _cart { get; set; }
         public DateTime _birthDate { get; set; }
-        [NotMapped]
-        public ICollection<ComplaintDAL> _filedComplaints { get; set; }// querry from db
         public ICollection<SystemRoleDAL> _roles { get; set; }
         public ICollection<AdminMessageToRegisteredDAL> _adminMessages { get; set; }
         public ICollection<NotifyMessageDAL> _notifications { get; set; }
-        [NotMapped]
-        public ICollection<MessageToStoreDAL> _repliedMessages { get; set; }//complicated  querry from db
 
         public RegisteredDAL()
         {
-            _filedComplaints = new List<ComplaintDAL>();
             _roles = new List<SystemRoleDAL>();
             _adminMessages = new List<AdminMessageToRegisteredDAL>();
             _notifications = new List<NotifyMessageDAL>();
-            _repliedMessages = new List<MessageToStoreDAL>();
             _cart = new ShoppingCartDAL();
             // Empty constructor for some reason?
         }
@@ -40,11 +34,9 @@ namespace MarketWeb.Server.DataLayer
             _salt = salt;
             _cart = cart;
             _birthDate = birthDate;
-            _filedComplaints = filedComplaints;
             _roles = roles;
             _adminMessages = adminMessages;
             _notifications = notifications;
-            _repliedMessages = repliedMessages;
         }
 
         public RegisteredDAL(string username, string password, string salt, DateTime birthDate)
@@ -54,11 +46,9 @@ namespace MarketWeb.Server.DataLayer
             _salt = salt;
             _birthDate = birthDate;
             _cart = new ShoppingCartDAL();
-            _filedComplaints = new List<ComplaintDAL>();
             _roles = new List<SystemRoleDAL>();
             _adminMessages = new List<AdminMessageToRegisteredDAL>();
             _notifications = new List<NotifyMessageDAL>();
-            _repliedMessages = new List<MessageToStoreDAL>(); 
         }
     }
 }

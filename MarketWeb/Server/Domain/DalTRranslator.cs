@@ -240,7 +240,7 @@ namespace MarketWeb.Server.Domain
         public MessageToStoreDAL MessageToStoreDomainToDAL(MessageToStore messageToStore)
         {
             return new MessageToStoreDAL(messageToStore.Id, messageToStore.SenderUsername, 
-                messageToStore.Message, messageToStore.Title, messageToStore.Reply, messageToStore.Replier);
+                messageToStore.Message, messageToStore.Title, messageToStore.Reply, messageToStore.Replier, messageToStore.StoreName);
         }
 
         public ItemDAL ItemDomainToDal(Item itemDomain)
@@ -269,7 +269,8 @@ namespace MarketWeb.Server.Domain
             StoreState state = storeDAL._state;
             Rating rating = RatingDalToDomain(storeDAL._rating);
             List<MessageToStore> messagesToStore = new List<MessageToStore>();
-            foreach (MessageToStoreDAL messageToStoreDAL in storeDAL._messagesToStore)
+            List<MessageToStoreDAL> messagesToStoreDAL = DalController.GetInstance().GetOpenMessagesToStoreByStoreName(storeDAL._storeName); ;
+            foreach (MessageToStoreDAL messageToStoreDAL in messagesToStoreDAL)
             {
                 messagesToStore.Add(MessageToStoreDALToDomain(messageToStoreDAL));
             }
@@ -547,7 +548,8 @@ namespace MarketWeb.Server.Domain
                 notifications.Add(NotifyMessageDalToDomain(notification));
             }
             ICollection<MessageToStore> repliedMessages = new List<MessageToStore>();
-            foreach(MessageToStoreDAL repliedMessage in registeredDAL._repliedMessages)
+            ICollection<MessageToStoreDAL> repliedMessagesDAL =DalController.GetInstance().GetRepliedMessagesToStoreByUserName(registeredDAL._username);
+            foreach (MessageToStoreDAL repliedMessage in repliedMessagesDAL)
             {
                 repliedMessages.Add(MessageToStoreDalToDomain(repliedMessage));
             }
@@ -557,7 +559,8 @@ namespace MarketWeb.Server.Domain
                 roles.Add(SystemRoleDalToDomain(role));
             }
             IDictionary<int, Complaint> filedComplaints = new Dictionary<int, Complaint>();
-            foreach (ComplaintDAL id_complaint in registeredDAL._filedComplaints)
+            ICollection<ComplaintDAL> fieldComplaintsDAL = DalController.GetInstance().GetRgisteredFiledComplaintsByUsername(registeredDAL._username);
+            foreach (ComplaintDAL id_complaint in fieldComplaintsDAL)
                 filedComplaints.Add(id_complaint._id, ComplaintDalToDomain(id_complaint));
             return new Registered(adminMessages, notifications, repliedMessages, username, password, 
                 salt, birthDate,roles, filedComplaints, cart);
@@ -717,7 +720,6 @@ namespace MarketWeb.Server.Domain
             ICollection<ComplaintDAL> filedComplaints = new List<ComplaintDAL>();
             foreach (KeyValuePair<int, Complaint> id_complaint in registered.FiledComplaints)
                 filedComplaints.Add(ComplaintDomainToDal(id_complaint.Value));
-            reg._filedComplaints = filedComplaints;
             return reg;
         }
 
@@ -755,7 +757,7 @@ namespace MarketWeb.Server.Domain
         public MessageToStoreDAL MessageToStoreDomainToDal(MessageToStore repliedMessage)
         {
             return new MessageToStoreDAL(repliedMessage.Id, repliedMessage.SenderUsername,
-                repliedMessage.Message, repliedMessage.Title, repliedMessage.Reply, repliedMessage.Replier);
+                repliedMessage.Message, repliedMessage.Title, repliedMessage.Reply, repliedMessage.Replier, repliedMessage.StoreName);
         }
 
         public NotifyMessageDAL NotifyMessageDomainToDal(NotifyMessage notification)

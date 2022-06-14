@@ -14,7 +14,7 @@ namespace MarketWeb.Server.DataLayer
         public String _storeName { get; set; }
         [Required]
         public StockDAL _stock { get; set; }
-        public List<MessageToStoreDAL> _messagesToStore { get; set; }
+        //public List<MessageToStoreDAL> _messagesToStore { get; set; }
         public RatingDAL _rating { get; set; }
         public List<StoreManagerDAL> _managers { get; set; }
         public List<StoreOwnerDAL> _owners { get; set; }
@@ -27,7 +27,7 @@ namespace MarketWeb.Server.DataLayer
         {
             _storeName = storeName;
             _stock = stock;
-            _messagesToStore = messagesToStore;
+            //_messagesToStore = messagesToStore;
             _rating = rating;
             _managers = managers;
             _owners = owners;
@@ -44,7 +44,7 @@ namespace MarketWeb.Server.DataLayer
             _state = state;
             _managers = new List<StoreManagerDAL>();
             _owners = new List<StoreOwnerDAL>();
-            _messagesToStore = new List<MessageToStoreDAL>();
+            //_messagesToStore = new List<MessageToStoreDAL>();
             _stock = new StockDAL(new List<StockItemDAL>());
             _rating = new RatingDAL(new List<RateDAL>());
             _purchasePolicy = new PurchasePolicyDAL(new List<ConditionDAL>());
@@ -53,14 +53,6 @@ namespace MarketWeb.Server.DataLayer
 
         public StoreDAL()
         {
-            _stock = new StockDAL();
-            //_messagesToStore = new List<MessageToStoreDAL>();
-            _rating = new RatingDAL();
-            //_managers = new List<StoreManagerDAL>();
-            //_owners = new List<StoreOwnerDAL>();
-            //_founder = new StoreFounderDAL("test", "test");
-            _purchasePolicy = new PurchasePolicyDAL();
-            _discountPolicy = new DiscountPolicyDAL();
         }
     }
 }
