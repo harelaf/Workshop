@@ -639,7 +639,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AnswerStoreMesseage", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername, reply);g
+            _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername, reply);
             SendNotification(storeName, receiverUsername, "Reply - "+ replierUsername, reply);
         }
 
