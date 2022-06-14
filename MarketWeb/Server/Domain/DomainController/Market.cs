@@ -568,6 +568,11 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             _storeManagement.SendMessageToStore(senderUsername, storeName, title, message, id);
+            List<string> names = _storeManagement.GetStoreRolesByName(storeName);
+            foreach (string name in names)
+			{
+                SendNotification(storeName, name, "Store Message: " + title, message);
+			}
         }
 
         public void SendAdminMessageToRegisterd(string userToken, String UsernameReciever, String title, String message)
@@ -593,6 +598,8 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever, senderUsername, title, message);
+            SendNotification("Administration", UsernameReciever, "Admin Message: " + title, message);
+
         }
         public void SendNotification(string storeName, string usernameReciever, String title, String message)
         {
@@ -632,7 +639,8 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AnswerStoreMesseage", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername, reply);
+            _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername, reply);g
+            SendNotification(storeName, receiverUsername, "Reply - "+ replierUsername, reply);
         }
 
         public List<MessageToStore> GetStoreMessages(String authToken, String storeName)
