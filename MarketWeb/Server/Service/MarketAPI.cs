@@ -32,6 +32,7 @@ namespace MarketWeb.Service
             {
                 _market = new Market();
                 testMode = true;
+                useConfigurationFile = true;
             }
             else
             {
