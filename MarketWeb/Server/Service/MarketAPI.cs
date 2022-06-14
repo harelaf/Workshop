@@ -32,6 +32,7 @@ namespace MarketWeb.Service
             {
                 _market = new Market();
                 testMode = true;
+                // V This line causes the acceptance tests to be super slow! V
                 useConfigurationFile = true;
             }
             else
