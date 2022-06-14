@@ -7,6 +7,7 @@ namespace MarketWeb.Server.Service
 {
     public class ConfigurationFileParser
     {
+        private static readonly log4net.ILog _logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Dictionary<String, String> configurations;
         private readonly String FILE_PATH = "";
 
@@ -22,13 +23,14 @@ namespace MarketWeb.Server.Service
             configurations["admin_username"] = "";
             configurations["admin_password"] = "";
             configurations["db_ip"] = "";
-            configurations["db_name"] = "";
-            configurations["db_fullname"] = "";
+            configurations["db_initial_catalog"] = "";
+            configurations["db_username"] = "";
             configurations["db_password"] = "";
-            configurations["db_connection_string"] = "";
+            configurations["external_shipping"] = "";
+            configurations["external_payment"] = "";
         }
 
-        public void ParseConfigurationFile()
+        public Dictionary<String, String> ParseConfigurationFile()
         {
             if (!File.Exists(FILE_PATH))
                 throw new FileNotFoundException("CONFIG: File not found.");
@@ -41,35 +43,31 @@ namespace MarketWeb.Server.Service
                     continue;
                 else if (line.StartsWith("//"))
                     continue;
-                ParseLine(line, LineNumber);
+                try
+                {
+                    ParseLine(line, LineNumber);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.Message);
+                }
             }
 
-            // CREATE DB BY SENDING THE VALUES OF DB:
-            // configurations["db_ip"] = "";
-            // configurations["db_name"] = "";
-            // configurations["db_fullname"] = "";
-            // configurations["db_password"] = "";
-            // configurations["db_connection_string"] = "";
+            if (configurations["external_shipping"] == "" || configurations["external_payment"] == "")
+                throw new Exception("CONFIG: External systems are not specified in the configuration file.");
+            if (configurations["db_ip"] == "" || configurations["db_initial_catalog"] == "" || configurations["db_username"] == "" || configurations["db_password"] == "")
+                throw new Exception("CONFIG: DB values are missing (ip, initial_catalog, username, password).");
 
-            // TODO
-            // REMEMBER TO REMOVE ADMIN INITIALIZATION IN VisitorManagement
-            // TODO
-            if (configurations["admin_username"] == "" || configurations["admin_password"] == "")
+            if (configurations["admin_username"] == "")
             {
-                // Call DB and add new registered user:
-                // username = admin
-                // password = admin
-                // dob = 1.1.2000
-                // Add role SystemAdmin
+                configurations["admin_username"] = "admin";
             }
-            else
+            if (configurations["admin_password"] == "")
             {
-                // Call DB and add new registered user:
-                // username = configurations["admin_username"]
-                // password = configurations["admin_password"]
-                // dob = 1.1.2000
-                // Add role SystemAdmin
+                configurations["admin_password"] = "admin";
             }
+
+            return configurations;
         }
 
         private void ParseLine(String line, int LineNumber)

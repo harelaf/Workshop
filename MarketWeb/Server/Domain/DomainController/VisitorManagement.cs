@@ -26,8 +26,6 @@ namespace MarketWeb.Server.Domain
         private SystemAdmin _currentAdmin;
         public SystemAdmin CurrentAdmin { get { return _currentAdmin; } set { _currentAdmin = value; } }
         private int _nextComplaintID = 1;
-        private static readonly string DEFAULT_ADMIN_USERNAME = "admin";
-        private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
         private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
 
         protected NotificationHub _notificationHub;
@@ -56,12 +54,15 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
             _notificationHub = notificationHub;
+        }
 
-            Registered defaultAdmin = new Registered(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-            SystemAdmin defaultAdminRole = new SystemAdmin(DEFAULT_ADMIN_USERNAME);
+        public void InitializeAdmin(String username, String password)
+        {
+            Registered defaultAdmin = new Registered(username, password, DEFAULT_BIRTH_DATE);
+            SystemAdmin defaultAdminRole = new SystemAdmin(username);
             defaultAdmin.AddRole(defaultAdminRole);
-            _registeredVisitors.Add(DEFAULT_ADMIN_USERNAME, defaultAdmin);
-            AdminStart(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD);
+            _registeredVisitors.Add(username, defaultAdmin);
+            AdminStart(username, password);
         }
 
         public void SetNotificationHub (NotificationHub notificationHub)

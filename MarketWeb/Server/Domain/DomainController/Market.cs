@@ -32,21 +32,43 @@ namespace MarketWeb.Server.Domain
             _notificationHub = notificationHub;
             _VisitorManagement.SetNotificationHub(notificationHub);
 
-            RestartSystem("admin", "admin", "https://cs-bgu-wsep.herokuapp.com/", "https://cs-bgu-wsep.herokuapp.com/");
+            // Calling RestartSystem after creating this object is important.
         }
-
 
         /// <summary>
         /// <para> For Req I.1. </para>
         /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
         /// </summary>
-        public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
+        public async Task RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
+            // Do starting system stuff with IPs
+            WSIEPaymentHandler paymentHandler = new WSIEPaymentHandler(ipPaymentService);
+            try
+            {
+                if (!(await paymentHandler.Handshake()))
+                    throw new Exception();
+            } 
+            catch(Exception)
+            {
+                throw new Exception("CONFIG: Payment method wasn't available.");
+            }
+            PurchaseProcess.GetInstance().AddPaymentMethod("WSIE", paymentHandler);
+            WSEPShippingHandler shippingHandler = new WSEPShippingHandler(ipShippingService);
+            try
+            {
+                if (!(await shippingHandler.Handshake()))
+                    throw new Exception();
+            }
+            catch(Exception)
+            {
+                throw new Exception("CONFIG: Shipping method wasn't available.");
+            }
+            PurchaseProcess.GetInstance().AddShipmentMethod("WSEP", shippingHandler);
+
+            // Initialize admin
+            _VisitorManagement.InitializeAdmin(adminUsername, adminPassword);
             _VisitorManagement.AdminStart(adminUsername, adminPassword);
 
-            // Do starting system stuff with IPs
-            PurchaseProcess.GetInstance().AddPaymentMethod("WSIE", new WSIEPaymentHandler(ipPaymentService));
-            PurchaseProcess.GetInstance().AddShipmentMethod("WSEP", new WSEPShippingHandler(ipShippingService));
         }
 
         /// add\update basket eof store with item and amount.

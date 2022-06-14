@@ -24,14 +24,16 @@ namespace MarketWeb.Service
         //private ILogger<MarketAPI> _logger;
         private int _id;
         private bool testMode = false;
-        private static bool useInitializationFile = false;
-        private static bool useConfigurationFile = false;
+        private static bool useInitializationFile = true;
+        private static bool useConfigurationFile = true;
         public MarketAPI(Market market, ILogger<MarketAPI> logger)
         {
             if (market == null)
             {
                 _market = new Market();
                 testMode = true;
+                // V This line causes the acceptance tests to be super slow! V
+                useConfigurationFile = true;
             }
             else
             {
@@ -43,13 +45,14 @@ namespace MarketWeb.Service
                 useConfigurationFile = false;
                 try
                 {
-                    new ConfigurationFileParser().ParseConfigurationFile();
-                    // TODO
-                    // GET DB CONNECTION? SEND IT TO MARKET?
+                    Dictionary<String, String> configurations = new ConfigurationFileParser().ParseConfigurationFile();
+                    _market.RestartSystem(configurations["admin_username"], configurations["admin_password"], configurations["external_shipping"], configurations["external_payment"]).Wait();
                 }
                 catch (Exception e)
                 {
                     _logger.Error(e.Message);
+                    _logger.Error("Unable to load configuration properly, exiting system.");
+                    Environment.Exit(-1);
                 }
             }
 
