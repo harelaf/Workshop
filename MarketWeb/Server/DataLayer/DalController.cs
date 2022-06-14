@@ -210,7 +210,7 @@ namespace MarketWeb.Server.DataLayer
             StoreFounderDAL founder = new StoreFounderDAL();
             founder._username = founderName;
             founder._storeName = storeName;
-            context.SystemRoleDALs.Add(founder);
+            context.StoreFounderDALs.Add(founder);
             context.SaveChanges();
         }
 
@@ -235,7 +235,7 @@ namespace MarketWeb.Server.DataLayer
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
            StoreManagerDAL storeManager = new StoreManagerDAL(appointer, managerUsername, storeName);
-            context.SystemRoleDALs.Add(storeManager);
+            context.storeManagerDALs.Add(storeManager);
             context.SaveChanges();  
         }
 
@@ -251,18 +251,18 @@ namespace MarketWeb.Server.DataLayer
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
            StoreOwnerDAL storeOwner = new StoreOwnerDAL(appointer, ownerUsername, storeName);
-            context.SystemRoleDALs.Add(storeOwner);
+            context.storeOwnerDALs.Add(storeOwner);
             context.SaveChanges();
         }
         public void RemoveStoreOwner(String ownerUsername, String storeName)
         {
-            StoreOwnerDAL owner = (StoreOwnerDAL)context.SystemRoleDALs.Include(r => r._operations).Where((r) => (r._storeName == storeName) && (r._username == ownerUsername)).First();
+            StoreOwnerDAL owner = context.storeOwnerDALs.Include(r => r._operations).Where((r) => (r._storeName == storeName)).First();
             context.SystemRoleDALs.Remove(owner);
             context.SaveChanges();
         }
         public void RemoveStoreManager(String managerUsername, String storeName)
         {
-            StoreManagerDAL manager = (StoreManagerDAL)context.SystemRoleDALs.Include(r => r._operations).Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
+            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operations).Where((r) => (r._storeName == storeName)).First();
             context.SystemRoleDALs.Remove(manager);
             context.SaveChanges();
         }
@@ -558,7 +558,7 @@ namespace MarketWeb.Server.DataLayer
         public void RemoveManagerPermission(String managerUsername, String storeName, Operation op)
         {
 
-            StoreManagerDAL manager = (StoreManagerDAL)context.SystemRoleDALs.Include(r => r._operations).Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
+            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operations).Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
 
             manager._operations.Remove(op);
             manager._operationsWrappers.Remove(manager._operationsWrappers.Find(x => x.op.Equals(op)));
@@ -567,7 +567,7 @@ namespace MarketWeb.Server.DataLayer
         }
         public void AddManagerPermission(String managerUsername, String storeName, Operation op)
         {
-            StoreManagerDAL manager = (StoreManagerDAL)context.SystemRoleDALs.Include(r => r._operations).Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
+            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operations).Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
             manager._operations.Add(op);
             manager._operationsWrappers.Add(new OperationWrapper(op));
             context.SaveChanges();
@@ -607,16 +607,17 @@ namespace MarketWeb.Server.DataLayer
         }
         public List<StoreOwnerDAL> GetStoreOwners(String storeName)
         {
-            return context.SystemRoleDALs.Include(r => r._operations).Where(r => (r._storeName == storeName) && (r is StoreOwnerDAL)).Select(r => (StoreOwnerDAL)r).ToList();
+            return context.storeOwnerDALs.Include(r => r._operations).Where(r => (r._storeName == storeName) ).ToList();
 
         }
         public List<StoreManagerDAL> GetStoreManagers(String storeName)
         {
-            return context.SystemRoleDALs.Include(r => r._operations).Where(r => (r._storeName == storeName) && (r is StoreManagerDAL)).Select(r => (StoreManagerDAL)r).ToList();
+            return context.storeManagerDALs.Include(r => r._operations).
+                Where(r => (r._storeName == storeName)).ToList();
         }
         public StoreFounderDAL GetStoreFounder(String storeName)
         {
-            return (StoreFounderDAL)context.SystemRoleDALs.Include(r => r._operations).Where(r => (r._storeName == storeName) && (r is StoreFounderDAL)).FirstOrDefault();
+            return context.StoreFounderDALs.Include(r => r._operations).Where(r => (r._storeName == storeName)).FirstOrDefault();
         }
 
         public void AnswerStoreMesseage(int msgID, string storeName, string reply, string replier)
@@ -688,7 +689,7 @@ namespace MarketWeb.Server.DataLayer
         public void AppointSystemAdmin(String adminUsername)
         {
             SystemAdminDAL systemAdminDAL = new SystemAdminDAL(adminUsername);
-            context.SystemRoleDALs.Add(systemAdminDAL);
+            context.SystemAdminDALs.Add(systemAdminDAL);
             context.SaveChanges();
         }
         public List<StoreDAL> GetStoresOfUser(string username)
