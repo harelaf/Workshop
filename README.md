@@ -20,13 +20,17 @@ Follow these steps to run the system:
 ## Initialization & Configuration File Formats
 ### Initialization
 The basic initialization file in the wiki has the instructions on how to add dummy data.
-If you would like the system to ignore the file, the first line should be: "ignore_file true".
+If you would like the system to ignore the file, the first line should be: "ignore_file".
 Start by using EnterSystem(), and then call the wanted functions from MarketAPI.
 ### Configuration
 The format for this file is:
+
 parameter_name1 parameter value1
+
 parameter_name2 parameter value2
+
 ...
+
 The allowed parameters are:
 * admin_username - the username of the initial admin.
 * admin_password - the password of the initial admin.
