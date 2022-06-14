@@ -1,10 +1,13 @@
 # Online Shopping System
 This is an online shopping system project. Users may join the website and traverse through it.
+
 They are able to create new stores, add new items, change values and manage their employees.
 
 ## About The Project
 The team worked on the project during our "Sostware Project Implementation Workshop" course.
+
 The project had 5 iterations, each 2-3 weeks long. Written in C# and uses Blazor as the client-server architecture.
+
 This is a fullstack project, consisting of a DAL, DL, SL, and a webpage GUI.
 
 ## Usage
@@ -20,8 +23,11 @@ Follow these steps to run the system:
 ## Initialization & Configuration File Formats
 ### Initialization
 The basic initialization file in the wiki has the instructions on how to add dummy data.
+
 If you would like the system to ignore the file, the first line should be: "ignore_file".
+
 Start by using EnterSystem(), and then call the wanted functions from MarketAPI.
+
 ### Configuration
 The format for this file is:
 
