@@ -26,18 +26,29 @@ namespace MarketWeb.Server.DataLayer
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<RegisteredDAL>();
-            builder.Entity<StoreDAL>();
+            builder.Entity<RegisteredDAL>();//.HasOne(e => e._cart).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<StoreDAL>().HasOne(e => e._stock).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            //builder.Entity<StoreDAL>().HasOne(e => e._discountPolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            //builder.Entity<StoreDAL>().HasOne(e => e._purchasePolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            //builder.Entity<StoreDAL>().HasOne(e => e._rating).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<StockDAL>().HasMany(e => e._itemAndAmount).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+
+            builder.Entity<StockItemDAL>().HasOne(x => x.item).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ItemDAL>().HasOne(x => x._rating).WithOne().OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<RatingDAL>().HasMany(x => x._ratings).WithOne().OnDelete(DeleteBehavior.Cascade);
+
+
             builder.Entity<ComplaintDAL>();
             builder.Entity<MessageToStoreDAL>();
-            builder.Entity<SystemRoleDAL>();
             builder.Entity<StorePurchasedBasketDAL>();
             builder.Entity<RegisteredPurchasedCartDAL>();
 
-            builder.Entity<SystemAdminDAL>();
-            builder.Entity<StoreFounderDAL>();
-            builder.Entity<StoreOwnerDAL>();
-            builder.Entity<StoreManagerDAL>();
+            builder.Entity<SystemRoleDAL>().HasMany("_operationsWrappers").WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<SystemAdminDAL>().HasMany("_operationsWrappers").WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<StoreFounderDAL>().HasMany("_operationsWrappers").WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<StoreOwnerDAL>().HasMany("_operationsWrappers").WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<StoreManagerDAL>().HasMany("_operationsWrappers").WithOne().OnDelete(DeleteBehavior.ClientCascade);
 
             base.OnModelCreating(builder);
             // Customize the ASP.NET Identity model and override the defaults if needed.

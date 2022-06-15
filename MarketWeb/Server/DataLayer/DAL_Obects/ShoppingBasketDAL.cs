@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace MarketWeb.Server.DataLayer
@@ -10,7 +11,9 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public int sbId { get; set; }
         [Required]
+        [ForeignKey("StoreDAL")]
         public StoreDAL _store { get; set; }
+        [Required]
         public ICollection<BasketItemDAL> _items { get; set; }
 
         public ShoppingBasketDAL(StoreDAL store, IDictionary<ItemDAL, PurchaseDetailsDAL> items)

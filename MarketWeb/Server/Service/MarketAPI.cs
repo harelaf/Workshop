@@ -416,7 +416,7 @@ namespace MarketWeb.Service
             }
             return response;
         }
-        [HttpPost("AddItemToStoreStock")]
+        //[HttpPost("AddItemToStoreStock")]
         public Response AddItemToStoreStock([FromHeader] String Authorization, String storeName,int id, String name, double price, String description, String category, int quantity)
         {//II.4.1
             Response response;

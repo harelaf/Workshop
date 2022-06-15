@@ -9,7 +9,7 @@ namespace MarketWeb.Server.DataLayer
         public int _itemID { get; set; }
         [Required]
         public int amount { get; set; }
-        
+        [Required]
         public List<AtomicDiscountDAL> discountList { get; set; }
 
         public PurchaseDetailsDAL(int ItemID, int amount, List<AtomicDiscountDAL> discountList)

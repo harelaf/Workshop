@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using MarketWeb.Shared;
 
@@ -13,14 +14,21 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public String _storeName { get; set; }
         [Required]
+        [ForeignKey("StockDAL")]
         public StockDAL _stock { get; set; }
         //public List<MessageToStoreDAL> _messagesToStore { get; set; }
+        [Required]
+        [ForeignKey("RatingDAL")]
         public RatingDAL _rating { get; set; }
-       // public List<StoreManagerDAL> _managers { get; set; }
+        //public List<StoreManagerDAL> _managers { get; set; }
         //public List<StoreOwnerDAL> _owners { get; set; }
-       // public StoreFounderDAL _founder { get; set; }
+        //public StoreFounderDAL _founder { get; set; }
         public StoreState _state { get; set; }
+        [Required]
+        [ForeignKey("PurchasePolicyDAL")]
         public PurchasePolicyDAL _purchasePolicy { get; set; }
+        [Required]
+        [ForeignKey("DiscountPolicyDAL")]
         public DiscountPolicyDAL _discountPolicy { get; set; }
 
         public StoreDAL(string storeName, StockDAL stock, List<MessageToStoreDAL> messagesToStore, RatingDAL rating, List<StoreManagerDAL> managers, List<StoreOwnerDAL> owners, StoreFounderDAL founder, StoreState state, PurchasePolicyDAL purchasePolicy, DiscountPolicyDAL discountPolicy)
@@ -29,9 +37,9 @@ namespace MarketWeb.Server.DataLayer
             _stock = stock;
             //_messagesToStore = messagesToStore;
             _rating = rating;
-           //_managers = managers;
-           //_owners = owners;
-           //_founder = founder;
+            //_managers = managers;
+            //_owners = owners;
+            //_founder = founder;
             _state = state;
             _purchasePolicy = purchasePolicy;
             _discountPolicy = discountPolicy;

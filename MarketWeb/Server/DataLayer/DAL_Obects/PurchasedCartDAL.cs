@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MarketWeb.Server.DataLayer
 {
@@ -8,6 +9,7 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public DateTime _purchaseDate { get; set; }
         [Key]
+        [ForeignKey("PurchasedCartDAL")]
         public ShoppingCartDAL _PurchasedCart { get; set; }
 
         public PurchasedCartDAL(DateTime purchaseDate, ShoppingCartDAL purchasedCart)

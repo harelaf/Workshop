@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MarketWeb.Server.DataLayer
 {
@@ -6,6 +7,8 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int id { get; set; }
+        [Required]
+        [ForeignKey("ItemDAL")]
         public ItemDAL item { get; set; }
         public int amount { get; set; }
 

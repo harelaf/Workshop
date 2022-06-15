@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace MarketWeb.Server.DataLayer
@@ -9,6 +10,8 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int _itemID { get; set; }
+        [Required]
+        [ForeignKey("RatingDAL")]
         public RatingDAL _rating { get; set; }
         [Required]
         public String _name { get; set; }

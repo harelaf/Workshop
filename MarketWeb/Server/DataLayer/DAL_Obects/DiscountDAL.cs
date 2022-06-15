@@ -8,6 +8,7 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int _id { get; set; }
+        [Required]
         public ConditionDAL _condition { get; set; }
         public DiscountDAL(ConditionDAL condition)
         {
@@ -105,6 +106,7 @@ namespace MarketWeb.Server.DataLayer
     }
     public class ComposedDiscountDAL : DiscountDAL
     {
+        [Required]
         public List<DiscountDAL> _discounts { get; set; }
         protected ComposedDiscountDAL(List<DiscountDAL> discounts, ConditionDAL condition) : base(condition)
         {

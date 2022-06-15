@@ -178,7 +178,7 @@ namespace MarketWeb.Server.Migrations
                 {
                     _itemID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    _ratingid = table.Column<int>(type: "int", nullable: true),
+                    RatingDAL = table.Column<int>(type: "int", nullable: false),
                     _name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     _price = table.Column<double>(type: "float", nullable: false),
                     _description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -188,11 +188,11 @@ namespace MarketWeb.Server.Migrations
                 {
                     table.PrimaryKey("PK_ItemDAL", x => x._itemID);
                     table.ForeignKey(
-                        name: "FK_ItemDAL_RatingDAL__ratingid",
-                        column: x => x._ratingid,
+                        name: "FK_ItemDAL_RatingDAL_RatingDAL",
+                        column: x => x.RatingDAL,
                         principalTable: "RatingDAL",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -214,7 +214,7 @@ namespace MarketWeb.Server.Migrations
                         column: x => x.RatingDALid,
                         principalTable: "RatingDAL",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,7 +222,7 @@ namespace MarketWeb.Server.Migrations
                 columns: table => new
                 {
                     _purchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    _PurchasedCartscId = table.Column<int>(type: "int", nullable: true),
+                    PurchasedCartDAL = table.Column<int>(type: "int", nullable: true),
                     RegisteredPurchasedCartDALuserName = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -235,8 +235,8 @@ namespace MarketWeb.Server.Migrations
                         principalColumn: "userName",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PurchasedCartDAL_ShoppingCartDAL__PurchasedCartscId",
-                        column: x => x._PurchasedCartscId,
+                        name: "FK_PurchasedCartDAL_ShoppingCartDAL_PurchasedCartDAL",
+                        column: x => x.PurchasedCartDAL,
                         principalTable: "ShoppingCartDAL",
                         principalColumn: "scId",
                         onDelete: ReferentialAction.Restrict);
@@ -249,18 +249,18 @@ namespace MarketWeb.Server.Migrations
                     _username = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     _password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     _salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    _cartscId = table.Column<int>(type: "int", nullable: true),
+                    CartDAL = table.Column<int>(type: "int", nullable: false),
                     _birthDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RegisteredDALs", x => x._username);
                     table.ForeignKey(
-                        name: "FK_RegisteredDALs_ShoppingCartDAL__cartscId",
-                        column: x => x._cartscId,
+                        name: "FK_RegisteredDALs_ShoppingCartDAL_CartDAL",
+                        column: x => x.CartDAL,
                         principalTable: "ShoppingCartDAL",
                         principalColumn: "scId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -268,36 +268,36 @@ namespace MarketWeb.Server.Migrations
                 columns: table => new
                 {
                     _storeName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    _stockid = table.Column<int>(type: "int", nullable: true),
-                    _ratingid = table.Column<int>(type: "int", nullable: true),
+                    StockDAL = table.Column<int>(type: "int", nullable: false),
+                    RatingDAL = table.Column<int>(type: "int", nullable: false),
                     _state = table.Column<int>(type: "int", nullable: false),
-                    _purchasePolicyid = table.Column<int>(type: "int", nullable: true),
-                    _discountPolicyid = table.Column<int>(type: "int", nullable: true)
+                    PurchasePolicyDAL = table.Column<int>(type: "int", nullable: false),
+                    DiscountPolicyDAL = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StoreDALs", x => x._storeName);
                     table.ForeignKey(
-                        name: "FK_StoreDALs_DiscountPolicyDAL__discountPolicyid",
-                        column: x => x._discountPolicyid,
+                        name: "FK_StoreDALs_DiscountPolicyDAL_DiscountPolicyDAL",
+                        column: x => x.DiscountPolicyDAL,
                         principalTable: "DiscountPolicyDAL",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StoreDALs_PurchasePolicyDAL__purchasePolicyid",
-                        column: x => x._purchasePolicyid,
+                        name: "FK_StoreDALs_PurchasePolicyDAL_PurchasePolicyDAL",
+                        column: x => x.PurchasePolicyDAL,
                         principalTable: "PurchasePolicyDAL",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StoreDALs_RatingDAL__ratingid",
-                        column: x => x._ratingid,
+                        name: "FK_StoreDALs_RatingDAL_RatingDAL",
+                        column: x => x.RatingDAL,
                         principalTable: "RatingDAL",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StoreDALs_StockDAL__stockid",
-                        column: x => x._stockid,
+                        name: "FK_StoreDALs_StockDAL_StockDAL",
+                        column: x => x.StockDAL,
                         principalTable: "StockDAL",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -364,7 +364,7 @@ namespace MarketWeb.Server.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    item_itemID = table.Column<int>(type: "int", nullable: true),
+                    ItemDAL = table.Column<int>(type: "int", nullable: false),
                     amount = table.Column<int>(type: "int", nullable: false),
                     StockDALid = table.Column<int>(type: "int", nullable: true)
                 },
@@ -372,11 +372,11 @@ namespace MarketWeb.Server.Migrations
                 {
                     table.PrimaryKey("PK_StockItemDAL", x => x.id);
                     table.ForeignKey(
-                        name: "FK_StockItemDAL_ItemDAL_item_itemID",
-                        column: x => x.item_itemID,
+                        name: "FK_StockItemDAL_ItemDAL_ItemDAL",
+                        column: x => x.ItemDAL,
                         principalTable: "ItemDAL",
                         principalColumn: "_itemID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_StockItemDAL_StockDAL_StockDALid",
                         column: x => x.StockDALid,
@@ -435,7 +435,7 @@ namespace MarketWeb.Server.Migrations
                 {
                     sbId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    _storeName = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    StoreDAL = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ShoppingCartDALscId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -448,11 +448,11 @@ namespace MarketWeb.Server.Migrations
                         principalColumn: "scId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ShoppingBasketDAL_StoreDALs__storeName",
-                        column: x => x._storeName,
+                        name: "FK_ShoppingBasketDAL_StoreDALs_StoreDAL",
+                        column: x => x.StoreDAL,
                         principalTable: "StoreDALs",
                         principalColumn: "_storeName",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -461,7 +461,7 @@ namespace MarketWeb.Server.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    item_itemID = table.Column<int>(type: "int", nullable: true),
+                    ItemDAL = table.Column<int>(type: "int", nullable: false),
                     purchaseDetails_itemID = table.Column<int>(type: "int", nullable: true),
                     ShoppingBasketDALsbId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -469,11 +469,11 @@ namespace MarketWeb.Server.Migrations
                 {
                     table.PrimaryKey("PK_BasketItemDAL", x => x.id);
                     table.ForeignKey(
-                        name: "FK_BasketItemDAL_ItemDAL_item_itemID",
-                        column: x => x.item_itemID,
+                        name: "FK_BasketItemDAL_ItemDAL_ItemDAL",
+                        column: x => x.ItemDAL,
                         principalTable: "ItemDAL",
                         principalColumn: "_itemID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_BasketItemDAL_PurchaseDetailsDAL_purchaseDetails_itemID",
                         column: x => x.purchaseDetails_itemID,
@@ -519,9 +519,9 @@ namespace MarketWeb.Server.Migrations
                 column: "RegisteredDAL_username");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BasketItemDAL_item_itemID",
+                name: "IX_BasketItemDAL_ItemDAL",
                 table: "BasketItemDAL",
-                column: "item_itemID");
+                column: "ItemDAL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BasketItemDAL_purchaseDetails_itemID",
@@ -554,9 +554,10 @@ namespace MarketWeb.Server.Migrations
                 column: "PurchaseDetailsDAL_itemID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItemDAL__ratingid",
+                name: "IX_ItemDAL_RatingDAL",
                 table: "ItemDAL",
-                column: "_ratingid");
+                column: "RatingDAL",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotifyMessageDAL_RegisteredDAL_username",
@@ -579,9 +580,9 @@ namespace MarketWeb.Server.Migrations
                 column: "StorePurchasedBasketDAL_storeName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PurchasedCartDAL__PurchasedCartscId",
+                name: "IX_PurchasedCartDAL_PurchasedCartDAL",
                 table: "PurchasedCartDAL",
-                column: "_PurchasedCartscId");
+                column: "PurchasedCartDAL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchasedCartDAL_RegisteredPurchasedCartDALuserName",
@@ -594,14 +595,9 @@ namespace MarketWeb.Server.Migrations
                 column: "RatingDALid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RegisteredDALs__cartscId",
+                name: "IX_RegisteredDALs_CartDAL",
                 table: "RegisteredDALs",
-                column: "_cartscId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ShoppingBasketDAL__storeName",
-                table: "ShoppingBasketDAL",
-                column: "_storeName");
+                column: "CartDAL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ShoppingBasketDAL_ShoppingCartDALscId",
@@ -609,9 +605,15 @@ namespace MarketWeb.Server.Migrations
                 column: "ShoppingCartDALscId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockItemDAL_item_itemID",
+                name: "IX_ShoppingBasketDAL_StoreDAL",
+                table: "ShoppingBasketDAL",
+                column: "StoreDAL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockItemDAL_ItemDAL",
                 table: "StockItemDAL",
-                column: "item_itemID");
+                column: "ItemDAL",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockItemDAL_StockDALid",
@@ -619,24 +621,25 @@ namespace MarketWeb.Server.Migrations
                 column: "StockDALid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StoreDALs__discountPolicyid",
+                name: "IX_StoreDALs_DiscountPolicyDAL",
                 table: "StoreDALs",
-                column: "_discountPolicyid");
+                column: "DiscountPolicyDAL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StoreDALs__purchasePolicyid",
+                name: "IX_StoreDALs_PurchasePolicyDAL",
                 table: "StoreDALs",
-                column: "_purchasePolicyid");
+                column: "PurchasePolicyDAL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StoreDALs__ratingid",
+                name: "IX_StoreDALs_RatingDAL",
                 table: "StoreDALs",
-                column: "_ratingid");
+                column: "RatingDAL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StoreDALs__stockid",
+                name: "IX_StoreDALs_StockDAL",
                 table: "StoreDALs",
-                column: "_stockid");
+                column: "StockDAL",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

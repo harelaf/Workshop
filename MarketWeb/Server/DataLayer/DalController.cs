@@ -24,11 +24,8 @@ namespace MarketWeb.Server.DataLayer
         {
             List<StoreDAL> stores= context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                   
                                                     .Where(store => store._state == StoreState.Active).ToList();
             if (stores == null)
                 return new List<StoreDAL>();
@@ -80,11 +77,9 @@ namespace MarketWeb.Server.DataLayer
                 throw new Exception($"user: {userName} not in system");
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
@@ -120,11 +115,9 @@ namespace MarketWeb.Server.DataLayer
 
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
@@ -154,11 +147,9 @@ namespace MarketWeb.Server.DataLayer
            
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
@@ -241,13 +232,12 @@ namespace MarketWeb.Server.DataLayer
 
         public void AddStoreManager(String managerUsername, String storeName, string appointer)
         {
+            
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
            StoreManagerDAL storeManager = new StoreManagerDAL(appointer, managerUsername, storeName);
@@ -259,11 +249,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
            StoreOwnerDAL storeOwner = new StoreOwnerDAL(appointer, ownerUsername, storeName);
@@ -286,12 +274,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
-                                                    .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .Include(x => x._discountPolicy)                                                   
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             ItemDAL item = new ItemDAL(new RatingDAL(new List<RateDAL>()), name, price,
@@ -304,12 +289,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
@@ -326,12 +308,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)

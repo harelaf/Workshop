@@ -12,9 +12,13 @@ namespace MarketWeb.Server.DataLayer
         public String _username { get; set; }
         public String _password { get; set; }
         public String _salt { get; set; }
+        [Required]
+        [ForeignKey("CartDAL")]
         public ShoppingCartDAL _cart { get; set; }
         public DateTime _birthDate { get; set; }
+        [Required]
         public ICollection<AdminMessageToRegisteredDAL> _adminMessages { get; set; }
+        [Required]
         public ICollection<NotifyMessageDAL> _notifications { get; set; }
 
         public RegisteredDAL()

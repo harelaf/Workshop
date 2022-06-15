@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace MarketWeb.Server.DataLayer
@@ -9,6 +10,7 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int id { get; set; }
+        [Required]
         public ICollection<StockItemDAL> _itemAndAmount { get; set; }
 
         public StockDAL(ICollection<StockItemDAL> itemAndAmount)

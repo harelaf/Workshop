@@ -11,6 +11,7 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int id { get; set; }
+        [Required]
         public Operation op { get; set; }
 
         public OperationWrapper(Operation op)
@@ -36,7 +37,7 @@ namespace MarketWeb.Server.DataLayer
 
         [ForeignKey("RegisterdDAL")]
         public string _appointer { get; set; }
-
+        [Required]
         public List<OperationWrapper> _operationsWrappers { get; set; }
         [NotMapped]
         public ICollection<Operation> _operations { get; set; }
@@ -66,6 +67,7 @@ namespace MarketWeb.Server.DataLayer
         {
             _username=username;
             _appointer = appointer;
+            _storeName=storename;
             _operations = getOps();
             _operationsWrappers = new List<OperationWrapper>();
             foreach (Operation op in _operations)

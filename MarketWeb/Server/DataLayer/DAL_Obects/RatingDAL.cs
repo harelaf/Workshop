@@ -9,6 +9,7 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int id { get; set; }
+        [Required]
         public ICollection<RateDAL> _ratings { get; set; } //ratings =: rating:int, review:String
 
         public RatingDAL(ICollection<RateDAL> ratings)

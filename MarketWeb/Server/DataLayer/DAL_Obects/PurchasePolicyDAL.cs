@@ -7,6 +7,7 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int id { get; set; }
+        [Required]
         public List<ConditionDAL> conditions { get; set; }
         public PurchasePolicyDAL(List<ConditionDAL> conditions)
         {

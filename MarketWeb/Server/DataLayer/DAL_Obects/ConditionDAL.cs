@@ -21,6 +21,7 @@ namespace MarketWeb.Server.DataLayer
     }
     public class ComposedConditionDAL : ConditionDAL
     {
+        [Required]
         public List<ConditionDAL> _conditionList { get; set; }
         protected ComposedConditionDAL(List<ConditionDAL> conditionList, bool negative) : base(negative)
         {

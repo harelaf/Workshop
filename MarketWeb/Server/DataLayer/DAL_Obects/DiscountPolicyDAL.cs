@@ -7,6 +7,7 @@ namespace MarketWeb.Server.DataLayer
     {
         [Key]
         public int id { get; set; }
+        [Required]
         public List<DiscountDAL> _discounts { get; set; }
 
         public DiscountPolicyDAL(List<DiscountDAL> discounts)
