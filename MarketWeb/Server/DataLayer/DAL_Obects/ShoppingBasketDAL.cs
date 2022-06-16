@@ -26,6 +26,12 @@ namespace MarketWeb.Server.DataLayer
             }
         }
 
+        public ShoppingBasketDAL(StoreDAL store, ICollection<BasketItemDAL> items)
+        {
+            _store = store;
+            _items = items;
+        }
+
         public IDictionary<ItemDAL, PurchaseDetailsDAL> ConvertToDictionary()
         {
             IDictionary<ItemDAL, PurchaseDetailsDAL> dic = new Dictionary<ItemDAL, PurchaseDetailsDAL>();

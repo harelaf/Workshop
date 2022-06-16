@@ -245,7 +245,7 @@ namespace MarketWeb.Server.Domain
 
         public ItemDAL ItemDomainToDal(Item itemDomain)
         {
-            return new ItemDAL(RatingDomainToDal(itemDomain.Rating), itemDomain.Name,
+            return new ItemDAL(itemDomain.ItemID,RatingDomainToDal(itemDomain.Rating), itemDomain.Name,
                 itemDomain._price, itemDomain.Description, itemDomain.Category);
         }
         public RatingDAL RatingDomainToDal(Rating ratingDomain)

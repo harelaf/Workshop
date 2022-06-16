@@ -31,6 +31,16 @@ namespace MarketWeb.Server.DataLayer
             _category = category;
         }
 
+        public ItemDAL(int itemID, RatingDAL rating, string name, double price, string description, string category)
+        {
+            _itemID = itemID;
+            _rating = rating;
+            _name = name;
+            _price = price;
+            _description = description;
+            _category = category;
+        }
+
         //private ICollection<DiscountDAL> _discounts;
 
         public ItemDAL()
