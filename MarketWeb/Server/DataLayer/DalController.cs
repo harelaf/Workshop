@@ -254,7 +254,7 @@ namespace MarketWeb.Server.DataLayer
                                                     .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-           StoreOwnerDAL storeOwner = new StoreOwnerDAL(appointer, ownerUsername, storeName);
+            StoreOwnerDAL storeOwner = new StoreOwnerDAL(appointer, ownerUsername, storeName);
             context.storeOwnerDALs.Add(storeOwner);
             context.SaveChanges();
         }
@@ -327,12 +327,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
@@ -349,12 +346,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
@@ -371,12 +365,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
@@ -404,12 +395,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             RateDAL rate = new RateDAL(userName, rating, review);
@@ -427,12 +415,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             RateDAL rate = new RateDAL(userName, rating, review);
@@ -443,12 +428,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL store = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if(store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
             return store;
@@ -459,12 +441,9 @@ namespace MarketWeb.Server.DataLayer
             {
                 return context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName)._stock._itemAndAmount.Where(i => i.item._itemID == itemID).First().item;
+                                                    .FirstOrDefault(s => s._storeName == storeName)._stock._itemAndAmount.Where(i => i.item._itemID == itemID).First().item;
             }
             catch (Exception ex)
             {
@@ -536,16 +515,16 @@ namespace MarketWeb.Server.DataLayer
         public RegisteredDAL GetVisitorInformation(string userName) 
         {
             return context.RegisteredDALs
-                                                .Include(x => x._cart)
-                                                .Include(x => x._adminMessages)
-                                                .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
+                                .Include(x => x._cart)
+                                .Include(x => x._adminMessages)
+                                .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
         }
         public void EditVisitorPassword(String newPassword, string newSalt, string userName)
         {
             RegisteredDAL registered = context.RegisteredDALs
-                                                .Include(x => x._cart)
-                                                .Include(x => x._adminMessages)
-                                                .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
+                                .Include(x => x._cart)
+                                .Include(x => x._adminMessages)
+                                .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
             registered._password = newPassword;
             registered._salt = newSalt;
             context.SaveChanges();
@@ -572,12 +551,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL store = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
 
@@ -588,12 +564,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL store = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
 
@@ -603,7 +576,6 @@ namespace MarketWeb.Server.DataLayer
         public List<StoreOwnerDAL> GetStoreOwners(String storeName)
         {
             return context.storeOwnerDALs.Include(r => r._operationsWrappers).Where(r => (r._storeName == storeName) ).ToList();
-
         }
         public List<StoreManagerDAL> GetStoreManagers(String storeName)
         {
@@ -640,12 +612,9 @@ namespace MarketWeb.Server.DataLayer
         {
             StoreDAL store = context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
-                                                    
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    
-                                                   .FirstOrDefault(s => s._storeName == storeName);
+                                                    .FirstOrDefault(s => s._storeName == storeName);
             if (store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
             store._state = StoreState.Closed;
@@ -685,9 +654,9 @@ namespace MarketWeb.Server.DataLayer
         public ICollection<NotifyMessageDAL> GetRegisteredMessagesNotofication(string username)
         {
             return context.RegisteredDALs
-                                                .Include(x => x._cart)
-                                                .Include(x => x._adminMessages)
-                                                .Include(x => x._notifications).FirstOrDefault(s => s._username == username)._notifications.ToList();
+                                .Include(x => x._cart)
+                                .Include(x => x._adminMessages)
+                                .Include(x => x._notifications).FirstOrDefault(s => s._username == username)._notifications.ToList();
         }
         public void AppointSystemAdmin(String adminUsername)
         {
@@ -705,8 +674,7 @@ namespace MarketWeb.Server.DataLayer
                                                     .Include(x => x._rating)
                                                     .Include(x => x._purchasePolicy)
                                                     .Include(x => x._discountPolicy)
-                                                    .FirstOrDefault(s => s._storeName == storeName)
-                          );
+                                                    .FirstOrDefault(s => s._storeName == storeName));
             }
                    
             return stores;
@@ -714,9 +682,9 @@ namespace MarketWeb.Server.DataLayer
         public int SendAdminMessage(String receiverUsername, string senderUsername, String title, String message)
         {
             RegisteredDAL registeredDAL = context.RegisteredDALs
-                                                .Include(x => x._cart)
-                                                .Include(x => x._adminMessages)
-                                                .Include(x => x._notifications).FirstOrDefault(s => s._username == receiverUsername); ;
+                                                    .Include(x => x._cart)
+                                                    .Include(x => x._adminMessages)
+                                                    .Include(x => x._notifications).FirstOrDefault(s => s._username == receiverUsername); ;
             if (registeredDAL == null)
                 throw new Exception($"there is no user with username: {receiverUsername} in db");
             AdminMessageToRegisteredDAL msg = new AdminMessageToRegisteredDAL(receiverUsername, senderUsername, title, message);
@@ -732,9 +700,9 @@ namespace MarketWeb.Server.DataLayer
         public int SendNotification(string storeName, string usernameReciever, String title, String message)
         {
             RegisteredDAL reg = context.RegisteredDALs
-                                                .Include(x => x._cart)
-                                                .Include(x => x._adminMessages)
-                                                .Include(x => x._notifications).FirstOrDefault(s => s._username == usernameReciever); ;
+                                            .Include(x => x._cart)
+                                            .Include(x => x._adminMessages)
+                                            .Include(x => x._notifications).FirstOrDefault(s => s._username == usernameReciever); ;
             if (usernameReciever == null)
                 throw new Exception($"there is no such user with uaername: {usernameReciever}");
             NotifyMessageDAL notifyMessageDAL = new NotifyMessageDAL(title, message, usernameReciever);
