@@ -361,25 +361,6 @@ namespace MarketWeb.Service
             }
             return response;
         }
-        [HttpPost("AddStoreOwner")]
-        public Response AddStoreOwner([FromHeader] String Authorization, String ownerUsername, String storeName)
-        {//II.4.4
-            Response response;
-            try
-            {
-
-                String authToken = parseAutherization(Authorization);
-                _logger.Info($"Add Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
-                _market.AddStoreOwner(authToken, ownerUsername, storeName);
-                response = new Response();
-                _logger.Info($"SUCCESSFULY executed Add Store Owner.");
-            }
-            catch (Exception e)
-            {
-                response = new Response(e); _logger.Error(e.Message);
-            }
-            return response;
-        }
         [HttpPost("RemoveStoreOwner")]
         public Response RemoveStoreOwner([FromHeader] String Authorization, String ownerUsername, String storeName)
         {//II.4.5
@@ -1587,6 +1568,91 @@ namespace MarketWeb.Service
             catch (Exception e)
             {
                 response = new Response<List<BidDTO>>(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        //[HttpPost("AddStoreOwner")]
+        //public Response<bool> AddStoreOwner([FromHeader] String Authorization, String ownerUsername, String storeName)
+        //{//II.4.4
+        //    Response<bool> response;
+        //    try
+        //    {
+
+        //        String authToken = parseAutherization(Authorization);
+        //        _logger.Info($"Add Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
+        //        bool res = _market.AcceptOwnerAppointment(authToken, ownerUsername, storeName);
+        //        response = new Response<bool>();
+        //        _logger.Info($"SUCCESSFULY executed Add Store Owner.");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        response = new Response<bool>(e); _logger.Error(e.Message);
+        //    }
+        //    return response;
+        //}
+        [HttpPost("AcceptOwnerAppointment")]
+        public Response<bool> AcceptOwnerAppointment([FromHeader] String Authorization, String newOwner, String storeName)
+        {//II.4.4
+            Response<bool> response;
+            try
+            {
+
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Accept Store Owner called with parameters: authToken={authToken}, storeName={storeName}, ownerUsername={newOwner}.");
+                bool res = _market.AcceptOwnerAppointment(authToken, storeName, newOwner);
+                response = new Response<bool>(res);
+                _logger.Info($"SUCCESSFULY executed Accept Store Owner.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<bool>(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        [HttpPost("RejectOwnerAppointment")]
+        public Response RejectOwnerAppointment([FromHeader] String Authorization, string storeName, string newOwner)
+        {
+            Response response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _market.RejectOwnerAppointment(authToken, storeName, newOwner);
+                response = new Response();
+            }
+            catch (Exception e)
+            {
+                response = new Response(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        [HttpPost("GetUsernamesWithOwnerAppointmentPermissionInStore")]
+        public Response<List<String>> GetUsernamesWithOwnerAppointmentPermissionInStore([FromHeader] String Authorization, string storeName)
+        {
+            Response<List<String>> response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                response = new Response<List<String>>(_market.GetUsernamesWithPermissionInStore(authToken, storeName, Operation.APPOINT_OWNER));
+            }
+            catch (Exception e)
+            {
+                response = new Response<List<String>>(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        [HttpPost("GetStandbyOwnersInStore")]
+        public Response<Dictionary<string, List<string>>> GetStandbyOwnersInStore([FromHeader] String Authorization, string storeName)
+        {
+            Response<Dictionary<string, List<string>>> response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                Dictionary<string, List<string>> standbyOwners = _market.GetStandbyOwnersInStore(authToken, storeName);
+                response = new Response<Dictionary<string, List<string>>>(standbyOwners);
+            }
+            catch (Exception e)
+            {
+                response = new Response<Dictionary<string, List<string>>>(e); _logger.Error(e.Message);
             }
             return response;
         }

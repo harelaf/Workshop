@@ -38,32 +38,30 @@
         {
             <button class="btn btn-primary" @onclick="() => ViewPoliciesPage()">View Purchase/Discount Policy Page</button>
         }
+        <br />
+        <br />
         @if (CanCloseStore && StoreIsActive)
         {
             <button class="btn btn-primary" @onclick="() => CloseStore()">close @(StoreInfo.StoreName)</button>
-            <br />
-            <br />
         }
         @if (CanCloseStorePermenantly)
         {
             <button class="btn btn-primary" @onclick="() => CloseStorePermenantly()">close @(StoreInfo.StoreName) Permenantly</button>
-            <br />
-            <br />
         }
         @if (!StoreIsActive && CanReopenStore)
         {
             <button class="btn btn-primary" @onclick="() => ReopenStore()">Reopen @(StoreInfo.StoreName)</button>
-            <br />
-            <br />
         }
         @if (StoreIsActive && CanRespondToStoreBids)
         {
             <button class="btn btn-primary" @onclick="() => ViewBidsPage()">View @(StoreInfo.StoreName) Bids</button>
-            <br />
-            <br />
+        }
+        @if (StoreIsActive && CanManageRoles)
+        {
+            <button class="btn btn-primary" @onclick="() => ViewStandByOwnersPage()">View Standby Owners</button>
         }
     </div>
-
+    <br />
     <br />
     <div>
         @if (CanManageRoles)
@@ -673,12 +671,13 @@ else
 
         try
         {
-            Response response = await _marketAPIClient.AddStoreOwner(toAppoint, StoreName);
+            Response<bool> response = await _marketAPIClient.AcceptOwnerAppointment(StoreName, toAppoint);
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);
             }
-            AlertService.Info("Successfully appointed new owner: " + toAppoint);
+            string message = response.Value ? $"Successfully appointed new owner: {toAppoint}" : $"'{toAppoint}' is standing by for the other owner appointers' approval.";
+            AlertService.Info(message);
         }
         catch (Exception ex)
         {
@@ -933,6 +932,11 @@ else
     private void ViewBidsPage()
     {
         NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreBids");
+    }
+
+    private void ViewStandByOwnersPage()
+    {
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreStandByOwners");
     }
 
     private void ViewMyBidsAtStorePage()

@@ -328,7 +328,7 @@ namespace MarketWeb.Server.Service
             String MethodName = "AddStoreOwner";
             String[] args = ParseArgs(args_, MethodName, 3);
             int authIndex = ParseAuthIndex(args[0], MethodName);
-            Response response = api.AddStoreOwner(tokens[authIndex - 1], args[1], args[2]);
+            Response response = api.AcceptOwnerAppointment(tokens[authIndex - 1], args[1], args[2]);
             if (response.ErrorOccured)
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }

@@ -27,6 +27,7 @@ namespace MarketWeb.Server.Domain
         private StoreState _state;
         // bidder (if registered -> username, else -> authentication token) to bids
         private IDictionary<String, List<Bid>> _biddedItems;
+        private Dictionary<String, List<String>> _standbyOwners;
 
         public String StoreName => _storeName;
         public StoreState State => _state;
@@ -49,6 +50,7 @@ namespace MarketWeb.Server.Domain
             _founder = founder;
             _state = StoreState.Active;
             _biddedItems = new Dictionary<String, List<Bid>>();
+            _standbyOwners = new Dictionary<String, List<String>>();
         }
 
         public Item ReserveItem(int itemID, int amount)
@@ -91,7 +93,7 @@ namespace MarketWeb.Server.Domain
             LogErrorMessage("AddStoreManager", errorMessage);
             throw new Exception(errorMessage);
         }
-        public bool AddStoreOwner(StoreOwner newOwner)
+        public StoreOwner AddStoreOwner(StoreOwner newOwner)
         {
             String errorMessage;
             lock (_managers)
@@ -101,7 +103,7 @@ namespace MarketWeb.Server.Domain
                     if (!hasRoleInStore(newOwner.Username))
                     {
                         _owners.Add(newOwner);
-                        return true;
+                        return newOwner;
                     }
                 }
             }
@@ -442,13 +444,82 @@ namespace MarketWeb.Server.Domain
         internal List<string> GetUsernamesWithPermission(Operation op)
         {
             List<string> usernames = new List<string>();
-            usernames.Add(_founder.Username);
+            if (_founder.hasAccess(StoreName, op))
+                usernames.Add(_founder.Username);
             foreach(StoreOwner owner in _owners)
-                usernames.Add(owner.Username);
+                if (owner.hasAccess(StoreName, op))
+                    usernames.Add(owner.Username);
             foreach (StoreManager manager in _managers)
                 if (manager.hasAccess(StoreName, op))
                     usernames.Add(manager.Username);
             return usernames;
+        }
+
+        internal StoreOwner AcceptOwnerAppointment(string acceptor, string newOwner)
+        {
+            lock (_standbyOwners)
+            {
+                if (!hasRoleInStore(newOwner))
+                {
+                    if (_standbyOwners.ContainsKey(newOwner))
+                    {
+                        if (!_standbyOwners[newOwner].Contains(acceptor))
+                            _standbyOwners[newOwner].Add(acceptor);
+                    }
+                    else
+                    {
+                        _standbyOwners[newOwner] = new List<string>();
+                        _standbyOwners[newOwner].Add(acceptor);
+                    }
+                }
+                else
+                {
+                    String errorMessage = "this visitor has a role in this store already.";
+                    LogErrorMessage("AcceptOwnerAppointment", errorMessage);
+                    throw new Exception(errorMessage);
+                }
+            }
+            if (checkOwnerAcceptance(newOwner))
+            {
+                String appointer = _standbyOwners[newOwner][0];
+                _standbyOwners.Remove(newOwner);
+                return AddStoreOwner(new StoreOwner(newOwner, StoreName, appointer));
+            }
+            return null;
+        }
+
+        private bool checkOwnerAcceptance(string newOwner)
+        {
+            lock (_standbyOwners)
+            {
+                if (!_standbyOwners.ContainsKey(newOwner))
+                    throw new Exception("this username is not in standby for ownership.");
+                List<string> workers = GetUsernamesWithPermission(Operation.APPOINT_OWNER);
+                foreach (string worker in workers)
+                    if (!_standbyOwners[newOwner].Contains(worker))
+                        return false;
+            }
+            return true;
+        }
+
+        internal void RejectOwnerAppointment(string rejector, string newOwner)
+        {
+            lock (_standbyOwners)
+            {
+                if (_standbyOwners.ContainsKey(newOwner))
+                    _standbyOwners.Remove(newOwner);
+                else
+                {
+                    String errorMessage = $"no such owner to reject in store '{StoreName}'.";
+                    LogErrorMessage("RejectOwnerAppointment", errorMessage);
+                    throw new Exception(errorMessage);
+                }
+            }
+        }
+
+        internal Dictionary<string, List<string>> GetStandbyOwnersInStore()
+        {
+            return _standbyOwners;
         }
 
         internal bool CounterOfferBid(string acceptor, int itemId, string bidder, double counterOffer)

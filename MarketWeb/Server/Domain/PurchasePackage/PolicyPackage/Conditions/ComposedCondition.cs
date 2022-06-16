@@ -21,8 +21,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 
         public void AddConditionToComposition(Condition condition)
         {
-            if (condition != null)
-                _ConditionList.Add(condition);
+            lock (ConditionList)
+            {
+                if (condition != null)
+                    _ConditionList.Add(condition);
+            }
         }
     }
 }

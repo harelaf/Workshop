@@ -254,11 +254,11 @@ namespace MarketWeb.Server.Domain
             return store.AddStoreManager(newManager);
         }
 
-        public bool AddStoreOwner(StoreOwner newOwner, string storeName)
-        {
-            Store store = GetStore(storeName);
-            return store.AddStoreOwner(newOwner);
-        }
+        //public bool AddStoreOwner(StoreOwner newOwner, string storeName)
+        //{
+        //    Store store = GetStore(storeName);
+        //    return store.AddStoreOwner(newOwner);
+        //}
         public Tuple<List<string>, List<string>> RemoveStoreOwner(string ownerUsername, string storeName, String appointerUsername)
         {
             Store store = GetStore(storeName);
@@ -424,6 +424,21 @@ namespace MarketWeb.Server.Domain
             errorMessage = "this visitor has no bids at store '" + storeName + "'.";
             LogErrorMessage("GetVisitorBidsAtStore", errorMessage);
             throw new Exception(errorMessage);
+        }
+
+        internal StoreOwner AcceptOwnerAppointment(string storeName, string acceptor, string newOwner)
+        {
+            return GetStore(storeName).AcceptOwnerAppointment(acceptor, newOwner);
+        }
+
+        internal void RejectOwnerAppointment(string storeName, string rejector, string newOwner)
+        {
+            GetStore(storeName).RejectOwnerAppointment(rejector, newOwner);
+        }
+
+        internal Dictionary<string, List<string>> GetStandbyOwnersInStore(string storeName)
+        {
+            return GetStore(storeName).GetStandbyOwnersInStore();
         }
     }
 }

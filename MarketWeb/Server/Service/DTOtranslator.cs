@@ -434,12 +434,12 @@ namespace MarketWeb.Service
         }
         public StoreFounderDTO toDTO(StoreFounder storeFounder)
         {
-            return new StoreFounderDTO(storeFounder.StoreName, storeFounder.Username);
+            return new StoreFounderDTO(storeFounder.Username, storeFounder.StoreName);
         }
         public StoreManagerDTO toDTO(StoreManager storeManager)
         {
             return new StoreManagerDTO(
-                new HashSet<Operation>(storeManager.operations),
+                storeManager.operations,
                 storeManager.Username,
                 storeManager.StoreName,
                 storeManager.Appointer);
@@ -448,8 +448,8 @@ namespace MarketWeb.Service
         {
             return new StoreOwnerDTO(
                 storeOwner.operations,
-                storeOwner.StoreName,
                 storeOwner.Username,
+                storeOwner.StoreName,
                 storeOwner.Appointer);
         }
         public PurchasePolicyDTO toDTO(PurchasePolicy policy)
@@ -479,7 +479,8 @@ namespace MarketWeb.Service
                 bid.CounterOffer,
                 bid.Acceptors,
                 originalPrice,
-                bid.AccepttedByAll);
+                bid.AccepttedByAll
+                );
         }
     }
 }
