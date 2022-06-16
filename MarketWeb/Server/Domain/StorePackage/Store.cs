@@ -93,7 +93,8 @@ namespace MarketWeb.Server.Domain
             LogErrorMessage("AddStoreManager", errorMessage);
             throw new Exception(errorMessage);
         }
-        public StoreOwner AddStoreOwner(StoreOwner newOwner)
+
+        private StoreOwner AddStoreOwner(StoreOwner newOwner)
         {
             String errorMessage;
             lock (_managers)
@@ -111,6 +112,7 @@ namespace MarketWeb.Server.Domain
             LogErrorMessage("AddStoreOwner", errorMessage);
             throw new Exception(errorMessage);
         }
+
         private bool hasRoleInStore(string Username)
         {
             return GetOwner(Username) != null || GetManager(Username) != null || _founder.Username.Equals(Username);
@@ -361,6 +363,7 @@ namespace MarketWeb.Server.Domain
             throw new Exception(errorMessage);
 
         }
+
         private List<string> GetAllApointeeOwners(string appinterOwner) 
         { 
             List<string> owners = new List<string>();
@@ -371,6 +374,7 @@ namespace MarketWeb.Server.Domain
             }
             return owners;
         }
+
         private List<string> GetAllApointeeManagers(string appinterOwner)
         {
             List<string> managers = new List<string>();
@@ -381,6 +385,7 @@ namespace MarketWeb.Server.Domain
             }
             return managers;
         }
+
         public bool RemoveStoreManager(string managerUsername, String appointerUsername)
         {
             String errorMessage = null;
@@ -631,19 +636,21 @@ namespace MarketWeb.Server.Domain
             return null;
         }
 
-
         public virtual DiscountPolicy GetDiscountPolicy()
         {
             return this._discountPolicy;
         }
+
         public virtual PurchasePolicy GetPurchasePolicy()
         {
             return this._purchasePolicy;
         }
+
         public void ResetDiscountPolicy()
         {
             _discountPolicy.Reset();
         }
+
         internal void ResetPurchasePolicy()
         {
             _purchasePolicy.Reset();
