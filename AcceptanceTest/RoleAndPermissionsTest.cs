@@ -165,7 +165,6 @@ namespace AcceptanceTest
         public void TestDenyStoreManagerPermission_DenyManagerOwnedPermissionByAppointer_success()
         {
             RegisteredDTO user = marketAPI.GetVisitorInformation(store_founder_token).Value;
-            String ownerUsername1 = "new owner1";
             String ownerUsername2 = "new owner2";
             String managerUsername3 = "new manager3";
             String password = "123456789";
@@ -381,6 +380,103 @@ namespace AcceptanceTest
 
             Assert.IsTrue(response4.ErrorOccured);
             Assert.IsTrue(response5.ErrorOccured, response5.ErrorMessage);
+        }
+        [TestMethod]
+        public void TestAddOwner_Add2ownersAcceptSecond_Success()
+        {
+            RegisteredDTO user = marketAPI.GetVisitorInformation(store_founder_token).Value;
+            String ownerUsername1 = "new owner1";
+            String ownerUsername2 = "new owner2";
+            String managerUsername3 = "new manager3";
+            String password = "123456789";
+            String store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_owner_token1, ownerUsername1, password, dob);
+            String store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_owner_token2, ownerUsername2, password, dob);
+            String store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_manager_token3, managerUsername3, password, dob);
+
+            store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
+            store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
+            store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
+
+            //act
+            Response<bool> response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+            Response<bool> response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);// awaiting ownerUsername1 to approve appointment
+            Response<bool> response3 = marketAPI.AcceptOwnerAppointment(store_owner_token1, ownerUsername2, storeName);//success. everyone approved owner's appointment.
+            
+            Assert.IsTrue(!response1.ErrorOccured && response1.Value, response1.ErrorMessage);
+            Assert.IsTrue(!response2.ErrorOccured && !response2.Value, response2.ErrorMessage);
+            Assert.IsTrue(!response2.ErrorOccured && response3.Value, response3.ErrorMessage);
+        }
+        [TestMethod]
+        public void TestAddOwner_Add2ownersAcceptThird_failure()
+        {
+            RegisteredDTO user = marketAPI.GetVisitorInformation(store_founder_token).Value;
+            String ownerUsername1 = "new owner1";
+            String ownerUsername2 = "new owner2";
+            String managerUsername3 = "new manager3";
+            String password = "123456789";
+            String store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_owner_token1, ownerUsername1, password, dob);
+            String store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_owner_token2, ownerUsername2, password, dob);
+            String store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_manager_token3, managerUsername3, password, dob);
+
+            store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
+            store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
+            store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
+
+            //act
+            Response<bool> response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+            Response<bool> response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);// awaiting ownerUsername1 to approve appointment
+            Response<bool> response3 = marketAPI.AcceptOwnerAppointment(store_owner_token1, store_founder_name, storeName);//success. everyone approved owner's appointment.
+
+            Assert.IsTrue(!response1.ErrorOccured && response1.Value, response1.ErrorMessage);
+            Assert.IsTrue(!response2.ErrorOccured && !response2.Value, response2.ErrorMessage);
+            Assert.IsTrue(response3.ErrorOccured);
+        }
+        [TestMethod]
+        public void TestAddOwner_Add2ownersRejectSecond_Success()
+        {
+            RegisteredDTO user = marketAPI.GetVisitorInformation(store_founder_token).Value;
+            String ownerUsername1 = "new owner1";
+            String ownerUsername2 = "new owner2";
+            String managerUsername3 = "new manager3";
+            String password = "123456789";
+            String store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_owner_token1, ownerUsername1, password, dob);
+            String store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_owner_token2, ownerUsername2, password, dob);
+            String store_manager_token3 = (marketAPI.EnterSystem()).Value;// guest
+            marketAPI.Register(store_manager_token3, managerUsername3, password, dob);
+
+            store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
+            store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
+            store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
+
+            //act
+            Response<bool> response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+            Response<bool> response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);// awaiting ownerUsername1 to approve appointment
+            Response response3 = marketAPI.RejectOwnerAppointment(store_owner_token1, storeName, ownerUsername2);//success. everyone approved owner's appointment.
+            bool notAdded = !marketAPI.GetUsernamesWithOwnerAppointmentPermissionInStore(store_owner_token1, storeName).Value.Contains(ownerUsername2);
+
+            Assert.IsTrue(!response1.ErrorOccured && response1.Value, response1.ErrorMessage);
+            Assert.IsTrue(!response2.ErrorOccured && !response2.Value, response2.ErrorMessage);
+            Assert.IsFalse(response3.ErrorOccured);
+            Assert.IsTrue(notAdded);
+        }
+        [TestMethod]
+        public void TestRejectOwner_RejectStranger_Failure()
+        {
+            RegisteredDTO user = marketAPI.GetVisitorInformation(store_founder_token).Value;
+            String ownerUsername1 = "new owner1";
+
+            //act
+            Response response = marketAPI.RejectOwnerAppointment(store_founder_token, storeName, ownerUsername1);
+
+            Assert.IsTrue(response.ErrorOccured);
         }
     }
 }

@@ -239,8 +239,8 @@ namespace MarketProject.Domain.Tests
         [TestMethod]
         public void AddStoreOwner_AddOwner_returnsTrue()
         {
-            //bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
-            //Assert.IsTrue(act);
+            StoreOwner act = _store.AcceptOwnerAppointment(storeFounder, name);
+            Assert.IsTrue(act != null);
         }
 
         [TestMethod]
@@ -404,6 +404,48 @@ namespace MarketProject.Domain.Tests
         public void RemoveStoreOwner_NonWorker_returnsfalse()
         {
             Assert.ThrowsException<Exception>(() => _store.RemoveStoreOwner("123", null));
+        }
+        [TestMethod()]
+        public void acceptStoreOwner_add2ownersCheckstandby_returnstrue()
+        {
+            string storeOwner = "amos";
+            string storeOwner2 = "haim";
+            StoreOwner add1 = _store.AcceptOwnerAppointment(storeFounder, storeOwner);//success. first owner's appointment.
+            StoreOwner add2 = _store.AcceptOwnerAppointment(storeFounder, storeOwner2);// awaiting ownerUsername1 to approve appointment
+            bool isAdded = _store.GetOwners().Contains(add1);
+            bool isNotAdded = !_store.GetOwners().Contains(add2);
+            bool isAdded2 = _store.GetStandbyOwnersInStore().ContainsKey(storeOwner2) && _store.GetStandbyOwnersInStore()[storeOwner2].Contains(storeFounder);
+            Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2);
+        }
+        [TestMethod()]
+        public void acceptStoreOwner_add2ownersAcceptSecond_returnstrue()
+        {
+            string storeOwner = "amos";
+            string storeOwner2 = "haim";
+            StoreOwner add1 = _store.AcceptOwnerAppointment(storeFounder, storeOwner);//success. first owner's appointment.
+            StoreOwner add2 = _store.AcceptOwnerAppointment(storeFounder, storeOwner2);// awaiting ownerUsername1 to approve appointment
+            bool isAdded = _store.GetOwners().Contains(add1);
+            bool isNotAdded = !_store.GetOwners().Contains(add2);
+            bool isAdded2 = _store.GetStandbyOwnersInStore().ContainsKey(storeOwner2) && _store.GetStandbyOwnersInStore()[storeOwner2].Contains(storeFounder);
+            StoreOwner add3 = _store.AcceptOwnerAppointment(storeOwner, storeOwner2);
+            bool isRemovedFromStandby = !_store.GetStandbyOwnersInStore().ContainsKey(storeOwner2);
+            bool isAdded3 = _store.GetOwners().Contains(add3);
+            Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2 && isRemovedFromStandby && isAdded3);
+        }
+        [TestMethod()]
+        public void acceptStoreOwner_add2ownersRejectSecond_returnstrue()
+        {
+            string storeOwner = "amos";
+            string storeOwner2 = "haim";
+            StoreOwner add1 = _store.AcceptOwnerAppointment(storeFounder, storeOwner);//success. first owner's appointment.
+            StoreOwner add2 = _store.AcceptOwnerAppointment(storeFounder, storeOwner2);// awaiting ownerUsername1 to approve appointment
+            bool isAdded = _store.GetOwners().Contains(add1);
+            bool isNotAdded = !_store.GetOwners().Contains(add2);
+            bool isAdded2 = _store.GetStandbyOwnersInStore().ContainsKey(storeOwner2) && _store.GetStandbyOwnersInStore()[storeOwner2].Contains(storeFounder);
+            _store.RejectOwnerAppointment(storeOwner, storeOwner2);
+            bool isRemoved = !_store.GetStandbyOwnersInStore().ContainsKey(storeOwner2);
+            bool isNotAdded2 = _store.GetOwners().Find(x => x.Username == storeOwner2) == null;
+            Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2 && isRemoved && isNotAdded2);
         }
     }
 }
