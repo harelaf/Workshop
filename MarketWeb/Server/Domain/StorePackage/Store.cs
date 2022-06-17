@@ -400,12 +400,12 @@ namespace MarketWeb.Server.Domain
             throw new Exception(errorMessage);
         }
 
-        internal List<string> GetPurchasePolicyStrings()
+        public List<string> GetPurchasePolicyStrings()
         {
             return _purchasePolicy.GetConditionsStrings();
         }
 
-        internal void BidItem(int itemId, int amount, double biddedPrice, string bidder)
+        public void BidItem(int itemId, int amount, double biddedPrice, string bidder)
         {
             if (!_biddedItems.ContainsKey(bidder))
                 _biddedItems.Add(bidder, new List<Bid>());
@@ -422,7 +422,7 @@ namespace MarketWeb.Server.Domain
         /// <param name="bidder"></param>
         /// <returns>true when all parties accepted the bid. false otherwise.</returns>
         /// <exception cref="Exception"></exception>
-        internal bool AcceptBid(string acceptor, int itemId, string bidder)
+        public bool AcceptBid(string acceptor, int itemId, string bidder)
         {
             Bid bid = GetBid(itemId, bidder);
             if (bid == null)
@@ -431,7 +431,7 @@ namespace MarketWeb.Server.Domain
             return CheckBidAcceptance(bid);
         }
 
-        internal List<Bid> GetBids()
+        public List<Bid> GetBids()
         {
             List<Bid> bids = new List<Bid>();
             foreach (List<Bid> bidList in _biddedItems.Values)
@@ -439,14 +439,14 @@ namespace MarketWeb.Server.Domain
             return bids;
         }
 
-        internal List<Bid> GetVisitorBids(String bidder)
+        public List<Bid> GetVisitorBids(String bidder)
         {
             if (_biddedItems.ContainsKey(bidder))
                 return _biddedItems[bidder];
             else return null;
         }
 
-        internal List<string> GetUsernamesWithPermission(Operation op)
+        public List<string> GetUsernamesWithPermission(Operation op)
         {
             List<string> usernames = new List<string>();
             if (_founder.hasAccess(StoreName, op))
@@ -460,8 +460,9 @@ namespace MarketWeb.Server.Domain
             return usernames;
         }
 
-        internal StoreOwner AcceptOwnerAppointment(string acceptor, string newOwner)
+        public StoreOwner AcceptOwnerAppointment(string acceptor, string newOwner)
         {
+            String errorMessage = null;
             lock (_standbyOwners)
             {
                 if (!hasRoleInStore(newOwner))
@@ -470,6 +471,7 @@ namespace MarketWeb.Server.Domain
                     {
                         if (!_standbyOwners[newOwner].Contains(acceptor))
                             _standbyOwners[newOwner].Add(acceptor);
+                        else errorMessage = "you already accepted this owner";
                     }
                     else
                     {
@@ -479,10 +481,13 @@ namespace MarketWeb.Server.Domain
                 }
                 else
                 {
-                    String errorMessage = "this visitor has a role in this store already.";
-                    LogErrorMessage("AcceptOwnerAppointment", errorMessage);
-                    throw new Exception(errorMessage);
+                    errorMessage = "this visitor has a role in this store already.";
                 }
+            }
+            if(errorMessage != null)
+            {
+                LogErrorMessage("AcceptOwnerAppointment", errorMessage);
+                throw new Exception(errorMessage);
             }
             if (checkOwnerAcceptance(newOwner))
             {
@@ -507,7 +512,7 @@ namespace MarketWeb.Server.Domain
             return true;
         }
 
-        internal void RejectOwnerAppointment(string rejector, string newOwner)
+        public void RejectOwnerAppointment(string rejector, string newOwner)
         {
             lock (_standbyOwners)
             {
@@ -522,12 +527,12 @@ namespace MarketWeb.Server.Domain
             }
         }
 
-        internal Dictionary<string, List<string>> GetStandbyOwnersInStore()
+        public Dictionary<string, List<string>> GetStandbyOwnersInStore()
         {
             return _standbyOwners;
         }
 
-        internal bool CounterOfferBid(string acceptor, int itemId, string bidder, double counterOffer)
+        public bool CounterOfferBid(string acceptor, int itemId, string bidder, double counterOffer)
         {
             Bid bid = GetBid(itemId, bidder);
             if (bid == null)
@@ -536,7 +541,7 @@ namespace MarketWeb.Server.Domain
             return CheckBidAcceptance(bid);
         }
 
-        internal void RejectBid(string rejector, int itemId, string bidder)
+        public void RejectBid(string rejector, int itemId, string bidder)
         {
             if(GetOwner(rejector) == null && _founder.Username != rejector)
             {
@@ -554,7 +559,7 @@ namespace MarketWeb.Server.Domain
                 _biddedItems.Remove(bidder);
         }
 
-        internal Bid GetBid(int itemId, string bidder)
+        public Bid GetBid(int itemId, string bidder)
         {
             foreach (Bid bid in _biddedItems[bidder])
                 if (bid.ItemID == itemId)
@@ -562,7 +567,7 @@ namespace MarketWeb.Server.Domain
             return null;
         }
 
-        internal double GetBidAcceptedPrice(string bidder, int itemID, int amount)
+        public double GetBidAcceptedPrice(string bidder, int itemID, int amount)
         {
             Bid bid = GetBid(itemID, bidder);
             if (bid == null)
@@ -574,7 +579,7 @@ namespace MarketWeb.Server.Domain
             return bid.GetFinalPrice();
         }
 
-        internal bool CheckBidAcceptance(Bid bid)
+        public bool CheckBidAcceptance(Bid bid)
         {
             if (bid == null)
                 throw new Exception("this bid does not exist.");
@@ -590,22 +595,22 @@ namespace MarketWeb.Server.Domain
             return true;
         }
 
-        internal List<string> GetDiscountPolicyStrings()
+        public List<string> GetDiscountPolicyStrings()
         {
             return _discountPolicy.GetDiscountsStrings();
         }
 
-        internal List<StoreManager> GetManagers()
+        public List<StoreManager> GetManagers()
         {
             return _managers;
         }
 
-        internal List<StoreOwner> GetOwners()
+        public List<StoreOwner> GetOwners()
         {
             return _owners;
         }
 
-        internal StoreFounder GetFounder()
+        public StoreFounder GetFounder()
         {
             return _founder;
         }

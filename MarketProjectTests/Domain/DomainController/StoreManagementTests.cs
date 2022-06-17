@@ -234,11 +234,10 @@ namespace MarketProject.Domain.Tests
             Assert.ThrowsException<Exception>(() => _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName));
         }
 
-        [Ignore]
         [TestMethod]
         public void AddStoreManager_AddManagerWhileIsOwner_throwsExeption()
         {
-            //bool arrange = _storeManagement.AddStoreOwner(new StoreOwner(Username, storeName, founder), storeName);
+            StoreOwner arrange = _storeManagement.AcceptOwnerAppointment(storeName, founder, Username);//success. first owner's appointment.
 
             Assert.ThrowsException<Exception>(() => _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName));
         }
@@ -250,42 +249,38 @@ namespace MarketProject.Domain.Tests
             Assert.IsTrue(act);
         }
 
-        [Ignore]
         [TestMethod]
         public void AddStoreOwner_AddOwnerTwice_returnsFalse()
         {
-            //bool arrange = _storeManagement.AddStoreOwner(new StoreOwner(Username, storeName, founder), storeName);
+            StoreOwner arrange = _storeManagement.AcceptOwnerAppointment(storeName, founder, Username);//success. first owner's appointment.
 
-            //Assert.ThrowsException<Exception>(() => _storeManagement.AddStoreOwner(new StoreOwner(Username, storeName, founder), storeName));
+            Assert.ThrowsException<Exception>(() => _storeManagement.AcceptOwnerAppointment(storeName, founder, Username));
         }
 
-        [Ignore]
         [TestMethod]
         public void AddStoreOwner_AddOwnerWhileIsManager_returnsFalse()
         {
             bool arrange = _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName);
 
-            //Assert.ThrowsException<Exception>(() => _storeManagement.AddStoreOwner(new StoreOwner(Username, storeName, founder), storeName));
+            Assert.ThrowsException<Exception>(() => _storeManagement.AcceptOwnerAppointment(storeName, founder, Username));
         }
 
-        [Ignore]
         [TestMethod()]
         public void AddStoreOwner_removeAsManagerAddAsOwner_returnsTrue()
         {
             bool arrange = _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName);
             arrange = arrange & _storeManagement.RemoveStoreManager(Username, storeName, founder);
 
-            //bool act = _storeManagement.AddStoreOwner(new StoreOwner(Username, storeName, founder), storeName);
+            StoreOwner act = _storeManagement.AcceptOwnerAppointment(storeName, founder, Username);
 
-            //Assert.IsTrue(arrange & act);
+            Assert.IsTrue(arrange & act != null);
         }
 
-        [Ignore]
         [TestMethod]
         public void AddStoreOwner_AddOwner_returnsTrue()
         {
-            //bool act = _storeManagement.AddStoreOwner(new StoreOwner(Username, storeName, founder), storeName);
-            //Assert.IsTrue(act);
+            StoreOwner act = _storeManagement.AcceptOwnerAppointment(storeName, founder, Username);//success. first owner's appointment.
+            Assert.IsTrue(act != null);
         }
 
         [TestMethod()]
@@ -316,22 +311,22 @@ namespace MarketProject.Domain.Tests
             Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(Username, storeName + "123", founder));
         }
 
-        [Ignore]
         [TestMethod()]
         public void RemoveStoreOwner_addAndRemove_returnstrue()
         {
             string storeOwner = "amos";
-            //bool add = _storeManagement.AddStoreOwner(new StoreOwner(storeOwner, storeName, founder), storeName);
+            StoreOwner add = _storeManagement.AcceptOwnerAppointment(storeName, founder, storeOwner);//success. first owner's appointment.
+            bool add2 = _storeManagement.getStoreOwners(storeName).Contains(add);
+            try
+            {
+                _storeManagement.RemoveStoreOwner(storeOwner, storeName, founder);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            Assert.IsTrue(add != null && add2);
 
-            //try
-            //{
-            //    _storeManagement.RemoveStoreOwner(storeOwner, storeName, founder);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Assert.Fail(ex.Message);
-            //}
-            //Assert.IsTrue(add);
         }
         [TestMethod()]
         public void RemoveStoreOwner_removeFounder_returnsfalse()

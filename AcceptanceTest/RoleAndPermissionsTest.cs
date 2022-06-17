@@ -40,7 +40,6 @@ namespace AcceptanceTest
             store_founder_token = (marketAPI.Login(store_founder_token, store_founder_name, "123456789")).Value;// reg
             marketAPI.OpenNewStore(store_founder_token, storeName);
         }
-        [Ignore]
         [TestMethod]
         public void TestAddManager_2VisitorsAddingDiffRolesSamePerson_oneIsFailed()
         {
@@ -48,7 +47,7 @@ namespace AcceptanceTest
             String ownerUsername = "new owner";
             String store_owner_token = (marketAPI.EnterSystem()).Value;// owner
             marketAPI.Register(store_owner_token, ownerUsername, "123456789", dob); 
-            //marketAPI.AddStoreOwner(store_founder_token, ownerUsername, storeName);
+            marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername, storeName);//success. first owner's appointment.
             String store_manager_token = (marketAPI.EnterSystem()).Value;// manager
             marketAPI.Register(store_manager_token, managerUsername, "123456789", dob);
             Boolean res1 = false, res2 = false;
@@ -76,7 +75,6 @@ namespace AcceptanceTest
             Assert.IsFalse(res1 && res2, "both res1 and res2 are true");
         }
 
-        [Ignore]
         [TestMethod]
         public void TestAddManager_circularAppointing_unsuccessful()
         {
@@ -96,8 +94,9 @@ namespace AcceptanceTest
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
-            //marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
-            //marketAPI.AddStoreOwner(store_owner_token1, ownerUsername2, storeName);
+            marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+            marketAPI.AcceptOwnerAppointment(store_owner_token1, ownerUsername2, storeName);// awaiting ownerUsername1 to approve appointment
+            marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);//success. everyone approved owner's appointment.
 
             //act
             Response response1 = marketAPI.AddStoreManager(store_owner_token2, store_founder_name, storeName);
@@ -114,7 +113,6 @@ namespace AcceptanceTest
             Assert.IsTrue(doubleCheck);
         }
 
-        [Ignore]
         [TestMethod]
         public void TestRemoveRole()
         {
@@ -134,12 +132,13 @@ namespace AcceptanceTest
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
-            //marketAPI.AddStoreOwner(store_owner_token1, ownerUsername2, storeName);
+            marketAPI.AcceptOwnerAppointment(store_owner_token1, ownerUsername2, storeName);//success. first owner's appointment.
             List<StoreManagerDTO> lst_m;
             List<StoreOwnerDTO> lst_o;
             //act
-            //Response response1 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
-            //Response response2 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername2, storeName);
+            Response response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+            Response response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);// awaiting ownerUsername1 to approve appointment
+            Response response6 = marketAPI.AcceptOwnerAppointment(store_owner_token1, ownerUsername2, storeName);//success. everyone approved owner's appointment.
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
             
             lst_m = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
@@ -162,7 +161,6 @@ namespace AcceptanceTest
            
         }
 
-        [Ignore]
         [TestMethod]
         public void TestDenyStoreManagerPermission_DenyManagerOwnedPermissionByAppointer_success()
         {
@@ -179,7 +177,7 @@ namespace AcceptanceTest
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
 
-            //Response response2 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername2, storeName);
+            Response response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);//success. first owner's appointment.
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
 
             //act
@@ -190,7 +188,7 @@ namespace AcceptanceTest
             Assert.IsFalse(response4.ErrorOccured, response4.ErrorMessage);
             Assert.IsTrue(response5.ErrorOccured);
         }
-        [Ignore]
+
         [TestMethod]
         public void TestDenyStoreManagerPermission_DenyManagerOwnedPermissionNotByAppointer_throwsException()
         {
@@ -210,8 +208,9 @@ namespace AcceptanceTest
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
 
-            //Response response1 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
-            //Response response2 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername2, storeName);
+            Response response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+            Response response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);// awaiting ownerUsername1 to approve appointment
+            Response response6 = marketAPI.AcceptOwnerAppointment(store_owner_token1, ownerUsername2, storeName);//success. everyone approved owner's appointment.
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
 
             //act
@@ -222,7 +221,7 @@ namespace AcceptanceTest
             Assert.IsTrue(response4.ErrorOccured);
             Assert.IsFalse(response5.ErrorOccured, response5.ErrorMessage);
         }
-        [Ignore]
+
         [TestMethod]
         public void TestDenyStoreManagerPermission_DenyManagerMissingPermission_failure()
         {
@@ -242,8 +241,9 @@ namespace AcceptanceTest
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
 
-            //Response response1 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
-            //Response response2 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername2, storeName);
+            Response response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+            Response response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);// awaiting ownerUsername1 to approve appointment
+            Response response6 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);//success. everyone approved owner's appointment.
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
 
             //act
@@ -254,7 +254,7 @@ namespace AcceptanceTest
             Assert.IsTrue(response4.ErrorOccured);
             Assert.IsTrue(response5.ErrorOccured);
         }
-        [Ignore]
+
         [TestMethod]
         public void TestDenyStoreOwnerPermission_DenyOwnerPermission_throwsException()
         {
@@ -266,8 +266,8 @@ namespace AcceptanceTest
             marketAPI.Register(store_owner_token1, ownerUsername1, password, dob);
 
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
-            //Response response1 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
-            
+            Response response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+
             //act
             //Response response3_fire = marketAPI.RemoveStoreManager(store_owner_token2, managerUsername3, storeName);
             Response response4 = marketAPI.RemoveManagerPermission(store_founder_token, ownerUsername1, storeName, Operation.STORE_WORKERS_INFO.ToString());
@@ -299,7 +299,6 @@ namespace AcceptanceTest
             Assert.IsTrue(response4.ErrorOccured);
         }
 
-        [Ignore]
         [TestMethod]
         public void TestGrantStoreManagerPermission_GrantManagerPermissionByAppointer_success()
         {
@@ -316,7 +315,7 @@ namespace AcceptanceTest
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
 
-            //Response response2 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername2, storeName);
+            Response response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);//success. first owner's appointment.
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
 
             //act
@@ -327,7 +326,7 @@ namespace AcceptanceTest
             Assert.IsFalse(response4.ErrorOccured, response4.ErrorMessage);
             Assert.IsFalse(response5.ErrorOccured, response4.ErrorMessage);
         }
-        [Ignore]
+
         [TestMethod]
         public void TestGrantStoreManagerPermission_GrantManagerPermissionNotByAppointer_fail()
         {
@@ -347,8 +346,9 @@ namespace AcceptanceTest
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
 
-            //Response response1 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
-            //Response response2 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername2, storeName);
+            Response response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
+            Response response2 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername2, storeName);// awaiting ownerUsername1 to approve appointment.
+            Response response6 = marketAPI.AcceptOwnerAppointment(store_owner_token1, ownerUsername2, storeName);//success. everyone approved owner's appointment.
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
 
             //act
@@ -359,7 +359,7 @@ namespace AcceptanceTest
             Assert.IsTrue(response4.ErrorOccured);
             Assert.IsTrue(response5.ErrorOccured);
         }
-        [Ignore]
+
         [TestMethod]
         public void TestGrantStoreOwnerPermission_GrantOwnerPermission_throwsException()
         {
@@ -372,7 +372,7 @@ namespace AcceptanceTest
             marketAPI.Register(store_owner_token1, ownerUsername1, password, dob);
 
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername2, password).Value;
-            //Response response1 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
+            Response response1 = marketAPI.AcceptOwnerAppointment(store_founder_token, ownerUsername1, storeName);//success. first owner's appointment.
 
             //act
             //Response response3_fire = marketAPI.RemoveStoreManager(store_owner_token2, managerUsername3, storeName);

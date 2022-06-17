@@ -145,7 +145,7 @@ namespace MarketWeb.Server.Domain
             store.UnReserveItem(item, amount_to_add);
         }
 
-        internal void markAcceptedBidAsUsed(string bidder, string storeName, int itemID)
+        public void markAcceptedBidAsUsed(string bidder, string storeName, int itemID)
         {
             GetStore(storeName).markAcceptedBidAsUsed(bidder, itemID);
         }
@@ -300,19 +300,19 @@ namespace MarketWeb.Server.Domain
             return storeList;
         }
 
-        internal List<StoreManager> getStoreManagers(string storeName)
+        public List<StoreManager> getStoreManagers(string storeName)
         {
             Store store = GetStore(storeName);
             return store.GetManagers();
         }
 
-        internal List<StoreOwner> getStoreOwners(string storeName)
+        public List<StoreOwner> getStoreOwners(string storeName)
         {
             Store store = GetStore(storeName);
             return store.GetOwners();
         }
 
-        internal StoreFounder getStoreFounder(string storeName)
+        public StoreFounder getStoreFounder(string storeName)
         {
             Store store = GetStore(storeName);
             return store.GetFounder();
@@ -323,7 +323,7 @@ namespace MarketWeb.Server.Domain
         /// <para> Remove a Registered Visitor's roles from all relevant stores.</para>
         /// </summary>
         /// <param name="registered"> The Visitor to revoke the roles of.</param>
-        internal void RemoveAllRoles(Registered registered)
+        public void RemoveAllRoles(Registered registered)
         {
             ICollection<String> storeNames = registered.StoresWithRoles;
             foreach (String storeName in storeNames)
@@ -344,13 +344,13 @@ namespace MarketWeb.Server.Domain
             log.Error($"Exception thrown in StoreManagement.{functionName}. Cause: {message}.");
         }
 
-        internal MessageToStore AnswerStoreMessage(string storeName, int msgID)
+        public MessageToStore AnswerStoreMessage(string storeName, int msgID)
         {
             Store store = GetStore(storeName);
             return store.AnswerMessage(msgID);
         }
 
-        internal List<Store> GetStoresByName(List<string> stores)
+        public List<Store> GetStoresByName(List<string> stores)
         {
             List<Store> storeList = new List<Store>();
             foreach (string storeName in stores)
@@ -360,62 +360,62 @@ namespace MarketWeb.Server.Domain
             return storeList;
         }
 
-        internal void ResetStoreDiscountPolicy(string storeName)
+        public void ResetStoreDiscountPolicy(string storeName)
         {
             GetStore(storeName).ResetDiscountPolicy();
         }
 
-        internal void ResetStorePurchasePolicy(string storeName)
+        public void ResetStorePurchasePolicy(string storeName)
         {
             GetStore(storeName).ResetPurchasePolicy();
         }
 
-        internal List<string> GetDiscountPolicyStrings(string storeName)
+        public List<string> GetDiscountPolicyStrings(string storeName)
         {
             return GetStore(storeName).GetDiscountPolicyStrings();
         }
 
-        internal List<string> GetPurchasePolicyStrings(string storeName)
+        public List<string> GetPurchasePolicyStrings(string storeName)
         {
             return GetStore(storeName).GetPurchasePolicyStrings();
         }
 
-        internal void BidItemInStore(string storeName, int itemId, int amount, double newPrice, string bidder)
+        public void BidItemInStore(string storeName, int itemId, int amount, double newPrice, string bidder)
         {
             GetStore(storeName).BidItem(itemId, amount, newPrice, bidder);
         }
 
-        internal bool AcceptBid(string storeName, string acceptor, int itemId, string bidder)
+        public bool AcceptBid(string storeName, string acceptor, int itemId, string bidder)
         {
             return GetStore(storeName).AcceptBid(acceptor, itemId, bidder);
         }
 
-        internal bool CounterOfferBid(string storeName, string acceptor, int itemId, string bidder, double counterOffer)
+        public bool CounterOfferBid(string storeName, string acceptor, int itemId, string bidder, double counterOffer)
         {
             return GetStore(storeName).CounterOfferBid(acceptor, itemId, bidder, counterOffer);
         }
 
-        internal void RejectBid(string storeName, string rejector, int itemId, string bidder)
+        public void RejectBid(string storeName, string rejector, int itemId, string bidder)
         {
             GetStore(storeName).RejectBid(rejector, itemId, bidder);
         }
 
-        internal double GetBidAcceptedPrice(string bidder, string storeName, int itemID, int amount)
+        public double GetBidAcceptedPrice(string bidder, string storeName, int itemID, int amount)
         {
             return GetStore(storeName).GetBidAcceptedPrice(bidder, itemID, amount);
         }
 
-        internal List<string> GetUsernamesWithPermissionInStore(string storeName, Operation op)
+        public List<string> GetUsernamesWithPermissionInStore(string storeName, Operation op)
         {
             return GetStore(storeName).GetUsernamesWithPermission(op);
         }
 
-        internal List<Bid> GetBidsForStore(string storeName)
+        public List<Bid> GetBidsForStore(string storeName)
         {
             return GetStore(storeName).GetBids();
         }
 
-        internal List<Bid> GetVisitorBidsAtStore(string storeName, string bidder)
+        public List<Bid> GetVisitorBidsAtStore(string storeName, string bidder)
         {
             String errorMessage = "";
             List<Bid> bids = GetStore(storeName).GetVisitorBids(bidder);
@@ -426,17 +426,17 @@ namespace MarketWeb.Server.Domain
             throw new Exception(errorMessage);
         }
 
-        internal StoreOwner AcceptOwnerAppointment(string storeName, string acceptor, string newOwner)
+        public StoreOwner AcceptOwnerAppointment(string storeName, string acceptor, string newOwner)
         {
             return GetStore(storeName).AcceptOwnerAppointment(acceptor, newOwner);
         }
 
-        internal void RejectOwnerAppointment(string storeName, string rejector, string newOwner)
+        public void RejectOwnerAppointment(string storeName, string rejector, string newOwner)
         {
             GetStore(storeName).RejectOwnerAppointment(rejector, newOwner);
         }
 
-        internal Dictionary<string, List<string>> GetStandbyOwnersInStore(string storeName)
+        public Dictionary<string, List<string>> GetStandbyOwnersInStore(string storeName)
         {
             return GetStore(storeName).GetStandbyOwnersInStore();
         }
