@@ -104,7 +104,7 @@ namespace MarketWeb.Server.DataLayer
             //shoppingBasketDALs.Remove(shoppingBasketDALs.Where(b => b._store._storeName == storeName).FirstOrDefault());
             basketDAL._store = storeDAL;
             basketDAL._items = shoppingBasket._items;
-            shoppingBasketDALs.Add(shoppingBasket);
+            user._cart._shoppingBaskets.Add(basketDAL);
             context.SaveChanges();
         }
         public void RemoveItemFromCart(int itemID, String storeName, string userName, int amount, ShoppingBasketDAL shoppingBasket)
