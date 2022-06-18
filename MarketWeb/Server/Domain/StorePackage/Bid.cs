@@ -37,11 +37,11 @@ namespace MarketWeb.Server.Domain
         public void CounterOfferBid(string userName, double newPrice)
         {
             _acceptors.Add(userName);
-            if(CounterOffer < newPrice)
+            if(CounterOffer < newPrice  && newPrice > BiddedPrice)
                 _counterOffer = newPrice;
         }
 
-        internal double GetFinalPrice()
+        public double GetFinalPrice()
         {
             return CounterOffer == -1 ? BiddedPrice : CounterOffer;
         }

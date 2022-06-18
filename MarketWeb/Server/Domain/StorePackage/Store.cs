@@ -405,47 +405,6 @@ namespace MarketWeb.Server.Domain
             return _purchasePolicy.GetConditionsStrings();
         }
 
-        public void BidItem(int itemId, int amount, double biddedPrice, string bidder)
-        {
-            if (!_biddedItems.ContainsKey(bidder))
-                _biddedItems.Add(bidder, new List<Bid>());
-            if (GetBid(itemId, bidder) == null)
-                _biddedItems[bidder].Add(new Bid(bidder, itemId, amount, biddedPrice));
-            else throw new Exception("this visitor already bid this item.");
-        }
-
-        /// <summary>
-        /// records that this role-holder accepted this bid
-        /// </summary>
-        /// <param name="acceptor"></param>
-        /// <param name="itemId"></param>
-        /// <param name="bidder"></param>
-        /// <returns>true when all parties accepted the bid. false otherwise.</returns>
-        /// <exception cref="Exception"></exception>
-        public bool AcceptBid(string acceptor, int itemId, string bidder)
-        {
-            Bid bid = GetBid(itemId, bidder);
-            if (bid == null)
-                throw new Exception("no such bid to accept.");
-            bid.AcceptBid(acceptor);
-            return CheckBidAcceptance(bid);
-        }
-
-        public List<Bid> GetBids()
-        {
-            List<Bid> bids = new List<Bid>();
-            foreach (List<Bid> bidList in _biddedItems.Values)
-                bids.AddRange(bidList);
-            return bids;
-        }
-
-        public List<Bid> GetVisitorBids(String bidder)
-        {
-            if (_biddedItems.ContainsKey(bidder))
-                return _biddedItems[bidder];
-            else return null;
-        }
-
         public List<string> GetUsernamesWithPermission(Operation op)
         {
             List<string> usernames = new List<string>();
@@ -532,28 +491,67 @@ namespace MarketWeb.Server.Domain
             return _standbyOwners;
         }
 
+        public void BidItem(int itemId, int amount, double biddedPrice, string bidder)
+        {
+            if (!_biddedItems.ContainsKey(bidder))
+                _biddedItems.Add(bidder, new List<Bid>());
+            if (GetBid(itemId, bidder) == null)
+                _biddedItems[bidder].Add(new Bid(bidder, itemId, amount, biddedPrice));
+            else throw new Exception("this visitor already bid this item.");
+        }
+
+        /// <summary>
+        /// records that this role-holder accepted this bid
+        /// </summary>
+        /// <param name="acceptor"></param>
+        /// <param name="itemId"></param>
+        /// <param name="bidder"></param>
+        /// <returns>true when all parties accepted the bid. false otherwise.</returns>
+        /// <exception cref="Exception"></exception>
+        public bool AcceptBid(string acceptor, int itemId, string bidder)
+        {
+            Bid bid = GetBid(itemId, bidder);
+            if (bid == null)
+                throw new Exception("no such bid to accept.");
+            if (CheckBidAcceptance(bid))
+                throw new Exception("this bid is already accepted.");
+            bid.AcceptBid(acceptor);
+            return CheckBidAcceptance(bid);
+        }
+
+        public List<Bid> GetBids()
+        {
+            List<Bid> bids = new List<Bid>();
+            foreach (List<Bid> bidList in _biddedItems.Values)
+                bids.AddRange(bidList);
+            return bids;
+        }
+
+        public List<Bid> GetVisitorBids(String bidder)
+        {
+            if (_biddedItems.ContainsKey(bidder))
+                return _biddedItems[bidder];
+            else return null;
+        }
+
         public bool CounterOfferBid(string acceptor, int itemId, string bidder, double counterOffer)
         {
             Bid bid = GetBid(itemId, bidder);
             if (bid == null)
                 throw new Exception("no such bid to counter-offer.");
+            if (CheckBidAcceptance(bid))
+                throw new Exception("this bid is already accepted.");
             bid.CounterOfferBid(acceptor, counterOffer);
             return CheckBidAcceptance(bid);
         }
 
         public void RejectBid(string rejector, int itemId, string bidder)
         {
-            if(GetOwner(rejector) == null && _founder.Username != rejector)
-            {
-                StoreManager manager = GetManager(rejector);
-                if(manager == null || !manager.hasAccess(StoreName, Operation.MANAGE_INVENTORY)) 
-                {
-                    throw new Exception("this visitor has no permission for this operation.");
-                }
-            }
             Bid bid = GetBid(itemId, bidder);
             if (bid == null)
                 throw new Exception("no such bid to reject.");
+            if (CheckBidAcceptance(bid))
+                throw new Exception("this bid is already accepted.");
             _biddedItems[bidder].Remove(bid);
             if(_biddedItems.Count == 0)
                 _biddedItems.Remove(bidder);
@@ -583,13 +581,11 @@ namespace MarketWeb.Server.Domain
         {
             if (bid == null)
                 throw new Exception("this bid does not exist.");
-            if (!bid.Acceptors.Contains(_founder.Username))
+            if(!bid.AccepttedByAll)
                 return false;
-            foreach (StoreOwner owner in _owners)
-                if (!bid.Acceptors.Contains(owner.Username))
-                    return false;
-            foreach (StoreManager manger in _managers)
-                if (manger.hasAccess(StoreName, Operation.STOCK_EDITOR) && !bid.Acceptors.Contains(manger.Username))
+            List<string> lst = GetUsernamesWithPermission(Operation.STOCK_EDITOR);
+            foreach (string s in lst)
+                if (!bid.Acceptors.Contains(s))
                     return false;
             bid.AccepttedByAll = true;
             return true;

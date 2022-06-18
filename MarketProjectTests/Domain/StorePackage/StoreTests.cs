@@ -433,7 +433,7 @@ namespace MarketProject.Domain.Tests
             Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2 && isRemovedFromStandby && isAdded3);
         }
         [TestMethod()]
-        public void acceptStoreOwner_add2ownersRejectSecond_returnstrue()
+        public void rejectStoreOwner_add2ownersRejectSecond_returnstrue()
         {
             string storeOwner = "amos";
             string storeOwner2 = "haim";
@@ -446,6 +446,88 @@ namespace MarketProject.Domain.Tests
             bool isRemoved = !_store.GetStandbyOwnersInStore().ContainsKey(storeOwner2);
             bool isNotAdded2 = _store.GetOwners().Find(x => x.Username == storeOwner2) == null;
             Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2 && isRemoved && isNotAdded2);
+        }
+
+        [TestMethod]
+        public void bidItem_acceptBidTwoUsernames_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            string acceptor1 = "acceptor1";
+            string acceptor2 = "acceptor2";
+            _store.BidItem(itemId, amount, biddedPrice, bidder);
+            _store.AcceptBid(acceptor1, itemId, bidder);
+            _store.AcceptBid(acceptor2, itemId, bidder);
+            ISet<string> acceptors = _store.GetVisitorBids(bidder)[0].Acceptors;
+            Assert.IsTrue(acceptors.Contains(acceptor1));
+            Assert.IsTrue(acceptors.Contains(acceptor2));
+        }
+        [TestMethod]
+        public void acceptBid_acceptBidTwoUsernames_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            string acceptor1 = "acceptor1";
+            string acceptor2 = "acceptor2";
+            _store.AcceptBid(acceptor1, itemId, bidder);
+            _store.AcceptBid(acceptor2, itemId, bidder);
+            ISet<string> acceptors = _store.GetVisitorBids(bidder)[0].Acceptors;
+            Assert.IsTrue(acceptors.Contains(acceptor1));
+            Assert.IsTrue(acceptors.Contains(acceptor2));
+        }
+        [TestMethod]
+        public void counterOffer_counterOfferBidTwoUsernames_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            Bid bid = new Bid(bidder, itemId, amount, biddedPrice);
+            string acceptor1 = "acceptor1";
+            string acceptor2 = "acceptor2";
+            double counterOffer1 = 1.7;
+            double counterOffer2 = 1.9;
+            bid.CounterOfferBid(acceptor1, counterOffer1);
+            bid.CounterOfferBid(acceptor2, counterOffer2);
+            Assert.IsTrue(bid.Acceptors.Contains(acceptor1));
+            Assert.IsTrue(bid.Acceptors.Contains(acceptor2));
+            Assert.IsTrue(bid.CounterOffer == counterOffer2);
+        }
+        [TestMethod]
+        public void counterOffer_counterOfferBidTwoUsernames_takesMaxOffer()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            Bid bid = new Bid(bidder, itemId, amount, biddedPrice);
+            string acceptor1 = "acceptor1";
+            string acceptor2 = "acceptor2";
+            double counterOffer1 = 1.9;
+            double counterOffer2 = 1.7;
+            bid.CounterOfferBid(acceptor1, counterOffer1);
+            bid.CounterOfferBid(acceptor2, counterOffer2);
+            Assert.IsTrue(bid.Acceptors.Contains(acceptor1));
+            Assert.IsTrue(bid.Acceptors.Contains(acceptor2));
+            Assert.IsTrue(bid.CounterOffer == counterOffer1);
+        }
+        [TestMethod]
+        public void counterOffer_counterOfferBidLessThenBiddedPrice_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            Bid bid = new Bid(bidder, itemId, amount, biddedPrice);
+            string acceptor1 = "acceptor1";
+            double counterOffer1 = 0.5;
+            bid.CounterOfferBid(acceptor1, counterOffer1);
+            Assert.IsTrue(bid.Acceptors.Contains(acceptor1));
+            Assert.IsTrue(bid.CounterOffer == -1);
         }
     }
 }
