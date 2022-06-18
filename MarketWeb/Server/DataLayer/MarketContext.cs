@@ -16,6 +16,7 @@ namespace MarketWeb.Server.DataLayer
         public DbSet<StoreFounderDAL> StoreFounderDALs { get; set; }
         public DbSet<StoreManagerDAL> storeManagerDALs { get; set; }
         public DbSet<StoreOwnerDAL> storeOwnerDALs { get; set; }
+        public DbSet<ItemDAL> itemDALs { get; set; }
         public string connectionStr { get; set; } = "Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
 
         // The following configures EF to create a Sqlite database file in the
@@ -26,16 +27,15 @@ namespace MarketWeb.Server.DataLayer
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<RegisteredDAL>();//.HasOne(e => e._cart).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<RegisteredDAL>().HasOne(e => e._cart).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             builder.Entity<StoreDAL>().HasOne(e => e._stock).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._discountPolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._purchasePolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._rating).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             builder.Entity<StockDAL>().HasMany(e => e._itemAndAmount).WithOne().OnDelete(DeleteBehavior.ClientCascade);
 
-            builder.Entity<StockItemDAL>().HasOne(x => x.item).WithOne().OnDelete(DeleteBehavior.Cascade);
-
             builder.Entity<ItemDAL>().HasOne(x => x._rating).WithOne().OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<PurchaseDetailsDAL>().HasMany(x => x.discountList).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             builder.Entity<RatingDAL>().HasMany(x => x._ratings).WithOne().OnDelete(DeleteBehavior.Cascade);
 
 

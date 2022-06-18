@@ -9,12 +9,12 @@ namespace MarketWeb.Server.DataLayer
         public int id { get; set; }
         [Required]
         [ForeignKey("ItemDAL")]
-        public ItemDAL item { get; set; }
+        public int itemID { get; set; }
         public int amount { get; set; }
 
-        public StockItemDAL(ItemDAL item, int amount)
+        public StockItemDAL(int itemID, int amount)
         {
-            this.item = item;
+            this.itemID = itemID;
             this.amount = amount;
         }
 

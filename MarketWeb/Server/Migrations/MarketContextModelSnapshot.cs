@@ -55,22 +55,20 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ItemDAL")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ShoppingBasketDALsbId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("purchaseDetails_itemID")
+                    b.Property<int>("itemID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("purchaseDetailsID")
                         .HasColumnType("int");
 
                     b.HasKey("id");
 
-                    b.HasIndex("ItemDAL");
-
                     b.HasIndex("ShoppingBasketDALsbId");
 
-                    b.HasIndex("purchaseDetails_itemID");
+                    b.HasIndex("purchaseDetailsID");
 
                     b.ToTable("BasketItemDAL");
                 });
@@ -191,7 +189,7 @@ namespace MarketWeb.Server.Migrations
                     b.HasIndex("RatingDAL")
                         .IsUnique();
 
-                    b.ToTable("ItemDAL");
+                    b.ToTable("itemDALs");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.MessageToStoreDAL", b =>
@@ -277,15 +275,18 @@ namespace MarketWeb.Server.Migrations
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", b =>
                 {
-                    b.Property<int>("_itemID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("_itemID")
+                        .HasColumnType("int");
+
                     b.Property<int>("amount")
                         .HasColumnType("int");
 
-                    b.HasKey("_itemID");
+                    b.HasKey("ID");
 
                     b.ToTable("PurchaseDetailsDAL");
                 });
@@ -400,7 +401,8 @@ namespace MarketWeb.Server.Migrations
 
                     b.HasKey("_username");
 
-                    b.HasIndex("CartDAL");
+                    b.HasIndex("CartDAL")
+                        .IsUnique();
 
                     b.ToTable("RegisteredDALs");
                 });
@@ -469,19 +471,16 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ItemDAL")
-                        .HasColumnType("int");
-
                     b.Property<int?>("StockDALid")
                         .HasColumnType("int");
 
                     b.Property<int>("amount")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.Property<int>("itemID")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ItemDAL")
-                        .IsUnique();
+                    b.HasKey("id");
 
                     b.HasIndex("StockDALid");
 
@@ -563,13 +562,13 @@ namespace MarketWeb.Server.Migrations
                 {
                     b.HasBaseType("MarketWeb.Server.DataLayer.DiscountDAL");
 
-                    b.Property<int?>("PurchaseDetailsDAL_itemID")
+                    b.Property<int?>("PurchaseDetailsDALID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("_expiration")
                         .HasColumnType("datetime2");
 
-                    b.HasIndex("PurchaseDetailsDAL_itemID");
+                    b.HasIndex("PurchaseDetailsDALID");
 
                     b.HasDiscriminator().HasValue("AtomicDiscountDAL");
                 });
@@ -611,21 +610,13 @@ namespace MarketWeb.Server.Migrations
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.BasketItemDAL", b =>
                 {
-                    b.HasOne("MarketWeb.Server.DataLayer.ItemDAL", "item")
-                        .WithMany()
-                        .HasForeignKey("ItemDAL")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MarketWeb.Server.DataLayer.ShoppingBasketDAL", null)
                         .WithMany("_items")
                         .HasForeignKey("ShoppingBasketDALsbId");
 
                     b.HasOne("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", "purchaseDetails")
                         .WithMany()
-                        .HasForeignKey("purchaseDetails_itemID");
-
-                    b.Navigation("item");
+                        .HasForeignKey("purchaseDetailsID");
 
                     b.Navigation("purchaseDetails");
                 });
@@ -713,9 +704,9 @@ namespace MarketWeb.Server.Migrations
             modelBuilder.Entity("MarketWeb.Server.DataLayer.RegisteredDAL", b =>
                 {
                     b.HasOne("MarketWeb.Server.DataLayer.ShoppingCartDAL", "_cart")
-                        .WithMany()
-                        .HasForeignKey("CartDAL")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne()
+                        .HasForeignKey("MarketWeb.Server.DataLayer.RegisteredDAL", "CartDAL")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("_cart");
@@ -738,18 +729,10 @@ namespace MarketWeb.Server.Migrations
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.StockItemDAL", b =>
                 {
-                    b.HasOne("MarketWeb.Server.DataLayer.ItemDAL", "item")
-                        .WithOne()
-                        .HasForeignKey("MarketWeb.Server.DataLayer.StockItemDAL", "ItemDAL")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MarketWeb.Server.DataLayer.StockDAL", null)
                         .WithMany("_itemAndAmount")
                         .HasForeignKey("StockDALid")
                         .OnDelete(DeleteBehavior.ClientCascade);
-
-                    b.Navigation("item");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreDAL", b =>
@@ -791,7 +774,8 @@ namespace MarketWeb.Server.Migrations
                 {
                     b.HasOne("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", null)
                         .WithMany("discountList")
-                        .HasForeignKey("PurchaseDetailsDAL_itemID");
+                        .HasForeignKey("PurchaseDetailsDALID")
+                        .OnDelete(DeleteBehavior.ClientCascade);
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountPolicyDAL", b =>

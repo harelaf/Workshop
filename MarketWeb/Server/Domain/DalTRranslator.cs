@@ -17,9 +17,9 @@ namespace MarketWeb.Server.Domain
         }
         public ShoppingBasketDAL BasketDomainToDal(ShoppingBasket basketDomain)
         {
-            IDictionary<ItemDAL, PurchaseDetailsDAL> items = new Dictionary<ItemDAL, PurchaseDetailsDAL>();
+            IDictionary<int, PurchaseDetailsDAL> items = new Dictionary<int, PurchaseDetailsDAL>();
             foreach (Item item in basketDomain._items.Keys)
-                items.Add(ItemDomainToDal(item), PurchaseDetailsToDal(item.ItemID, basketDomain._items[item]));
+                items.Add(item.ItemID, PurchaseDetailsToDal(item.ItemID, basketDomain._items[item]));
             return new ShoppingBasketDAL(StoreDomainToDal(basketDomain._store), items);
         }
 
@@ -219,7 +219,7 @@ namespace MarketWeb.Server.Domain
             ICollection<StockItemDAL> itemAndAmount = new List<StockItemDAL>();
             foreach (KeyValuePair<Item, int> i_a in stock.Items)
             {
-                itemAndAmount.Add(new StockItemDAL(ItemDomainToDal(i_a.Key), i_a.Value));
+                itemAndAmount.Add(new StockItemDAL(i_a.Key.ItemID, i_a.Value));
             }
             return new StockDAL(itemAndAmount);
         }
@@ -334,7 +334,8 @@ namespace MarketWeb.Server.Domain
             Dictionary<Item, int> itemAndAmount = new Dictionary<Item, int>();  
             foreach (StockItemDAL stockItem in stockDAL._itemAndAmount)
             {
-                itemAndAmount.Add(ItemDalToDomain(stockItem.item), stockItem.amount);
+                ItemDAL item = DalController.GetInstance().GetItem(stockItem.itemID);
+                itemAndAmount.Add(ItemDalToDomain(item), stockItem.amount);
             }
             return new Stock(itemAndAmount);
         }
@@ -367,9 +368,9 @@ namespace MarketWeb.Server.Domain
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
             IDictionary<Item, DiscountDetails> items = new Dictionary<Item, DiscountDetails>();
-            foreach(KeyValuePair<ItemDAL, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
+            foreach(KeyValuePair<int, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
             {
-                items.Add(ItemDalToDomain(i_a.Key), PurchaseDetailsDALToDomain(i_a.Value));
+                items.Add(ItemDalToDomain(DalController.GetInstance().GetItem(i_a.Key)), PurchaseDetailsDALToDomain(i_a.Value));
             }
             return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items);
         }
@@ -669,10 +670,10 @@ namespace MarketWeb.Server.Domain
         }
         public ShoppingBasketDAL ShoppingBasketDomainToDAL(ShoppingBasket basket)
         {
-            IDictionary<ItemDAL, PurchaseDetailsDAL> items = new Dictionary<ItemDAL, PurchaseDetailsDAL>();
+            IDictionary<int, PurchaseDetailsDAL> items = new Dictionary<int, PurchaseDetailsDAL>();
             foreach (KeyValuePair<Item, DiscountDetails> i_a in basket.Items)
             {
-                items.Add(ItemDomainToDal(i_a.Key), PurchaseDetailsDomainToDal(i_a.Key.ItemID, i_a.Value));
+                items.Add(i_a.Key.ItemID, PurchaseDetailsDomainToDal(i_a.Key.ItemID, i_a.Value));
             }
             return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items);
         }

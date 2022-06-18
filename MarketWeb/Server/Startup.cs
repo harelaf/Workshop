@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketWeb.Server.DataLayer;
 
 namespace MarketWeb.Server
 {
@@ -86,6 +87,7 @@ namespace MarketWeb.Server
             services.AddSingleton<MarketAPI>();
             services.AddSingleton<NotificationHub>();
             services.AddSingleton<Market>();
+            services.AddScoped<MarketContext>();
             services.AddResponseCompression(opts =>
             {
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(

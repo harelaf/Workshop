@@ -16,11 +16,11 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public ICollection<BasketItemDAL> _items { get; set; }
 
-        public ShoppingBasketDAL(StoreDAL store, IDictionary<ItemDAL, PurchaseDetailsDAL> items)
+        public ShoppingBasketDAL(StoreDAL store, IDictionary<int, PurchaseDetailsDAL> items)
         {
             _store = store;
             _items = new List<BasketItemDAL>();
-            foreach (KeyValuePair<ItemDAL, PurchaseDetailsDAL> i_p in items)
+            foreach (KeyValuePair<int, PurchaseDetailsDAL> i_p in items)
             {
                 _items.Add(new BasketItemDAL(i_p.Key, i_p.Value));
             }
@@ -32,12 +32,12 @@ namespace MarketWeb.Server.DataLayer
             _items = items;
         }
 
-        public IDictionary<ItemDAL, PurchaseDetailsDAL> ConvertToDictionary()
+        public IDictionary<int, PurchaseDetailsDAL> ConvertToDictionary()
         {
-            IDictionary<ItemDAL, PurchaseDetailsDAL> dic = new Dictionary<ItemDAL, PurchaseDetailsDAL>();
+            IDictionary<int, PurchaseDetailsDAL> dic = new Dictionary<int, PurchaseDetailsDAL>();
             foreach (BasketItemDAL item in _items)
             {
-                dic[item.item] = item.purchaseDetails;
+                dic[item.itemID] = item.purchaseDetails;
             }
             return dic;
         }
