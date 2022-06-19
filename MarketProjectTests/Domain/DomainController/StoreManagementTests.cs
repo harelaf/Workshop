@@ -33,6 +33,14 @@ namespace MarketProject.Domain.Tests
             price = 5.0;
         }
 
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 3.4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== RateStore =====================================
         [TestMethod()]
         public void RateStore_StoreExists_NoException()
         {
@@ -73,6 +81,64 @@ namespace MarketProject.Domain.Tests
             }
         }
 
+        
+        
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 3.5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== SendMessageToStore =====================================
+        [TestMethod()]
+        public void SendMessageToStore_StoreExist_Success()
+        {
+            String title = "reservation";
+            String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
+
+            try
+            {
+                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _storeManagement.SendMessageToStore(Username, storeName, title, message, 20);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+        }
+
+        [TestMethod()]
+        public void SendMessageToStore_StoreDoesntExist_Success()
+        {
+            String title = "reservation";
+            String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
+
+            try
+            {
+                _storeManagement.SendMessageToStore(Username, storeName, title, message, 5);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+                Assert.IsTrue(true);
+            }
+
+        }
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== UpdaeStockQuantityOfItem =====================================
         [TestMethod()]
         public void UpdateStockQuantityOfItem_StoreExistsItemExists_NoException()
         {
@@ -111,6 +177,8 @@ namespace MarketProject.Domain.Tests
             }
         }
 
+
+        // ===================================== AddItemToStoreStock =====================================
         [TestMethod()]
         public void AddItemToStoreStock_StoreDoesntExist_ThrowsException()
         {
@@ -159,6 +227,7 @@ namespace MarketProject.Domain.Tests
             }
         }
 
+        // ===================================== RemoveItemFromStore =====================================
         [TestMethod()]
         public void RemoveItemFromStore_StoreExists_NoException()
         {
@@ -182,73 +251,13 @@ namespace MarketProject.Domain.Tests
             }
         }
 
-        [TestMethod()]
-        public void SendMessageToStore_StoreExist_Success()
-        {
-            String title = "reservation";
-            String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
+        
 
-            try
-            {
-                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-            try
-            {
-                _storeManagement.SendMessageToStore(Username, storeName, title, message, 20);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-
-        }
-
-        [TestMethod()]
-        public void SendMessageToStore_StoreDoesntExist_Success()
-        {
-            String title = "reservation";
-            String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
-
-            try
-            {
-                _storeManagement.SendMessageToStore(Username, storeName, title, message, 5);
-                Assert.Fail();
-            }
-            catch (Exception)
-            {
-                Assert.IsTrue(true);
-            }
-
-        }
-
-        [TestMethod()]
-        public void AddStoreManager_AddManagerTwice_throwsExeption()
-        {
-            bool arrange = _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName);
-
-            Assert.ThrowsException<Exception>(() => _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName));
-        }
-
-        [TestMethod]
-        public void AddStoreManager_AddManagerWhileIsOwner_throwsExeption()
-        {
-            StoreOwner arrange = _storeManagement.AcceptOwnerAppointment(storeName, founder, Username);//success. first owner's appointment.
-
-            Assert.ThrowsException<Exception>(() => _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName));
-        }
-
-        [TestMethod]
-        public void AddStoreManager_AddManager_returnsTrue()
-        {
-            bool act = _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName);
-            Assert.IsTrue(act);
-        }
-
+        // ===================================== AddStoreOwner =====================================
         [TestMethod]
         public void AddStoreOwner_AddOwnerTwice_returnsFalse()
         {
@@ -283,34 +292,13 @@ namespace MarketProject.Domain.Tests
             Assert.IsTrue(act != null);
         }
 
-        [TestMethod()]
-        public void RemoveStoreManager_addAndRemove_returnstrue()
-        {
-            string storeManager = "tommy shelby";
-            bool add = _storeManagement.AddStoreManager(new StoreManager(storeManager, storeName, founder), storeName);
 
-            bool actual = _storeManagement.RemoveStoreManager(storeManager, storeName, founder);
-            Assert.IsTrue(add);
-            Assert.IsTrue(actual);
-        }
-        [TestMethod()]
-        public void RemoveStoreManager_removeFounder_returnsfalse()
-        {
-            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(founder, storeName, founder));
-        }
 
-        [TestMethod()]
-        public void RemoveStoreManager_NonWorker_returnsfalse()
-        {
-            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager("123", storeName, founder));
-        }
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        [TestMethod]
-        public void RemoveStoreManager_NonStore_returnsfalse()
-        {
-            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(Username, storeName + "123", founder));
-        }
-
+        // ===================================== RemoveStoreOwner =====================================
         [TestMethod()]
         public void RemoveStoreOwner_addAndRemove_returnstrue()
         {
@@ -339,5 +327,71 @@ namespace MarketProject.Domain.Tests
         {
             Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreOwner("123", storeName, founder));
         }
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.6 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== AddStoreManager =====================================
+        [TestMethod()]
+        public void AddStoreManager_AddManagerTwice_throwsExeption()
+        {
+            bool arrange = _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName);
+
+            Assert.ThrowsException<Exception>(() => _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName));
+        }
+
+        [TestMethod]
+        public void AddStoreManager_AddManagerWhileIsOwner_throwsExeption()
+        {
+            StoreOwner arrange = _storeManagement.AcceptOwnerAppointment(storeName, founder, Username);//success. first owner's appointment.
+
+            Assert.ThrowsException<Exception>(() => _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName));
+        }
+
+        [TestMethod]
+        public void AddStoreManager_AddManager_returnsTrue()
+        {
+            bool act = _storeManagement.AddStoreManager(new StoreManager(Username, storeName, founder), storeName);
+            Assert.IsTrue(act);
+        }
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.8 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== RemoveStoreManager =====================================
+        [TestMethod()]
+        public void RemoveStoreManager_addAndRemove_returnstrue()
+        {
+            string storeManager = "tommy shelby";
+            bool add = _storeManagement.AddStoreManager(new StoreManager(storeManager, storeName, founder), storeName);
+
+            bool actual = _storeManagement.RemoveStoreManager(storeManager, storeName, founder);
+            Assert.IsTrue(add);
+            Assert.IsTrue(actual);
+        }
+        [TestMethod()]
+        public void RemoveStoreManager_removeFounder_returnsfalse()
+        {
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(founder, storeName, founder));
+        }
+
+        [TestMethod()]
+        public void RemoveStoreManager_NonWorker_returnsfalse()
+        {
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager("123", storeName, founder));
+        }
+
+        [TestMethod]
+        public void RemoveStoreManager_NonStore_returnsfalse()
+        {
+            Assert.ThrowsException<Exception>(() => _storeManagement.RemoveStoreManager(Username, storeName + "123", founder));
+        }
+        
     }
 }
