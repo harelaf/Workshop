@@ -84,6 +84,7 @@ namespace MarketWeb.Server
                 //options.SerializerSettings.Converters.Add(new DetailsConverter());
             });
             services.AddSingleton<MarketAPI>();
+            services.AddSingleton<IConnectedUsers, ConnectedUsers>();
             services.AddSingleton<NotificationHub>();
             services.AddSingleton<Market>();
             services.AddResponseCompression(opts =>

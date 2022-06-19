@@ -332,6 +332,7 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             _visitorsGuestsTokens.Remove(curToken);
+            _notificationHub._connectedUsers.ChangeToken(curToken, authToken);
             return authToken;
         }
 
