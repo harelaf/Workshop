@@ -419,11 +419,17 @@ namespace MarketWeb.Server.Domain
         {
             String errorMessage = "";
             List<Bid> bids = GetStore(storeName).GetVisitorBids(bidder);
-            if (bids != null)
+            if (bids != null && bids.Count > 0)
                 return bids;
             errorMessage = "this visitor has no bids at store '" + storeName + "'.";
             LogErrorMessage("GetVisitorBidsAtStore", errorMessage);
             throw new Exception(errorMessage);
+        }
+
+        public StoreOwner AddStoreOwnerForTestPurposes(StoreOwner newOwner, string storeName)
+        {
+            Store store = GetStore(storeName);
+            return store.AddStoreOwner(newOwner);
         }
 
         public StoreOwner AcceptOwnerAppointment(string storeName, string acceptor, string newOwner)

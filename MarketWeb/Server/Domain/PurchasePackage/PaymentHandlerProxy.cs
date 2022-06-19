@@ -24,9 +24,9 @@ namespace MarketWeb.Server.Domain
         // includes mock of pay
         public virtual async Task<int> Pay(double price, string paymentMethode, string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
-            if (paymentMethode==paymentMethode_mock_flase)
+            if (paymentMethode == paymentMethode_mock_flase)
                 return -1;
-            if (paymentMethode== paymentMethode_mock_true)
+            if (paymentMethode == paymentMethode_mock_true)
                 return 1;
             if(!_paymentHandlers.ContainsKey(paymentMethode))
                 return -1;//default mock

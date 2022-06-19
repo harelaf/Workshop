@@ -90,7 +90,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response> AcceptBid(String StoreName, BidDTO bid);
         public Task<Response> RejectBid(String StoreName, BidDTO bid);
         public Task<Response<List<String>>> GetUsernamesWithInventoryPermissionInStore(String storeName);
-        public Task<Response> AddAcceptedBidToCart(int ItemId, String StoreName, int Amount, double price);
+        public Task<Response> AddAcceptedBidToCart(int ItemId, String StoreName, int Amount);
         public Task<Response<List<BidDTO>>> GetVisitorBidsAtStore(String StoreName);
     }
 
@@ -967,14 +967,13 @@ namespace MarketWeb.Client.Connect
             Response<List<String>> res = await _httpService.Post<Response<List<String>>>(newUrl, null);
             return res;
         }
-        public async Task<Response> AddAcceptedBidToCart(int itemId, String storeName, int amount, double price)
+        public async Task<Response> AddAcceptedBidToCart(int itemId, String storeName, int amount)
         {
             const string url = "api/market/AddAcceptedBidToCart";
             var param = new Dictionary<string, string>() {
                 { "itemId", itemId.ToString() },
                 { "storeName", storeName },
                 { "amount", amount.ToString() },
-                { "price", price.ToString() }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response<List<String>> res = await _httpService.Post<Response<List<String>>>(newUrl, null);

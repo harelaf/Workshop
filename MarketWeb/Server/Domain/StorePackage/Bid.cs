@@ -19,7 +19,7 @@ namespace MarketWeb.Server.Domain
         public double BiddedPrice => _biddedPrice;
         public double CounterOffer => _counterOffer;
         public ISet<string> Acceptors => _acceptors;
-        public bool AccepttedByAll = false;
+        public bool AcceptedByAll = false;
 
         public Bid(String bidder, int itemId, int amount, double biddedPrice)
         {

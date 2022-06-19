@@ -479,7 +479,7 @@ namespace MarketWeb.Service
                 bid.CounterOffer,
                 bid.Acceptors,
                 originalPrice,
-                bid.AccepttedByAll
+                bid.AcceptedByAll
                 );
         }
     }

@@ -18,7 +18,7 @@ namespace MarketWeb.Shared.DTO
             ShoppingBasketDTO basket = null;
             foreach (ShoppingBasketDTO b in _DTObaskets)
             {
-                if (basket.StoreName == StoreName)
+                if (b.StoreName == StoreName)
                 {
                     basket = b;
                 }

@@ -73,8 +73,7 @@ else
 
         try
         {
-            double price = bid.CounterOffer > 0 ? bid.CounterOffer : bid.BiddedPrice;
-            Response res = await _marketAPIClient.AddAcceptedBidToCart(bid.ItemID, StoreName, bid.Amount, price);
+            Response res = await _marketAPIClient.AddAcceptedBidToCart(bid.ItemID, StoreName, bid.Amount);
             if (res.ErrorOccured)
             {
                 throw new Exception(res.ErrorMessage);

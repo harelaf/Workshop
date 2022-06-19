@@ -119,10 +119,10 @@ namespace MarketWeb.Server.Domain
             return _loggedinVisitorsTokens[token];
         }
 
-        internal void AddAcceptedBidToCart(string visitorToken, Store store, int itemId, int amount, double price)
+        internal void AddAcceptedBidToCart(string visitorToken, Store store, int itemId, int amount)
         {
             Visitor Visitor = GetVisitorVisitor(visitorToken);
-            Visitor.AddAcceptedBidToCart(store, itemId, amount, price);
+            Visitor.AddAcceptedBidToCart(store, itemId, amount, store.GetBidAcceptedPrice(visitorToken, itemId, amount));
         }
 
         /// <summary>
@@ -666,7 +666,13 @@ namespace MarketWeb.Server.Domain
         internal void SendNotificationMessageToVisitor(string authToken, string storeName, string title, string message)
         {
             NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, "visitor");
-            _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
+            if (authToken != null)
+            {
+                if (_notificationHub != null)
+                {
+                    _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
+                }
+            }
         }
 
         internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string regUserName, string reply)

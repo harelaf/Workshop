@@ -94,7 +94,7 @@ namespace MarketWeb.Server.Domain
             throw new Exception(errorMessage);
         }
 
-        private StoreOwner AddStoreOwner(StoreOwner newOwner)
+        public StoreOwner AddStoreOwner(StoreOwner newOwner)
         {
             String errorMessage;
             lock (_managers)
@@ -539,10 +539,13 @@ namespace MarketWeb.Server.Domain
             Bid bid = GetBid(itemId, bidder);
             if (bid == null)
                 throw new Exception("no such bid to counter-offer.");
-            if (CheckBidAcceptance(bid))
-                throw new Exception("this bid is already accepted.");
-            bid.CounterOfferBid(acceptor, counterOffer);
-            return CheckBidAcceptance(bid);
+            lock (bid)
+            {
+                if (CheckBidAcceptance(bid))
+                    throw new Exception("this bid is already accepted.");
+                bid.CounterOfferBid(acceptor, counterOffer);
+                return CheckBidAcceptance(bid);
+            }
         }
 
         public void RejectBid(string rejector, int itemId, string bidder)
@@ -559,9 +562,10 @@ namespace MarketWeb.Server.Domain
 
         public Bid GetBid(int itemId, string bidder)
         {
-            foreach (Bid bid in _biddedItems[bidder])
-                if (bid.ItemID == itemId)
-                    return bid;
+            if(_biddedItems.ContainsKey(bidder))
+                foreach (Bid bid in _biddedItems[bidder])
+                    if (bid.ItemID == itemId)
+                        return bid;
             return null;
         }
 
@@ -581,13 +585,13 @@ namespace MarketWeb.Server.Domain
         {
             if (bid == null)
                 throw new Exception("this bid does not exist.");
-            if(!bid.AccepttedByAll)
-                return false;
+            if(bid.AcceptedByAll)
+                return true;
             List<string> lst = GetUsernamesWithPermission(Operation.STOCK_EDITOR);
             foreach (string s in lst)
                 if (!bid.Acceptors.Contains(s))
                     return false;
-            bid.AccepttedByAll = true;
+            bid.AcceptedByAll = true;
             return true;
         }
 

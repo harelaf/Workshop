@@ -108,7 +108,7 @@ namespace MarketWeb.Server.Domain
 
         }
 
-        public void AddAcceptedBidToCart(String VisitorToken, int itemID, String storeName, int amount, double price)
+        public void AddAcceptedBidToCart(String VisitorToken, int itemID, String storeName, int amount)
         {//II.2.3
             String errorMessage = null;
             CheckIsVisitorAVisitor(VisitorToken, "AddAcceptedBidToCart");
@@ -137,7 +137,7 @@ namespace MarketWeb.Server.Domain
                     try
                     {
                         copy.SetPrice(_storeManagement.GetBidAcceptedPrice(bidder, storeName, itemID, amount));
-                        _VisitorManagement.AddAcceptedBidToCart(VisitorToken, store, itemID, amount, price);
+                        _VisitorManagement.AddAcceptedBidToCart(VisitorToken, store, itemID, amount);
                         _storeManagement.markAcceptedBidAsUsed(bidder, storeName, itemID);
                     }
                     catch (Exception ex)
@@ -1345,6 +1345,25 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             return _storeManagement.GetVisitorBidsAtStore(storeName, bidder);
+        }
+        public void AddStoreOwnerForTestPurposes(String authToken, String ownerUsername, String storeName)
+        {//II.4.4
+            CheckIsVisitorLoggedIn(authToken, "AddStoreOwner");
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
+            {
+                if (!_VisitorManagement.IsRegistered(ownerUsername))
+                {
+                    throw new Exception("there is no register user in system with username: " + ownerUsername + ". you can only appoint register user to store role.");
+                }
+                StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
+                if (_storeManagement.AddStoreOwnerForTestPurposes(newOwner, storeName) != null)
+                    _VisitorManagement.AddRole(ownerUsername, newOwner);
+            }
+            else
+            {
+                throw new Exception("you don't have access to fire owner in store.");
+            }
         }
         internal bool AcceptOwnerAppointment(string authToken, string storeName, string newOwner)
         {//II.4.4

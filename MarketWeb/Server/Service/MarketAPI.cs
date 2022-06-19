@@ -1536,13 +1536,13 @@ namespace MarketWeb.Service
             return response;
         }
         [HttpPost("AddAcceptedBidToCart")]
-        public Response AddAcceptedBidToCart([FromHeader] String Authorization, int itemId, string storeName, int amount, double price)
+        public Response AddAcceptedBidToCart([FromHeader] String Authorization, int itemId, string storeName, int amount)
         {
             Response response;
             try
             {
                 String authToken = parseAutherization(Authorization);
-                _market.AddAcceptedBidToCart(authToken, itemId, storeName, amount, price);
+                _market.AddAcceptedBidToCart(authToken, itemId, storeName, amount);
                 response = new Response();
             }
             catch (Exception e)
@@ -1571,25 +1571,24 @@ namespace MarketWeb.Service
             }
             return response;
         }
-        //[HttpPost("AddStoreOwner")]
-        //public Response<bool> AddStoreOwner([FromHeader] String Authorization, String ownerUsername, String storeName)
-        //{//II.4.4
-        //    Response<bool> response;
-        //    try
-        //    {
+        public Response AddStoreOwnerForTestPurposes(String Authorization, String ownerUsername, String storeName)
+        {//II.4.4
+            Response response;
+            try
+            {
 
-        //        String authToken = parseAutherization(Authorization);
-        //        _logger.Info($"Add Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
-        //        bool res = _market.AcceptOwnerAppointment(authToken, ownerUsername, storeName);
-        //        response = new Response<bool>();
-        //        _logger.Info($"SUCCESSFULY executed Add Store Owner.");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        response = new Response<bool>(e); _logger.Error(e.Message);
-        //    }
-        //    return response;
-        //}
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Add Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
+                _market.AddStoreOwnerForTestPurposes(authToken, ownerUsername, storeName);
+                response = new Response();
+                _logger.Info($"SUCCESSFULY executed Add Store Owner.");
+            }
+            catch (Exception e)
+            {
+                response = new Response(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
         [HttpPost("AcceptOwnerAppointment")]
         public Response<bool> AcceptOwnerAppointment([FromHeader] String Authorization, String newOwner, String storeName)
         {//II.4.4
