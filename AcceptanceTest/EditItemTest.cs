@@ -25,7 +25,7 @@ namespace AcceptanceTest
         int itemID_outStock = 1111111;
 
         [TestInitialize()]
-        public void setup()
+        public void Setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
@@ -40,6 +40,13 @@ namespace AcceptanceTest
                 //"Tomatoes Juice", 4.2, "", "Drinks", itemAmount_inSttock_2);
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== EditItemName =====================================
         [TestMethod]
         public void TestEditItemName_Happy()
         {
@@ -76,6 +83,7 @@ namespace AcceptanceTest
         }
 
 
+        // ===================================== EditItemPrice =====================================
         [TestMethod]
         public void TestEditItemPrice_Happy()
         {
@@ -119,6 +127,7 @@ namespace AcceptanceTest
         }
 
 
+        // ===================================== EditItemDescription =====================================
         [TestMethod]
         public void TestEditItemDescription_Happy()
         {

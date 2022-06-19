@@ -26,7 +26,7 @@ namespace AcceptanceTest
         int itemID_outStock = 1111111;
 
         [TestInitialize()]
-        public void setup()
+        public void Setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
@@ -41,6 +41,13 @@ namespace AcceptanceTest
                 "Tomatoes Juice", 4.2, "500ml bottle", "Drinks", itemAmount_inSttock_2);
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 2.1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== GetItemInformation =====================================
         [TestMethod]
         public void GetItemInformation_Happy()
         {

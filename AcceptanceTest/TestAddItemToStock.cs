@@ -30,7 +30,7 @@ namespace AcceptanceTest
         int itemQuantity;
 
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
@@ -45,6 +45,13 @@ namespace AcceptanceTest
             itemQuantity = 10;
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== AddItemToStoreStock =====================================
         [TestMethod]
         public void sad_UserDoesntHavePermission()
         {

@@ -22,7 +22,7 @@ namespace AcceptanceTest
 
 
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             store_founder_token = (marketAPI.EnterSystem()).Value;// guest
@@ -32,6 +32,13 @@ namespace AcceptanceTest
             marketAPI.OpenNewStore(store_founder_token, storeName);
         }
         
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.2 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
         [TestMethod]
         public void GetTotalDiscount_noCondition_success()
         {

@@ -27,7 +27,7 @@ namespace AcceptanceTest
         DateTime dob = new DateTime(2001, 7, 30);
 
         [TestInitialize()]
-        public void setup()
+        public void Setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
@@ -46,18 +46,13 @@ namespace AcceptanceTest
             marketAPI.AddItemToCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, itemAmount_inGuestCart);
         }
 
-        [TestMethod]
-        public void Test_sad_UpdateQuantotyOfItemInCart_QuantityIsZero()
-        {
-            int quantity = 0;
-            Response response_reg = marketAPI.UpdateQuantityOfItemInCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, quantity);
-            Response response_guest = marketAPI.UpdateQuantityOfItemInCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, quantity);
-            if (!response_reg.ErrorOccured || !response_guest.ErrorOccured)
-                Assert.Fail("should've faild: new q = 0");
-
-        }
 
 
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 2.4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== RemoveItemFromCart =====================================
         [TestMethod]
         public void Test_happy_RemoveItemFromCart_itemExistsInCart()//UPDATE Fail: remove item in basket
         {
@@ -83,7 +78,6 @@ namespace AcceptanceTest
             Assert.AreEqual(amount_of_item_after_reg_remove, amount_of_item_before_reg_remove + itemAmount_inRegCart);
 
         }
-        
 
         [TestMethod]
         public void Test_sad_RemoveItemFromCart_itemNotExistsInCart()//UPDATE FILE: remove item not in basket
@@ -98,9 +92,20 @@ namespace AcceptanceTest
                 Assert.Fail("basket should not change in a faild remove");
         }
 
+        // ===================================== UpdateQuantityOfItemInCart =====================================
+        [TestMethod]
+        public void Test_sad_UpdateQuantityOfItemInCart_QuantityIsZero()
+        {
+            int quantity = 0;
+            Response response_reg = marketAPI.UpdateQuantityOfItemInCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, quantity);
+            Response response_guest = marketAPI.UpdateQuantityOfItemInCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, quantity);
+            if (!response_reg.ErrorOccured || !response_guest.ErrorOccured)
+                Assert.Fail("should've faild: new q = 0");
+
+        }
 
         [TestMethod]
-        public void Test_sad_UpdateQuantotyOfItemInCart_IncreaseAmountInCart_NotEnoughtInStock()//UPDATE FILE: update amount not in stock
+        public void Test_sad_UpdateQuantityOfItemInCart_IncreaseAmountInCart_NotEnoughtInStock()//UPDATE FILE: update amount not in stock
         {
             int toAdd = 100;
             Response response_reg = marketAPI.UpdateQuantityOfItemInCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inSttock_1 + toAdd);
@@ -127,7 +132,7 @@ namespace AcceptanceTest
         }
 
         [TestMethod]
-        public void Test_happy_UpdateQuantotyOfItemInCart_IncreaseAmountInCart_EnoughtInStock()//UPDATE FILE: update amount in stock-> increase
+        public void Test_happy_UpdateQuantityOfItemInCart_IncreaseAmountInCart_EnoughtInStock()//UPDATE FILE: update amount in stock-> increase
         {
             Response response_reg = marketAPI.UpdateQuantityOfItemInCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inRegCart+ itemAmount_inSttock_1);
             Response response_guest = marketAPI.UpdateQuantityOfItemInCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, itemAmount_inRegCart+ itemAmount_inSttock_2);
@@ -160,7 +165,7 @@ namespace AcceptanceTest
         }
 
         [TestMethod]
-        public void Test_happy_UpdateQuantotyOfItemInCart_DecreaseAmountInCart()//UPDATE FILE: update amoiunt in stock -> decrease
+        public void Test_happy_UpdateQuantityOfItemInCart_DecreaseAmountInCart()//UPDATE FILE: update amoiunt in stock -> decrease
         {
             int to_decrease = 5;
             Response response_reg = marketAPI.UpdateQuantityOfItemInCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inRegCart - to_decrease);
@@ -194,7 +199,7 @@ namespace AcceptanceTest
         }
 
         [TestMethod]
-        public void TestUpdateQuantotyOfItemInCart_2VisitorsIncreaseAmountInCart()//UPDATE FILE: threads- both Visitors try to decrease amount of item-> last in stock
+        public void TestUpdateQuantityOfItemInCart_2VisitorsIncreaseAmountInCart()//UPDATE FILE: threads- both Visitors try to decrease amount of item-> last in stock
         {
             int iterations = 10000;
             int tot_amountInStock = iterations + 2; 

@@ -21,7 +21,7 @@ namespace AcceptanceTest
 
 
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
             guest_token = (marketAPI.EnterSystem()).Value;
             registered_token_founder = (marketAPI.EnterSystem()).Value;
@@ -32,6 +32,13 @@ namespace AcceptanceTest
             marketAPI.CloseStore(registered_token_founder, storeName_inSystem);
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.10 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== ReopenStore =====================================
         [TestMethod]
         public void sad_StoreDoesntExist()
         {

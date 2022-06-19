@@ -31,7 +31,7 @@ namespace AcceptanceTest
         DateTime dob = new DateTime(2001, 7, 30);
 
         [TestInitialize()]
-        public void setup()
+        public void Setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             store_founder_token = (marketAPI.EnterSystem()).Value;// guest

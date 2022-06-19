@@ -28,7 +28,7 @@ namespace AcceptanceTest
         public static readonly string shippingMethode_mock_true = "mock_true";
 
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
             guest_userToken = (marketAPI.EnterSystem()).Value;
             registered_userToken = (marketAPI.EnterSystem()).Value;
@@ -40,6 +40,13 @@ namespace AcceptanceTest
             ratingInRange = 5;
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 3.4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== RateStore =====================================
         [TestMethod]
         public void sad_UserHasntPurchasedInStore()
         {

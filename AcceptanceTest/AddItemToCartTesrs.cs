@@ -24,7 +24,7 @@ namespace AcceptanceTest
         int itemID_outStock = 1111111;
 
         [TestInitialize()]
-        public void setup()
+        public void Setup()
         {
             DateTime dob = new DateTime(2001, 7, 30);
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
@@ -41,6 +41,13 @@ namespace AcceptanceTest
 
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 2.3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== AddItemToCart =====================================
         [TestMethod]
         public void TestAddItemToCart_2VisitorsAddingLastItemInStock()
         {

@@ -32,7 +32,7 @@ namespace AcceptanceTest
 
 
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             store_founder_token = (marketAPI.EnterSystem()).Value;// guest
@@ -43,6 +43,13 @@ namespace AcceptanceTest
             marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, itemprice, itemDesc, category, 100);
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 2.5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== PurchaseCart =====================================
         [TestMethod]
         public void TryPurchaseCart_SimplePurchasePolicyAllows_success()
         {

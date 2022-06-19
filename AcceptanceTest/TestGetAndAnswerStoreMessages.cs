@@ -27,7 +27,7 @@ namespace AcceptanceTest
 
 
         [TestInitialize]
-        public void setup()
+        public void Setup()
         {
             guest_token = marketAPI.EnterSystem().Value;
             registered_token_founder = marketAPI.EnterSystem().Value;
@@ -38,6 +38,12 @@ namespace AcceptanceTest
             registered_token_reviewer = marketAPI.Login(registered_token_reviewer, username_reviewer, "123456789").Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName);
         }
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 3.5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         [TestMethod]
         public void happy_reviewerSendsMessageAndTheMessageArrivesAsExpected()
@@ -67,6 +73,11 @@ namespace AcceptanceTest
             Assert.IsTrue(response2.ErrorOccured);
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.12 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         [TestMethod]
         public void happy_reviewerSendMessageAndTheFounderReply()
         {
