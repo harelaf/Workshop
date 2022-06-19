@@ -32,7 +32,7 @@ namespace AcceptanceTest
         public static readonly string paymentMethode_mock_true = "mock_true";
 
         [TestInitialize()]
-        public void setup()
+        public void Setup()
         {
             guest_VisitorToken = (marketAPI.EnterSystem()).Value;
             registered_VisitorToken = (marketAPI.EnterSystem()).Value;// guest
@@ -48,6 +48,12 @@ namespace AcceptanceTest
             itemId_inRegCart = itemID_inStock_1;
             itemId_inGuestCart = itemID_inStock_2;
         }
+        
+        
+        
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 2.5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         [TestMethod]
         public void TestPurchaseCart_CartIsEmpty()
