@@ -10,6 +10,11 @@ namespace MarketProject.Domain.Tests
     [TestClass()]
     public class RatingTests
     {
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 3.3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== AddRating =====================================
         [TestMethod()]
         public void AddRating_VisitorHasntRatedYet_ReturnsTrue()
         {
@@ -37,6 +42,8 @@ namespace MarketProject.Domain.Tests
             Assert.IsFalse(result);
         }
 
+
+        // ===================================== GetRating =====================================
         [TestMethod()]
         public void GetRating_AllVisitorsRated5_Returns5()
         {
