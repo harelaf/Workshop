@@ -22,7 +22,7 @@ namespace MarketProject.Domain.Tests
         int quantity;
 
         [TestInitialize()]
-        public void setup()
+        public void Setup()
         {
             storeFounder = "Mr. Krabs";
             storeName = "Krusty Krab";
@@ -36,213 +36,11 @@ namespace MarketProject.Domain.Tests
         }
 
 
-        [TestMethod()]
-        public void RateStore_UserHasntRatedStore_NoException()
-        {
-            String username = "Squidward Tentacles";
-            int rating = 1;
-            String review = "NOOOOOOOOOOOO";
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 2.3 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-            try
-            {
-                _store.RateStore(username, rating, review);
-                Assert.AreEqual(_store.GetRating(), "" + rating);
-            }
-            catch (Exception e)
-            {
-                Assert.Fail();
-            }
-        }
-
-        [TestMethod()]
-        public void RateStore_UserHasRatedStore_ThrowsException()
-        {
-            String username = "Squidward Tentacles";
-            int rating = 1;
-            String review = "NOOOOOOOOOOOO";
-
-            try
-            {
-                _store.RateStore(username, rating, review);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-
-            try
-            {
-                _store.RateStore(username, rating, review);
-                Assert.Fail();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        [TestMethod()]
-        public void UpdateStockQuantityOfItem_ItemExists_NoException()
-        {
-            String description = "Delicious";
-            int quantity = 5;
-            double price = 5.0;
-            String category = "";
-            int newQuantity = 10;
-            try
-            {
-                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-
-            try
-            {
-                _store.UpdateStockQuantityOfItem(itemId, newQuantity);
-                Item i = _store.GetItem(itemId);
-                Assert.AreEqual(_store.Stock.GetItemAmount(i), newQuantity);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
-
-        [TestMethod()]
-        public void UpdateStockQuantityOfItem_ItemDoesntExist_ThrowsException()
-        {
-            int newQuantity = 15;
-
-            try
-            {
-                _store.UpdateStockQuantityOfItem(itemId, newQuantity);
-                Assert.Fail();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        [TestMethod()]
-        public void AddItemToStoreStock_ItemIdIsUnique_NoException()
-        {
-            try
-            {
-                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
-                Assert.IsNotNull(_store.GetItem(itemId));
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
-
-        [TestMethod()]
-        public void AddItemToStoreStock_ItemIdIsNotUnique_ThrowsException()
-        {
-            try
-            {
-                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-
-            try
-            {
-                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
-                Assert.Fail();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        [TestMethod()]
-        public void RemoveItemFromStore_ItemDoesntExist_ThrowsException()
-        {
-            try
-            {
-                _store.RemoveItemFromStore(itemId);
-                Assert.Fail();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        [TestMethod()]
-        public void RemoveItemFromStore_ItemExists_NoException()
-        {
-            try
-            {
-                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-
-            try
-            {
-                _store.RemoveItemFromStore(itemId);
-                Item i = _store.GetItem(itemId);
-                Assert.IsNull(i);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
-
-        [TestMethod()]
-        public void AddStoreManager_AddManagerTwice_returnsFalse()
-        {
-            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
-
-            Assert.ThrowsException<Exception>(() => _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder)));
-        }
-
-        [TestMethod]
-        public void AddStoreManager_AddManagerWhileIsOwner_returnsFalse()
-        {
-            StoreOwner arrange = _store.AcceptOwnerAppointment(storeFounder, name);//success. first owner's appointment.
-
-            Assert.ThrowsException<Exception>(() => _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder)));
-        }
-
-        [TestMethod]
-        public void AddStoreManager_AddManager_returnsTrue()
-        {
-            bool act = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
-            Assert.IsTrue(act);
-        }
-
-        [TestMethod]
-        public void AddStoreOwner_AddOwnerTwice_returnsFalse()
-        {
-            StoreOwner arrange = _store.AcceptOwnerAppointment(storeFounder, name);
-
-            Assert.ThrowsException<Exception>(() => _store.AcceptOwnerAppointment(storeFounder, name));
-        }
-
-        [TestMethod]
-        public void AddStoreOwner_AddOwnerWhileIsManager_returnsFalse()
-        {
-            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
-
-            Assert.ThrowsException<Exception>(() => _store.AcceptOwnerAppointment(storeFounder, name));
-        }
-
-        [TestMethod]
-        public void AddStoreOwner_AddOwner_returnsTrue()
-        {
-            StoreOwner act = _store.AcceptOwnerAppointment(storeFounder, name);
-            Assert.IsTrue(act != null);
-        }
-
+        // ===================================== ReserveItem =====================================
         [TestMethod]
         public void TestReserveItem_moreThanAmountInStock()
         {
@@ -301,6 +99,9 @@ namespace MarketProject.Domain.Tests
             //action+ assert
             Assert.ThrowsException<Exception>(() => store.ReserveItem(itemID, amountToReserve));
         }
+
+
+        // ===================================== UnreserveItem =====================================
         [TestMethod]
         public void TestUnreserveItem_positiveAmount()
         {
@@ -345,6 +146,215 @@ namespace MarketProject.Domain.Tests
             Assert.ThrowsException<Exception>(() => store.UnReserveItem(item, amountToUnreserve));
         }
 
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 3.4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== RateStore =====================================
+        [TestMethod()]
+        public void RateStore_UserHasntRatedStore_NoException()
+        {
+            String username = "Squidward Tentacles";
+            int rating = 1;
+            String review = "NOOOOOOOOOOOO";
+
+            try
+            {
+                _store.RateStore(username, rating, review);
+                Assert.AreEqual(_store.GetRating(), "" + rating);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod()]
+        public void RateStore_UserHasRatedStore_ThrowsException()
+        {
+            String username = "Squidward Tentacles";
+            int rating = 1;
+            String review = "NOOOOOOOOOOOO";
+
+            try
+            {
+                _store.RateStore(username, rating, review);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _store.RateStore(username, rating, review);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.1 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== UpdateStockQuantityOfItem =====================================
+        [TestMethod()]
+        public void UpdateStockQuantityOfItem_ItemExists_NoException()
+        {
+            String description = "Delicious";
+            int quantity = 5;
+            double price = 5.0;
+            String category = "";
+            int newQuantity = 10;
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _store.UpdateStockQuantityOfItem(itemId, newQuantity);
+                Item i = _store.GetItem(itemId);
+                Assert.AreEqual(_store.Stock.GetItemAmount(i), newQuantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod()]
+        public void UpdateStockQuantityOfItem_ItemDoesntExist_ThrowsException()
+        {
+            int newQuantity = 15;
+
+            try
+            {
+                _store.UpdateStockQuantityOfItem(itemId, newQuantity);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+
+        // ===================================== AddItemToStoreStock =====================================
+        [TestMethod()]
+        public void AddItemToStoreStock_ItemIdIsUnique_NoException()
+        {
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
+                Assert.IsNotNull(_store.GetItem(itemId));
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [TestMethod()]
+        public void AddItemToStoreStock_ItemIdIsNotUnique_ThrowsException()
+        {
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+
+        // ===================================== RemoveItemFromStore =====================================
+        [TestMethod()]
+        public void RemoveItemFromStore_ItemDoesntExist_ThrowsException()
+        {
+            try
+            {
+                _store.RemoveItemFromStore(itemId);
+                Assert.Fail();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        [TestMethod()]
+        public void RemoveItemFromStore_ItemExists_NoException()
+        {
+            try
+            {
+                _store.AddItemToStoreStock(itemId, name, price, description, category, quantity);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+
+            try
+            {
+                _store.RemoveItemFromStore(itemId);
+                Item i = _store.GetItem(itemId);
+                Assert.IsNull(i);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.4 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== AddStoreOwner =====================================
+        [TestMethod]
+        public void AddStoreOwner_AddOwnerTwice_returnsFalse()
+        {
+            StoreOwner arrange = _store.AcceptOwnerAppointment(storeFounder, name);
+
+            Assert.ThrowsException<Exception>(() => _store.AcceptOwnerAppointment(storeFounder, name));
+        }
+
+        [TestMethod]
+        public void AddStoreOwner_AddOwnerWhileIsManager_returnsFalse()
+        {
+            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            Assert.ThrowsException<Exception>(() => _store.AcceptOwnerAppointment(storeFounder, name));
+        }
+
+        [TestMethod]
+        public void AddStoreOwner_AddOwner_returnsTrue()
+        {
+            StoreOwner act = _store.AcceptOwnerAppointment(storeFounder, name);
+            Assert.IsTrue(act != null);
+        }
+
         [TestMethod()]
         public void AddStoreOwner_removeAsManagerAddAsOwner_returnsTrue()
         {
@@ -355,56 +365,7 @@ namespace MarketProject.Domain.Tests
             bool isAdded = _store.GetOwners().Contains(act);
             Assert.IsTrue(arrange & act != null && isAdded);
         }
-
-        [TestMethod()]
-        public void RemoveStoreManager_addAndRemove_returnstrue()
-        {
-            string storeManager = "tommy shelby";
-            bool add = _store.AddStoreManager(new StoreManager(storeManager, storeName, storeFounder));
-
-            bool actual = _store.RemoveStoreManager(storeManager, storeFounder);
-            Assert.IsTrue(add);
-            Assert.IsTrue(actual);
-        }
-        [TestMethod()]
-        public void RemoveStoreManager_removeFounder_returnsfalse()
-        {
-            Assert.ThrowsException<Exception>(() => _store.RemoveStoreManager(storeFounder, null));
-        }
-
-        [TestMethod()]
-        public void RemoveStoreManager_NonWorker_returnsfalse()
-        {
-            Assert.ThrowsException<Exception>(() => _store.RemoveStoreManager("123", null));
-        }
-
-        [TestMethod()]
-        public void RemoveStoreOwner_addAndRemove_returnstrue()
-        {
-            string storeOwner = "amos";
-            StoreOwner add = _store.AcceptOwnerAppointment(storeFounder, storeOwner);
-            bool isAdded = _store.GetOwners().Contains(add);
-            try
-            {
-                _store.RemoveStoreOwner(storeOwner, storeFounder);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-            Assert.IsTrue(add != null && isAdded);
-        }
-        [TestMethod()]
-        public void RemoveStoreOwner_removeFounder_returnsfalse()
-        {
-            Assert.ThrowsException<Exception>(() => _store.RemoveStoreOwner(storeFounder, storeFounder));
-        }
-
-        [TestMethod()]
-        public void RemoveStoreOwner_NonWorker_returnsfalse()
-        {
-            Assert.ThrowsException<Exception>(() => _store.RemoveStoreOwner("123", null));
-        }
+        
         [TestMethod()]
         public void acceptStoreOwner_add2ownersCheckstandby_returnstrue()
         {
@@ -447,5 +408,102 @@ namespace MarketProject.Domain.Tests
             bool isNotAdded2 = _store.GetOwners().Find(x => x.Username == storeOwner2) == null;
             Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2 && isRemoved && isNotAdded2);
         }
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.5 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== RemoveStoreOwner =====================================
+        [TestMethod()]
+        public void RemoveStoreOwner_addAndRemove_returnstrue()
+        {
+            string storeOwner = "amos";
+            StoreOwner add = _store.AcceptOwnerAppointment(storeFounder, storeOwner);
+            bool isAdded = _store.GetOwners().Contains(add);
+            try
+            {
+                _store.RemoveStoreOwner(storeOwner, storeFounder);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            Assert.IsTrue(add != null && isAdded);
+        }
+        [TestMethod()]
+        public void RemoveStoreOwner_removeFounder_returnsfalse()
+        {
+            Assert.ThrowsException<Exception>(() => _store.RemoveStoreOwner(storeFounder, storeFounder));
+        }
+
+        [TestMethod()]
+        public void RemoveStoreOwner_NonWorker_returnsfalse()
+        {
+            Assert.ThrowsException<Exception>(() => _store.RemoveStoreOwner("123", null));
+        }
+        
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.6 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== AddStoreManager =====================================
+        [TestMethod()]
+        public void AddStoreManager_AddManagerTwice_returnsFalse()
+        {
+            bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+
+            Assert.ThrowsException<Exception>(() => _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder)));
+        }
+
+        [TestMethod]
+        public void AddStoreManager_AddManagerWhileIsOwner_returnsFalse()
+        {
+            StoreOwner arrange = _store.AcceptOwnerAppointment(storeFounder, name);//success. first owner's appointment.
+
+            Assert.ThrowsException<Exception>(() => _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder)));
+        }
+
+        [TestMethod]
+        public void AddStoreManager_AddManager_returnsTrue()
+        {
+            bool act = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
+            Assert.IsTrue(act);
+        }
+
+
+
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Req II 4.8 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        // ===================================== RemoveStoreManager =====================================
+        [TestMethod()]
+        public void RemoveStoreManager_addAndRemove_returnstrue()
+        {
+            string storeManager = "tommy shelby";
+            bool add = _store.AddStoreManager(new StoreManager(storeManager, storeName, storeFounder));
+
+            bool actual = _store.RemoveStoreManager(storeManager, storeFounder);
+            Assert.IsTrue(add);
+            Assert.IsTrue(actual);
+        }
+        [TestMethod()]
+        public void RemoveStoreManager_removeFounder_returnsfalse()
+        {
+            Assert.ThrowsException<Exception>(() => _store.RemoveStoreManager(storeFounder, null));
+        }
+
+        [TestMethod()]
+        public void RemoveStoreManager_NonWorker_returnsfalse()
+        {
+            Assert.ThrowsException<Exception>(() => _store.RemoveStoreManager("123", null));
+        }
+
+
+
     }
 }
