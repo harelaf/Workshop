@@ -19,7 +19,7 @@ namespace MarketWeb.Server.Domain
         public double BiddedPrice => _biddedPrice;
         public double CounterOffer => _counterOffer;
         public ISet<string> Acceptors => _acceptors;
-        public bool AccepttedByAll = false;
+        public bool AcceptedByAll = false;
 
         public Bid(String bidder, int itemId, int amount, double biddedPrice)
         {
@@ -37,11 +37,11 @@ namespace MarketWeb.Server.Domain
         public void CounterOfferBid(string userName, double newPrice)
         {
             _acceptors.Add(userName);
-            if(CounterOffer < newPrice)
+            if(CounterOffer < newPrice  && newPrice > BiddedPrice)
                 _counterOffer = newPrice;
         }
 
-        internal double GetFinalPrice()
+        public double GetFinalPrice()
         {
             return CounterOffer == -1 ? BiddedPrice : CounterOffer;
         }

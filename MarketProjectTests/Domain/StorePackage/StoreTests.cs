@@ -208,7 +208,7 @@ namespace MarketProject.Domain.Tests
         [TestMethod]
         public void AddStoreManager_AddManagerWhileIsOwner_returnsFalse()
         {
-            bool arrange = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+            StoreOwner arrange = _store.AcceptOwnerAppointment(storeFounder, name);//success. first owner's appointment.
 
             Assert.ThrowsException<Exception>(() => _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder)));
         }
@@ -223,9 +223,9 @@ namespace MarketProject.Domain.Tests
         [TestMethod]
         public void AddStoreOwner_AddOwnerTwice_returnsFalse()
         {
-            bool arrange = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
+            StoreOwner arrange = _store.AcceptOwnerAppointment(storeFounder, name);
 
-            Assert.ThrowsException<Exception>(() => _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder)));
+            Assert.ThrowsException<Exception>(() => _store.AcceptOwnerAppointment(storeFounder, name));
         }
 
         [TestMethod]
@@ -233,14 +233,14 @@ namespace MarketProject.Domain.Tests
         {
             bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
 
-            Assert.ThrowsException<Exception>(() => _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder)));
+            Assert.ThrowsException<Exception>(() => _store.AcceptOwnerAppointment(storeFounder, name));
         }
 
         [TestMethod]
         public void AddStoreOwner_AddOwner_returnsTrue()
         {
-            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
-            Assert.IsTrue(act);
+            StoreOwner act = _store.AcceptOwnerAppointment(storeFounder, name);
+            Assert.IsTrue(act != null);
         }
 
         [TestMethod]
@@ -351,9 +351,9 @@ namespace MarketProject.Domain.Tests
             bool arrange = _store.AddStoreManager(new StoreManager(name, _store.StoreName, storeFounder));
             arrange = arrange & _store.RemoveStoreManager(name, storeFounder);
 
-            bool act = _store.AddStoreOwner(new StoreOwner(name, _store.StoreName, storeFounder));
-
-            Assert.IsTrue(arrange & act);
+            StoreOwner act = _store.AcceptOwnerAppointment(storeFounder, name);
+            bool isAdded = _store.GetOwners().Contains(act);
+            Assert.IsTrue(arrange & act != null && isAdded);
         }
 
         [TestMethod()]
@@ -382,17 +382,17 @@ namespace MarketProject.Domain.Tests
         public void RemoveStoreOwner_addAndRemove_returnstrue()
         {
             string storeOwner = "amos";
-            bool add = _store.AddStoreOwner(new StoreOwner(storeOwner, storeName, storeFounder));
-
+            StoreOwner add = _store.AcceptOwnerAppointment(storeFounder, storeOwner);
+            bool isAdded = _store.GetOwners().Contains(add);
             try
             {
                 _store.RemoveStoreOwner(storeOwner, storeFounder);
-            } 
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Assert.Fail(ex.Message);
             }
-            Assert.IsTrue(add);
+            Assert.IsTrue(add != null && isAdded);
         }
         [TestMethod()]
         public void RemoveStoreOwner_removeFounder_returnsfalse()
@@ -404,6 +404,172 @@ namespace MarketProject.Domain.Tests
         public void RemoveStoreOwner_NonWorker_returnsfalse()
         {
             Assert.ThrowsException<Exception>(() => _store.RemoveStoreOwner("123", null));
+        }
+        [TestMethod()]
+        public void acceptStoreOwner_add2ownersCheckstandby_returnstrue()
+        {
+            string storeOwner = "amos";
+            string storeOwner2 = "haim";
+            StoreOwner add1 = _store.AcceptOwnerAppointment(storeFounder, storeOwner);//success. first owner's appointment.
+            StoreOwner add2 = _store.AcceptOwnerAppointment(storeFounder, storeOwner2);// awaiting ownerUsername1 to approve appointment
+            bool isAdded = _store.GetOwners().Contains(add1);
+            bool isNotAdded = !_store.GetOwners().Contains(add2);
+            bool isAdded2 = _store.GetStandbyOwnersInStore().ContainsKey(storeOwner2) && _store.GetStandbyOwnersInStore()[storeOwner2].Contains(storeFounder);
+            Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2);
+        }
+        [TestMethod()]
+        public void acceptStoreOwner_add2ownersAcceptSecond_returnstrue()
+        {
+            string storeOwner = "amos";
+            string storeOwner2 = "haim";
+            StoreOwner add1 = _store.AcceptOwnerAppointment(storeFounder, storeOwner);//success. first owner's appointment.
+            StoreOwner add2 = _store.AcceptOwnerAppointment(storeFounder, storeOwner2);// awaiting ownerUsername1 to approve appointment
+            bool isAdded = _store.GetOwners().Contains(add1);
+            bool isNotAdded = !_store.GetOwners().Contains(add2);
+            bool isAdded2 = _store.GetStandbyOwnersInStore().ContainsKey(storeOwner2) && _store.GetStandbyOwnersInStore()[storeOwner2].Contains(storeFounder);
+            StoreOwner add3 = _store.AcceptOwnerAppointment(storeOwner, storeOwner2);
+            bool isRemovedFromStandby = !_store.GetStandbyOwnersInStore().ContainsKey(storeOwner2);
+            bool isAdded3 = _store.GetOwners().Contains(add3);
+            Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2 && isRemovedFromStandby && isAdded3);
+        }
+        [TestMethod()]
+        public void rejectStoreOwner_add2ownersRejectSecond_returnstrue()
+        {
+            string storeOwner = "amos";
+            string storeOwner2 = "haim";
+            StoreOwner add1 = _store.AcceptOwnerAppointment(storeFounder, storeOwner);//success. first owner's appointment.
+            StoreOwner add2 = _store.AcceptOwnerAppointment(storeFounder, storeOwner2);// awaiting ownerUsername1 to approve appointment
+            bool isAdded = _store.GetOwners().Contains(add1);
+            bool isNotAdded = !_store.GetOwners().Contains(add2);
+            bool isAdded2 = _store.GetStandbyOwnersInStore().ContainsKey(storeOwner2) && _store.GetStandbyOwnersInStore()[storeOwner2].Contains(storeFounder);
+            _store.RejectOwnerAppointment(storeOwner, storeOwner2);
+            bool isRemoved = !_store.GetStandbyOwnersInStore().ContainsKey(storeOwner2);
+            bool isNotAdded2 = _store.GetOwners().Find(x => x.Username == storeOwner2) == null;
+            Assert.IsTrue(add1 != null && isAdded && isNotAdded && isAdded2 && isRemoved && isNotAdded2);
+        }
+
+        [TestMethod]
+        public void bidItem_bidAndCheck_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            _store.BidItem(itemId, amount, biddedPrice, bidder);
+            List<Bid> bids = _store.GetVisitorBids(bidder);
+            Assert.IsTrue(bids != null && bids.Count > 0 && bids[0].ItemID == itemId && bids[0].Amount == amount);
+            Assert.IsTrue(bids[0].Acceptors.Count == 0);
+        }
+        [TestMethod]
+        public void acceptBid_acceptBidTwoUsernames_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            string acceptor1 = "acceptor1";
+            string acceptor2 = "acceptor2";
+            _store.BidItem(itemId, amount, biddedPrice, bidder);
+            _store.AcceptBid(acceptor1, itemId, bidder);
+            _store.AcceptBid(acceptor2, itemId, bidder);
+            ISet<string> acceptors = _store.GetVisitorBids(bidder)[0].Acceptors;
+            Assert.IsTrue(acceptors.Contains(acceptor1));
+            Assert.IsTrue(acceptors.Contains(acceptor2));
+        }
+        [TestMethod]
+        public void acceptRejectAndCounterOfferBid_acceptBeforeBid_throwsException()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            string acceptor1 = "acceptor1";
+            Assert.ThrowsException<Exception>(() => _store.AcceptBid(acceptor1, itemId, bidder));
+            Assert.ThrowsException<Exception>(() => _store.RejectBid(acceptor1, itemId, bidder));
+            Assert.ThrowsException<Exception>(() => _store.CounterOfferBid(acceptor1, itemId, bidder, 1.7));
+        }
+        [TestMethod]
+        public void acceptAndReject_acceptRejectAndAccept_throwsException()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            string acceptor1 = "acceptor1";
+            string acceptor2 = "acceptor2";
+            _store.BidItem(itemId, amount, biddedPrice, bidder);
+            _store.AcceptBid(acceptor1, itemId, bidder);
+            ISet<string> acceptors = _store.GetVisitorBids(bidder)[0].Acceptors;
+            Assert.IsTrue(acceptors.Contains(acceptor1)); 
+            _store.RejectBid(acceptor2, itemId, bidder);
+            Assert.IsTrue(_store.GetVisitorBids(bidder).Count == 0);
+            Assert.ThrowsException<Exception>(() => _store.AcceptBid("new acceptor", itemId, bidder));
+        }
+        [TestMethod]
+        public void counterOffer_counterOfferBidTwoUsernames_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            _store.BidItem(itemId, amount, biddedPrice, bidder);
+            string acceptor1 = "acceptor1";
+            string acceptor2 = "acceptor2";
+            double counterOffer1 = 1.7;
+            double counterOffer2 = 1.9;
+            _store.CounterOfferBid(acceptor1, itemId, bidder, counterOffer1);
+            _store.CounterOfferBid(acceptor2, itemId, bidder, counterOffer2);
+            List<Bid> bids = _store.GetVisitorBids(bidder);
+            Assert.IsTrue(bids[0].Acceptors.Contains(acceptor1));
+            Assert.IsTrue(bids[0].Acceptors.Contains(acceptor2));
+            Assert.IsTrue(bids[0].CounterOffer == counterOffer2);
+        }
+        [TestMethod]
+        public void counterOffer_counterOfferBidTwoUsernames_takesMaxOffer()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            _store.BidItem(itemId, amount, biddedPrice, bidder);
+            string acceptor1 = "acceptor1";
+            string acceptor2 = "acceptor2";
+            double counterOffer1 = 1.9;
+            double counterOffer2 = 1.7;
+            _store.CounterOfferBid(acceptor1, itemId, bidder, counterOffer1);
+            _store.CounterOfferBid(acceptor2, itemId, bidder, counterOffer2);
+            List<Bid> bids = _store.GetVisitorBids(bidder);
+            Assert.IsTrue(bids[0].Acceptors.Contains(acceptor1));
+            Assert.IsTrue(bids[0].Acceptors.Contains(acceptor2));
+            Assert.IsTrue(bids[0].CounterOffer == counterOffer1);
+        }
+        [TestMethod]
+        public void counterOffer_counterOfferBidLessThenBiddedPrice_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            _store.BidItem(itemId, amount, biddedPrice, bidder);
+            string acceptor1 = "acceptor1";
+            double counterOffer1 = 0.5;
+            _store.CounterOfferBid(acceptor1, itemId, bidder, counterOffer1);
+            List<Bid> bids = _store.GetVisitorBids(bidder);
+            Assert.IsTrue(bids[0].Acceptors.Contains(acceptor1));
+            Assert.IsTrue(bids[0].CounterOffer == -1);
+        }
+        [TestMethod]
+        public void rejectBid_bidThenReject_success()
+        {
+            string bidder = "bidder";
+            int itemId = 1;
+            int amount = 100;
+            double biddedPrice = 1.5;
+            _store.BidItem(itemId, amount, biddedPrice, bidder);
+            string acceptor1 = "acceptor1";
+            double counterOffer1 = 0.5;
+            _store.CounterOfferBid(acceptor1, itemId, bidder, counterOffer1);
+            List<Bid> bids = _store.GetVisitorBids(bidder);
+            Assert.IsTrue(bids[0].Acceptors.Contains(acceptor1));
+            Assert.IsTrue(bids[0].CounterOffer == -1);
         }
     }
 }

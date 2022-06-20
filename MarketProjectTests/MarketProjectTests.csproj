@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\StorePackage\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MarketWeb\Server\MarketWeb.Server.csproj" />
 	<!--<ProjectReference Include="..\MarketWeb\Server\MarketWeb.Shared.csproj" />-->
   </ItemGroup>

@@ -1,0 +1,36 @@
+ignore_file
+// First call EnterSystem() for each user you want to use.
+// For this initialization file I will use 2 users.
+EnterSystem()
+EnterSystem()
+EnterSystem()
+EnterSystem()
+EnterSystem()
+EnterSystem()
+
+// Now use the system as usual, replace authrization tokens with indexes of user.
+// For example, if you want to register the *first* user, use: Register(1, Sponge Bob Square Pants, password, DOB).
+// Formats:
+// Date of Birth format: MM/DD/YYYY HH:MM:SS AM/PM
+// Condition format: The same as in GUI
+Register(1, u1, pass1, 1/2/2000 12:00:00 AM)
+Register(2, u2, pass1, 1/2/2000 12:00:00 AM)
+Register(3, u3, pass1, 1/2/2000 12:00:00 AM)
+Register(4, u4, pass1, 1/2/2000 12:00:00 AM)
+Register(5, u5, pass1, 1/2/2000 12:00:00 AM)
+Register(6, u6, pass1, 1/2/2000 12:00:00 AM)
+
+Login(1, u1, pass1)
+Login(2, u2, pass1)
+Login(3, u3, pass1)
+Login(4, u4, pass1)
+Login(5, u5, pass1)
+Login(6, u6, pass1)
+
+OpenNewStore(2, s1)
+AddItemToStoreStock(2, s1, 1, Bamba, 30, Yummy Burger, Candy, 20)
+AddStoreManager(2, u3, s1)
+//AddManagerPermission(2, u3, s1, MANAGE_INVENTORY)
+AddStoreOwner(2, u4, s1)
+AddStoreOwner(2, u5, s1)
+Logout(5)

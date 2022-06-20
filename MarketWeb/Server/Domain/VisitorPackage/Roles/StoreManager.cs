@@ -56,13 +56,14 @@ namespace MarketWeb.Server.Domain
             if (!_appointer.Equals(denier))
                 throw new Exception("store-manager permissions can be changed by appointer only.");
             if (!(op.Equals(Operation.STORE_HISTORY_INFO) || op.Equals(Operation.RECEIVE_AND_REPLY_STORE_MESSAGE)))
-                 throw new Exception("manager doesn't has this permission go be removed!");
+                 throw new Exception("manager doesn't have this permission go be removed!");
+            bool res = false;
             lock (_operations)
             {
                 if (_operations.Contains(op))
-                     _operations.Remove(op);
+                     res = _operations.Remove(op);
             }
-            return true;
+            return res;
         }
 
         private static ISet<Operation> getOps()

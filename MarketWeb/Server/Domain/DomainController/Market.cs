@@ -35,22 +35,45 @@ namespace MarketWeb.Server.Domain
             _notificationHub = notificationHub;
             _VisitorManagement.SetNotificationHub(notificationHub);
 
+            // Calling RestartSystem after creating this object is important.
             RestartSystem("admin", "admin", "https://cs-bgu-wsep.herokuapp.com/", "https://cs-bgu-wsep.herokuapp.com/");
             _dalTRranslator = new DalTRranslator(); 
         }
-
 
         /// <summary>
         /// <para> For Req I.1. </para>
         /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
         /// </summary>
-        public void RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
+        public async Task RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
         {//I.1
+            // Do starting system stuff with IPs
+            WSIEPaymentHandler paymentHandler = new WSIEPaymentHandler(ipPaymentService);
+            try
+            {
+                if (!(await paymentHandler.Handshake()))
+                    throw new Exception();
+            } 
+            catch(Exception)
+            {
+                throw new Exception("CONFIG: Payment method wasn't available.");
+            }
+            PurchaseProcess.GetInstance().AddPaymentMethod("WSIE", paymentHandler);
+            WSEPShippingHandler shippingHandler = new WSEPShippingHandler(ipShippingService);
+            try
+            {
+                if (!(await shippingHandler.Handshake()))
+                    throw new Exception();
+            }
+            catch(Exception)
+            {
+                throw new Exception("CONFIG: Shipping method wasn't available.");
+            }
+            PurchaseProcess.GetInstance().AddShipmentMethod("WSEP", shippingHandler);
+
+            // Initialize admin
+            _VisitorManagement.InitializeAdmin(adminUsername, adminPassword);
             _VisitorManagement.AdminStart(adminUsername, adminPassword);
 
-            // Do starting system stuff with IPs
-            PurchaseProcess.GetInstance().AddPaymentMethod("WSIE", new WSIEPaymentHandler(ipPaymentService));
-            PurchaseProcess.GetInstance().AddShipmentMethod("WSEP", new WSEPShippingHandler(ipShippingService));
         }
 
         /// add\update basket eof store with item and amount.
@@ -84,7 +107,7 @@ namespace MarketWeb.Server.Domain
 
         }
 
-        public void AddAcceptedBidToCart(String VisitorToken, int itemID, String storeName, int amount, double price)
+        public void AddAcceptedBidToCart(String VisitorToken, int itemID, String storeName, int amount)
         {//II.2.3
             String errorMessage = null;
             CheckIsVisitorAVisitor(VisitorToken, "AddAcceptedBidToCart");
@@ -113,7 +136,7 @@ namespace MarketWeb.Server.Domain
                     try
                     {
                         copy.SetPrice(_storeManagement.GetBidAcceptedPrice(bidder, storeName, itemID, amount));
-                        _VisitorManagement.AddAcceptedBidToCart(VisitorToken, store, itemID, amount, price);
+                        _VisitorManagement.AddAcceptedBidToCart(VisitorToken, store, itemID, amount);
                         _storeManagement.markAcceptedBidAsUsed(bidder, storeName, itemID);
                     }
                     catch (Exception ex)
@@ -721,30 +744,6 @@ namespace MarketWeb.Server.Domain
         {
             CheckIsVisitorLoggedIn(authToken, "GetRegisteredAnswerdStoreMessages");
             return _VisitorManagement.GetRegisteredAnswerdStoreMessages(authToken);
-        }
-
-        public void AddStoreOwner(String authToken, String ownerUsername, String storeName)
-        {//II.4.4
-            CheckIsVisitorLoggedIn(authToken, "AddStoreOwner");
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
-            {
-                if (!_VisitorManagement.IsRegistered(ownerUsername))
-                {
-                    throw new Exception("there is no register user in system with username: " + ownerUsername + ". you can only appoint register user to store role.");
-                }
-                StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
-                if (_storeManagement.AddStoreOwner(newOwner, storeName))
-                {
-                    _VisitorManagement.AddRole(ownerUsername, newOwner);
-                    _dalController.AddStoreOwner(ownerUsername, storeName, appointerUsername);
-                }
-                
-            }
-            else
-            {
-                throw new Exception("you don't have access to fire owner in store.");
-            }
         }
 
         public async Task PurchaseMyCartAsync(String VisitorToken, String address, String city, String country, String zip, String purchaserName, String paymentMethode, String shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
@@ -1411,6 +1410,87 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             return _storeManagement.GetVisitorBidsAtStore(storeName, bidder);
+        }
+        public void AddStoreOwnerForTestPurposes(String authToken, String ownerUsername, String storeName)
+        {//II.4.4
+            CheckIsVisitorLoggedIn(authToken, "AddStoreOwner");
+            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.APPOINT_OWNER))
+            {
+                if (!_VisitorManagement.IsRegistered(ownerUsername))
+                {
+                    throw new Exception("there is no register user in system with username: " + ownerUsername + ". you can only appoint register user to store role.");
+                }
+                StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
+                if (_storeManagement.AddStoreOwnerForTestPurposes(newOwner, storeName) != null)
+                    _VisitorManagement.AddRole(ownerUsername, newOwner);
+            }
+            else
+            {
+                throw new Exception("you don't have access to fire owner in store.");
+            }
+        }
+        internal bool AcceptOwnerAppointment(string authToken, string storeName, string newOwner)
+        {//II.4.4
+            CheckIsVisitorLoggedIn(authToken, "AcceptOwnerAppointment");
+            String errorMessage = null;
+            String acceptor = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(acceptor, storeName, Operation.APPOINT_OWNER))
+                errorMessage = "this visitor is not the entitled to execute this operation.";
+            if (!_VisitorManagement.IsRegistered(newOwner))
+                errorMessage = $"there is no registered user in system with username: {newOwner}. you can only appoint registered user to store role.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("AcceptOwnerAppointment", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            StoreOwner ownerRole = _storeManagement.AcceptOwnerAppointment(storeName, acceptor, newOwner);
+            if (ownerRole != null)
+            {
+                _VisitorManagement.AddRole(newOwner, ownerRole);
+                return true;
+            }
+            return false;
+                
+            //{
+            //    String title = $"You're a new owner at store '{storeName}'!";
+            //    String message = $"your appointment got approved. you now have owwner's permission at this store.";
+            //    _VisitorManagement.SendNotificationMessageToRegistered(newOwner, storeName, title, message);
+            //}
+        }
+        internal void RejectOwnerAppointment(string authToken, string storeName, string newOwner)
+        {
+            CheckIsVisitorLoggedIn(authToken, "RejectOwnerAppointment");
+            String errorMessage = null;
+            String rejector = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(rejector, storeName, Operation.APPOINT_OWNER))
+                errorMessage = "this visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("RejectOwnerAppointment", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            _storeManagement.RejectOwnerAppointment(storeName, rejector, newOwner);
+        }
+        internal Dictionary<string, List<string>> GetStandbyOwnersInStore(string authToken, string storeName)
+        {
+            CheckIsVisitorLoggedIn(authToken, "GetStandbyOwnersInStore");
+            String errorMessage = null;
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+            if (!_storeManagement.isStoreActive(storeName))
+                errorMessage = $"Store '{storeName}' is currently inactive.";
+            if (!_VisitorManagement.CheckAccess(Username, storeName, Operation.APPOINT_OWNER))
+                errorMessage = "this visitor is not the entitled to execute this operation.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("GetStandbyOwnersInStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return _storeManagement.GetStandbyOwnersInStore(storeName); ;
         }
     }
 }

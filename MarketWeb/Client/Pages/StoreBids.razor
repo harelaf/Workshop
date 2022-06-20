@@ -43,7 +43,7 @@
             </tr>
         </thead>
         <tbody>
-            @if(bids != null)
+            @if(bids != null && bids.Count > 0)
             {
                 foreach(BidDTO bid in bids)
                 {
