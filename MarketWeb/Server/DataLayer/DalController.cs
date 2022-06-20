@@ -216,27 +216,29 @@ namespace MarketWeb.Server.DataLayer
 
         internal List<MessageToStoreDAL> GetOpenMessagesToStoreByStoreName(string storeName)
         {
+            List<MessageToStoreDAL> returnMessages = new List<MessageToStoreDAL>();
             List<MessageToStoreDAL> messages = context.MessageToStoreDALs.Where(msg => (msg._storeName == storeName)).ToList();
             foreach (MessageToStoreDAL message in messages)
             {
-                if (message.Status() == StoreMessageStatus.Closed)
+                if (message.Status() != StoreMessageStatus.Closed)
                 {
-                    messages.Remove(message);
+                    returnMessages.Add(message);
                 }
             }
-            return messages;
+            return returnMessages;
         }
         internal List<MessageToStoreDAL> GetRepliedMessagesToStoreByUserName(string userName)
         {
+            List<MessageToStoreDAL> returnMessages = new List<MessageToStoreDAL>();
             List<MessageToStoreDAL> messages = context.MessageToStoreDALs.Where(msg => (msg._senderUsername == userName)).ToList();
             foreach (MessageToStoreDAL message in messages)
             {
-                if (message.Status() == StoreMessageStatus.Open)
+                if (message.Status() != StoreMessageStatus.Open)
                 {
-                    messages.Remove(message);
+                   returnMessages.Add(message);
                 }
             }
-            return messages;
+            return returnMessages;
         }
 
         public void AddStoreManager(String managerUsername, String storeName, string appointer)
