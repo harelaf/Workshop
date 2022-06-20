@@ -27,13 +27,10 @@ namespace MarketWeb.Server.Domain
 
         public Market(NotificationHub notificationHub = null)
         {
-            _storeManagement = new StoreManagement();
-            _VisitorManagement = new VisitorManagement();
-            _history = new History();
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
             _notificationHub = notificationHub;
-            _VisitorManagement.SetNotificationHub(notificationHub);
+           
             _dalTRranslator = new DalTRranslator();
 
             // Calling RestartSystem after creating this object is important.
@@ -69,13 +66,20 @@ namespace MarketWeb.Server.Domain
             }
             PurchaseProcess.GetInstance().AddShipmentMethod("WSEP", shippingHandler);
 
+           
+            // Initialize DB
+            DalController.InitializeContext(datasource, initialcatalog, userid, password);
+            this._dalController = DalController.GetInstance();
+
+            _storeManagement = new StoreManagement();
+            _VisitorManagement = new VisitorManagement();
+            _history = new History();
+            _VisitorManagement.SetNotificationHub(_notificationHub);
+
             // Initialize admin
             _VisitorManagement.InitializeAdmin(adminUsername, adminPassword);
             _VisitorManagement.AdminStart(adminUsername, adminPassword);
 
-            // Initialize DB
-            DalController.InitializeContext(datasource, initialcatalog, userid, password);
-            this._dalController = DalController.GetInstance();
         }
 
         /// add\update basket eof store with item and amount.

@@ -87,27 +87,7 @@ namespace MarketWeb.Service
         }
 
 
-        /// <summary>
-        /// <para> For Req I.1. </para>
-        /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
-        /// </summary>
-        [HttpPost("")]
-        public Response RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
-        {//I.1
-            Response response;
-            try
-            {
-                _logger.Info($"Restart System called with parameters: adminUsername={adminUsername}, adminUsername={adminPassword}, ipShippingService={ipShippingService}, ipPaymentService={ipPaymentService}.");
-                _market.RestartSystem(adminUsername, adminPassword, ipShippingService, ipPaymentService);
-                response = new Response();
-                _logger.Info($"SUCCESSFULY executed Restart System.");
-            }
-            catch (Exception e)
-            {
-                response = new Response(e); _logger.Error(e.Message);
-            }
-            return response;
-        }
+        
 
         /// <summary>
         /// <para> For Req II.1.4. </para>

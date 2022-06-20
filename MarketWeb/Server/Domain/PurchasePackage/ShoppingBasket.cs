@@ -33,10 +33,10 @@ namespace MarketWeb.Server.Domain
             if (isItemInBasket(item))
             {
                 //updateItemQuantity(item, amount + Items[GetItem(item.ItemID)].Amount);
-                updateItemQuantity(item, amount + Items[item].Amount);
+                updateItemQuantity(item, amount + Items[GetItem(item.ItemID)].Amount);
                 return;
             }
-            else _items[item] = new DiscountDetails<AtomicDiscount>(amount);
+            else _items[GetItem(item.ItemID)] = new DiscountDetails<AtomicDiscount>(amount);
             if (!Store().GetPurchasePolicy().checkPolicyConditions(this))
             {
                 _items.Remove(item);
@@ -49,7 +49,7 @@ namespace MarketWeb.Server.Domain
         public virtual int GetAmountOfItem(Item item)
         {
             String errorMessage;
-            int amount = Items[item].Amount;
+            int amount = Items[GetItem(item.ItemID)].Amount;
             foreach(Bid bid in BiddedItems)
             {
                 if(bid.ItemID == item.ItemID)
@@ -68,7 +68,7 @@ namespace MarketWeb.Server.Domain
         public virtual int GetAmountOfItemNoBids(Item item)
         {
             String errorMessage;
-            int amount = Items[item].Amount;
+            int amount =Items[ GetItem(item.ItemID)].Amount;
             if (amount == 0)
             {
                 errorMessage = "item doesn't exist in basket";
@@ -107,7 +107,7 @@ namespace MarketWeb.Server.Domain
             String errorMessage;
             if (isItemInBasket(item))
             {
-                int amount = _items[item].Amount;
+                int amount = _items[GetItem(item._itemID)].Amount;
                 _items.Remove(item);
                 resetDiscounts();
                 Store().GetDiscountPolicy().ApplyDiscounts(this);
@@ -120,28 +120,28 @@ namespace MarketWeb.Server.Domain
 
         public bool isItemInBasket(Item item)
         {
-            //foreach(Item i in Items.Keys)
-            //{
-            //    if(i.ItemID == item.ItemID)
-            //    {
-            //        return true;
-            //    }
-            //}
-            //return false;
-            return _items.ContainsKey(item);
+            foreach(Item i in Items.Keys)
+            {
+                if(i.ItemID == item.ItemID)
+                {
+                    return true;
+                }
+            }
+            return false;
+            //return _items.ContainsKey(item);
         }
 
         public bool updateItemQuantity(Item item, int newQuantity)
         {
             if (isItemInBasket(item))
             {
-                int oldAmount = _items[item].Amount;
-                _items[item].Amount = newQuantity;
+                int oldAmount = _items[GetItem(item.ItemID)].Amount;
+                _items[GetItem(item.ItemID)].Amount = newQuantity;
                 if (!Store().GetPurchasePolicy().checkPolicyConditions(this))
                 {
                     if (oldAmount < newQuantity)
                     {
-                        _items[item].Amount = oldAmount;
+                        _items[GetItem(item.ItemID)].Amount = oldAmount;
                     }
                     throw new ArgumentException("this purchase is not compatible with the store's purchase policy.");
                 }
@@ -283,11 +283,11 @@ namespace MarketWeb.Server.Domain
             return _store;
         }
 
-        private Item GetItem(int itemId, double price)
+        private Item GetItem(int itemId)
         {
             foreach(Item item in Items.Keys)
             {
-                if(item.ItemID == itemId && item._price == price)
+                if(item.ItemID == itemId)
                 {
                     return item;
                 }
