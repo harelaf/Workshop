@@ -102,10 +102,10 @@ namespace MarketWeb.Server.Domain
         public StoreDAL StoreDomainToDal(Store store)
         {
             String storeName = store.StoreName;
-            StockDAL stock = StockDomainToDal(store.Stock);
+            ICollection<StockItemDAL> stock = StockDomainToDal(store.Stock);
             StoreFounderDAL founder = StoreFounderDomainToDal(store.GetFounder());
             StoreState state = store.State;
-            RatingDAL rating = RatingDomainToDal(store.Rating);
+            ICollection<RateDAL> rating = RatingDomainToDal(store.Rating);
             List<MessageToStoreDAL> messagesToStoreDAL = new List<MessageToStoreDAL>();
             foreach (MessageToStore messageToStore in store.MessagesToStore)
             {
@@ -248,7 +248,7 @@ namespace MarketWeb.Server.Domain
             return new ItemDAL(itemDomain.ItemID,RatingDomainToDal(itemDomain.Rating), itemDomain.Name,
                 itemDomain._price, itemDomain.Description, itemDomain.Category);
         }
-        public RatingDAL RatingDomainToDal(Rating ratingDomain)
+        public ICollection<RateDAL> RatingDomainToDal(Rating ratingDomain)
         {
             ICollection<RateDAL> rateSet = new List<RateDAL>();
 
@@ -256,7 +256,7 @@ namespace MarketWeb.Server.Domain
             {
                 rateSet.Add(new RateDAL(rate.Key, rate.Value.Item1, rate.Value.Item2));
             }
-            return new RatingDAL(rateSet);
+            return rateSet;
         }
 
         public Store StoreDalToDomain(StoreDAL storeDAL)
@@ -329,10 +329,10 @@ namespace MarketWeb.Server.Domain
         {
             return new StoreOwner(ownerDAL._appointer, ownerDAL.ConvertToSet(), DalController.GetInstance().GetRoleUsername(ownerDAL.id), DalController.GetInstance().GetRoleStoreName(ownerDAL.id));
         }
-        public Stock StockDalToDomain(StockDAL stockDAL)
+        public Stock StockDalToDomain(ICollection<StockItemDAL> stockDAL)
         {
             Dictionary<Item, int> itemAndAmount = new Dictionary<Item, int>();  
-            foreach (StockItemDAL stockItem in stockDAL._itemAndAmount)
+            foreach (StockItemDAL stockItem in stockDAL)
             {
                 ItemDAL item = DalController.GetInstance().GetItem(stockItem.itemID);
                 itemAndAmount.Add(ItemDalToDomain(item), stockItem.amount);
@@ -346,10 +346,10 @@ namespace MarketWeb.Server.Domain
             item._rating = RatingDalToDomain(itemDal._rating);
             return item;
         }
-        public Rating RatingDalToDomain(RatingDAL ratingDAL)
+        public Rating RatingDalToDomain(ICollection<RateDAL> ratingDAL)
         {
             Dictionary<string, Tuple<int, string>> ratings = new Dictionary<string, Tuple<int, string>>();
-            foreach (RateDAL rate in ratingDAL._ratings)
+            foreach (RateDAL rate in ratingDAL)
             {
                 ratings.Add(rate.username, new Tuple<int, string>(rate.rate, rate.review));
             }

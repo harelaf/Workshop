@@ -12,7 +12,7 @@ namespace MarketWeb.Server.DataLayer
         public int _itemID { get; set; }
         [Required]
         [ForeignKey("RatingDAL")]
-        public RatingDAL _rating { get; set; }
+        public ICollection<RateDAL> _rating { get; set; }
         [Required]
         public String _name { get; set; }
         [Required]
@@ -22,7 +22,7 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public String _category { get; set; }
 
-        public ItemDAL(RatingDAL rating, string name, double price, string description, string category)
+        public ItemDAL(ICollection<RateDAL> rating, string name, double price, string description, string category)
         {
             _rating = rating;
             _name = name;
@@ -31,7 +31,7 @@ namespace MarketWeb.Server.DataLayer
             _category = category;
         }
 
-        public ItemDAL(int itemID, RatingDAL rating, string name, double price, string description, string category)
+        public ItemDAL(int itemID, ICollection<RateDAL> rating, string name, double price, string description, string category)
         {
             _itemID = itemID;
             _rating = rating;
@@ -45,7 +45,7 @@ namespace MarketWeb.Server.DataLayer
 
         public ItemDAL()
         {
-            _rating = new RatingDAL(); 
+            _rating = new List<RateDAL>(); 
         }
     }
 }
