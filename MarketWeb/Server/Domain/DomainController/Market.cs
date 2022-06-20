@@ -22,7 +22,7 @@ namespace MarketWeb.Server.Domain
         private History _history;
         private IDictionary<string, Operation> _opNameToOp;
         private DalTRranslator _dalTRranslator;
-        private DalController _dalController = DalController.GetInstance();
+        private DalController _dalController;
         protected NotificationHub _notificationHub;
 
         public Market(NotificationHub notificationHub = null)
@@ -35,6 +35,7 @@ namespace MarketWeb.Server.Domain
             _notificationHub = notificationHub;
             _VisitorManagement.SetNotificationHub(notificationHub);
             _dalTRranslator = new DalTRranslator();
+
             // Calling RestartSystem after creating this object is important.
         }
 
@@ -42,7 +43,7 @@ namespace MarketWeb.Server.Domain
         /// <para> For Req I.1. </para>
         /// <para> Starts system with the given credentials setting the Visitor as the current admin.</para>
         /// </summary>
-        public async Task RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService)
+        public async Task RestartSystem(String adminUsername, String adminPassword, String ipShippingService, String ipPaymentService, string datasource, string initialcatalog, string userid, string password)
         {//I.1
             // Do starting system stuff with IPs
             WSIEPaymentHandler paymentHandler = new WSIEPaymentHandler(ipPaymentService);
@@ -72,6 +73,9 @@ namespace MarketWeb.Server.Domain
             _VisitorManagement.InitializeAdmin(adminUsername, adminPassword);
             _VisitorManagement.AdminStart(adminUsername, adminPassword);
 
+            // Initialize DB
+            DalController.InitializeContext(datasource, initialcatalog, userid, password);
+            this._dalController = DalController.GetInstance();
         }
 
         /// add\update basket eof store with item and amount.

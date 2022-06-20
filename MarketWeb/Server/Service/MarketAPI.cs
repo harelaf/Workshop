@@ -46,7 +46,7 @@ namespace MarketWeb.Service
                 try
                 {
                     Dictionary<String, String> configurations = new ConfigurationFileParser().ParseConfigurationFile();
-                    _market.RestartSystem(configurations["admin_username"], configurations["admin_password"], configurations["external_shipping"], configurations["external_payment"]).Wait();
+                    _market.RestartSystem(configurations["admin_username"], configurations["admin_password"], configurations["external_shipping"], configurations["external_payment"], configurations["db_ip"], configurations["db_initial_catalog"], configurations["db_username"], configurations["db_password"]).Wait();
                 }
                 catch (Exception e)
                 {

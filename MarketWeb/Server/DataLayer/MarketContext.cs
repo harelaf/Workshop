@@ -17,12 +17,25 @@ namespace MarketWeb.Server.DataLayer
         public DbSet<StoreManagerDAL> storeManagerDALs { get; set; }
         public DbSet<StoreOwnerDAL> storeOwnerDALs { get; set; }
         public DbSet<ItemDAL> itemDALs { get; set; }
-        public string connectionStr { get; set; } = "Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
+        public string datasource { get; set; } = "";
+        public string initialcatalog { get; set; } = "";
+        public string userid { get; set; } = "";
+        public string password { get; set; } = "";
+        //public string connectionStr { get; set; } = $"Data Source={datasource};Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
+
+        public MarketContext(string _datasource, string _initialcatalog, string _userid, string _password)
+        {
+            datasource = _datasource;
+            initialcatalog = _initialcatalog;
+            userid = _userid;
+            password = _password;
+        }
 
         // The following configures EF to create a Sqlite database file in the
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
+            string connectionStr = $"Data Source={datasource};Initial Catalog={initialcatalog};User Id={userid};Password={password}";
             options.UseSqlServer(connectionStr);
         }
         protected override void OnModelCreating(ModelBuilder builder)

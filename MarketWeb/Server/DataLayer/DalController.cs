@@ -10,6 +10,10 @@ namespace MarketWeb.Server.DataLayer
     {
         MarketContext context;
         private static DalController instance = null;
+        private static string datasource;
+        private static string initialcatalog;
+        private static string userid;
+        private static string password;
         public static DalController GetInstance()
         {
             if (instance == null)
@@ -18,7 +22,14 @@ namespace MarketWeb.Server.DataLayer
         }
         private DalController()
         {
-            context = new MarketContext();
+            context = new MarketContext(datasource, initialcatalog, userid, password);
+        }
+        public static void InitializeContext(string _datasource, string _initialcatalog, string _userid, string _password)
+        {
+            datasource = _datasource;
+            initialcatalog = _initialcatalog;
+            userid = _userid;
+            password = _password;
         }
         public List<StoreDAL> GetAllActiveStores() 
         {
