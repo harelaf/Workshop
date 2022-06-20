@@ -26,12 +26,12 @@ namespace MarketWeb.Server.DataLayer
         [ForeignKey("DiscountPolicyDAL")]
         public DiscountPolicyDAL _discountPolicy { get; set; }
 
-        public StoreDAL(string storeName, StockDAL stock, List<MessageToStoreDAL> messagesToStore, RatingDAL rating, List<StoreManagerDAL> managers, List<StoreOwnerDAL> owners, StoreFounderDAL founder, StoreState state, PurchasePolicyDAL purchasePolicy, DiscountPolicyDAL discountPolicy)
+        public StoreDAL(string storeName, ICollection<StockItemDAL> stock, List<MessageToStoreDAL> messagesToStore, ICollection<RateDAL> rating, List<StoreManagerDAL> managers, List<StoreOwnerDAL> owners, StoreFounderDAL founder, StoreState state, PurchasePolicyDAL purchasePolicy, DiscountPolicyDAL discountPolicy)
         {
             _storeName = storeName;
             _stock = stock;
             //_messagesToStore = messagesToStore;
-            _rating = rating;
+            _ratings = rating;
             //_managers = managers;
             //_owners = owners;
             //_founder = founder;

@@ -32,11 +32,8 @@ namespace MarketWeb.Server.DataLayer
             //builder.Entity<StoreDAL>().HasOne(e => e._discountPolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._purchasePolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._rating).WithOne().OnDelete(DeleteBehavior.ClientCascade);
-            builder.Entity<StockDAL>().HasMany(e => e._itemAndAmount).WithOne().OnDelete(DeleteBehavior.ClientCascade);
-
             builder.Entity<ItemDAL>().HasOne(x => x._rating).WithOne().OnDelete(DeleteBehavior.Cascade);
             builder.Entity<PurchaseDetailsDAL>().HasMany(x => x.discountList).WithOne().OnDelete(DeleteBehavior.ClientCascade);
-            builder.Entity<RatingDAL>().HasMany(x => x._ratings).WithOne().OnDelete(DeleteBehavior.Cascade);
 
 
             builder.Entity<ComplaintDAL>();
