@@ -22,7 +22,7 @@ namespace MarketWeb.Server.DataLayer
         }
         public List<StoreDAL> GetAllActiveStores() 
         {
-            List<StoreDAL> stores= context.StoreDALs.Include(x => x._stock).ThenInclude(s => s._itemAndAmount)
+            List<StoreDAL> stores= context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
                                                     .Where(store => store._state == StoreState.Active).ToList();
             if (stores == null)
@@ -74,14 +74,14 @@ namespace MarketWeb.Server.DataLayer
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
             StoreDAL storeDAL = context.StoreDALs/*.AsNoTracking()*/
-                                                    .Include(x => x._stock).ThenInclude(s => s._itemAndAmount)
+                                                    .Include(x => x._stock)
                                                     .Include(x => x._rating)
                                                     .Include(x => x._purchasePolicyJSON)
                                                     .Include(x => x._discountPolicyJSON)
                                                     .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
+            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock;
             ItemDAL itemToAdd = null;
             foreach (StockItemDAL stockItem in itemsNamunt)
             {
@@ -127,7 +127,7 @@ namespace MarketWeb.Server.DataLayer
                                                     .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
+            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock;
             foreach (StockItemDAL stockItem in itemsNamunt)
             {
                 if (stockItem.itemID == itemID)
@@ -159,7 +159,7 @@ namespace MarketWeb.Server.DataLayer
                                                     .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock._itemAndAmount;
+            ICollection<StockItemDAL> itemsNamunt = storeDAL._stock;
             foreach (StockItemDAL stockItem in itemsNamunt)
             {
                 if (stockItem.itemID == itemID)
@@ -200,10 +200,10 @@ namespace MarketWeb.Server.DataLayer
         public void OpenNewStore(String storeName, string founderName)
         {
             StoreDAL store = new StoreDAL(storeName, StoreState.Active);
-            store._stock = new StockDAL();
-            store._rating = new RatingDAL();
-            store._purchasePolicyJSON = "";
-            store._discountPolicyJSON = "";
+            store._stock = new List<StockItemDAL>();
+            store._rating = new List<RateDAL>();
+            store._purchasePolicy = new PurchasePolicyDAL();
+            store._discountPolicy = new DiscountPolicyDAL();
             context.StoreDALs.Add(store);
             StoreFounderDAL founder = new StoreFounderDAL();
             founder._username = founderName;
@@ -214,27 +214,29 @@ namespace MarketWeb.Server.DataLayer
 
         internal List<MessageToStoreDAL> GetOpenMessagesToStoreByStoreName(string storeName)
         {
+            List<MessageToStoreDAL> returnMessages = new List<MessageToStoreDAL>();
             List<MessageToStoreDAL> messages = context.MessageToStoreDALs.Where(msg => (msg._storeName == storeName)).ToList();
             foreach (MessageToStoreDAL message in messages)
             {
-                if (message.Status() == StoreMessageStatus.Closed)
+                if (message.Status() != StoreMessageStatus.Closed)
                 {
-                    messages.Remove(message);
+                    returnMessages.Add(message);
                 }
             }
-            return messages;
+            return returnMessages;
         }
         internal List<MessageToStoreDAL> GetRepliedMessagesToStoreByUserName(string userName)
         {
+            List<MessageToStoreDAL> returnMessages = new List<MessageToStoreDAL>();
             List<MessageToStoreDAL> messages = context.MessageToStoreDALs.Where(msg => (msg._senderUsername == userName)).ToList();
             foreach (MessageToStoreDAL message in messages)
             {
-                if (message.Status() == StoreMessageStatus.Open)
+                if (message.Status() != StoreMessageStatus.Open)
                 {
-                    messages.Remove(message);
+                   returnMessages.Add(message);
                 }
             }
-            return messages;
+            return returnMessages;
         }
 
         public void AddStoreManager(String managerUsername, String storeName, string appointer)
@@ -286,12 +288,12 @@ namespace MarketWeb.Server.DataLayer
                                                     .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            ItemDAL item = new ItemDAL(new RatingDAL(new List<RateDAL>()), name, price,
+            ItemDAL item = new ItemDAL(new List<RateDAL>(), name, price,
                 description, category);
             context.itemDALs.Add(item);
             context.SaveChanges();
             item = context.itemDALs.OrderBy(x => x._itemID).Last();
-            storeDAL._stock._itemAndAmount.Add(new StockItemDAL(item._itemID, quantity));
+            storeDAL._stock.Add(new StockItemDAL(item._itemID, quantity));
             context.SaveChanges();
             return item._itemID;
         }
@@ -304,11 +306,11 @@ namespace MarketWeb.Server.DataLayer
                                                     .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
+            foreach (StockItemDAL stockItem in storeDAL._stock)
             {
                 if(stockItem.itemID == itemID)
                 {
-                    storeDAL._stock._itemAndAmount.Remove(stockItem);
+                    storeDAL._stock.Remove(stockItem);
                     break;
                 }
             }
@@ -323,7 +325,7 @@ namespace MarketWeb.Server.DataLayer
                                                     .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
-            foreach (StockItemDAL stockItem in storeDAL._stock._itemAndAmount)
+            foreach (StockItemDAL stockItem in storeDAL._stock)
             {
                 if (stockItem.itemID == itemID)
                 {
@@ -373,7 +375,7 @@ namespace MarketWeb.Server.DataLayer
 
         public void RateItem(int itemID, String storeName, int rating, String review, string userName)
         {
-            context.itemDALs.Find(itemID)._rating._ratings.Add(new RateDAL(userName, rating, review));
+            context.itemDALs.Find(itemID)._rating.Add(new RateDAL(userName, rating, review));
             context.SaveChanges();
         }
         public void RateStore(String storeName, int rating, String review, string userName)
@@ -386,7 +388,7 @@ namespace MarketWeb.Server.DataLayer
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             RateDAL rate = new RateDAL(userName, rating, review);
-            storeDAL._rating._ratings.Add(rate);
+            storeDAL._rating.Add(rate);
             context.SaveChanges();
         }
         public StoreDAL GetStoreInformation(String storeName)

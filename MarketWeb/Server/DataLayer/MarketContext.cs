@@ -28,15 +28,12 @@ namespace MarketWeb.Server.DataLayer
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<RegisteredDAL>().HasOne(e => e._cart).WithOne().OnDelete(DeleteBehavior.ClientCascade);
-            builder.Entity<StoreDAL>().HasOne(e => e._stock).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            builder.Entity<StoreDAL>().HasMany(e => e._stock).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._discountPolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._purchasePolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._rating).WithOne().OnDelete(DeleteBehavior.ClientCascade);
-            builder.Entity<StockDAL>().HasMany(e => e._itemAndAmount).WithOne().OnDelete(DeleteBehavior.ClientCascade);
-
-            builder.Entity<ItemDAL>().HasOne(x => x._rating).WithOne().OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<ItemDAL>().HasMany(x => x._rating).WithOne().OnDelete(DeleteBehavior.Cascade);
             builder.Entity<PurchaseDetailsDAL>().HasMany(x => x.discountList).WithOne().OnDelete(DeleteBehavior.ClientCascade);
-            builder.Entity<RatingDAL>().HasMany(x => x._ratings).WithOne().OnDelete(DeleteBehavior.Cascade);
 
 
             builder.Entity<ComplaintDAL>();

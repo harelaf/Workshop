@@ -11,7 +11,6 @@ namespace MarketWeb.Server.DataLayer
         [ForeignKey("ItemDAL")]
         public int itemID { get; set; }
         public int amount { get; set; }
-
         public StockItemDAL(int itemID, int amount)
         {
             this.itemID = itemID;
