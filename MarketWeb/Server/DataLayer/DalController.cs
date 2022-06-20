@@ -203,8 +203,8 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL store = new StoreDAL(storeName, StoreState.Active);
             store._stock = new List<StockItemDAL>();
             store._rating = new List<RateDAL>();
-            store._purchasePolicy = new PurchasePolicyDAL();
-            store._discountPolicy = new DiscountPolicyDAL();
+            store._purchasePolicyJSON = "";
+            store._discountPolicyJSON = "";
             context.StoreDALs.Add(store);
             StoreFounderDAL founder = new StoreFounderDAL();
             founder._username = founderName;
@@ -349,6 +349,18 @@ namespace MarketWeb.Server.DataLayer
         public void EditItemDescription(String storeName, int itemID, String newDescription)
         {
             context.itemDALs.Find(itemID)._description = newDescription;
+            context.SaveChanges();
+        }
+
+        public void EditStoreDiscountPolicy(string storeName, string newDiscountPolicyJSON)
+        {
+            context.StoreDALs.Find(storeName)._discountPolicyJSON = newDiscountPolicyJSON;
+            context.SaveChanges();
+        }
+
+        public void EditStorePurchasePolicy(string storeName, string newPurchasePolicyJSON)
+        {
+            context.StoreDALs.Find(storeName)._purchasePolicyJSON = newPurchasePolicyJSON;
             context.SaveChanges();
         }
 
@@ -645,7 +657,8 @@ namespace MarketWeb.Server.DataLayer
         public int SendNotification(string storeName, string usernameReciever, String title, String message)
         {
             RegisteredDAL reg = context.RegisteredDALs
-.Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).Include(x => x._adminMessages)
+                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                            .Include(x => x._adminMessages)
                                             .Include(x => x._notifications).FirstOrDefault(s => s._username == usernameReciever); ;
             if (usernameReciever == null)
                 throw new Exception($"there is no such user with uaername: {usernameReciever}");
@@ -705,7 +718,8 @@ namespace MarketWeb.Server.DataLayer
         public String GetReceiverOfNotificationMessage(int mid)
         {
             List<RegisteredDAL> regs = context.RegisteredDALs
-.Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).Include(x => x._adminMessages)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).ToList();
             foreach (RegisteredDAL registered in regs)
             {

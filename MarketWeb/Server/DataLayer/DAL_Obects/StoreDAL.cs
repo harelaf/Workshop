@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using MarketWeb.Shared;
+using Newtonsoft.Json;
 
 namespace MarketWeb.Server.DataLayer
 {
@@ -18,22 +19,39 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public ICollection<StockItemDAL> _stock { get; set; }
 
+        [ForeignKey("RatingDAL")]
+        [Required]
+        public string _discountPolicyJSON { get; set; }
+        [Required]
+        public string _purchasePolicyJSON { get; set; }
+        //public List<StoreManagerDAL> _managers { get; set; }
+        //public List<StoreOwnerDAL> _owners { get; set; }
+        //public StoreFounderDAL _founder { get; set; }
         public StoreState _state { get; set; }
-        [Required]
-        [ForeignKey("PurchasePolicyDAL")]
-        public PurchasePolicyDAL _purchasePolicy { get; set; }
-        [Required]
-        [ForeignKey("DiscountPolicyDAL")]
-        public DiscountPolicyDAL _discountPolicy { get; set; }
+        //[Required]
+        //[ForeignKey("PurchasePolicyDAL")]
+        //public PurchasePolicyDAL _purchasePolicy { get; set; }
+        //[Required]
+        //[ForeignKey("DiscountPolicyDAL")]
+        //public DiscountPolicyDAL _discountPolicy { get; set; }
 
-        public StoreDAL(string storeName, ICollection<StockItemDAL> stock, List<MessageToStoreDAL> messagesToStore, ICollection<RateDAL> rating, List<StoreManagerDAL> managers, List<StoreOwnerDAL> owners, StoreFounderDAL founder, StoreState state, PurchasePolicyDAL purchasePolicy, DiscountPolicyDAL discountPolicy)
+        public StoreDAL(string storeName, 
+                        ICollection<StockItemDAL> stock, 
+                        List<MessageToStoreDAL> messagesToStore, 
+                        ICollection<RateDAL> rating, 
+                        List<StoreManagerDAL> managers, 
+                        List<StoreOwnerDAL> owners, 
+                        StoreFounderDAL founder, 
+                        StoreState state, 
+                        string purchasePolicyJSON, 
+                        string discountPolicyJSON)
         {
             _storeName = storeName;
             _stock = stock;
             _rating = rating;
             _state = state;
-            _purchasePolicy = purchasePolicy;
-            _discountPolicy = discountPolicy;
+            _purchasePolicyJSON = purchasePolicyJSON;
+            _discountPolicyJSON = discountPolicyJSON;
         }
 
         public StoreDAL(string storeName, StoreState state)
@@ -42,8 +60,11 @@ namespace MarketWeb.Server.DataLayer
             _state = state;
             _stock = new List<StockItemDAL>();
             _rating = new List<RateDAL>();
-            _purchasePolicy = new PurchasePolicyDAL(new List<ConditionDAL>());
-            _discountPolicy = new DiscountPolicyDAL(new List<DiscountDAL>());
+            //_managers = new List<StoreManagerDAL>();
+            //_owners = new List<StoreOwnerDAL>();
+            //_messagesToStore = new List<MessageToStoreDAL>();
+            _purchasePolicyJSON = "";
+            _discountPolicyJSON = "";
         }
 
         public StoreDAL()
