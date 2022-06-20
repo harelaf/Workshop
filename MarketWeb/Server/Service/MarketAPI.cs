@@ -1439,10 +1439,11 @@ namespace MarketWeb.Service
             Response response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Bid Item In Store called with parameters: authToken={authToken}, storeName={storeName}, itemId={itemId}, amount={amount}, newPrice={newPrice}.");
                 _market.BidItemInStore(authToken, storeName, itemId, amount, newPrice);
                 response = new Response();
+                _logger.Info($"SUCCESSFULY executed Bid Item In Store.");
             }
             catch (Exception e)
             {
@@ -1457,8 +1458,10 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Accept Bid called with parameters: authToken={authToken}, storeName={storeName}, itemId={itemId}, bidder={bidder}.");
                 _market.AcceptBid(authToken, storeName, itemId, bidder);
                 response = new Response();
+                _logger.Info($"SUCCESSFULY executed Accept Bid.");
             }
             catch (Exception e)
             {
@@ -1473,8 +1476,10 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Counter-Offer Bid called with parameters: authToken={authToken}, storeName={storeName}, itemId={itemId}, bidder={bidder}, counterOffer={counterOffer}.");
                 _market.CounterOfferBid(authToken, storeName, itemId, bidder, counterOffer);
                 response = new Response();
+                _logger.Info($"SUCCESSFULY executed CounterOffer Bid.");
             }
             catch (Exception e)
             {
@@ -1489,8 +1494,10 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Reject Bid called with parameters: authToken={authToken}, storeName={storeName}, itemId={itemId}, bidder={bidder}.");
                 _market.RejectBid(authToken, storeName, itemId, bidder);
                 response = new Response();
+                _logger.Info($"SUCCESSFULY executed Reject Bid.");
             }
             catch (Exception e)
             {
@@ -1520,6 +1527,7 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Get Bids For Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 List<Bid> bids = _market.GetBidsForStore(authToken, storeName);
                 List<BidDTO> dtoBids = new List<BidDTO>();
                 DTOtranslator translator = new DTOtranslator();
@@ -1528,6 +1536,7 @@ namespace MarketWeb.Service
                     dtoBids.Add(translator.toDTO(bid, _market.GetItem(authToken, storeName, bid.ItemID)._price));
                 }
                 response = new Response<List<BidDTO>>(dtoBids);
+                _logger.Info($"SUCCESSFULY executed Get Bids For Store.");
             }
             catch (Exception e)
             {
@@ -1542,8 +1551,10 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Add Acceted Bid To Cart called with parameters: authToken={authToken}, storeName={storeName}, amount={amount}.");
                 _market.AddAcceptedBidToCart(authToken, itemId, storeName, amount);
                 response = new Response();
+                _logger.Info($"SUCCESSFULY executed Add Accepted Bid To Cart.");
             }
             catch (Exception e)
             {
@@ -1558,12 +1569,14 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Get Visitor Bids At Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 List<Bid> bids = _market.GetVisitorBidsAtStore(authToken, storeName);
                 List<BidDTO> dtoBids = new List<BidDTO>();
                 DTOtranslator translator = new DTOtranslator();
                 foreach (Bid bid in bids)
                     dtoBids.Add(translator.toDTO(bid, _market.GetItem(authToken, storeName, bid.ItemID)._price));
                 response = new Response<List<BidDTO>>(dtoBids);
+                _logger.Info($"SUCCESSFULY executed Get Visitor Bids At Store.");
             }
             catch (Exception e)
             {
@@ -1576,9 +1589,8 @@ namespace MarketWeb.Service
             Response response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
-                _logger.Info($"Add Store Owner called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
+                _logger.Info($"Add Store Owner For Test Purposes Only called with parameters: authToken={authToken}, ownerUsername={ownerUsername}, storeName={storeName}.");
                 _market.AddStoreOwnerForTestPurposes(authToken, ownerUsername, storeName);
                 response = new Response();
                 _logger.Info($"SUCCESSFULY executed Add Store Owner.");
@@ -1595,7 +1607,6 @@ namespace MarketWeb.Service
             Response<bool> response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Accept Store Owner called with parameters: authToken={authToken}, storeName={storeName}, ownerUsername={newOwner}.");
                 bool res = _market.AcceptOwnerAppointment(authToken, storeName, newOwner);
@@ -1615,8 +1626,10 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Reject Owner Appointment called with parameters: authToken={authToken}, storeName={storeName}, ownerUsername={newOwner}.");
                 _market.RejectOwnerAppointment(authToken, storeName, newOwner);
                 response = new Response();
+                _logger.Info($"SUCCESSFULY executed Reject Owner Appointment.");
             }
             catch (Exception e)
             {
@@ -1646,8 +1659,10 @@ namespace MarketWeb.Service
             try
             {
                 String authToken = parseAutherization(Authorization);
+                _logger.Info($"Get Standby Owners In Store called with parameters: authToken={authToken}, storeName={storeName}.");
                 Dictionary<string, List<string>> standbyOwners = _market.GetStandbyOwnersInStore(authToken, storeName);
                 response = new Response<Dictionary<string, List<string>>>(standbyOwners);
+                _logger.Info($"SUCCESSFULY executed Get Standby Owners In Store.");
             }
             catch (Exception e)
             {
