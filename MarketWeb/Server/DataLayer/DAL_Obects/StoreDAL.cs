@@ -14,15 +14,10 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public String _storeName { get; set; }
         [Required]
-        [ForeignKey("StockDAL")]
-        public StockDAL _stock { get; set; }
-        //public List<MessageToStoreDAL> _messagesToStore { get; set; }
+        public ICollection<RateDAL> _ratings { get; set; }
         [Required]
-        [ForeignKey("RatingDAL")]
-        public RatingDAL _rating { get; set; }
-        //public List<StoreManagerDAL> _managers { get; set; }
-        //public List<StoreOwnerDAL> _owners { get; set; }
-        //public StoreFounderDAL _founder { get; set; }
+        public ICollection<StockItemDAL> _stock { get; set; }
+
         public StoreState _state { get; set; }
         [Required]
         [ForeignKey("PurchasePolicyDAL")]
