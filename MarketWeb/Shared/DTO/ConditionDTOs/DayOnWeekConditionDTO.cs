@@ -12,9 +12,9 @@ namespace MarketWeb.Shared.DTO
         public String DayOnWeek => _dayOnWeek.ToString();
         public bool Negative => _negative;
         public int ObjType { get => 1; set { return; } }
-        public DayOnWeekConditionDTO(String day, bool negative)
+        public DayOnWeekConditionDTO(String dayOnWeek, bool negative)
         {
-            _dayOnWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), day);
+            _dayOnWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), dayOnWeek);
             _negative = negative;
         }
     }

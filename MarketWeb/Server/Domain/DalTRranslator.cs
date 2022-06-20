@@ -122,24 +122,31 @@ namespace MarketWeb.Server.Domain
             {
                 managers.Add(StoreManagerDomainToDal(manager));
             }
-            return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, PrchasePolicyDomainToDal(store.GetPurchasePolicy()), DiscountPolicyDomainToDal(store.GetDiscountPolicy()));
+            return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, 
+                                                                        PrchasePolicyDomainToDal(store.GetPurchasePolicy()), 
+                                                                        DiscountPolicyDomainToDal(store.GetDiscountPolicy()));
         }
 
-        private DiscountPolicyDAL DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
+        private String DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
         {
-            List<DiscountDAL> disList = new List<DiscountDAL>();
-            foreach (Discount dis in discountPolicy.Discounts.DiscountList)
-                disList.Add(DiscountDomainToDal(dis));
-            return new DiscountPolicyDAL(disList);
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(discountPolicy, settings);
         }
 
-        private PurchasePolicyDAL PrchasePolicyDomainToDal(PurchasePolicy purchasePolicy)
+        private String PrchasePolicyDomainToDal(PurchasePolicy purchasePolicy)
         {
-            List<ConditionDAL> conditions = new List<ConditionDAL>();
-            foreach(Condition cond in purchasePolicy.Conditions.ConditionList)
-                conditions.Add(ConditionDomainToDal(cond));
-            PurchasePolicyDAL ppDal = new PurchasePolicyDAL(conditions);
-            return ppDal;
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(purchasePolicy, settings);
         }
 
         private ConditionDAL ConditionDomainToDal(Condition cond)
@@ -263,8 +270,8 @@ namespace MarketWeb.Server.Domain
         public Store StoreDalToDomain(StoreDAL storeDAL)
         {
             Stock stock = StockDalToDomain(storeDAL._stock);
-            PurchasePolicy purchasePolicy = PurchasePolicyDalToDomain(storeDAL._purchasePolicy);
-            DiscountPolicy discountPolicy = DiscountPolicyDalToDomain(storeDAL._discountPolicy);
+            PurchasePolicy purchasePolicy = PurchasePolicyDalToDomain(storeDAL._purchasePolicyJSON);
+            DiscountPolicy discountPolicy = DiscountPolicyDalToDomain(storeDAL._discountPolicyJSON);
             StoreFounderDAL founderDAL = DalController.GetInstance().GetStoreFounder(storeDAL._storeName);
             StoreFounder founder = StoreFounderDalToDomain(founderDAL);
             String storeName = storeDAL._storeName;
@@ -293,24 +300,32 @@ namespace MarketWeb.Server.Domain
                 , managers, owners, founder,storeName ,state, new Dictionary<string, List<Bid>>());// bid!!!!!!!!!!!!!!!!!!!!
         }
 
-        private DiscountPolicy DiscountPolicyDalToDomain(DiscountPolicyDAL discountPolicy)
+        private DiscountPolicy DiscountPolicyDalToDomain(string discountPolicyJSON)
         {
-            DiscountPolicy policy = new DiscountPolicy();
-            foreach (DiscountDAL discount in discountPolicy._discounts)
+            if(discountPolicyJSON == null || discountPolicyJSON == "")
             {
-                policy.AddDiscount(DiscountDalToDomain(discount));
+                return new DiscountPolicy();
             }
-            return policy;
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            return JsonConvert.DeserializeObject<DiscountPolicy>(discountPolicyJSON, settings);
         }
 
-        private PurchasePolicy PurchasePolicyDalToDomain(PurchasePolicyDAL purchasePolicy)
+        private PurchasePolicy PurchasePolicyDalToDomain(string purchasePolicyJSON)
         {
-            PurchasePolicy policy = new PurchasePolicy();
-            foreach (ConditionDAL condition in purchasePolicy.conditions)
+            if (purchasePolicyJSON == null || purchasePolicyJSON == "")
             {
-                policy.AddCondition(ConditionDalToDomain(condition));
+                return new PurchasePolicy();
             }
-            return policy;
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            return JsonConvert.DeserializeObject<PurchasePolicy>(purchasePolicyJSON, settings);
         }
 
         public MessageToStore MessageToStoreDALToDomain(MessageToStoreDAL msg)

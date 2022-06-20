@@ -1,0 +1,8 @@
+admin_username admin
+admin_password admin
+db_ip 34.159.230.231
+db_initial_catalog marketdb
+db_username sqlserver
+db_password WorkshopSadna20a
+external_shipping https://cs-bgu-wsep.herokuapp.com/
+external_payment https://cs-bgu-wsep.herokuapp.com/

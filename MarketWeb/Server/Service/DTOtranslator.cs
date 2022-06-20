@@ -222,6 +222,25 @@ namespace MarketWeb.Service
             //    return toDTO((PlusDiscount)dis);
             else throw new NotImplementedException($"need an implementation for {type} discount type.");
         }
+        public IDiscountDTO discountToDTO2(Discount dis)
+        {
+            if (dis == null)
+                return null;
+            Type type = dis.GetType();
+            if (type.Equals(typeof(AllProductsDiscount)))
+                return toDTO((AllProductsDiscount)dis);
+            if (type.Equals(typeof(CategoryDiscount)))
+                return toDTO((CategoryDiscount)dis);
+            if (type.Equals(typeof(ItemDiscount)))
+                return toDTO((ItemDiscount)dis);
+            if (type.Equals(typeof(NumericDiscount)))
+                return toDTO((NumericDiscount)dis);
+            if (type.Equals(typeof(MaxDiscount)))
+                return toDTO((MaxDiscount)dis);
+            if (type.Equals(typeof(PlusDiscount)))
+                return toDTO((PlusDiscount)dis);
+            else throw new NotImplementedException($"need an implementation for {type} discount type.");
+        }
         public Discount translate(AllProductsDiscountDTO discount_dto)
         {
             double percentage = discount_dto.Percentage;
@@ -388,9 +407,22 @@ namespace MarketWeb.Service
         {
             return new NumericDiscountDTO(discount.PriceToSubtract, conditionToDTO(discount.Condition), discount.Expiration);
         }
-        public MaxDiscountDTO toDTO(MaxDiscount dis)
+        public MaxDiscountDTO toDTO(MaxDiscount discount)
         {
-            throw new NotImplementedException();
+            List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
+            IConditionDTO conditionDTOs = conditionToDTO(discount.Condition);
+            foreach (Discount dis in discount.DiscountList)
+                discountDTOs.Add(discountToDTO2(dis));
+            return new MaxDiscountDTO(discountDTOs, conditionDTOs);
+        }
+        // to be implemented when needed
+        public PlusDiscountDTO toDTO(PlusDiscount discount)
+        {
+            List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
+            IConditionDTO conditionDTOs = conditionToDTO(discount.Condition);
+            foreach (Discount dis in discount.DiscountList)
+                discountDTOs.Add(discountToDTO2(dis));
+            return new PlusDiscountDTO(discountDTOs, conditionDTOs);
         }
         public ShoppingCartDTO toDTO(ShoppingCart shoppingCart)
         {
@@ -439,7 +471,7 @@ namespace MarketWeb.Service
         public StoreManagerDTO toDTO(StoreManager storeManager)
         {
             return new StoreManagerDTO(
-                new HashSet<Operation>(storeManager.operations),
+                storeManager.operations,
                 storeManager.Username,
                 storeManager.StoreName,
                 storeManager.Appointer);
@@ -448,8 +480,8 @@ namespace MarketWeb.Service
         {
             return new StoreOwnerDTO(
                 storeOwner.operations,
-                storeOwner.StoreName,
                 storeOwner.Username,
+                storeOwner.StoreName,
                 storeOwner.Appointer);
         }
         public PurchasePolicyDTO toDTO(PurchasePolicy policy)
@@ -460,15 +492,7 @@ namespace MarketWeb.Service
         {
             return new DiscountPolicyDTO(toDTO(policy.Discounts));
         }
-        // to be implemented when needed
-        public PlusDiscountDTO toDTO(PlusDiscount discounts)
-        {
-            //List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
-            //List<IConditionDTO> conditionDTOs = new List<IConditionDTO>();
-            //foreach (Discount dis in discounts.DiscountList)
-            //    discountDTOs.Add(toDTO(dis));
-            return null;
-        }
+        
         public BidDTO toDTO(Bid bid, double originalPrice)
         {
             return new BidDTO(
@@ -479,7 +503,8 @@ namespace MarketWeb.Service
                 bid.CounterOffer,
                 bid.Acceptors,
                 originalPrice,
-                bid.AccepttedByAll);
+                bid.AcceptedByAll
+                );
         }
     }
 }

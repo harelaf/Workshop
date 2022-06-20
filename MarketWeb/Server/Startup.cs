@@ -87,7 +87,6 @@ namespace MarketWeb.Server
             services.AddSingleton<MarketAPI>();
             services.AddSingleton<NotificationHub>();
             services.AddSingleton<Market>();
-            services.AddScoped<MarketContext>();
             services.AddResponseCompression(opts =>
             {
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(

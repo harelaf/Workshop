@@ -19,13 +19,13 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public ComposedDiscount(List<Discount> discounts, Condition condition) : base(condition)
         {
-            lock(_discountList){
+            lock(DiscountList){
                 _discountList = discounts;
             }
         }
         public ComposedDiscount(List<Discount> discounts) : base()
         {
-            lock (_discountList)
+            lock (DiscountList)
             {
                 _discountList = discounts;
             }

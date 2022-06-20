@@ -48,7 +48,7 @@ namespace AcceptanceTest
             String ownerUsername = "new owner";
             String store_owner_token = (marketAPI.EnterSystem()).Value;// owner
             marketAPI.Register(store_owner_token, ownerUsername, "123456789", dob); 
-            marketAPI.AddStoreOwner(store_founder_token, ownerUsername, storeName);
+            marketAPI.AddStoreOwnerForTestPurposes(store_founder_token, ownerUsername, storeName);
             String store_manager_token = (marketAPI.EnterSystem()).Value;// manager
             marketAPI.Register(store_manager_token, managerUsername, "123456789", dob);
             Boolean res1 = false, res2 = false;
@@ -95,8 +95,8 @@ namespace AcceptanceTest
             store_owner_token1 = marketAPI.Login(store_owner_token1, ownerUsername1, password).Value;
             store_owner_token2 = marketAPI.Login(store_owner_token2, ownerUsername2, password).Value;
             store_manager_token3 = marketAPI.Login(store_manager_token3, managerUsername3, password).Value;
-            marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
-            marketAPI.AddStoreOwner(store_owner_token1, ownerUsername2, storeName);
+            marketAPI.AddStoreOwnerForTestPurposes(store_founder_token, ownerUsername1, storeName);
+            marketAPI.AddStoreOwnerForTestPurposes(store_owner_token1, ownerUsername2, storeName);
 
             //act
             Response response1 = marketAPI.AddStoreManager(store_owner_token2, store_founder_name, storeName);
@@ -136,8 +136,8 @@ namespace AcceptanceTest
             List<StoreManagerDTO> lst_m;
             List<StoreOwnerDTO> lst_o;
             //act
-            Response response1 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername1, storeName);
-            Response response2 = marketAPI.AddStoreOwner(store_founder_token, ownerUsername2, storeName);
+            Response response1 = marketAPI.AddStoreOwnerForTestPurposes(store_founder_token, ownerUsername1, storeName);
+            Response response2 = marketAPI.AddStoreOwnerForTestPurposes(store_founder_token, ownerUsername2, storeName);
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
             
             lst_m = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;

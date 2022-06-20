@@ -103,7 +103,7 @@ namespace AcceptanceTest
             policy = $"ItemTotalAmountInBasketFrom_{itemName}_{4}";
             res1 = marketAPI.AddStorePurchasePolicy(store_founder_token, storeName, policy);
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
-            policy = $"(AND DayOfWeek_{((int)DateTime.Now.Day + 1) % 7} Hour_{(DateTime.Now.Hour + 23) % 24}_{(DateTime.Now.Hour + 1) % 24})";
+            policy = $"(AND DayOfWeek_{((int)DateTime.Now.DayOfWeek + 1) % 7} Hour_{(DateTime.Now.Hour + 23) % 24}_{(DateTime.Now.Hour + 1) % 24})";
             res1 = marketAPI.AddStorePurchasePolicy(store_founder_token, storeName, policy);
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
             policy = $"(OR TotalBasketPriceTo_{10})"; // False

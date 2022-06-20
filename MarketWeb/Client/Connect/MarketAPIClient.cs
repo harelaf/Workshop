@@ -33,7 +33,11 @@ namespace MarketWeb.Client.Connect
         public Task<Response> PurchaseMyCart(String address, String city, String country, String zip, String purchaserName, string paymentMethode, string shipmentMethode, int cardNumber, int month, int year, int ccv, string id);
         public Task<Response> OpenNewStore(String storeName);
         public Task<Response> AddStoreManager(String managerUsername, String storeName);
-        public Task<Response> AddStoreOwner(String ownerUsername, String storeName);
+        //public Task<Response> AddStoreOwner(String ownerUsername, String storeName);
+        public Task<Response<bool>> AcceptOwnerAppointment(string storeName, string newOwner);
+        public Task<Response> RejectOwnerAppointment(string storeName, string newOwner);
+        public Task<Response<List<String>>> GetUsernamesWithOwnerAppointmentPermissionInStore(string storeName);
+        public Task<Response<Dictionary<string, List<string>>>> GetStandbyOwnersInStore(string storeName);
         public Task<Response> RemoveStoreOwner(String ownerUsername, String storeName);
         public Task<Response> RemoveStoreManager(String managerUsername, String storeName);
         public Task<Response> AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity);
@@ -86,7 +90,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response> AcceptBid(String StoreName, BidDTO bid);
         public Task<Response> RejectBid(String StoreName, BidDTO bid);
         public Task<Response<List<String>>> GetUsernamesWithInventoryPermissionInStore(String storeName);
-        public Task<Response> AddAcceptedBidToCart(int ItemId, String StoreName, int Amount, double price);
+        public Task<Response> AddAcceptedBidToCart(int ItemId, String StoreName, int Amount);
         public Task<Response<List<BidDTO>>> GetVisitorBidsAtStore(String StoreName);
     }
 
@@ -304,16 +308,57 @@ namespace MarketWeb.Client.Connect
             Response res = await _httpService.Post<Response>(newUrl, null);
             return res;
         }
+        /////////////////////////////////////////////////////
 
-        public async Task<Response> AddStoreOwner(string ownerUsername, string storeName)
+        public async Task<Response<bool>> AcceptOwnerAppointment(string storeName, string newOwner)
+        {//II.4.4
+            const string url = "api/market/AcceptOwnerAppointment";
+            var param = new Dictionary<string, string>() { { "newOwner", newOwner }, { "storeName", storeName } };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+
+            Response<bool> res = await _httpService.Post<Response<bool>>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response> RejectOwnerAppointment(string storeName, string newOwner)
         {
-            const string url = "api/market/AddStoreOwner";
-            var param = new Dictionary<string, string>() { { "storeName", storeName }, { "ownerUsername", ownerUsername } };
+            const string url = "api/market/RejectOwnerAppointment";
+            var param = new Dictionary<string, string>() { { "storeName", storeName }, { "newOwner", newOwner } };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
             Response res = await _httpService.Post<Response>(newUrl, null);
             return res;
         }
+        
+        public async Task<Response<List<String>>> GetUsernamesWithOwnerAppointmentPermissionInStore(string storeName)
+        {
+            const string url = "api/market/GetUsernamesWithOwnerAppointmentPermissionInStore";
+            var param = new Dictionary<string, string>() { { "storeName", storeName } };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+
+            Response<List<String>> res = await _httpService.Post<Response<List<String>>>(newUrl, null);
+            return res;
+        }
+        
+        public async Task<Response<Dictionary<string, List<string>>>> GetStandbyOwnersInStore(string storeName)
+        {
+            const string url = "api/market/GetStandbyOwnersInStore";
+            var param = new Dictionary<string, string>() { { "storeName", storeName } };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+
+            Response<Dictionary<string, List<string>>> res = await _httpService.Post<Response<Dictionary<string, List<string>>>>(newUrl, null);
+            return res;
+        }
+
+        //public async Task<Response> AddStoreOwner(string ownerUsername, string storeName)
+        //{
+        //    const string url = "api/market/AddStoreOwner";
+        //    var param = new Dictionary<string, string>() { { "storeName", storeName }, { "ownerUsername", ownerUsername } };
+        //    var newUrl = QueryHelpers.AddQueryString(url, param);
+
+        //    Response res = await _httpService.Post<Response>(newUrl, null);
+        //    return res;
+        //}
 
         public async Task<Response> RemoveStoreOwner(string ownerUsername, string storeName)
         {
@@ -921,14 +966,13 @@ namespace MarketWeb.Client.Connect
             Response<List<String>> res = await _httpService.Post<Response<List<String>>>(newUrl, null);
             return res;
         }
-        public async Task<Response> AddAcceptedBidToCart(int itemId, String storeName, int amount, double price)
+        public async Task<Response> AddAcceptedBidToCart(int itemId, String storeName, int amount)
         {
             const string url = "api/market/AddAcceptedBidToCart";
             var param = new Dictionary<string, string>() {
                 { "itemId", itemId.ToString() },
                 { "storeName", storeName },
                 { "amount", amount.ToString() },
-                { "price", price.ToString() }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response<List<String>> res = await _httpService.Post<Response<List<String>>>(newUrl, null);

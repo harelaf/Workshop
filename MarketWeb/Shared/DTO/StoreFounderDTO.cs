@@ -9,12 +9,12 @@ namespace MarketWeb.Shared.DTO
         private String _storeName;
         public String StoreName => _storeName;
 
-        private String _Username;
-        public String Username => _Username;
+        private String _username;
+        public String Username => _username;
 
         public StoreFounderDTO(String username, String storeName)
         {
-            _Username = username;
+            _username = username;
             _storeName = storeName;
         }
     }
