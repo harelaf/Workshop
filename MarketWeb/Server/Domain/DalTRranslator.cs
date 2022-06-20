@@ -1,6 +1,7 @@
 ﻿using MarketWeb.Server.DataLayer;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 

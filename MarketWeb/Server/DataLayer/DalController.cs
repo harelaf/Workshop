@@ -24,7 +24,6 @@ namespace MarketWeb.Server.DataLayer
         {
             List<StoreDAL> stores= context.StoreDALs.Include(x => x._stock)
                                                     .Include(x => x._rating)
-                                                    
                                                     .Where(store => store._state == StoreState.Active).ToList();
             if (stores == null)
                 return new List<StoreDAL>();
