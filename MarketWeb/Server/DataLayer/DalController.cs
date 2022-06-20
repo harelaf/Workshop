@@ -42,7 +42,7 @@ namespace MarketWeb.Server.DataLayer
         public RegisteredDAL GetRegistered(string username)
         {
             if(IsUsernameExists(username))
-                return context.RegisteredDALs.Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                return context.RegisteredDALs.Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i=>i.purchaseDetails)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).FirstOrDefault(s => s._username == username);
             throw new Exception($"there is no registered user with username: {username}");
@@ -142,7 +142,7 @@ namespace MarketWeb.Server.DataLayer
         public void UpdateQuantityOfItemInCart(int itemID, String storeName, int newQuantity, string userName, ShoppingBasketDAL shoppingBasketDAL, int amountDiff)
         {
             RegisteredDAL user = context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
             if (user == null)
@@ -184,7 +184,7 @@ namespace MarketWeb.Server.DataLayer
         public void addRegisteredPurchse(ShoppingCartDAL cart, DateTime date, string userName)
         {
             RegisteredDAL registeredDAL = context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
             if (registeredDAL == null)
@@ -472,7 +472,7 @@ namespace MarketWeb.Server.DataLayer
         public RegisteredDAL GetVisitorInformation(string userName) 
         {
             return context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                 .Include(x => x._adminMessages)
                                 .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
         }
@@ -592,7 +592,7 @@ namespace MarketWeb.Server.DataLayer
         public ICollection<AdminMessageToRegisteredDAL> GetRegisteredMessagesFromAdmin(string username)
         {
             return context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                 .Include(x => x._adminMessages)
                                 .Include(x => x._notifications).FirstOrDefault(s => s._username == username)._adminMessages.ToList();
         }
@@ -611,7 +611,7 @@ namespace MarketWeb.Server.DataLayer
         public ICollection<NotifyMessageDAL> GetRegisteredMessagesNotofication(string username)
         {
             return context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                 .Include(x => x._adminMessages)
                                 .Include(x => x._notifications).FirstOrDefault(s => s._username == username)._notifications.ToList();
         }
@@ -639,7 +639,7 @@ namespace MarketWeb.Server.DataLayer
         public int SendAdminMessage(String receiverUsername, string senderUsername, String title, String message)
         {
             RegisteredDAL registeredDAL = context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                                     .Include(x => x._adminMessages)
                                                     .Include(x => x._notifications).FirstOrDefault(s => s._username == receiverUsername); ;
             if (registeredDAL == null)
@@ -657,7 +657,7 @@ namespace MarketWeb.Server.DataLayer
         public int SendNotification(string storeName, string usernameReciever, String title, String message)
         {
             RegisteredDAL reg = context.RegisteredDALs
-                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                             .Include(x => x._adminMessages)
                                             .Include(x => x._notifications).FirstOrDefault(s => s._username == usernameReciever); ;
             if (usernameReciever == null)
@@ -700,7 +700,7 @@ namespace MarketWeb.Server.DataLayer
         public String GetReceiverOfAdminMessage(int mid)
         {
             List<RegisteredDAL> regs = context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).ToList();
             foreach (RegisteredDAL registered in regs)
@@ -718,7 +718,7 @@ namespace MarketWeb.Server.DataLayer
         public String GetReceiverOfNotificationMessage(int mid)
         {
             List<RegisteredDAL> regs = context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).ToList();
             foreach (RegisteredDAL registered in regs)

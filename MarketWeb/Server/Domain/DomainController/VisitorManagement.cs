@@ -45,6 +45,8 @@ namespace MarketWeb.Server.Domain
 
         public void InitializeAdmin(String username, String password)
         {
+            if (_dalController.IsUsernameExists(username))
+                return;
             Register(username, password, DEFAULT_BIRTH_DATE);
             _dalController.AppointSystemAdmin(username);
         }
