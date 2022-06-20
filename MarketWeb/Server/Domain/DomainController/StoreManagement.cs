@@ -150,7 +150,13 @@ namespace MarketWeb.Server.Domain
             store.AddMessage(messageToStore);
             
         }
+        public void SendMessageToStoreTest(String Username, String storeName, String title, String message, int id)
+        {
+            Store store = GetActiveStore(storeName);
+            MessageToStore messageToStore = new MessageToStore(storeName, Username, title, message, id);
+            store.AddMessage(messageToStore);
 
+        }
         public void UnreserveItemInStore(String storeName, Item item, int amount_to_add)
         {
             String errorMessage;
@@ -463,6 +469,12 @@ namespace MarketWeb.Server.Domain
             errorMessage = "this visitor has no bids at store '" + storeName + "'.";
             LogErrorMessage("GetVisitorBidsAtStore", errorMessage);
             throw new Exception(errorMessage);
+        }
+
+        internal List<string> GetStoreRolesByName(string storeName)
+        {
+            Store store = GetStore(storeName);
+            return store.GetStoreRolesByName();
         }
     }
 }

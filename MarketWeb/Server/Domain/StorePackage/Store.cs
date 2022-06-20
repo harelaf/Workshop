@@ -12,10 +12,13 @@ namespace MarketWeb.Server.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private Stock _stock;
+        public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
         private DiscountPolicy _discountPolicy;
         private List<MessageToStore> _messagesToStore;
+        public List<MessageToStore> MessagesToStore => _messagesToStore;
         private Rating _rating;
+        public Rating Rating => _rating;
         private List<StoreManager> _managers;
         private List<StoreOwner> _owners;
         private StoreFounder _founder;
@@ -30,6 +33,21 @@ namespace MarketWeb.Server.Domain
         public bool isActive()
         {
             return _state == StoreState.Active;
+        }
+
+        public Store(Stock stock, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy, List<MessageToStore> messagesToStore, Rating rating, List<StoreManager> managers, List<StoreOwner> owners, StoreFounder founder, string storeName, StoreState state, IDictionary<string, List<Bid>> biddedItems)
+        {
+            _stock = stock;
+            _purchasePolicy = purchasePolicy;
+            _discountPolicy = discountPolicy;
+            _messagesToStore = messagesToStore;
+            _rating = rating;
+            _managers = managers;
+            _owners = owners;
+            _founder = founder;
+            _storeName = storeName;
+            _state = state;
+            _biddedItems = biddedItems;
         }
 
         public Store(String storeName, StoreFounder founder, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
@@ -257,10 +275,6 @@ namespace MarketWeb.Server.Domain
             _stock.RemoveItem(itemId);
         }
 
-        internal void AddConditionToPurchasePolicy(Condition condition)
-        {
-            _purchasePolicy.AddCondition(condition);
-        }
 
         public void AddMessage(MessageToStore message)
         {

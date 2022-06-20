@@ -80,7 +80,7 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
-                _storeManagement.AddItemToStoreStock(storeName, itemId, Username, price, description, category, quantity);
+                _storeManagement.AddItemToStoreStockTest(storeName, itemId, Username, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -116,7 +116,7 @@ namespace MarketProject.Domain.Tests
         {
             try
             {
-                _storeManagement.AddItemToStoreStock(storeName, itemId, Username, price, description, category, quantity);
+                _storeManagement.AddItemToStoreStockTest(storeName, itemId, Username, price, description, category, quantity);
                 Assert.Fail();
             }
             catch (Exception)
@@ -138,7 +138,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _storeManagement.AddItemToStoreStock(storeName, itemId, Username, price, description, category, quantity);
+                _storeManagement.AddItemToStoreStockTest(storeName, itemId, Username, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -165,7 +165,7 @@ namespace MarketProject.Domain.Tests
             try
             {
                 _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
-                _storeManagement.AddItemToStoreStock(storeName, itemId, Username, price, description, category, quantity);
+                _storeManagement.AddItemToStoreStockTest(storeName, itemId,  Username, price, description, category, quantity);
             }
             catch (Exception)
             {
@@ -199,7 +199,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _storeManagement.SendMessageToStore(Username, storeName, title, message, 20);
+                _storeManagement.SendMessageToStoreTest(Username, storeName, title, message, 20);
             }
             catch (Exception)
             {
@@ -216,7 +216,7 @@ namespace MarketProject.Domain.Tests
 
             try
             {
-                _storeManagement.SendMessageToStore(Username, storeName, title, message, 5);
+                _storeManagement.SendMessageToStoreTest(Username, storeName, title, message, 5);
                 Assert.Fail();
             }
             catch (Exception)

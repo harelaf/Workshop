@@ -25,7 +25,6 @@ namespace MarketWeb.Server.Domain
         /// Dictionary mapping tokens to guests.
         /// </summary>
         private IDictionary<String, Guest> _visitorsGuestsTokens;
-        private SystemAdmin _currentAdmin;
         private static readonly string DEFAULT_ADMIN_USERNAME = "admin";
         private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
         private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
@@ -42,6 +41,11 @@ namespace MarketWeb.Server.Domain
             {
                 SetAdmin();
             }
+        }
+        public VisitorManagement(Dictionary<string, Registered> regs, Dictionary<String, Guest> visitorsGuestsTokens)
+        {
+            _loggedinVisitorsTokens = regs;
+            _visitorsGuestsTokens = visitorsGuestsTokens;
         }
         private void SetAdmin()
         {
@@ -591,7 +595,7 @@ namespace MarketWeb.Server.Domain
             return Visitor.RemoveAcceptedBidFromCart(itemID, storeName);
         }
 
-        public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity)
+        public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity, int amountdiff)
         {
             String errorMessage;
             if (newQuantity <= 0)
@@ -713,7 +717,7 @@ namespace MarketWeb.Server.Domain
         internal void SendNotificationMessageToRegistered(string usernameReciever, string storeName, string title, string message, int id)
         {
             Registered registered = GetRegisteredVisitor(usernameReciever);
-            NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, usernameReciever);
+            NotifyMessage notifyMessage = new NotifyMessage(id, storeName, title, message, usernameReciever);
             string authToken = GetLoggedInToken(usernameReciever); 
             if (authToken != null)
             {

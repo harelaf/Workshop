@@ -152,16 +152,7 @@ namespace MarketWeb.Server.Domain
                 }
                 return item;
             }
-            
-            Item item = _storeManagement.GetItem(storeName, itemID);
-            int amount_removed = _VisitorManagement.RemoveItemFromCart(VisitorToken, item, _storeManagement.GetStore(storeName));
-            // now update store stock
-            Store store = _storeManagement.GetStore(storeName);
-            lock (store.Stock)
-            {
-                _storeManagement.UnreserveItemInStore(storeName, item, amount_removed);
-            }
-            return item;
+           
         }
 
         internal void RemoveAcceptedBidFromCart(string authToken, int itemID, string storeName)
@@ -609,7 +600,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("SendMessageToStore", errorMessage);
                 throw new Exception(errorMessage);
             }
-            _storeManagement.SendMessageToStore(senderUsername, storeName, title, message, id);
+            _storeManagement.SendMessageToStore(senderUsername, storeName, title, message);
             List<string> names = _storeManagement.GetStoreRolesByName(storeName);
             foreach (string name in names)
 			{
@@ -641,7 +632,6 @@ namespace MarketWeb.Server.Domain
             }
             int id = _dalController.SendAdminMessage(UsernameReciever, senderUsername, title, message);
             _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever,senderUsername, title, message, id);
-            _VisitorManagement.SendAdminMessageToRegistered(UsernameReciever, senderUsername, title, message);
             SendNotification("Administration", UsernameReciever, "Admin Message: " + title, message);
 
         }
@@ -687,7 +677,6 @@ namespace MarketWeb.Server.Domain
             }
             _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername ,reply);
             _dalController.AnswerStoreMesseage(msgID, storeName, reply, replierUsername);
-            _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername, reply);
             SendNotification(storeName, receiverUsername, "Reply - "+ replierUsername, reply);
         }
 
@@ -1288,7 +1277,12 @@ namespace MarketWeb.Server.Domain
             String message = $"a visitor entered a new bid for item id '{itemId}' at the '{storeName}' store.";
             List<String> involvedUsernames = _storeManagement.GetUsernamesWithPermissionInStore(storeName, Operation.STOCK_EDITOR);
             foreach (String username in involvedUsernames)
-                _VisitorManagement.SendNotificationMessageToRegistered(username, storeName, title, message);
+            {
+                int id = _dalController.SendNotification(storeName, username, title, message);
+
+                _VisitorManagement.SendNotificationMessageToRegistered(username, storeName, title, message, id);
+
+            }
         }
 
         internal bool AcceptBid(string authToken, string storeName, int itemId, string bidder)
@@ -1308,8 +1302,12 @@ namespace MarketWeb.Server.Domain
             {
                 String title = $"Your Bid Got Respond!";
                 String message = $"your bid for item id '{itemId}' at the '{storeName}' store has an answer.";
-                if(_VisitorManagement.IsRegistered(bidder))
-                    _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message);
+                if (_VisitorManagement.IsRegistered(bidder))
+                {
+                    int id = _dalController.SendNotification(storeName, bidder, title, message);
+                    _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message, id);
+
+                }
                 else _VisitorManagement.SendNotificationMessageToVisitor(bidder, storeName, title, message);
                 return true;
             }
@@ -1334,7 +1332,10 @@ namespace MarketWeb.Server.Domain
                 String title = $"Your Bid Got Respond!";
                 String message = $"your bid for item id '{itemId}' at the '{storeName}' store has an answer.";
                 if (_VisitorManagement.IsRegistered(bidder))
-                    _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message);
+                {
+                    int id = _dalController.SendNotification(storeName, bidder, title, message);
+                    _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message, id);
+                }
                 else _VisitorManagement.SendNotificationMessageToVisitor(bidder, storeName, title, message);
                 return true;
             }
@@ -1358,7 +1359,11 @@ namespace MarketWeb.Server.Domain
             String title = $"Your Bid Got Rejected!";
             String message = $"your bid for item id '{itemId}' at the '{storeName}' store is not approved.";
             if (_VisitorManagement.IsRegistered(bidder))
-                _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message);
+            {
+                int id = _dalController.SendNotification(storeName, bidder, title, message);
+                _VisitorManagement.SendNotificationMessageToRegistered(bidder, storeName, title, message, id);
+
+            }
             else _VisitorManagement.SendNotificationMessageToVisitor(bidder, storeName, title, message);
         }
 
