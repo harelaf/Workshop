@@ -686,7 +686,8 @@ namespace MarketWeb.Server.DataLayer
         public String GetReceiverOfAdminMessage(int mid)
         {
             List<RegisteredDAL> regs = context.RegisteredDALs
-.Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).Include(x => x._adminMessages)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).ToList();
             foreach (RegisteredDAL registered in regs)
             {
