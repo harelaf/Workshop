@@ -25,36 +25,28 @@ namespace MarketWeb.Server.Domain
         /// Dictionary mapping tokens to guests.
         /// </summary>
         private IDictionary<String, Guest> _visitorsGuestsTokens;
-        private static readonly string DEFAULT_ADMIN_USERNAME = "admin";
-        private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
+
         private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
         private DalTRranslator _dalTRranslator;
         private DalController _dalController = DalController.GetInstance();
         protected NotificationHub _notificationHub;
-        private static bool hasInitialized = false;
 
         // ===================================== CONSTRUCTORS =====================================
 
         public VisitorManagement() : this(new Dictionary<String, Registered>()) { 
             _dalTRranslator = new DalTRranslator();
-            if (!hasInitialized)
-            {
-                SetAdmin();
-            }
+
         }
         public VisitorManagement(Dictionary<string, Registered> regs, Dictionary<String, Guest> visitorsGuestsTokens)
         {
             _loggedinVisitorsTokens = regs;
             _visitorsGuestsTokens = visitorsGuestsTokens;
         }
-        private void SetAdmin()
+
+        public void InitializeAdmin(String username, String password)
         {
-            if (!_dalController.IsUsernameExists(DEFAULT_ADMIN_USERNAME))
-            {
-                Register(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-                _dalController.AppointSystemAdmin(DEFAULT_ADMIN_USERNAME);
-            }
-            hasInitialized = true;
+            Register(username, password, DEFAULT_BIRTH_DATE);
+            _dalController.AppointSystemAdmin(username);
         }
         // TODO: There's GOT to be a better way to do these constructors.
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
@@ -63,11 +55,9 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
             _dalTRranslator= new DalTRranslator();
-            if (!hasInitialized)
-            {
-                SetAdmin();
-            }
+
         }
+
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens): this(registeredVisitors, loggedinVisitorsTokens, new Dictionary<String, Guest>())
         {
@@ -75,10 +65,7 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
             _dalTRranslator = new DalTRranslator();
-            if (!hasInitialized)
-            {
-                SetAdmin();
-            }
+
         }
 
 
@@ -89,10 +76,7 @@ namespace MarketWeb.Server.Domain
             _visitorsGuestsTokens = visitorsGuestsTokens;
             _notificationHub = notificationHub;
             _dalTRranslator = new DalTRranslator();
-            if (!hasInitialized)
-            {
-                SetAdmin();
-            }
+
         }
 
         public void SetNotificationHub (NotificationHub notificationHub)

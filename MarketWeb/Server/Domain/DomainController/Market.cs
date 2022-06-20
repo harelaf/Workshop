@@ -34,10 +34,8 @@ namespace MarketWeb.Server.Domain
             setOPerationDictionary();
             _notificationHub = notificationHub;
             _VisitorManagement.SetNotificationHub(notificationHub);
-
+            _dalTRranslator = new DalTRranslator();
             // Calling RestartSystem after creating this object is important.
-            RestartSystem("admin", "admin", "https://cs-bgu-wsep.herokuapp.com/", "https://cs-bgu-wsep.herokuapp.com/");
-            _dalTRranslator = new DalTRranslator(); 
         }
 
         /// <summary>
