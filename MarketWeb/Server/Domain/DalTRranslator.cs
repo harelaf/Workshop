@@ -214,14 +214,14 @@ namespace MarketWeb.Server.Domain
             return new XorCompositionDAL(condList, cond.ToNegative);
         }
 
-        public StockDAL StockDomainToDal(Stock stock)
+        public ICollection<StockItemDAL> StockDomainToDal(Stock stock)
         {
             ICollection<StockItemDAL> itemAndAmount = new List<StockItemDAL>();
             foreach (KeyValuePair<Item, int> i_a in stock.Items)
             {
                 itemAndAmount.Add(new StockItemDAL(i_a.Key.ItemID, i_a.Value));
             }
-            return new StockDAL(itemAndAmount);
+            return itemAndAmount;
         }
 
         public StoreManagerDAL StoreManagerDomainToDal(StoreManager manager)

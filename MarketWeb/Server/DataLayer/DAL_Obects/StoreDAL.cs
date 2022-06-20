@@ -14,7 +14,7 @@ namespace MarketWeb.Server.DataLayer
         [Key]
         public String _storeName { get; set; }
         [Required]
-        public ICollection<RateDAL> _ratings { get; set; }
+        public ICollection<RateDAL> _rating { get; set; }
         [Required]
         public ICollection<StockItemDAL> _stock { get; set; }
 
@@ -30,11 +30,7 @@ namespace MarketWeb.Server.DataLayer
         {
             _storeName = storeName;
             _stock = stock;
-            //_messagesToStore = messagesToStore;
-            _ratings = rating;
-            //_managers = managers;
-            //_owners = owners;
-            //_founder = founder;
+            _rating = rating;
             _state = state;
             _purchasePolicy = purchasePolicy;
             _discountPolicy = discountPolicy;
@@ -44,11 +40,8 @@ namespace MarketWeb.Server.DataLayer
         {
             _storeName = storeName;
             _state = state;
-            //_managers = new List<StoreManagerDAL>();
-            //_owners = new List<StoreOwnerDAL>();
-            //_messagesToStore = new List<MessageToStoreDAL>();
-            _stock = new StockDAL(new List<StockItemDAL>());
-            _rating = new RatingDAL(new List<RateDAL>());
+            _stock = new List<StockItemDAL>();
+            _rating = new List<RateDAL>();
             _purchasePolicy = new PurchasePolicyDAL(new List<ConditionDAL>());
             _discountPolicy = new DiscountPolicyDAL(new List<DiscountDAL>());
         }
