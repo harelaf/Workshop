@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketWeb.Server.Migrations
 {
     [DbContext(typeof(MarketContext))]
-    [Migration("20220618232727_Initial")]
+    [Migration("20220620174947_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,31 @@ namespace MarketWeb.Server.Migrations
                     b.HasIndex("RegisteredDAL_username");
 
                     b.ToTable("AdminMessageToRegisteredDAL");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.AtomicDiscountDAL", b =>
+                {
+                    b.Property<int>("_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("PurchaseDetailsDALID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("_condition_id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("_expiration")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("_id");
+
+                    b.HasIndex("PurchaseDetailsDALID");
+
+                    b.HasIndex("_condition_id");
+
+                    b.ToTable("AtomicDiscountDAL");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.BasketItemDAL", b =>
@@ -108,57 +133,12 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("PurchasePolicyDALid")
-                        .HasColumnType("int");
-
                     b.Property<bool>("_negative")
                         .HasColumnType("bit");
 
                     b.HasKey("_id");
 
-                    b.HasIndex("PurchasePolicyDALid");
-
                     b.ToTable("ConditionDAL");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountDAL", b =>
-                {
-                    b.Property<int>("_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("DiscountPolicyDALid")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("_condition_id")
-                        .HasColumnType("int");
-
-                    b.HasKey("_id");
-
-                    b.HasIndex("DiscountPolicyDALid");
-
-                    b.HasIndex("_condition_id");
-
-                    b.ToTable("DiscountDAL");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("DiscountDAL");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountPolicyDAL", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.HasKey("id");
-
-                    b.ToTable("DiscountPolicyDAL");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.ItemDAL", b =>
@@ -291,18 +271,6 @@ namespace MarketWeb.Server.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("PurchaseDetailsDAL");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchasePolicyDAL", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.HasKey("id");
-
-                    b.ToTable("PurchasePolicyDAL");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchasedBasketDAL", b =>
@@ -494,26 +462,24 @@ namespace MarketWeb.Server.Migrations
                     b.Property<string>("_storeName")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("DiscountPolicyDAL")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PurchasePolicyDAL")
-                        .HasColumnType("int");
-
                     b.Property<int>("RatingDAL")
                         .HasColumnType("int");
 
                     b.Property<int>("StockDAL")
                         .HasColumnType("int");
 
+                    b.Property<string>("_discountPolicyJSON")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_purchasePolicyJSON")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("_state")
                         .HasColumnType("int");
 
                     b.HasKey("_storeName");
-
-                    b.HasIndex("DiscountPolicyDAL");
-
-                    b.HasIndex("PurchasePolicyDAL");
 
                     b.HasIndex("RatingDAL");
 
@@ -560,21 +526,6 @@ namespace MarketWeb.Server.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("SystemRoleDAL");
                 });
 
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.AtomicDiscountDAL", b =>
-                {
-                    b.HasBaseType("MarketWeb.Server.DataLayer.DiscountDAL");
-
-                    b.Property<int?>("PurchaseDetailsDALID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("_expiration")
-                        .HasColumnType("datetime2");
-
-                    b.HasIndex("PurchaseDetailsDALID");
-
-                    b.HasDiscriminator().HasValue("AtomicDiscountDAL");
-                });
-
             modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreFounderDAL", b =>
                 {
                     b.HasBaseType("MarketWeb.Server.DataLayer.SystemRoleDAL");
@@ -610,6 +561,20 @@ namespace MarketWeb.Server.Migrations
                         .HasForeignKey("RegisteredDAL_username");
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.AtomicDiscountDAL", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", null)
+                        .WithMany("discountList")
+                        .HasForeignKey("PurchaseDetailsDALID")
+                        .OnDelete(DeleteBehavior.ClientCascade);
+
+                    b.HasOne("MarketWeb.Server.DataLayer.ConditionDAL", "_condition")
+                        .WithMany()
+                        .HasForeignKey("_condition_id");
+
+                    b.Navigation("_condition");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.BasketItemDAL", b =>
                 {
                     b.HasOne("MarketWeb.Server.DataLayer.ShoppingBasketDAL", null)
@@ -621,26 +586,6 @@ namespace MarketWeb.Server.Migrations
                         .HasForeignKey("purchaseDetailsID");
 
                     b.Navigation("purchaseDetails");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.ConditionDAL", b =>
-                {
-                    b.HasOne("MarketWeb.Server.DataLayer.PurchasePolicyDAL", null)
-                        .WithMany("conditions")
-                        .HasForeignKey("PurchasePolicyDALid");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountDAL", b =>
-                {
-                    b.HasOne("MarketWeb.Server.DataLayer.DiscountPolicyDAL", null)
-                        .WithMany("_discounts")
-                        .HasForeignKey("DiscountPolicyDALid");
-
-                    b.HasOne("MarketWeb.Server.DataLayer.ConditionDAL", "_condition")
-                        .WithMany()
-                        .HasForeignKey("_condition_id");
-
-                    b.Navigation("_condition");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.ItemDAL", b =>
@@ -739,18 +684,6 @@ namespace MarketWeb.Server.Migrations
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.StoreDAL", b =>
                 {
-                    b.HasOne("MarketWeb.Server.DataLayer.DiscountPolicyDAL", "_discountPolicy")
-                        .WithMany()
-                        .HasForeignKey("DiscountPolicyDAL")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MarketWeb.Server.DataLayer.PurchasePolicyDAL", "_purchasePolicy")
-                        .WithMany()
-                        .HasForeignKey("PurchasePolicyDAL")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MarketWeb.Server.DataLayer.RatingDAL", "_rating")
                         .WithMany()
                         .HasForeignKey("RatingDAL")
@@ -763,36 +696,14 @@ namespace MarketWeb.Server.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.Navigation("_discountPolicy");
-
-                    b.Navigation("_purchasePolicy");
-
                     b.Navigation("_rating");
 
                     b.Navigation("_stock");
                 });
 
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.AtomicDiscountDAL", b =>
-                {
-                    b.HasOne("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", null)
-                        .WithMany("discountList")
-                        .HasForeignKey("PurchaseDetailsDALID")
-                        .OnDelete(DeleteBehavior.ClientCascade);
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.DiscountPolicyDAL", b =>
-                {
-                    b.Navigation("_discounts");
-                });
-
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", b =>
                 {
                     b.Navigation("discountList");
-                });
-
-            modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchasePolicyDAL", b =>
-                {
-                    b.Navigation("conditions");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.RatingDAL", b =>

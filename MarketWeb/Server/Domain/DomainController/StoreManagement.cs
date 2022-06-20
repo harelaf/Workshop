@@ -4,6 +4,7 @@ using System.Text;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
 using MarketWeb.Server.DataLayer;
+using Newtonsoft.Json;
 
 namespace MarketWeb.Server.Domain
 {
@@ -269,11 +270,25 @@ namespace MarketWeb.Server.Domain
         public void AddStoreDiscount(String storeName, Discount discount)
         {
             GetActiveStore(storeName).AddDiscount(discount);
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            _dalController.EditStoreDiscountPolicy(storeName, JsonConvert.SerializeObject(discount, settings));
         }
 
         public void AddStorePurchasePolicy(string storeName, Condition condition)
         {
             GetStore(storeName).AddConditionToPurchasePolicy(condition);
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            _dalController.EditStorePurchasePolicy(storeName, JsonConvert.SerializeObject(condition, settings));
         }
 
         public bool AddStoreManager(StoreManager newManager, string storeName)
