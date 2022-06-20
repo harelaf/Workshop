@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MarketWeb.Server.DataLayer;
+using System.Threading.Tasks;
 using MarketWeb.Server.Service;
 using MarketWeb.Service;
 using MarketWeb.Shared;
@@ -24,32 +25,30 @@ namespace MarketWeb.Server.Domain
         /// Dictionary mapping tokens to guests.
         /// </summary>
         private IDictionary<String, Guest> _visitorsGuestsTokens;
-        private SystemAdmin _currentAdmin;
-        private static readonly string DEFAULT_ADMIN_USERNAME = "admin";
-        private static readonly string DEFAULT_ADMIN_PASSWORD = "admin";
+
         private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
         private DalTRranslator _dalTRranslator;
         private DalController _dalController = DalController.GetInstance();
         protected NotificationHub _notificationHub;
-        private static bool hasInitialized = false;
 
         // ===================================== CONSTRUCTORS =====================================
 
         public VisitorManagement() : this(new Dictionary<String, Registered>()) { 
             _dalTRranslator = new DalTRranslator();
-            if (!hasInitialized)
-            {
-                SetAdmin();
-            }
+
         }
-        private void SetAdmin()
+        public VisitorManagement(Dictionary<string, Registered> regs, Dictionary<String, Guest> visitorsGuestsTokens)
         {
-            if (!_dalController.IsUsernameExists(DEFAULT_ADMIN_USERNAME))
-            {
-                Register(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, DEFAULT_BIRTH_DATE);
-                _dalController.AppointSystemAdmin(DEFAULT_ADMIN_USERNAME);
-            }
-            hasInitialized = true;
+            _loggedinVisitorsTokens = regs;
+            _visitorsGuestsTokens = visitorsGuestsTokens;
+        }
+
+        public void InitializeAdmin(String username, String password)
+        {
+            if (_dalController.IsUsernameExists(username))
+                return;
+            Register(username, password, DEFAULT_BIRTH_DATE);
+            _dalController.AppointSystemAdmin(username);
         }
         // TODO: There's GOT to be a better way to do these constructors.
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
@@ -58,11 +57,9 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
             _dalTRranslator= new DalTRranslator();
-            if (!hasInitialized)
-            {
-                SetAdmin();
-            }
+
         }
+
 
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens): this(registeredVisitors, loggedinVisitorsTokens, new Dictionary<String, Guest>())
         {
@@ -70,10 +67,7 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
             _dalTRranslator = new DalTRranslator();
-            if (!hasInitialized)
-            {
-                SetAdmin();
-            }
+
         }
 
 
@@ -84,13 +78,13 @@ namespace MarketWeb.Server.Domain
             _visitorsGuestsTokens = visitorsGuestsTokens;
             _notificationHub = notificationHub;
             _dalTRranslator = new DalTRranslator();
-            if (!hasInitialized)
-            {
-                SetAdmin();
-            }
+
         }
 
-
+        public void SetNotificationHub (NotificationHub notificationHub)
+        {
+            _notificationHub = notificationHub;
+        }
 
         // ===================================== GETTERS =====================================
 
@@ -130,6 +124,7 @@ namespace MarketWeb.Server.Domain
             return _loggedinVisitorsTokens[token].Username;
         }
 
+
         /// <summary>
         /// Returns the Registered associated with a token.
         /// </summary>
@@ -145,6 +140,12 @@ namespace MarketWeb.Server.Domain
                 throw new ArgumentException(errorMessage);
             }
             return _loggedinVisitorsTokens[token];
+        }
+
+        internal void AddAcceptedBidToCart(string visitorToken, Store store, int itemId, int amount)
+        {
+            Visitor Visitor = GetVisitorVisitor(visitorToken);
+            Visitor.AddAcceptedBidToCart(store, itemId, amount, store.GetBidAcceptedPrice(visitorToken, itemId, amount));
         }
 
         /// <summary>
@@ -200,8 +201,6 @@ namespace MarketWeb.Server.Domain
             }
             return null;
         }
-
-
 
         // ===================================== Req I.1 - RESTART SYSTEM =====================================
 
@@ -576,6 +575,12 @@ namespace MarketWeb.Server.Domain
             return amount;
         }
 
+        internal int RemoveAcceptedBidFromCart(string authToken, int itemID, String storeName)
+        {
+            Visitor Visitor = GetVisitorVisitor(authToken);
+            return Visitor.RemoveAcceptedBidFromCart(itemID, storeName);
+        }
+
         public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity, int amountdiff)
         {
             String errorMessage;
@@ -602,7 +607,7 @@ namespace MarketWeb.Server.Domain
             return newQuantity - old_quantity;
         }
 
-        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode)
+        public async Task<ShoppingCart> PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
             String errorMessage;
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
@@ -612,7 +617,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("PurchaseMyCart", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
+            return await Visitor.PurchaseMyCartAsync(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
         }
 
 
@@ -698,11 +703,25 @@ namespace MarketWeb.Server.Domain
         internal void SendNotificationMessageToRegistered(string usernameReciever, string storeName, string title, string message, int id)
         {
             Registered registered = GetRegisteredVisitor(usernameReciever);
-            NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, usernameReciever);
+            NotifyMessage notifyMessage = new NotifyMessage(id, storeName, title, message, usernameReciever);
             string authToken = GetLoggedInToken(usernameReciever); 
             if (authToken != null)
             {
-                _notificationHub.SendNotification(authToken, new DTOtranslator().toDTO(notifyMessage));
+                if (_notificationHub != null)
+                {
+                    _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
+                }
+            }
+        }
+        internal void SendNotificationMessageToVisitor(string authToken, string storeName, string title, string message)
+        {
+            NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, "visitor");
+            if (authToken != null)
+            {
+                if (_notificationHub != null)
+                {
+                    _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
+                }
             }
         }
 

@@ -26,49 +26,101 @@
         double totalWithDiscount = 0;
         IDictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = shoppingBasketDTO.Items;
         <h4>Store: @storeName</h4>
-        <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
-            <tr>
-                <th>Product Name</th>
-                <th>Amount</th>
-                <th>Price Per Unit</th>
-                <th>Applied Discounts</th>
-                <th>Actual Price Per All Items</th>
-                <th>Remove Item</th>
-                <th>Update Quantity</th>
-            </tr>
-            @foreach (int itemID in items.Keys)
-            {
-                List<String> dislist = items[itemID].Item2.DiscountList;
-                String detailsString = dislist == null || dislist.Count == 0 ? "no discount" : String.Join("\n", items[itemID].Item2.DiscountList);//"kkklll";//
-                //detailsString = detailsString.Replace("\\n", "\n").Replace("\\t", "\t");
-                //String detailsString = StringFormatter.discountDetailsToString(items[itemID].Item2);//"kkklll";//
-                totalNoDiscount += items[itemID].Item1.Price * items[itemID].Item2.Amount;
-                totalWithDiscount += items[itemID].Item2.ActualPrice;
-                totalAllBasketsWithDiscount += items[itemID].Item2.ActualPrice;
-                <tr id="@(items[itemID].Item1.Name + storeName)">
-                    <th>@items[itemID].Item1.Name</th>
-                    <th>@items[itemID].Item2.Amount</th>
-                    <th>$@items[itemID].Item1.Price</th>
-                    <th>@detailsString</th>
-                    <th>@items[itemID].Item2.ActualPrice</th>
-                    <th>
-                        <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
-                    </th>
-                    <th>
-                        <div>
-                            <EditForm Model="@UpdateItemQuantityInCartModel">
-                                <DataAnnotationsValidator/>
-                                <div id="@itemID" class="form-group">
-                                    <label>New Quantity</label>
-                                    <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
-                                </div>
-                                <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
-                            </EditForm>
-                        </div>
-                    </th>
+        @if (shoppingBasketDTO.Items.Count > 0)
+        {
+            <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Amount</th>
+                    <th>Price Per Unit</th>
+                    <th>Applied Discounts</th>
+                    <th>Actual Price Per All Items</th>
+                    <th>Remove Item</th>
+                    <th>Update Quantity</th>
                 </tr>
-            }
-        </table>
+                @foreach (int itemID in items.Keys)
+                {
+                    List<String> dislist = items[itemID].Item2.DiscountList;
+                    String detailsString = dislist == null || dislist.Count == 0 ? "no discount" : String.Join("\n", items[itemID].Item2.DiscountList);//"kkklll";//
+                    totalNoDiscount += items[itemID].Item1.Price * items[itemID].Item2.Amount;
+                    totalWithDiscount += items[itemID].Item2.ActualPrice;
+                    totalAllBasketsWithDiscount += items[itemID].Item2.ActualPrice;
+                    <tr id="@(items[itemID].Item1.Name + storeName)">
+                        <th>@items[itemID].Item1.Name</th>
+                        <th>@items[itemID].Item2.Amount</th>
+                        <th>$@items[itemID].Item1.Price</th>
+                        <th>@detailsString</th>
+                        <th>@items[itemID].Item2.ActualPrice</th>
+                        <th>
+                            <button class="btn btn-primary" @onclick="() => RemoveItemFromCartButton(itemID, items[itemID].Item1.StoreName)">Remove Item</button>
+                        </th>
+                        <th>
+                            <div>
+                                <EditForm Model="@UpdateItemQuantityInCartModel">
+                                    <DataAnnotationsValidator/>
+                                    <div id="@itemID" class="form-group">
+                                        <label>New Quantity</label>
+                                        <InputNumber @bind-Value="UpdateItemQuantityInCartModel.NewQuantity" class="form-control" />
+                                    </div>
+                                    <button class="btn btn-primary" @onclick="() => UpdateItemQuantityInCartForm(items[itemID].Item1.StoreName, itemID)">Update Quantity</button>
+                                </EditForm>
+                            </div>
+                        </th>
+                    </tr>
+                }
+            </table>
+        }
+        @if(shoppingBasketDTO.BiddedItems.Count > 0)
+        {
+            <h4>Bids in '@shoppingBasketDTO.StoreName'</h4>
+            <br />
+            <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
+                <tr>
+                    <th>Product ID</th>
+                    <th>Amount</th>
+                    <th>Price Per Unit</th>
+                    <th>Actual Price Per All Items</th>
+                    <th>Remove Item</th>
+                </tr>
+                @foreach (BidDTO bid in shoppingBasketDTO.BiddedItems)
+                {
+                    totalNoDiscount += bid.BiddedPrice * bid.Amount;
+                    totalWithDiscount += bid.BiddedPrice * bid.Amount;
+                    totalAllBasketsWithDiscount += bid.BiddedPrice * bid.Amount;
+                    <tr>
+                        <th>@bid.ItemID</th>
+                        <th>@bid.Amount</th>
+                        <th>$@bid.BiddedPrice</th>
+                        <th>@(bid.BiddedPrice * bid.Amount)</th>
+                        <th>
+                            <button class="btn btn-primary" @onclick="() => RemoveAcceptedBidFromCart(bid.ItemID, shoppingBasketDTO.StoreName)">Remove Item</button>
+                        </th>
+                    </tr>
+                }
+            </table>    
+        }
+        
+        double sumAdditionalDiscounts = 0;
+        @if(shoppingBasketDTO.AdditionalDiscounts.Count > 0)
+        {
+            <h2>Discount On Entire Basket</h2>
+            <table class="table" style="white-space:pre-wrap; width:100%" id="@storeName">
+                <tr>
+                    <th>Discount Description</th>
+                    <th>price to reduct</th>
+                </tr>
+                @foreach (NumericDiscountDTO dis in shoppingBasketDTO.AdditionalDiscounts)
+                {
+                    sumAdditionalDiscounts += dis.PriceToSubtract;
+                    <tr>
+                        <th>@StringFormatter.discountToString(dis)</th>
+                        <th>@dis.PriceToSubtract</th>
+                    </tr>
+                }
+            </table>    
+        }
+        totalWithDiscount -= sumAdditionalDiscounts;
+        totalAllBasketsWithDiscount -= sumAdditionalDiscounts;
         <h4>Your total (without discounts) is: $@totalNoDiscount</h4>
         <h4>Your total (with discounts) is: $@totalWithDiscount</h4>
     }
@@ -93,14 +145,16 @@ else
         Response response = await marketAPIClient.UpdateQuantityOfItemInCart(itemID, storeName, UpdateItemQuantityInCartModel.NewQuantity);
         if (response.ErrorOccured)
         {
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/ShoppingCart");
             AlertService.Error(response.ErrorMessage);
             StateHasChanged();
         }
         else
         {
-            AlertService.Info("Item quantity updated.");
             NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Info("Item quantity updated.");
         }
         UpdateItemQuantityInCartModel = new Models.UpdateItemQuantityInCartModel();
     }
@@ -121,15 +175,35 @@ else
         Response response = await marketAPIClient.RemoveItemFromCart(ItemID, StoreName);
         if (response.ErrorOccured)
         {
-            AlertService.Error(response.ErrorMessage);
             NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Error(response.ErrorMessage);
         }
         else
         {
-            AlertService.Info("Successfully removed item.");
             NavigationManager.NavigateTo("");
             NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Info("Successfully removed item.");
+        }
+    }
+
+    private async void RemoveAcceptedBidFromCart(int itemID, string storeName)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        Response response = await marketAPIClient.RemoveAcceptedBidFromCart(itemID, storeName);
+        if (response.ErrorOccured)
+        {
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Error(response.ErrorMessage);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo("/ShoppingCart");
+            AlertService.Info("Successfully removed item.");
         }
     }
 

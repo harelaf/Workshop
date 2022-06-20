@@ -42,9 +42,12 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             return GetDiscountString(indent);
         }
-        public override double calcPriceFromCurrPrice(double currPrice)
+        public override double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
         {
-            return currPrice - PriceToSubtract;
+            if (!CheckCondition(searchablePriceable))
+                return currPrice;
+            double actualPrice = currPrice - PriceToSubtract > 0 ? currPrice - PriceToSubtract : 0;
+            return actualPrice;
         }
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {

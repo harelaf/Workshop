@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MarketProject.Domain.PurchasePackage.PolicyPackage;
+using MarketWeb.Server.Domain;
+using MarketWeb.Server.Domain.PolicyPackage;
 
 namespace MarketProject.Domain.Tests
 {
@@ -69,7 +71,7 @@ namespace MarketProject.Domain.Tests
             // Assert
             ShoppingBasket actual = guest.ShoppingCart.GetShoppingBasket(store.StoreName);
             Assert.IsNotNull(actual);
-            Assert.AreEqual(actual.GetAmountOfItem(item1), expected_amount);
+            Assert.AreEqual(expected_amount, actual.GetAmountOfItem(item1));
         }
         [TestMethod]
         public void TestRemoveItemToCart1()

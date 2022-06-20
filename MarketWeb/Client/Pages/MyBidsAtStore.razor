@@ -1,0 +1,119 @@
+﻿@page "/StorePage/{StoreName}/MyBidsAtStore"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+<div class="text-center" id="Title">
+    <h1 class="display-4">your @(StoreName)'s Bids Page</h1>
+    <br />
+</div>
+@if(bids != null && bids.Count > 0)
+{
+    <h2>Bid Table</h2>
+    <br />
+    <p>the prices are per item</p>
+    <div>
+        <table class="table" style="white-space:pre-wrap; width:100%" id="@StoreName">
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Amount</th>
+                    <th>Original Price</th>
+                    <th>Bid</th>
+                    <th>Counter Offer</th>
+                    <th>Status</th>
+                    <th>Add To Cart</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(BidDTO bid in bids)
+                {
+                    string status = @bid.AcceptedByAll ? "ACCEPTED" : "IN PROGRESS";
+                    <tr>
+                        <th>@bid.ItemID</th>
+                        <th>@bid.Amount</th>
+                        <th>@bid.OriginalPrice</th>
+                        <th>@bid.BiddedPrice</th>
+                        <th>@bid.CounterOffer</th>
+                        <th>@status</th>
+                        @if(bid.AcceptedByAll)
+                        {
+                            <th>
+                                <button class="btn btn-primary" @onclick="() => AddAcceptedBidToCart(bid)">Add To Cart</button>
+                            </th>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <h2>no bids here.</h2>
+}
+        
+
+@code {
+    [Parameter] public string StoreName { get; set; }
+    List<BidDTO> bids = null;
+
+    private async void AddAcceptedBidToCart(BidDTO bid)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response res = await _marketAPIClient.AddAcceptedBidToCart(bid.ItemID, StoreName, bid.Amount);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}/MyBidsAtStore");
+            AlertService.Info($"Successfully added items to cart.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AlertService.Clear();
+
+        try
+        {
+            Response<List<BidDTO>> response = await _marketAPIClient.GetVisitorBidsAtStore(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            bids = response.Value;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}

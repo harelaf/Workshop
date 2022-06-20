@@ -4,6 +4,9 @@ using MarketProject.Domain;
 using System.Collections.Generic;
 using System;
 using MarketProject.Domain.PurchasePackage.PolicyPackage;
+using MarketWeb.Server.Domain;
+using MarketWeb.Server.Domain.PolicyPackage;
+using System.Threading.Tasks;
 
 namespace MarketProject.Domain.Tests
 {
@@ -45,6 +48,7 @@ namespace MarketProject.Domain.Tests
             basketMoq1.Setup(x => x.Store()).Returns(storeMoq1.Object);
             basketMoq2.Setup(x => x.Store()).Returns(storeMoq2.Object);
 
+
             shoppingBaskets = new List<ShoppingBasket>();
             items1 = new List<Item>();
             items2 = new List<Item>();
@@ -82,16 +86,30 @@ namespace MarketProject.Domain.Tests
         public void TestPurchase_PaymentNShippingAproved()
         {
             //arrange
-            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(true);
-            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-            discountMoq.Setup(x => x.calculateDiscounts(It.IsAny<ShoppingBasket>())).Returns(0);
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => 1));
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => 1));
+            discountMoq.Setup(x => x.calculateDiscounts(It.IsAny<ISearchablePriceable>())).Returns(0);
+            purchaseMoq.Setup(x => x.checkPolicyConditions(It.IsAny<ISearchablePriceable>())).Returns(true);
             //action
             //calculateDiscounts
             try
             {
-                purchase.Purchase("adr","", "", "","", cartMoq.Object, "", "");
+                purchase.Purchase("adr", "", "", "", "", cartMoq.Object, "", "");
             }
             catch (Exception ex) { Assert.Fail(ex.Message); }
+        }
+
+        [TestMethod]
+        public void TestPurchase_PaymentNShippingAproved_PurchasePolicyNotApproved()
+        {
+            //arrange
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => 1));
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => 1));
+            discountMoq.Setup(x => x.calculateDiscounts(It.IsAny<ISearchablePriceable>())).Returns(0);
+            purchaseMoq.Setup(x => x.checkPolicyConditions(It.IsAny<ISearchablePriceable>())).Returns(false);
+            //action
+            //calculateDiscounts
+            Assert.IsNotNull(purchase.Purchase("adr", "", "", "", "", cartMoq.Object, "", "").Exception);
         }
 
         [TestMethod]
@@ -99,8 +117,8 @@ namespace MarketProject.Domain.Tests
         {
             //arrange
             setUp();
-            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(true);
-            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => 1));
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => -1));
             //action
             try
             {
@@ -108,14 +126,14 @@ namespace MarketProject.Domain.Tests
                 Assert.Fail();
             }
             catch (Exception ex) { }
-
         }
+
         [TestMethod]
         public void TestPurchase_ShippingAproved_PaymentNot()
         {
             //arrange
-            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(false);
-            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => -1));
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => 1));
             //action
             try
             {
@@ -123,14 +141,14 @@ namespace MarketProject.Domain.Tests
                 Assert.Fail();
             }
             catch (Exception ex) { }
-
         }
+
         [TestMethod]
         public void TestPurchase_ShippingNPaymentNotAproved()
         {
             //arrange
-            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>())).Returns(false);
-            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(false);
+            paymentProxyMoq.Setup(x => x.Pay(It.IsAny<double>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => -1));
+            shippingProxyMoq.Setup(x => x.ShippingApproval(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(new System.Threading.Tasks.Task<int>(() => -1));
             //action
             try
             {
@@ -138,7 +156,6 @@ namespace MarketProject.Domain.Tests
                 Assert.Fail();
             }
             catch (Exception ex) { }
-
         }
     }
 }

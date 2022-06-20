@@ -12,20 +12,31 @@ namespace MarketWeb.Server.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private Stock _stock;
+        public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
         private DiscountPolicy _discountPolicy;
         private List<MessageToStore> _messagesToStore;
+        public List<MessageToStore> MessagesToStore => _messagesToStore;
         private Rating _rating;
+        public Rating Rating => _rating;
         private List<StoreManager> _managers;
         private List<StoreOwner> _owners;
         private StoreFounder _founder;
         private String _storeName;
         private StoreState _state;
-        public List<MessageToStore> MessagesToStore => _messagesToStore;
-        
-        public Rating Rating => _rating;
+        // bidder (if registered -> username, else -> authentication token) to bids
+        private IDictionary<String, List<Bid>> _biddedItems;
+        private Dictionary<String, List<String>> _standbyOwners;
 
-        public Store(Stock stock, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy, List<MessageToStore> messagesToStore, Rating rating, List<StoreManager> managers, List<StoreOwner> owners, StoreFounder founder, string storeName, StoreState state)
+        public String StoreName => _storeName;
+        public StoreState State => _state;
+
+        public bool isActive()
+        {
+            return _state == StoreState.Active;
+        }
+
+        public Store(Stock stock, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy, List<MessageToStore> messagesToStore, Rating rating, List<StoreManager> managers, List<StoreOwner> owners, StoreFounder founder, string storeName, StoreState state, IDictionary<string, List<Bid>> biddedItems)
         {
             _stock = stock;
             _purchasePolicy = purchasePolicy;
@@ -37,16 +48,7 @@ namespace MarketWeb.Server.Domain
             _founder = founder;
             _storeName = storeName;
             _state = state;
-        }
-
-        public Stock Stock => _stock;
-        public String StoreName => _storeName;
-
-        public StoreState State => _state;
-
-        public bool isActive()
-        {
-            return _state == StoreState.Active;
+            _biddedItems = biddedItems;
         }
 
         public Store(String storeName, StoreFounder founder, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
@@ -61,6 +63,8 @@ namespace MarketWeb.Server.Domain
             _owners = new List<StoreOwner>();
             _founder = founder;
             _state = StoreState.Active;
+            _biddedItems = new Dictionary<String, List<Bid>>();
+            _standbyOwners = new Dictionary<String, List<String>>();
         }
 
         public Item ReserveItem(int itemID, int amount)
@@ -103,7 +107,8 @@ namespace MarketWeb.Server.Domain
             LogErrorMessage("AddStoreManager", errorMessage);
             throw new Exception(errorMessage);
         }
-        public bool AddStoreOwner(StoreOwner newOwner)
+
+        public StoreOwner AddStoreOwner(StoreOwner newOwner)
         {
             String errorMessage;
             lock (_managers)
@@ -113,7 +118,7 @@ namespace MarketWeb.Server.Domain
                     if (!hasRoleInStore(newOwner.Username))
                     {
                         _owners.Add(newOwner);
-                        return true;
+                        return newOwner;
                     }
                 }
             }
@@ -121,6 +126,7 @@ namespace MarketWeb.Server.Domain
             LogErrorMessage("AddStoreOwner", errorMessage);
             throw new Exception(errorMessage);
         }
+
         private bool hasRoleInStore(string Username)
         {
             return GetOwner(Username) != null || GetManager(Username) != null || _founder.Username.Equals(Username);
@@ -173,6 +179,12 @@ namespace MarketWeb.Server.Domain
         public List<Item> getItemsByName(String itemName)
         {
             return _stock.GetItemsByName(itemName);
+        }
+
+        internal void markAcceptedBidAsUsed(string bidder, int itemID)
+        {
+            Bid bid = GetBid(itemID, bidder);
+            _biddedItems[bidder].Remove(bid);
         }
 
         public List<String> GetStoreRolesByName()
@@ -266,6 +278,7 @@ namespace MarketWeb.Server.Domain
             }
             _stock.RemoveItem(itemId);
         }
+
 
         public void AddMessage(MessageToStore message)
         {
@@ -361,6 +374,7 @@ namespace MarketWeb.Server.Domain
             throw new Exception(errorMessage);
 
         }
+
         private List<string> GetAllApointeeOwners(string appinterOwner) 
         { 
             List<string> owners = new List<string>();
@@ -371,6 +385,7 @@ namespace MarketWeb.Server.Domain
             }
             return owners;
         }
+
         private List<string> GetAllApointeeManagers(string appinterOwner)
         {
             List<string> managers = new List<string>();
@@ -381,6 +396,7 @@ namespace MarketWeb.Server.Domain
             }
             return managers;
         }
+
         public bool RemoveStoreManager(string managerUsername, String appointerUsername)
         {
             String errorMessage = null;
@@ -395,17 +411,217 @@ namespace MarketWeb.Server.Domain
             throw new Exception(errorMessage);
         }
 
-        internal List<StoreManager> GetManagers()
+        public List<string> GetPurchasePolicyStrings()
+        {
+            return _purchasePolicy.GetConditionsStrings();
+        }
+
+        public List<string> GetUsernamesWithPermission(Operation op)
+        {
+            List<string> usernames = new List<string>();
+            if (_founder.hasAccess(StoreName, op))
+                usernames.Add(_founder.Username);
+            foreach(StoreOwner owner in _owners)
+                if (owner.hasAccess(StoreName, op))
+                    usernames.Add(owner.Username);
+            foreach (StoreManager manager in _managers)
+                if (manager.hasAccess(StoreName, op))
+                    usernames.Add(manager.Username);
+            return usernames;
+        }
+
+        public StoreOwner AcceptOwnerAppointment(string acceptor, string newOwner)
+        {
+            String errorMessage = null;
+            lock (_standbyOwners)
+            {
+                if (!hasRoleInStore(newOwner))
+                {
+                    if (_standbyOwners.ContainsKey(newOwner))
+                    {
+                        if (!_standbyOwners[newOwner].Contains(acceptor))
+                            _standbyOwners[newOwner].Add(acceptor);
+                        else errorMessage = "you already accepted this owner";
+                    }
+                    else
+                    {
+                        _standbyOwners[newOwner] = new List<string>();
+                        _standbyOwners[newOwner].Add(acceptor);
+                    }
+                }
+                else
+                {
+                    errorMessage = "this visitor has a role in this store already.";
+                }
+            }
+            if(errorMessage != null)
+            {
+                LogErrorMessage("AcceptOwnerAppointment", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            if (checkOwnerAcceptance(newOwner))
+            {
+                String appointer = _standbyOwners[newOwner][0];
+                _standbyOwners.Remove(newOwner);
+                return AddStoreOwner(new StoreOwner(newOwner, StoreName, appointer));
+            }
+            return null;
+        }
+
+        private bool checkOwnerAcceptance(string newOwner)
+        {
+            lock (_standbyOwners)
+            {
+                if (!_standbyOwners.ContainsKey(newOwner))
+                    throw new Exception("this username is not in standby for ownership.");
+                List<string> workers = GetUsernamesWithPermission(Operation.APPOINT_OWNER);
+                foreach (string worker in workers)
+                    if (!_standbyOwners[newOwner].Contains(worker))
+                        return false;
+            }
+            return true;
+        }
+
+        public void RejectOwnerAppointment(string rejector, string newOwner)
+        {
+            lock (_standbyOwners)
+            {
+                if (_standbyOwners.ContainsKey(newOwner))
+                    _standbyOwners.Remove(newOwner);
+                else
+                {
+                    String errorMessage = $"no such owner to reject in store '{StoreName}'.";
+                    LogErrorMessage("RejectOwnerAppointment", errorMessage);
+                    throw new Exception(errorMessage);
+                }
+            }
+        }
+
+        public Dictionary<string, List<string>> GetStandbyOwnersInStore()
+        {
+            return _standbyOwners;
+        }
+
+        public void BidItem(int itemId, int amount, double biddedPrice, string bidder)
+        {
+            if (!_biddedItems.ContainsKey(bidder))
+                _biddedItems.Add(bidder, new List<Bid>());
+            if (GetBid(itemId, bidder) == null)
+                _biddedItems[bidder].Add(new Bid(bidder, itemId, amount, biddedPrice));
+            else throw new Exception("this visitor already bid this item.");
+        }
+
+        /// <summary>
+        /// records that this role-holder accepted this bid
+        /// </summary>
+        /// <param name="acceptor"></param>
+        /// <param name="itemId"></param>
+        /// <param name="bidder"></param>
+        /// <returns>true when all parties accepted the bid. false otherwise.</returns>
+        /// <exception cref="Exception"></exception>
+        public bool AcceptBid(string acceptor, int itemId, string bidder)
+        {
+            Bid bid = GetBid(itemId, bidder);
+            if (bid == null)
+                throw new Exception("no such bid to accept.");
+            if (CheckBidAcceptance(bid))
+                throw new Exception("this bid is already accepted.");
+            bid.AcceptBid(acceptor);
+            return CheckBidAcceptance(bid);
+        }
+
+        public List<Bid> GetBids()
+        {
+            List<Bid> bids = new List<Bid>();
+            foreach (List<Bid> bidList in _biddedItems.Values)
+                bids.AddRange(bidList);
+            return bids;
+        }
+
+        public List<Bid> GetVisitorBids(String bidder)
+        {
+            if (_biddedItems.ContainsKey(bidder))
+                return _biddedItems[bidder];
+            else return null;
+        }
+
+        public bool CounterOfferBid(string acceptor, int itemId, string bidder, double counterOffer)
+        {
+            Bid bid = GetBid(itemId, bidder);
+            if (bid == null)
+                throw new Exception("no such bid to counter-offer.");
+            lock (bid)
+            {
+                if (CheckBidAcceptance(bid))
+                    throw new Exception("this bid is already accepted.");
+                bid.CounterOfferBid(acceptor, counterOffer);
+                return CheckBidAcceptance(bid);
+            }
+        }
+
+        public void RejectBid(string rejector, int itemId, string bidder)
+        {
+            Bid bid = GetBid(itemId, bidder);
+            if (bid == null)
+                throw new Exception("no such bid to reject.");
+            if (CheckBidAcceptance(bid))
+                throw new Exception("this bid is already accepted.");
+            _biddedItems[bidder].Remove(bid);
+            if(_biddedItems.Count == 0)
+                _biddedItems.Remove(bidder);
+        }
+
+        public Bid GetBid(int itemId, string bidder)
+        {
+            if(_biddedItems.ContainsKey(bidder))
+                foreach (Bid bid in _biddedItems[bidder])
+                    if (bid.ItemID == itemId)
+                        return bid;
+            return null;
+        }
+
+        public double GetBidAcceptedPrice(string bidder, int itemID, int amount)
+        {
+            Bid bid = GetBid(itemID, bidder);
+            if (bid == null)
+                throw new Exception("this bid does not exist."); 
+            if (!CheckBidAcceptance(bid))
+                throw new Exception("this bid is not yet accepted");
+            if (bid.Amount != amount)
+                throw new Exception($"the amount on wich the bid was accepted is {bid.Amount}.");
+            return bid.GetFinalPrice();
+        }
+
+        public bool CheckBidAcceptance(Bid bid)
+        {
+            if (bid == null)
+                throw new Exception("this bid does not exist.");
+            if(bid.AcceptedByAll)
+                return true;
+            List<string> lst = GetUsernamesWithPermission(Operation.STOCK_EDITOR);
+            foreach (string s in lst)
+                if (!bid.Acceptors.Contains(s))
+                    return false;
+            bid.AcceptedByAll = true;
+            return true;
+        }
+
+        public List<string> GetDiscountPolicyStrings()
+        {
+            return _discountPolicy.GetDiscountsStrings();
+        }
+
+        public List<StoreManager> GetManagers()
         {
             return _managers;
         }
 
-        internal List<StoreOwner> GetOwners()
+        public List<StoreOwner> GetOwners()
         {
             return _owners;
         }
 
-        internal StoreFounder GetFounder()
+        public StoreFounder GetFounder()
         {
             return _founder;
         }
@@ -436,14 +652,24 @@ namespace MarketWeb.Server.Domain
             return null;
         }
 
-
         public virtual DiscountPolicy GetDiscountPolicy()
         {
             return this._discountPolicy;
         }
+
         public virtual PurchasePolicy GetPurchasePolicy()
         {
             return this._purchasePolicy;
+        }
+
+        public void ResetDiscountPolicy()
+        {
+            _discountPolicy.Reset();
+        }
+
+        internal void ResetPurchasePolicy()
+        {
+            _purchasePolicy.Reset();
         }
     }
 }

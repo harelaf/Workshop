@@ -197,8 +197,8 @@ namespace MarketWeb.Service
                 return translate((ItemDiscountDTO)dis);
             if (type.Equals(typeof(MaxDiscountDTO)))
                 return translate((MaxDiscountDTO)dis);
-            if (type.Equals(typeof(NumericDiscountDTO)))
-                return translate((NumericDiscountDTO)dis);
+            //if (type.Equals(typeof(NumericDiscountDTO)))
+            //    return translate((NumericDiscountDTO)dis);
             if (type.Equals(typeof(PlusDiscountDTO)))
                 return translate((PlusDiscountDTO)dis);
             else throw new NotImplementedException($"need an implementation for {type} discount type.");
@@ -220,6 +220,25 @@ namespace MarketWeb.Service
             //    return toDTO((MaxDiscount)dis);
             //if (type.Equals(typeof(PlusDiscount)))
             //    return toDTO((PlusDiscount)dis);
+            else throw new NotImplementedException($"need an implementation for {type} discount type.");
+        }
+        public IDiscountDTO discountToDTO2(Discount dis)
+        {
+            if (dis == null)
+                return null;
+            Type type = dis.GetType();
+            if (type.Equals(typeof(AllProductsDiscount)))
+                return toDTO((AllProductsDiscount)dis);
+            if (type.Equals(typeof(CategoryDiscount)))
+                return toDTO((CategoryDiscount)dis);
+            if (type.Equals(typeof(ItemDiscount)))
+                return toDTO((ItemDiscount)dis);
+            if (type.Equals(typeof(NumericDiscount)))
+                return toDTO((NumericDiscount)dis);
+            if (type.Equals(typeof(MaxDiscount)))
+                return toDTO((MaxDiscount)dis);
+            if (type.Equals(typeof(PlusDiscount)))
+                return toDTO((PlusDiscount)dis);
             else throw new NotImplementedException($"need an implementation for {type} discount type.");
         }
         public Discount translate(AllProductsDiscountDTO discount_dto)
@@ -253,13 +272,13 @@ namespace MarketWeb.Service
             Condition condition = translateCondition(discount_dto.Condition);
             return new MaxDiscount(discount_list, condition);
         }
-        public Discount translate(NumericDiscountDTO discount_dto)
-        {
-            double priceToSubtract = discount_dto.PriceToSubtract;
-            Condition condition = translateCondition(discount_dto.Condition);
-            DateTime expiration = discount_dto.Expiration;
-            return new NumericDiscount(priceToSubtract, condition, expiration);
-        }
+        //public Discount translate(NumericDiscountDTO discount_dto)
+        //{
+        //    double priceToSubtract = discount_dto.PriceToSubtract;
+        //    Condition condition = translateCondition(discount_dto.Condition);
+        //    DateTime expiration = discount_dto.Expiration;
+        //    return new NumericDiscount(priceToSubtract, condition, expiration);
+        //}
         public Discount translate(PlusDiscountDTO discount_dto)
         {
             List<Discount> discounts = new List<Discount>();
@@ -344,24 +363,27 @@ namespace MarketWeb.Service
 
         public ShoppingBasketDTO toDTO(ShoppingBasket shoppingBasket)
         {
-            Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = new Dictionary<int ,Tuple<ItemDTO, DiscountDetailsDTO>>();
+            Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>> items = new Dictionary<int, Tuple<ItemDTO, DiscountDetailsDTO>>();
             List<NumericDiscountDTO> additionalDiscounts = new List<NumericDiscountDTO>();
-            foreach (KeyValuePair<Item, DiscountDetails> entry in shoppingBasket.Items)
+            List<BidDTO> biddedItems = new List<BidDTO>();
+            foreach (Bid bid in shoppingBasket.BiddedItems)
+                biddedItems.Add(toDTO(bid, shoppingBasket.Store().GetItem(bid.ItemID)._price));
+            foreach (KeyValuePair<Item, DiscountDetails<AtomicDiscount>> entry in shoppingBasket.Items)
             {
                 ItemDTO dto = toDTO(entry.Key, shoppingBasket.Store().StoreName);
-                items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(entry.Value, entry.Key._price));
+                items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(shoppingBasket, entry.Value, entry.Key._price));
             }
-            foreach(NumericDiscount dis in shoppingBasket.GetAdditionalDiscounts())
+            foreach (NumericDiscount dis in shoppingBasket.AdditionalDiscounts.DiscountList)
                 additionalDiscounts.Add(toDTO(dis));
-            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts);
+            return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts, biddedItems);
         }
 
-        public DiscountDetailsDTO toDTO(DiscountDetails discountDetails, double itemPrice)
+        public DiscountDetailsDTO toDTO(ISearchablePriceable searchablePriceable, DiscountDetails<AtomicDiscount> discountDetails, double itemPrice)
         {
             List<String> disList = new List<String>();
             foreach (AtomicDiscount discount in discountDetails.DiscountList)
                 disList.Add(discount.GetDiscountString(0));
-            double actualPrice = discountDetails.calcPriceFromCurrPrice(itemPrice);
+            double actualPrice = discountDetails.calcPriceFromCurrPrice(searchablePriceable, itemPrice);
             return new DiscountDetailsDTO(
                 discountDetails.Amount,
                 disList,
@@ -385,9 +407,22 @@ namespace MarketWeb.Service
         {
             return new NumericDiscountDTO(discount.PriceToSubtract, conditionToDTO(discount.Condition), discount.Expiration);
         }
-        public MaxDiscountDTO toDTO(MaxDiscount dis)
+        public MaxDiscountDTO toDTO(MaxDiscount discount)
         {
-            throw new NotImplementedException();
+            List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
+            IConditionDTO conditionDTOs = conditionToDTO(discount.Condition);
+            foreach (Discount dis in discount.DiscountList)
+                discountDTOs.Add(discountToDTO2(dis));
+            return new MaxDiscountDTO(discountDTOs, conditionDTOs);
+        }
+        // to be implemented when needed
+        public PlusDiscountDTO toDTO(PlusDiscount discount)
+        {
+            List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
+            IConditionDTO conditionDTOs = conditionToDTO(discount.Condition);
+            foreach (Discount dis in discount.DiscountList)
+                discountDTOs.Add(discountToDTO2(dis));
+            return new PlusDiscountDTO(discountDTOs, conditionDTOs);
         }
         public ShoppingCartDTO toDTO(ShoppingCart shoppingCart)
         {
@@ -436,7 +471,7 @@ namespace MarketWeb.Service
         public StoreManagerDTO toDTO(StoreManager storeManager)
         {
             return new StoreManagerDTO(
-                new HashSet<Operation>(storeManager.operations),
+                storeManager.operations,
                 storeManager.Username,
                 storeManager.StoreName,
                 storeManager.Appointer);
@@ -445,8 +480,8 @@ namespace MarketWeb.Service
         {
             return new StoreOwnerDTO(
                 storeOwner.operations,
-                storeOwner.StoreName,
                 storeOwner.Username,
+                storeOwner.StoreName,
                 storeOwner.Appointer);
         }
         public PurchasePolicyDTO toDTO(PurchasePolicy policy)
@@ -457,14 +492,19 @@ namespace MarketWeb.Service
         {
             return new DiscountPolicyDTO(toDTO(policy.Discounts));
         }
-        // to be implemented when needed
-        public PlusDiscountDTO toDTO(PlusDiscount discounts)
+        
+        public BidDTO toDTO(Bid bid, double originalPrice)
         {
-            //List<IDiscountDTO> discountDTOs = new List<IDiscountDTO>();
-            //List<IConditionDTO> conditionDTOs = new List<IConditionDTO>();
-            //foreach (Discount dis in discounts.DiscountList)
-            //    discountDTOs.Add(toDTO(dis));
-            return null;
+            return new BidDTO(
+                bid.Bidder,
+                bid.ItemID,
+                bid.Amount,
+                bid.BiddedPrice,
+                bid.CounterOffer,
+                bid.Acceptors,
+                originalPrice,
+                bid.AcceptedByAll
+                );
         }
     }
 }

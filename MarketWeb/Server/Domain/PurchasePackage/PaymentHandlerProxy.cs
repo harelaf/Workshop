@@ -1,33 +1,41 @@
-﻿using System;
+﻿using MarketWeb.Server.Domain.PurchasePackage;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MarketWeb.Server.Domain
 {
     public class PaymentHandlerProxy 
     {
-        private IDictionary<string, int> _paymentServices_name_ip;
+        private IDictionary<string, IPaymentHandler> _paymentHandlers                                              ;
         public static readonly string paymentMethode_mock_flase = "mock_false";
         public static readonly string paymentMethode_mock_true = "mock_true";
 
         public PaymentHandlerProxy()
         {
-            _paymentServices_name_ip = new Dictionary<string, int>();
+            _paymentHandlers = new Dictionary<string, IPaymentHandler>();
+        }
+
+        public void AddPaymentMethod(string name, IPaymentHandler paymentHandler)
+        {
+            _paymentHandlers.TryAdd(name, paymentHandler);
         }
         // includes mock of pay
-        public virtual bool Pay(double price, string paymentMethode)
+        public virtual async Task<int> Pay(double price, string paymentMethode, string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
-            if (paymentMethode==paymentMethode_mock_flase)
-                return false;
-            if (paymentMethode== paymentMethode_mock_true)
-                return true;
-            if(!_paymentServices_name_ip.ContainsKey(paymentMethode))
-                return true;//default mock
-            return realPay(price, _paymentServices_name_ip[paymentMethode]);
+            if (paymentMethode == paymentMethode_mock_flase)
+                return -1;
+            if (paymentMethode == paymentMethode_mock_true)
+                return 1;
+            if(!_paymentHandlers.ContainsKey(paymentMethode))
+                return -1;//default mock
+            return await _paymentHandlers[paymentMethode].Pay(cardNumber, month, year, holder, ccv, id);
         }
-        private bool realPay(double price, int ip)
+
+        public List<String> GetPaymentMethods()
         {
-            throw new NotImplementedException();
+            return new List<string>(_paymentHandlers.Keys);
         }
     }
 }

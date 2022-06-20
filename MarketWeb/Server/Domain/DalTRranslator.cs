@@ -1,6 +1,7 @@
 ﻿using MarketWeb.Server.DataLayer;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -23,7 +24,7 @@ namespace MarketWeb.Server.Domain
             return new ShoppingBasketDAL(StoreDomainToDal(basketDomain._store), items);
         }
 
-        private PurchaseDetailsDAL PurchaseDetailsToDal(int itemID, DiscountDetails discountDetails)
+        private PurchaseDetailsDAL PurchaseDetailsToDal(int itemID, DiscountDetails<AtomicDiscount> discountDetails)
         {
             List<AtomicDiscountDAL> disList = new List<AtomicDiscountDAL>();
             foreach (AtomicDiscount dis in discountDetails.DiscountList)
@@ -121,24 +122,31 @@ namespace MarketWeb.Server.Domain
             {
                 managers.Add(StoreManagerDomainToDal(manager));
             }
-            return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, PrchasePolicyDomainToDal(store.GetPurchasePolicy()), DiscountPolicyDomainToDal(store.GetDiscountPolicy()));
+            return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, 
+                                                                        PrchasePolicyDomainToDal(store.GetPurchasePolicy()), 
+                                                                        DiscountPolicyDomainToDal(store.GetDiscountPolicy()));
         }
 
-        private DiscountPolicyDAL DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
+        private String DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
         {
-            List<DiscountDAL> disList = new List<DiscountDAL>();
-            foreach (Discount dis in discountPolicy.Discounts.DiscountList)
-                disList.Add(DiscountDomainToDal(dis));
-            return new DiscountPolicyDAL(disList);
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(discountPolicy, settings);
         }
 
-        private PurchasePolicyDAL PrchasePolicyDomainToDal(PurchasePolicy purchasePolicy)
+        private String PrchasePolicyDomainToDal(PurchasePolicy purchasePolicy)
         {
-            List<ConditionDAL> conditions = new List<ConditionDAL>();
-            foreach(Condition cond in purchasePolicy.Conditions.ConditionList)
-                conditions.Add(ConditionDomainToDal(cond));
-            PurchasePolicyDAL ppDal = new PurchasePolicyDAL(conditions);
-            return ppDal;
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+
+            return JsonConvert.SerializeObject(purchasePolicy, settings);
         }
 
         private ConditionDAL ConditionDomainToDal(Condition cond)
@@ -262,8 +270,8 @@ namespace MarketWeb.Server.Domain
         public Store StoreDalToDomain(StoreDAL storeDAL)
         {
             Stock stock = StockDalToDomain(storeDAL._stock);
-            PurchasePolicy purchasePolicy = PurchasePolicyDalToDomain(storeDAL._purchasePolicy);
-            DiscountPolicy discountPolicy = DiscountPolicyDalToDomain(storeDAL._discountPolicy);
+            PurchasePolicy purchasePolicy = PurchasePolicyDalToDomain(storeDAL._purchasePolicyJSON);
+            DiscountPolicy discountPolicy = DiscountPolicyDalToDomain(storeDAL._discountPolicyJSON);
             StoreFounderDAL founderDAL = DalController.GetInstance().GetStoreFounder(storeDAL._storeName);
             StoreFounder founder = StoreFounderDalToDomain(founderDAL);
             String storeName = storeDAL._storeName;
@@ -289,27 +297,35 @@ namespace MarketWeb.Server.Domain
             }
 
             return new Store(stock, purchasePolicy, discountPolicy, messagesToStore, rating
-                , managers, owners, founder,storeName ,state);
+                , managers, owners, founder,storeName ,state, new Dictionary<string, List<Bid>>());// bid!!!!!!!!!!!!!!!!!!!!
         }
 
-        private DiscountPolicy DiscountPolicyDalToDomain(DiscountPolicyDAL discountPolicy)
+        private DiscountPolicy DiscountPolicyDalToDomain(string discountPolicyJSON)
         {
-            DiscountPolicy policy = new DiscountPolicy();
-            foreach (DiscountDAL discount in discountPolicy._discounts)
+            if(discountPolicyJSON == null || discountPolicyJSON == "")
             {
-                policy.AddDiscount(DiscountDalToDomain(discount));
+                return new DiscountPolicy();
             }
-            return policy;
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            return JsonConvert.DeserializeObject<DiscountPolicy>(discountPolicyJSON, settings);
         }
 
-        private PurchasePolicy PurchasePolicyDalToDomain(PurchasePolicyDAL purchasePolicy)
+        private PurchasePolicy PurchasePolicyDalToDomain(string purchasePolicyJSON)
         {
-            PurchasePolicy policy = new PurchasePolicy();
-            foreach (ConditionDAL condition in purchasePolicy.conditions)
+            if (purchasePolicyJSON == null || purchasePolicyJSON == "")
             {
-                policy.AddCondition(ConditionDalToDomain(condition));
+                return new PurchasePolicy();
             }
-            return policy;
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            return JsonConvert.DeserializeObject<PurchasePolicy>(purchasePolicyJSON, settings);
         }
 
         public MessageToStore MessageToStoreDALToDomain(MessageToStoreDAL msg)
@@ -367,7 +383,7 @@ namespace MarketWeb.Server.Domain
         }
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
-            IDictionary<Item, DiscountDetails> items = new Dictionary<Item, DiscountDetails>();
+            IDictionary<Item, DiscountDetails<AtomicDiscount>> items = new Dictionary<Item, DiscountDetails<AtomicDiscount>>();
             foreach(KeyValuePair<int, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
             {
                 items.Add(ItemDalToDomain(DalController.GetInstance().GetItem(i_a.Key)), PurchaseDetailsDALToDomain(i_a.Value));
@@ -375,12 +391,12 @@ namespace MarketWeb.Server.Domain
             return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items);
         }
 
-        private DiscountDetails PurchaseDetailsDALToDomain(PurchaseDetailsDAL value)
+        private DiscountDetails<AtomicDiscount> PurchaseDetailsDALToDomain(PurchaseDetailsDAL value)
         {
             ISet<AtomicDiscount> disList = new HashSet<AtomicDiscount>();
             foreach (AtomicDiscountDAL dis in value.discountList)
                 disList.Add(AtomicDiscountDalToDomain(dis));
-            DiscountDetails details = new DiscountDetails(value.amount, disList);
+            DiscountDetails<AtomicDiscount> details = new DiscountDetails<AtomicDiscount>(value.amount, disList);
             return details;
         }
 
@@ -671,14 +687,14 @@ namespace MarketWeb.Server.Domain
         public ShoppingBasketDAL ShoppingBasketDomainToDAL(ShoppingBasket basket)
         {
             IDictionary<int, PurchaseDetailsDAL> items = new Dictionary<int, PurchaseDetailsDAL>();
-            foreach (KeyValuePair<Item, DiscountDetails> i_a in basket.Items)
+            foreach (KeyValuePair<Item, DiscountDetails<AtomicDiscount>> i_a in basket.Items)
             {
                 items.Add(i_a.Key.ItemID, PurchaseDetailsDomainToDal(i_a.Key.ItemID, i_a.Value));
             }
             return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items);
         }
 
-        private PurchaseDetailsDAL PurchaseDetailsDomainToDal(int itemID, DiscountDetails value)
+        private PurchaseDetailsDAL PurchaseDetailsDomainToDal(int itemID, DiscountDetails<AtomicDiscount> value)
         {
             List<AtomicDiscountDAL> disList = new List<AtomicDiscountDAL>();
             foreach (AtomicDiscount dis in value.DiscountList)

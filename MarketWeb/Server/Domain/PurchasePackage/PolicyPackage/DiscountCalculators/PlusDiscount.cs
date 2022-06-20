@@ -12,31 +12,37 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {
-            double sumDis = 0;
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return 0;
+            double totalPrice = searchablePriceable.GetTotalPrice();
+            double totalPriceAfterDiscount = totalPrice;
             foreach(Discount dis in DiscountList)
-                sumDis += dis.GetTotalDiscount(searchablePriceable);
-            return sumDis;
+                totalPriceAfterDiscount = dis.calcPriceFromCurrPrice(searchablePriceable, totalPriceAfterDiscount);
+            return totalPrice - totalPriceAfterDiscount;
         }
         public override void applyDiscount(ISearchablePriceable searchablePriceable)
         {
-            foreach(Discount dis in DiscountList)
+            if (!CheckCondition(searchablePriceable) || GetExpirationDate(searchablePriceable) < DateTime.Now)
+                return;
+            foreach (Discount dis in DiscountList)
                 dis.applyDiscount(searchablePriceable);
         }
         public override String GetDiscountString(int indent)
         {
             String pad = newLine(indent);
             String pad2 = newLine(indent + 1);
-            String str = pad + "sum all of the following:\n";
+            String str = pad + "sum all of the following:";
             int index = 0;
             foreach(Discount discount in DiscountList)
             {
-                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 1)}";
+                str += $"{pad2}{++index}. {discount.GetDiscountString(indent + 2)}";
             }
+            str += ConditionToString(indent);
             return str;
         }
         public override DateTime GetExpirationDate(ISearchablePriceable searchablePriceable)
         {
-            DateTime ans = DateTime.MinValue;
+            DateTime ans = DateTime.MaxValue;
             foreach (Discount dis in DiscountList)
             {
                 if (dis.GetTotalDiscount(searchablePriceable) > 0)
@@ -62,6 +68,14 @@ namespace MarketWeb.Server.Domain.PolicyPackage
                 str += $"{pad2}{++index}. {discount.GetActualDiscountString(searchablePriceable, indent + 1)}";
             }
             return str;
+        }
+        public override double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
+        {
+            if (!CheckCondition(searchablePriceable))
+                return currPrice;
+            foreach (Discount dis in DiscountList)
+                currPrice = dis.calcPriceFromCurrPrice(searchablePriceable, currPrice);
+            return currPrice;
         }
     }
 }

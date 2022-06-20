@@ -18,20 +18,43 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public void AddDiscount(Discount discount)
         {
-            _discounts.AddDiscount(discount);
+            lock (Discounts)
+            {
+                Discounts.AddDiscount(discount);
+            }
         }
         public virtual double calculateDiscounts(ISearchablePriceable searchablePriceable)
         {
-            return _discounts.GetTotalDiscount(searchablePriceable);
+            return Discounts.GetTotalDiscount(searchablePriceable);
+        }
+        public virtual double calcActualPrice(ISearchablePriceable searchablePriceable)
+        {
+            return Discounts.calcPriceFromCurrPrice(searchablePriceable, searchablePriceable.GetTotalPrice());
         }
         public string GetActualDiscountString(ISearchablePriceable searchablePriceable)
         {
-            return _discounts.GetActualDiscountString(searchablePriceable, 0);
+            return Discounts.GetActualDiscountString(searchablePriceable, 0);
         }
 
         public void ApplyDiscounts(ISearchablePriceable searchablePriceable)
         {
             Discounts.applyDiscount(searchablePriceable);
+        }
+
+        internal void Reset()
+        {
+            lock (Discounts)
+            {
+                Discounts.DiscountList.Clear();
+            }
+        }
+
+        internal List<string> GetDiscountsStrings()
+        {
+            List<string> discountsStrings = new List<string>();
+            foreach (Discount dis in Discounts.DiscountList)
+                discountsStrings.Add(dis.GetDiscountString(0));
+            return discountsStrings;
         }
     }
 }

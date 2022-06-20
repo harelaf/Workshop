@@ -88,6 +88,13 @@ namespace MarketWeb.Server.Service
             int LineNumber = -1;
             foreach (string fileline in File.ReadLines(FILE_PATH))
             {
+                if (LineNumber == -1)
+                {
+                    if (fileline.Trim().Equals("ignore_file"))
+                    {
+                        return;
+                    }
+                }
                 LineNumber++;
                 String line = fileline.Trim();
                 if (line.Length == 0)
@@ -286,12 +293,12 @@ namespace MarketWeb.Server.Service
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
 
-        private void ParsePurchaseMyCart(String args_)
+        private async void ParsePurchaseMyCart(String args_)
         {
             String MethodName = "PurchaseMyCart";
             String[] args = ParseArgs(args_, MethodName, 8);
             int authIndex = ParseAuthIndex(args[0], MethodName);
-            Response response = api.PurchaseMyCart(tokens[authIndex - 1], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+            Response response = await api.PurchaseMyCart(tokens[authIndex - 1], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
             if (response.ErrorOccured)
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
@@ -321,7 +328,7 @@ namespace MarketWeb.Server.Service
             String MethodName = "AddStoreOwner";
             String[] args = ParseArgs(args_, MethodName, 3);
             int authIndex = ParseAuthIndex(args[0], MethodName);
-            Response response = api.AddStoreOwner(tokens[authIndex - 1], args[1], args[2]);
+            Response response = api.AcceptOwnerAppointment(tokens[authIndex - 1], args[1], args[2]);
             if (response.ErrorOccured)
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
