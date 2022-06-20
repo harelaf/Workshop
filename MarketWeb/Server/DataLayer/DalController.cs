@@ -202,8 +202,8 @@ namespace MarketWeb.Server.DataLayer
             StoreDAL store = new StoreDAL(storeName, StoreState.Active);
             store._stock = new List<StockItemDAL>();
             store._rating = new List<RateDAL>();
-            store._purchasePolicy = new PurchasePolicyDAL();
-            store._discountPolicy = new DiscountPolicyDAL();
+            store._purchasePolicyJSON = "";
+            store._discountPolicyJSON = "";
             context.StoreDALs.Add(store);
             StoreFounderDAL founder = new StoreFounderDAL();
             founder._username = founderName;
