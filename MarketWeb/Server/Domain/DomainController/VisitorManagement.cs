@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MarketWeb.Server.DataLayer;
+using System.Threading.Tasks;
 using MarketWeb.Server.Service;
 using MarketWeb.Service;
 using MarketWeb.Shared;
@@ -90,7 +91,10 @@ namespace MarketWeb.Server.Domain
             }
         }
 
-
+        public void SetNotificationHub (NotificationHub notificationHub)
+        {
+            _notificationHub = notificationHub;
+        }
 
         // ===================================== GETTERS =====================================
 
@@ -130,6 +134,7 @@ namespace MarketWeb.Server.Domain
             return _loggedinVisitorsTokens[token].Username;
         }
 
+
         /// <summary>
         /// Returns the Registered associated with a token.
         /// </summary>
@@ -145,6 +150,12 @@ namespace MarketWeb.Server.Domain
                 throw new ArgumentException(errorMessage);
             }
             return _loggedinVisitorsTokens[token];
+        }
+
+        internal void AddAcceptedBidToCart(string visitorToken, Store store, int itemId, int amount, double price)
+        {
+            Visitor Visitor = GetVisitorVisitor(visitorToken);
+            Visitor.AddAcceptedBidToCart(store, itemId, amount, price);
         }
 
         /// <summary>
@@ -200,8 +211,6 @@ namespace MarketWeb.Server.Domain
             }
             return null;
         }
-
-
 
         // ===================================== Req I.1 - RESTART SYSTEM =====================================
 
@@ -576,7 +585,13 @@ namespace MarketWeb.Server.Domain
             return amount;
         }
 
-        public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity, int amountdiff)
+        internal int RemoveAcceptedBidFromCart(string authToken, int itemID, String storeName)
+        {
+            Visitor Visitor = GetVisitorVisitor(authToken);
+            return Visitor.RemoveAcceptedBidFromCart(itemID, storeName);
+        }
+
+        public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity)
         {
             String errorMessage;
             if (newQuantity <= 0)
@@ -602,7 +617,7 @@ namespace MarketWeb.Server.Domain
             return newQuantity - old_quantity;
         }
 
-        public ShoppingCart PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode)
+        public async Task<ShoppingCart> PurchaseMyCart(String VisitorToken, String address, String city, String country, String zip, String purchaserName, string paymentMethode,string shipmentMethode,  string cardNumber = null, string month = null, string year = null, string holder = null, string ccv = null, string id = null)
         {
             String errorMessage;
             Visitor Visitor = GetVisitorVisitor(VisitorToken);
@@ -612,7 +627,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("PurchaseMyCart", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return Visitor.PurchaseMyCart(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode);
+            return await Visitor.PurchaseMyCartAsync(address, city, country, zip, purchaserName, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
         }
 
 
@@ -702,8 +717,16 @@ namespace MarketWeb.Server.Domain
             string authToken = GetLoggedInToken(usernameReciever); 
             if (authToken != null)
             {
-                _notificationHub.SendNotification(authToken, new DTOtranslator().toDTO(notifyMessage));
+                if (_notificationHub != null)
+                {
+                    _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
+                }
             }
+        }
+        internal void SendNotificationMessageToVisitor(string authToken, string storeName, string title, string message)
+        {
+            NotifyMessage notifyMessage = new NotifyMessage(storeName, title, message, "visitor");
+            _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
         }
 
         internal void SendStoreMessageReplyment(MessageToStore msg, string replier, string regUserName, string reply)

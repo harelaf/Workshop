@@ -34,6 +34,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         public abstract String GetDiscountString(int indent);
         public abstract String GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent);
         public abstract DateTime GetExpirationDate(ISearchablePriceable searchablePriceable);
+        public abstract double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice);
         protected String newLine(int numOfTabs)
         {
             String str = "\n";

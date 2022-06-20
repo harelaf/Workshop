@@ -56,6 +56,12 @@
             <br />
             <br />
         }
+        @if (StoreIsActive && CanRespondToStoreBids)
+        {
+            <button class="btn btn-primary" @onclick="() => ViewBidsPage()">View @(StoreInfo.StoreName) Bids</button>
+            <br />
+            <br />
+        }
     </div>
 
     <br />
@@ -125,24 +131,66 @@
                 </button>
             </EditForm>
             <h5>Manage Permission of Store Manager: </h5>
-            <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="ModifyManagerPermissionsForm">
-                <DataAnnotationsValidator />
-                <div class="form-group">
-                    <label>Username</label>
-                    <InputText @bind-Value="ModifyStoreManagerPermissionsModel.Username" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>Receive information and Reply</label>
-                    <input id="ReceiveInfoAndReply" @bind-value="ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply" name="ReciveInfoAndReply" type="checkbox" />
-                </div>
-                <div class="form-group">
-                    <label>Receive Store Purchase History</label>
-                    <input id="ReceiveStorePurchaseHistory" @bind-value="ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory" name="ReceiveStorePurchaseHistory" type="checkbox" />
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    Modify Permissions
-                </button>
-            </EditForm>
+            <p>
+                List of available permissions:
+                <br />
+                MANAGE_INVENTORY - Add/Remove items.
+                <br />
+                CHANGE_SHOP_AND_DISCOUNT_POLICY - Allows to change store policies.
+                <br />
+                APPOINT_OWNER - Allows appointing of owners.
+                <br />
+                REMOVE_OWNER - Allows removing of owners.
+                <br />
+                APPOINT_MANAGER - Allows appointing of managers.
+                <br />
+                REMOVE_MANAGER - Allows removing of managers.
+                <br />
+                CHANGE_MANAGER_PREMISSIONS - Allows changing manager permissions.
+                <br />
+                STORE_WORKERS_INFO - Can view store staff information.
+                <br />
+                RECEIVE_AND_REPLY_STORE_MESSAGE - Can view and reply to store messages.
+                <br />
+                STORE_HISTORY_INFO - Can view store purchase history.
+                <br />
+                STOCK_EDITOR - Can edit stock.
+                <br />
+            </p>
+            <div id="AddPermission">
+                <h6>Add Permission</h6>
+                <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="AddManagerPermissionsForm">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label>Username</label>
+                        <InputText @bind-Value="ModifyStoreManagerPermissionsModel.Username" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Permission</label>
+                        <input id="Permission" @bind-value="ModifyStoreManagerPermissionsModel.Permission" name="Permission" type="text" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Add Permission
+                    </button>
+                </EditForm>
+            </div>
+            <div id="RemovePermission">
+                <h6>Remove Permission</h6>
+                <EditForm Model="@ModifyStoreManagerPermissionsModel" OnValidSubmit="RemoveManagerPermissionsForm">
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label>Username</label>
+                        <InputText @bind-Value="ModifyStoreManagerPermissionsModel.Username" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Permission</label>
+                        <input id="Permission" @bind-value="ModifyStoreManagerPermissionsModel.Permission" name="Permission" type="text" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Remove Permission
+                    </button>
+                </EditForm>
+            </div>
         }
     </div>
     <br />
@@ -167,6 +215,11 @@
                 </button>
             </EditForm>
         }
+    </div>
+    <br />
+    <br />
+    <div>
+        <button class="btn btn-primary" @onclick="() => ViewMyBidsAtStorePage()">View My Bids</button>
     </div>
     <br />
     <br />
@@ -327,7 +380,7 @@
                 <div class="form-group">
                     <label>Rating</label>
                     <div>
-                        <input type="range" @bind-value="@(RateStoreModel.rating)" id="rating" name="rating" title="rating" min="0" max="10" oninput="this.nextElementSibling.value = this.value"/>
+                        <input type="range" @bind-value="@(RateStoreModel.rating)" id="rating" name="rating" title="rating" min="0" max="10" oninput="this.nextElementSibling.value = this.value" />
                         <output>5</output>
                     </div>
                 </div>
@@ -341,6 +394,49 @@
             </EditForm>
         </div>
     }
+    <div id="Discount Policy">
+        <br />
+        <h2>Display Policies</h2>
+        <button class="btn btn-primary" @onclick="() => DisplayPurchasePolicy()">
+            Display Purchase Policy
+        </button>
+        <button class="btn btn-primary" @onclick="() => DisplayDiscountPolicy()">
+            Display Discount Policy
+        </button>
+        <br />
+        @if(discountStrList != null && discountStrList.Count > 0)
+        {
+            <table class="table" style="white-space:pre-wrap; width:100%">
+                <tr>
+                    <th></th>
+                    <th>Discount</th>
+                </tr>
+                @for(int index = 0 ; index < discountStrList.Count ; index++)
+                {
+                    <tr>
+                        <th>@(index + 1)</th>
+                        <th>@discountStrList[index]</th>
+                    </tr>
+                }
+            </table>
+        }
+        @if(purchaseStrList != null && purchaseStrList.Count > 0)
+        {
+            <table class="table" style="white-space:pre-wrap; width:100%">
+                <tr>
+                    <th></th>
+                    <th>Condition</th>
+                </tr>
+                @for(int index = 0 ; index < purchaseStrList.Count ; index++)
+                {
+                    <tr>
+                        <th>@(index + 1)</th>
+                        <th>@purchaseStrList[index]</th>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
 }
 else
 {
@@ -369,8 +465,11 @@ else
     private bool CanViewPurchaseHistory { get; set; } = false;
     private bool CanViewStoreMessages { get; set; } = false;
     private bool CanViewStoreRoles { get; set; } = false;
+    private bool CanRespondToStoreBids { get; set; } = false;
     private bool CanChangeStoreAndDiscountPolicies { get; set; } = false;
     private bool StoreIsActive { get; set; } = true;
+    List<String> discountStrList = new List<String>();
+    List<String> purchaseStrList = new List<String>();
 
     private async void OnValidSubmit()
     {
@@ -497,7 +596,8 @@ else
             CanCloseStorePermenantly = !(await _marketAPIClient.HasPermission(StoreName, "PERMENENT_CLOSE_STORE")).ErrorOccured;
             CanViewPurchaseHistory = !(await _marketAPIClient.HasPermission(StoreName, "STORE_HISTORY_INFO")).ErrorOccured;
             CanViewStoreMessages = !(await _marketAPIClient.HasPermission(StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE")).ErrorOccured;
-            CanViewStoreRoles = !(await _marketAPIClient.HasPermission(StoreName, "MANAGE_STOCK")).ErrorOccured;//should add new op:
+            CanViewStoreRoles = !(await _marketAPIClient.HasPermission(StoreName, "STORE_WORKERS_INFO")).ErrorOccured;//should add new op:
+            CanRespondToStoreBids = !(await _marketAPIClient.HasPermission(StoreName, "STOCK_EDITOR")).ErrorOccured;
             CanChangeStoreAndDiscountPolicies = !(await _marketAPIClient.HasPermission(StoreName, "CHANGE_SHOP_AND_DISCOUNT_POLICY")).ErrorOccured;
         }
         catch (Exception ex)
@@ -511,46 +611,45 @@ else
         //return view;
     }
 
-    private async void ModifyManagerPermissionsForm()
+    private async void AddManagerPermissionsForm()
     {
         // reset alerts on submit
         AlertService.Clear();
-        bool askHistoryPermission = ModifyStoreManagerPermissionsModel.ReceiveStorePurchaseHistory;
-        bool askMsgPermission = ModifyStoreManagerPermissionsModel.ReceiveInfoAndReply;
+
         string managerUserName = ModifyStoreManagerPermissionsModel.Username;
+        string permission = ModifyStoreManagerPermissionsModel.Permission;
         ModifyStoreManagerPermissionsModel = new Models.ModifyStoreManagerPermissionsModel();
         try
         {
-            string feedback = "";
-            if (!askHistoryPermission)
-            {//remove history permmision
-                Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
-                if (response.ErrorOccured)
-                    throw new Exception(response.ErrorMessage);
-                feedback += "remove history permssion from store manager: " + managerUserName + " ; ";
-            }
-            if (askHistoryPermission)
-            {//add history permmision
-                Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "STORE_HISTORY_INFO");
-                if (response.ErrorOccured)
-                    throw new Exception(response.ErrorMessage);
-                feedback += "add history permssion to store manager: " + managerUserName + " ; ";
-            }
-            if (!askMsgPermission)
-            {//remove msg permmision
-                Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
-                if (response.ErrorOccured)
-                    throw new Exception(response.ErrorMessage);
-                feedback += "remove msg permssion from store manager: " + managerUserName + " ; ";
-            }
-            if (askMsgPermission)
-            {//add msg permmision
-                Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, "RECEIVE_AND_REPLY_STORE_MESSAGE");
-                if (response.ErrorOccured)
-                    throw new Exception(response.ErrorMessage);
-                feedback += "add msg permssion to store manager: " + managerUserName + " ; ";
-            }
-            AlertService.Info(feedback);
+            Response response = await _marketAPIClient.AddManagerPermission(managerUserName, StoreName, permission);
+            if (response.ErrorOccured)
+                throw new Exception(response.ErrorMessage);
+            AlertService.Info("Successfully added permission to manager!");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void RemoveManagerPermissionsForm()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        string managerUserName = ModifyStoreManagerPermissionsModel.Username;
+        string permission = ModifyStoreManagerPermissionsModel.Permission;
+        ModifyStoreManagerPermissionsModel = new Models.ModifyStoreManagerPermissionsModel();
+        try
+        {
+            Response response = await _marketAPIClient.RemoveManagerPermission(managerUserName, StoreName, permission);
+            if (response.ErrorOccured)
+                throw new Exception(response.ErrorMessage);
+            AlertService.Info("Successfully removed permission to manager!");
         }
         catch (Exception ex)
         {
@@ -770,8 +869,70 @@ else
         StateHasChanged();
     }
 
-    private async void ViewPoliciesPage()
+    private async void DisplayPurchasePolicy()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        discountStrList.Clear();
+        try
+        {
+            Response<List<String>> response = await _marketAPIClient.GetPurchasePolicyStrings(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            purchaseStrList = response.Value;
+            AlertService.Info("Successfully display the purchase policy of this store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void DisplayDiscountPolicy()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        purchaseStrList.Clear();
+        try
+        {
+            Response<List<String>> response = await _marketAPIClient.GetDiscountPolicyStrings(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            discountStrList = response.Value;
+            AlertService.Info("Successfully display the discount policy of this store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private void ViewPoliciesPage()
     {
         NavigationManager.NavigateTo($"/StorePage/{StoreName}/Policies");
+    }
+
+    private void ViewBidsPage()
+    {
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreBids");
+    }
+
+    private void ViewMyBidsAtStorePage()
+    {
+        NavigationManager.NavigateTo($"/StorePage/{StoreName}/MyBidsAtStore");
     }
 }

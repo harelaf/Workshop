@@ -160,7 +160,7 @@ namespace MarketWeb.Server.Domain.PurchasePackage.PolicyPackage
 
             ConditionIndex++;
 
-            while (ConditionString[ConditionIndex] == ' ')
+            while (ConditionIndex < ConditionString.Length && ConditionString[ConditionIndex] == ' ')
             {
                 ConditionIndex++;
             }

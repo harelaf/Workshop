@@ -84,7 +84,6 @@ namespace MarketWeb.Server.Domain.PurchasePackage.DiscountPolicyPackage
                 DiscountIndex++;
                 discount = ParseDiscount();
             }
-            //_logger.Error(discount.GetDiscountString(0));
             return discount;
         }
 

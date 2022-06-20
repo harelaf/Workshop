@@ -24,11 +24,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
                     break;
                 }
             }
-            if (ToNegative)
-            {
-                return !result;
-            }
-            return result;
+            return checkNegative(result);
         }
         public override String GetConditionString(int indent)
         {

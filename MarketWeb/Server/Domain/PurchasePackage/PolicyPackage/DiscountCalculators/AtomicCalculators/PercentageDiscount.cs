@@ -27,8 +27,10 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             _percentage_to_subtract = percentage_to_subtract;
         }
-        public override double calcPriceFromCurrPrice(double currPrice)
+        public override double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
         {
+            if (!CheckCondition(searchablePriceable))
+                return currPrice;
             return currPrice * (100 - PercentageToSubtract) / 100;
         }
     }

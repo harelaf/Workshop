@@ -52,7 +52,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestPurchaseCart_CartIsEmpty()
         {
-            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true);
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true).Result;
             if (!guest_res.ErrorOccured)
                 Assert.Fail("should've faild: can't purchase empty cart");
         }
@@ -61,7 +61,7 @@ namespace AcceptanceTest
         public void Test_happy_Purchase_Guest()
         {
             marketAPI.AddItemToCart(guest_VisitorToken, itemId_inGuestCart, storeName_inSystem, itemAmount_inGuestCart);
-            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true);
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true).Result;
             if (guest_res.ErrorOccured)
                 Assert.Fail("should'nt faild");
             //check recored added in store history:
@@ -98,7 +98,7 @@ namespace AcceptanceTest
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             int amount_of_item_before_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
 
-            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_true, shippingMethode_mock_false);
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_true, shippingMethode_mock_false).Result;
             if (!guest_res.ErrorOccured)
                 Assert.Fail("should faild");
 
@@ -123,7 +123,7 @@ namespace AcceptanceTest
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             int amount_of_item_before_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
 
-            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_true);
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_true).Result;
             if (!guest_res.ErrorOccured)
                 Assert.Fail("should faild");
 
@@ -148,7 +148,7 @@ namespace AcceptanceTest
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             int amount_of_item_before_guest_faild_purchase = getAmountOfItemInStock(itemId_inGuestCart, store.Stock);
 
-            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_false);
+            Response guest_res = marketAPI.PurchaseMyCart(guest_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_false).Result;
             if (!guest_res.ErrorOccured)
                 Assert.Fail("should faild");
 
@@ -170,7 +170,7 @@ namespace AcceptanceTest
         public void Test_happy_Purchase_Registred()
         {
             marketAPI.AddItemToCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inRegCart);
-            Response guest_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true);
+            Response guest_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi",paymentMethode_mock_true, shippingMethode_mock_true).Result;
             if (guest_res.ErrorOccured)
                 Assert.Fail("should'nt faild");
             //check recored added in store history:
@@ -238,7 +238,7 @@ namespace AcceptanceTest
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             int amount_of_item_before_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
 
-            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_true, shippingMethode_mock_false);
+            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_true, shippingMethode_mock_false).Result;
             if (!reg_res.ErrorOccured)
                 Assert.Fail("should faild");
 
@@ -267,7 +267,7 @@ namespace AcceptanceTest
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             int amount_of_item_before_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
 
-            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_true);
+            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_true).Result;
             if (!reg_res.ErrorOccured)
                 Assert.Fail("should faild");
 
@@ -296,7 +296,7 @@ namespace AcceptanceTest
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
             int amount_of_item_before_reg_faild_purchase = getAmountOfItemInStock(itemId_inRegCart, store.Stock);
 
-            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_false);
+            Response reg_res = marketAPI.PurchaseMyCart(registered_VisitorToken, "", "", "", "", "shlomi", paymentMethode_mock_false, shippingMethode_mock_false).Result;
             if (!reg_res.ErrorOccured)
                 Assert.Fail("should faild");
 

@@ -3,6 +3,8 @@ using MarketProject.Domain;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MarketWeb.Server.Domain;
+using MarketWeb.Shared;
 
 namespace MarketProject.Domain.Tests
 {

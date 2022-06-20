@@ -24,6 +24,5 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             _expiration = expiration;
         }
-        public abstract double calcPriceFromCurrPrice(double currPrice);
     }
 }

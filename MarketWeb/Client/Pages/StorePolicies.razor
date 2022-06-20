@@ -88,7 +88,7 @@
             <br />
             The following is an example of a discount:
             <br />
-            <b>(MAX (PLUS CategoryPercentage_Dairy_10_2022_12_30 CategoryPercentage_Pasta_5_2022_11_23 Absolute_5_2022_7_1) ItemPercentage_Bread_50_2029_1_1)</b>
+            <b>(MAX (PLUS CategoryPercentage_Dairy_10_2022_12_30 CategoryPercentage_Pasta_5_2022_11_23 BasketAbsolute_5_2022_7_1) ItemPercentage_Bread_50_2029_1_1)</b>
         </p>
     </div>
     <br />
@@ -262,14 +262,25 @@
         <EditForm Model="@AddingPurchasePolicyModel" OnValidSubmit="AddPurchasePolicyForm">
             <DataAnnotationsValidator />
             <div class="form-group">
-                <label>Conditions (Use the AND operator)</label>
+                <label>Condition</label>
                 <InputText @bind-Value="AddingPurchasePolicyModel.ConditionString" class="form-control" />
             </div>
             <button class="btn btn-primary">
-                Add Purchase Policy
+                Add Purchase Condition
             </button>
         </EditForm>
     </div>
+</div>
+
+<div id="Discount Policy">
+    <br />
+    <h2>Reset Purchase and Discount Policy</h2>
+    <button class="btn btn-primary" @onclick="() => ResetPurchasePolicy()">
+        Reset Purchase Policy
+    </button>
+    <button class="btn btn-primary" @onclick="() => ResetDiscountPolicy()">
+        Reset Discount Policy
+    </button>
 </div>
 
 @code {
@@ -285,6 +296,7 @@
         try
         {
             Response response = await _marketAPIClient.AddStoreDiscount(StoreName, AddingDiscountModel.ConditionString, AddingDiscountModel.DiscountString);
+            AddingDiscountModel = new Models.AddingDiscountModel();
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);
@@ -302,20 +314,65 @@
         }
     }
 
+    private async void ResetPurchasePolicy()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response response = await _marketAPIClient.ResetStorePurchasePolicy(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully reset the purchase policy of this store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void ResetDiscountPolicy()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response response = await _marketAPIClient.ResetStoreDiscountPolicy(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            AlertService.Info("Successfully reset the discount policy of this store.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+    
     private async void AddPurchasePolicyForm()
     {
         // reset alerts on submit
         AlertService.Clear();
 
-        if (!AddingPurchasePolicyModel.ConditionString.Trim().StartsWith("(AND"))
-        {
-            AlertService.Error("Use the AND operation please.");
-            return;
-        }
-
         try
         {
             Response response = await _marketAPIClient.AddStorePurchasePolicy(StoreName, AddingPurchasePolicyModel.ConditionString);
+            AddingPurchasePolicyModel = new Models.AddingPurchasePolicyModel();
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);

@@ -1,0 +1,282 @@
+﻿@page "/StorePage/{StoreName}/StoreBids"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient _marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+
+<div class="text-center" id="Title">
+    <h1 class="display-4">@(StoreName)'s Active Bids Page</h1>
+    <br />
+</div>
+@if (CanViewStoreRoles && usernameList != null)
+{
+    <h2>a bid is accepted only when all the following worker accept it.</h2>
+    <br />
+    String str = "";
+    int Index = 1;
+    @foreach (String username in usernameList)
+        str += $"{Index++}. {username}.\n";
+    <p style="white-space:pre-wrap;">@str</p> 
+}
+<h2>Bid Table</h2>
+<br />
+<p>the prices are per item</p>
+<div>
+    <table class="table" style="white-space:pre-wrap; width:100%" id="@StoreName">
+        <thead>
+            <tr>
+                <th>Item ID</th>
+                <th>Amount</th>
+                <th>Original Price</th>
+                <th>Bid</th>
+                <th>Counter Offer</th>
+                <th>Respond</th>
+                <th>Status</th>
+                <th>View Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(bids != null)
+            {
+                foreach(BidDTO bid in bids)
+                {
+                    String status = bid.AcceptedByAll ? "ACCEPTED BY ALL" : "IN PROGRESS";
+                    <tr>
+                        <th>@bid.ItemID</th>
+                        <th>@bid.Amount</th>
+                        <th>@bid.OriginalPrice</th>
+                        <th>@bid.BiddedPrice</th>
+                        <th>@bid.CounterOffer</th>
+                        <th>
+                            <button class="btn btn-primary" @onclick="() => AllowResponseToBid(bid)">Respond</button>
+                        </th>
+                        <th>@status</th>
+                        @if (CanViewStoreRoles)
+                        {
+                            <th>
+                                <button class="btn btn-primary" @onclick="() => ShowRespondedUsernames(bid)">View Status</button>
+                            </th>    
+                        }
+                    </tr>
+                    @if(bid == focusedBid)
+                    {
+                        @if (RespondedUsernames)
+                        {
+                            String str = "";
+                            @if(bid.Acceptors.Count > 0)
+                            {
+                                int Index = 1;
+                                @foreach (String username in bid.Acceptors)
+                                    str += $"{Index++}. {username}.\n";
+                            }
+                            else
+                            {
+                                str = "no acceptors yet.";
+                            }
+                            <tr><p>@str</p></tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <th><button class="btn btn-primary" @onclick="() => AcceptBid()">Accept</button></th>
+                                <th><button class="btn btn-primary" @onclick="() => RejectBid()">Reject</button></th>
+                                <th><EditForm Model="@bidModel" OnValidSubmit="CounterOffer">
+                                    <DataAnnotationsValidator />
+                                    <label>counter offer</label>
+                                    <InputNumber @bind-Value="bidModel.CounterOffer" class="form-control" />
+                                    <button type="submit" class="btn btn-primary">Counter Offer</button>
+                                </EditForm></th>
+                            </tr>
+                        }
+                    }
+                }
+            }
+            else
+            {
+                <h2>no bids here.</h2>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter] public string StoreName { get; set; }
+    private Models.BidModel bidModel = null;
+    List<BidDTO> bids = null;
+    BidDTO focusedBid = null;
+    private bool RespondedUsernames = false;
+    private bool CanViewStoreRoles { get; set; } = false;
+    private List<string> usernameList = null;
+
+
+    private void AllowResponseToBid(BidDTO bid)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            focusedBid = bid;
+            RespondedUsernames = false;
+            bidModel = new Models.BidModel();
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private void ShowRespondedUsernames(BidDTO bid)
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            focusedBid = bid;
+            RespondedUsernames = true;
+            bidModel = null;
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void CounterOffer()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        try
+        {
+            focusedBid.CounterOffer = bidModel.CounterOffer;
+            Response response = await _marketAPIClient.CounterOfferBid(StoreName, focusedBid);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            focusedBid = null;
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreBids");
+            AlertService.Info("Successfully set bid counter offer.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void AcceptBid()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response response = await _marketAPIClient.AcceptBid(StoreName, focusedBid);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            focusedBid = null;
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreBids");
+            AlertService.Info("Successfully accepted bid.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async void RejectBid()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response response = await _marketAPIClient.RejectBid(StoreName, focusedBid);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            focusedBid = null;
+            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo($"/StorePage/{StoreName}/StoreBids");
+            AlertService.Info("Successfully rejected bid.");
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AlertService.Clear();
+
+        try
+        {
+            bidModel = null;
+            Response<List<BidDTO>> response = await _marketAPIClient.GetBidsForStore(StoreName);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            bids = response.Value;
+            CanViewStoreRoles = !(await _marketAPIClient.HasPermission(StoreName, "STORE_WORKERS_INFO")).ErrorOccured;
+            if (CanViewStoreRoles)
+            {
+                Response<List<String>> res = await _marketAPIClient.GetUsernamesWithInventoryPermissionInStore(StoreName);
+                if (res.ErrorOccured)
+                {
+                    throw new Exception(response.ErrorMessage);
+                }
+                usernameList = res.Value;
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+            StateHasChanged();
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}

@@ -16,9 +16,14 @@ namespace MarketWeb.Client.Models
         [Required]
         public string purchaserName { get; set; }
         [Required]
-        public string paymentMethode { get; set; }
+        public string paymentMethod { get; set; }
         [Required]
-        public string shipmentMethode { get; set; }
+        public string shipmentMethod { get; set; }
+        public int CardNumber { get; set; }
+        public int Month { get; set; }
+        public int Year { get; set; }
+        public int CCV { get; set; }
+        public string ID { get; set; }
 
     }
 }

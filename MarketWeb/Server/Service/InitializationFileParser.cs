@@ -286,12 +286,12 @@ namespace MarketWeb.Server.Service
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }
 
-        private void ParsePurchaseMyCart(String args_)
+        private async void ParsePurchaseMyCart(String args_)
         {
             String MethodName = "PurchaseMyCart";
             String[] args = ParseArgs(args_, MethodName, 8);
             int authIndex = ParseAuthIndex(args[0], MethodName);
-            Response response = api.PurchaseMyCart(tokens[authIndex - 1], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+            Response response = await api.PurchaseMyCart(tokens[authIndex - 1], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
             if (response.ErrorOccured)
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }

@@ -17,11 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MarketProject\MarketProject.csproj" />
+    <Folder Include="Domain\StorePackage\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\StorePackage\" />
+    <ProjectReference Include="..\MarketWeb\Server\MarketWeb.Server.csproj" />
+	<!--<ProjectReference Include="..\MarketWeb\Server\MarketWeb.Shared.csproj" />-->
   </ItemGroup>
 
 </Project>
