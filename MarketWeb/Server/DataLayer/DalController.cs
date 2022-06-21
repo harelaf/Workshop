@@ -38,9 +38,10 @@ namespace MarketWeb.Server.DataLayer
         public List<StoreDAL> GetAllActiveStores() 
         {
             MarketContext context = new MarketContext();
-            List<StoreDAL> stores= context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    .Where(store => store._state == StoreState.Active).ToList();
+            List<StoreDAL> stores= context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .Where(store => store._state == StoreState.Active).ToList();
             if (stores == null)
                 return new List<StoreDAL>();
             return stores; 
@@ -61,11 +62,12 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             if (IsUsernameExists(username))
             {
-                registeredDAL = context.RegisteredDALs.Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b=>b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                    .Include(x => x._adminMessages)
-                                                .Include(x => x._notifications).FirstOrDefault(s => s._username == username);
+                registeredDAL = context.RegisteredDALs
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b=>b._store).ThenInclude(x => x._stock)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                    .Include(x => x._adminMessages)
+                                                    .Include(x => x._notifications).FirstOrDefault(s => s._username == username);
                 return registeredDAL;
             }
                  
@@ -82,7 +84,7 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL toRemove = context.RegisteredDALs
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).FirstOrDefault(s => s._username == username);
             if (toRemove != null) 
@@ -91,76 +93,86 @@ namespace MarketWeb.Server.DataLayer
                 context.SaveChanges();
             }    
             else
+            {
                 throw new Exception("no such register in db");
+            }
         }
         public void AddItemToCart(ShoppingBasketDAL shoppingBasket ,String storeName,string userName, int itemID, int amount)
         {
             MarketContext context = new MarketContext();
-            StoreDAL storeDAL = context.StoreDALs/*.AsNoTracking()*/
-                                                    .Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                    
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL storeDAL = context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             ICollection<StockItemDAL> itemsNamunt = storeDAL._stock;
-            context = new MarketContext();
+            //context = new MarketContext();
             foreach (StockItemDAL stockItem in itemsNamunt)
             {
                 if (stockItem.itemID == itemID)
                 {
                     stockItem.amount = stockItem.amount - amount;
                 }
-                    
             }
             context.SaveChanges();
 
-
             context = new MarketContext();
-            string errMsg = "";
-            RegisteredDAL user = context.RegisteredDALs/*.AsNoTracking()*/
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                                .Include(x => x._adminMessages)
-                                                .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
+            RegisteredDAL user = context.RegisteredDALs
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                    .Include(x => x._adminMessages)
+                                                    .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
-            ICollection<ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
-            ShoppingBasketDAL basketDAL = new ShoppingBasketDAL();
-            if (shoppingBasketDALs.Where(b => b._store._storeName == storeName).Any())
+
+            if (user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).Any())
             {
-               ShoppingBasketDAL shoppingBasketDAL = shoppingBasketDALs.Where(b => b._store._storeName == storeName).FirstOrDefault();
-               shoppingBasketDALs.Remove(shoppingBasketDAL);
+                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
+                toModify._items = shoppingBasket._items;
             }
-            //shoppingBasketDALs.Remove(shoppingBasketDALs.Where(b => b._store._storeName == storeName).FirstOrDefault());
-            basketDAL._store = storeDAL;
-            basketDAL._items = shoppingBasket._items;
-            
-            user._cart._shoppingBaskets.Add(basketDAL);
+            else
+            {
+                ShoppingBasketDAL toAdd = new ShoppingBasketDAL();
+                toAdd._items = shoppingBasket._items;
+                toAdd._store  = context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .FirstOrDefault(s => s._storeName == storeName); 
+                user._cart._shoppingBaskets.Add(toAdd);
+            }
             context.SaveChanges();
         }
         public void RemoveItemFromCart(int itemID, String storeName, string userName, int amount, ShoppingBasketDAL shoppingBasket)
         {
             MarketContext context = new MarketContext();
             RegisteredDAL user = context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                                .Include(x => x._adminMessages)
-                                                .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                    .Include(x => x._adminMessages)
+                                                    .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
 
-            ICollection<ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
-            if (shoppingBasketDALs.Where(b => b._store._storeName == storeName).Any())
-                shoppingBasketDALs.Remove(shoppingBasketDALs.Where(b => b._store._storeName == storeName).FirstOrDefault());
-            shoppingBasketDALs.Add(shoppingBasket);
+            ShoppingBasketDAL toRemove = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
+            if (shoppingBasket == null)//remove basket
+            {
+                user._cart._shoppingBaskets.Remove(toRemove);
+            }
+            else
+            {
+                toRemove._items = shoppingBasket._items;
+            }
+            context.Update(user);
             context.SaveChanges();
-
+            
             context = new MarketContext();
-            StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock).Include(x => x._rating).FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL storeDAL = context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             ICollection<StockItemDAL> itemsNamunt = storeDAL._stock;
@@ -177,9 +189,10 @@ namespace MarketWeb.Server.DataLayer
         public void UpdateQuantityOfItemInCart(int itemID, String storeName, int newQuantity, string userName, ShoppingBasketDAL shoppingBasketDAL, int amountDiff)
         {
             MarketContext context = new MarketContext();
-            StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
-                                                  .Include(x => x._rating)
-                                                  .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL storeDAL = context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             ICollection<StockItemDAL> itemsNamunt = storeDAL._stock;
@@ -194,19 +207,18 @@ namespace MarketWeb.Server.DataLayer
             context.SaveChanges();
 
             context = new MarketContext();
-           
             RegisteredDAL user = context.RegisteredDALs
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                               .Include(x => x._adminMessages)
-                                               .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                    .Include(x => x._adminMessages)
+                                                    .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
 
             if (user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).Any())
             {
-                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).First();
+                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
                 toModify._items = shoppingBasketDAL._items;
             }
             else
@@ -215,14 +227,14 @@ namespace MarketWeb.Server.DataLayer
             }
             context.Update(user);
             context.SaveChanges();
-
         }
         //public ShoppingCartDAL ViewMyCart(){} ---- no need. the field is updated
         public void addStorePurchse(ShoppingBasketDAL basket, DateTime date, string storename)
         {
             MarketContext context = new MarketContext();
             PurchasedBasketDAL PurchasedBasket = new PurchasedBasketDAL(date, basket);
-            StorePurchasedBasketDAL storePurchasedBasketDAL = context.StorePurchaseHistory.Include(x => x._PurchasedBaskets).FirstOrDefault(s => s._storeName == storename);
+            StorePurchasedBasketDAL storePurchasedBasketDAL = context.StorePurchaseHistory.Include(x => x._PurchasedBaskets)
+                                                                                          .FirstOrDefault(s => s._storeName == storename);
             if (storePurchasedBasketDAL == null)
                 storePurchasedBasketDAL = new StorePurchasedBasketDAL(storename);
             storePurchasedBasketDAL._PurchasedBaskets.Add(PurchasedBasket);
@@ -234,20 +246,22 @@ namespace MarketWeb.Server.DataLayer
             RegisteredDAL registeredDAL = context.RegisteredDALs
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
             if (registeredDAL == null)
                 throw new Exception($"user: {userName} not in system");
             PurchasedCartDAL PurchasedCart = new PurchasedCartDAL(date, registeredDAL._cart);
+            registeredDAL._cart = new ShoppingCartDAL();
             context.SaveChanges();
             context = new MarketContext();
-            RegisteredPurchasedCartDAL registeredPurchasedCartDAL = context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).FirstOrDefault(s => s.userName == userName);
+            RegisteredPurchasedCartDAL registeredPurchasedCartDAL = context.RegisteredPurchaseHistory
+                                                                                                .Include(x => x._PurchasedCarts)
+                                                                                                .FirstOrDefault(s => s.userName == userName);
             if (registeredPurchasedCartDAL == null)
                 registeredPurchasedCartDAL = new RegisteredPurchasedCartDAL(userName);
 
             registeredPurchasedCartDAL._PurchasedCarts.Add(PurchasedCart);
-            registeredDAL._cart = new ShoppingCartDAL();
             context.SaveChanges();
         }
         public void OpenNewStore(String storeName, string founderName)
@@ -315,44 +329,46 @@ namespace MarketWeb.Server.DataLayer
         public void RemoveStoreOwner(String ownerUsername, String storeName)
         {
             MarketContext context = new MarketContext();
-            StoreOwnerDAL owner = context.storeOwnerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName)).First();
+            StoreOwnerDAL owner = context.storeOwnerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName)).FirstOrDefault();
             context.SystemRoleDALs.Remove(owner);
             context.SaveChanges();
         }
         public void RemoveStoreManager(String managerUsername, String storeName)
         {
             MarketContext context = new MarketContext();
-            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName)).First();
+            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName)).FirstOrDefault();
             context.SystemRoleDALs.Remove(manager);
             context.SaveChanges();
         }
         public int AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity)
         {
             MarketContext context = new MarketContext();
-            StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                                                                       
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL storeDAL = context.StoreDALs
+                                            .Include(x => x._stock)
+                                            .Include(x => x._rating)                                              
+                                            .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             ItemDAL item = new ItemDAL(new List<RateDAL>(), name, price,
                 description, category);
 
             context.itemDALs.Add(item);
-            item = context.itemDALs.OrderBy(x => x._itemID).Last();
-            storeDAL._stock.Add(new StockItemDAL(item._itemID, quantity));
+            context.SaveChanges();
+            context = new MarketContext();
+            context.StoreDALs.Include(x => x._stock)
+                             .Include(x => x._rating)
+                             .FirstOrDefault(s => s._storeName == storeName)
+                             ._stock.Add(new StockItemDAL(item._itemID, quantity));
             context.SaveChanges();
             return item._itemID;
         }
         public void RemoveItemFromStore(String storeName, int itemID)
         {
             MarketContext context = new MarketContext();
-            StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                    
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL storeDAL = context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             foreach (StockItemDAL stockItem in storeDAL._stock)
@@ -368,11 +384,10 @@ namespace MarketWeb.Server.DataLayer
         public void UpdateStockQuantityOfItem(String storeName, int itemID, int newQuantity)
         {
             MarketContext context = new MarketContext();
-            StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                    
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL storeDAL = context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             foreach (StockItemDAL stockItem in storeDAL._stock)
@@ -439,11 +454,10 @@ namespace MarketWeb.Server.DataLayer
         public void RateStore(String storeName, int rating, String review, string userName)
         {
             MarketContext context = new MarketContext();
-            StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                    
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL storeDAL = context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)
                 throw new Exception($"store: {storeName} not in system");
             RateDAL rate = new RateDAL(userName, rating, review);
@@ -453,11 +467,10 @@ namespace MarketWeb.Server.DataLayer
         public StoreDAL GetStoreInformation(String storeName)
         {
             MarketContext context = new MarketContext();
-            StoreDAL store = context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                    
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL store = context.StoreDALs
+                                            .Include(x => x._stock)
+                                            .Include(x => x._rating)
+                                            .FirstOrDefault(s => s._storeName == storeName);
             if(store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
             return store;
@@ -488,7 +501,9 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             List<Tuple<DateTime, ShoppingCartDAL>> history = new List<Tuple<DateTime, ShoppingCartDAL>>();
-            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).FirstOrDefault(s => s.userName == userName);
+            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory
+                                                                                .Include(x => x._PurchasedCarts)
+                                                                                .FirstOrDefault(s => s.userName == userName);
             if (reg_history == null)
                 return null;
             foreach (PurchasedCartDAL cart in reg_history._PurchasedCarts)
@@ -501,7 +516,9 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             List<Tuple<DateTime, ShoppingBasketDAL>> history = new List<Tuple<DateTime, ShoppingBasketDAL>>();
-            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).FirstOrDefault(s => s.userName == userName);
+            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory
+                                                                                .Include(x => x._PurchasedCarts)
+                                                                                .FirstOrDefault(s => s.userName == userName);
             if (reg_history == null)
                 return null;
             foreach (PurchasedCartDAL purchasedCart in reg_history._PurchasedCarts)
@@ -518,7 +535,9 @@ namespace MarketWeb.Server.DataLayer
         public bool DidRegisterPurchasedInStore(string userName, string storeName)
         {
             MarketContext context = new MarketContext();
-            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).FirstOrDefault(s => s.userName == userName);
+            RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory
+                                                                            .Include(x => x._PurchasedCarts)
+                                                                            .FirstOrDefault(s => s.userName == userName);
 
             if (reg_history == null)
                 return false;
@@ -537,21 +556,21 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             return context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                                .Include(x => x._adminMessages)
-                                .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                        .Include(x => x._adminMessages)
+                                        .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
         }
         public void EditVisitorPassword(String newPassword, string newSalt, string userName)
         {
             MarketContext context = new MarketContext();
             RegisteredDAL registered = context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                .Include(x => x._adminMessages)
-                                .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
+                                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items)
+                                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                            .Include(x => x._adminMessages)
+                                                            .Include(x => x._notifications).FirstOrDefault(s => s._username == userName);
             registered._password = newPassword;
             registered._salt = newSalt;
             context.SaveChanges();
@@ -559,7 +578,9 @@ namespace MarketWeb.Server.DataLayer
         public void RemoveManagerPermission(String managerUsername, String storeName, Operation op)
         {
             MarketContext context = new MarketContext();
-            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
+            StoreManagerDAL manager = context.storeManagerDALs
+                                                        .Include(r => r._operationsWrappers)
+                                                        .Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).FirstOrDefault();
 
             manager._operations.Remove(op);
             manager._operationsWrappers.Remove(manager._operationsWrappers.Find(x => x.op.Equals(op)));
@@ -569,7 +590,9 @@ namespace MarketWeb.Server.DataLayer
         public void AddManagerPermission(String managerUsername, String storeName, Operation op)
         {
             MarketContext context = new MarketContext();
-            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
+            StoreManagerDAL manager = context.storeManagerDALs
+                                                        .Include(r => r._operationsWrappers)
+                                                        .Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).FirstOrDefault();
             manager._operations.Add(op);
             manager._operationsWrappers.Add(new OperationWrapper(op));
             context.SaveChanges();
@@ -578,11 +601,10 @@ namespace MarketWeb.Server.DataLayer
         public void CloseStore(String storeName)
         {
             MarketContext context = new MarketContext();
-            StoreDAL store = context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                    
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL store = context.StoreDALs
+                                            .Include(x => x._stock)
+                                            .Include(x => x._rating)
+                                            .FirstOrDefault(s => s._storeName == storeName);
             if (store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
 
@@ -592,11 +614,10 @@ namespace MarketWeb.Server.DataLayer
         public void ReopenStore(String storeName)
         {
             MarketContext context = new MarketContext();
-            StoreDAL store = context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                    
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL store = context.StoreDALs
+                                            .Include(x => x._stock)
+                                            .Include(x => x._rating)
+                                            .FirstOrDefault(s => s._storeName == storeName);
             if (store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
 
@@ -606,18 +627,23 @@ namespace MarketWeb.Server.DataLayer
         public List<StoreOwnerDAL> GetStoreOwners(String storeName)
         {
             MarketContext context = new MarketContext();
-            return context.storeOwnerDALs.Include(r => r._operationsWrappers).Where(r => (r._storeName == storeName) ).ToList();
+            return context.storeOwnerDALs
+                                        .Include(r => r._operationsWrappers)
+                                        .Where(r => (r._storeName == storeName) ).ToList();
         }
         public List<StoreManagerDAL> GetStoreManagers(String storeName)
         {
             MarketContext context = new MarketContext();
-            return context.storeManagerDALs.Include(r => r._operationsWrappers).
-                Where(r => (r._storeName == storeName)).ToList();
+            return context.storeManagerDALs
+                                        .Include(r => r._operationsWrappers)
+                                        .Where(r => (r._storeName == storeName)).ToList();
         }
         public StoreFounderDAL GetStoreFounder(String storeName)
         {
             MarketContext context = new MarketContext();
-            return context.StoreFounderDALs.Include(r => r._operationsWrappers).Where(r => (r._storeName == storeName)).FirstOrDefault();
+            return context.StoreFounderDALs
+                                        .Include(r => r._operationsWrappers)
+                                        .Where(r => (r._storeName == storeName)).FirstOrDefault();
         }
 
         public void AnswerStoreMesseage(int msgID, string storeName, string reply, string replier)
@@ -634,7 +660,9 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             List<Tuple<DateTime, ShoppingBasketDAL>> history = new List<Tuple<DateTime, ShoppingBasketDAL>>();
-            StorePurchasedBasketDAL store_basket = context.StorePurchaseHistory.Include(x => x._PurchasedBaskets).FirstOrDefault(s => s._storeName == storeName);
+            StorePurchasedBasketDAL store_basket = context.StorePurchaseHistory
+                                                                            .Include(x => x._PurchasedBaskets)
+                                                                            .FirstOrDefault(s => s._storeName == storeName);
             if (store_basket == null)
                 return null;
             foreach (PurchasedBasketDAL basket in store_basket._PurchasedBaskets)
@@ -646,11 +674,10 @@ namespace MarketWeb.Server.DataLayer
         public void CloseStorePermanently(String storeName)
         {
             MarketContext context = new MarketContext();
-            StoreDAL store = context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    
-                                                    
-                                                    .FirstOrDefault(s => s._storeName == storeName);
+            StoreDAL store = context.StoreDALs
+                                            .Include(x => x._stock)
+                                            .Include(x => x._rating)
+                                            .FirstOrDefault(s => s._storeName == storeName);
             if (store == null)
                 throw new Exception($"there is no such store: {storeName} in system.");
             store._state = StoreState.Closed;
@@ -674,11 +701,11 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             return context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                                .Include(x => x._adminMessages)
-                                .Include(x => x._notifications).FirstOrDefault(s => s._username == username)._adminMessages.ToList();
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                        .Include(x => x._adminMessages)
+                                        .Include(x => x._notifications).FirstOrDefault(s => s._username == username)._adminMessages.ToList();
         }
         public ICollection<MessageToStoreDAL> GetRegisterAnsweredStoreMessages(string username)
         {
@@ -697,11 +724,11 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             return context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                                .Include(x => x._adminMessages)
-                                .Include(x => x._notifications).FirstOrDefault(s => s._username == username)._notifications.ToList();
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                        .Include(x => x._adminMessages)
+                                        .Include(x => x._notifications).FirstOrDefault(s => s._username == username)._notifications.ToList();
         }
         public void AppointSystemAdmin(String adminUsername)
         {
@@ -713,14 +740,18 @@ namespace MarketWeb.Server.DataLayer
         public List<StoreDAL> GetStoresOfUser(string username)
         {
             MarketContext context = new MarketContext();
-            List<string> storesnames = context.SystemRoleDALs.Include(r => r._operationsWrappers).Where(r => (r._username == username) && (r._storeName != null)).Select(r => r._storeName).ToList();
+            List<string> storesnames = context.SystemRoleDALs
+                                                        .Include(r => r._operationsWrappers)
+                                                        .Where(r => (r._username == username) && (r._storeName != null))
+                                                        .Select(r => r._storeName).ToList();
             List<StoreDAL> stores = new List<StoreDAL>();
             context = new MarketContext();
             foreach (string storeName in storesnames)
             {
-                stores.Add(context.StoreDALs.Include(x => x._stock)
-                                                    .Include(x => x._rating)
-                                                    .FirstOrDefault(s => s._storeName == storeName));
+                stores.Add(context.StoreDALs
+                                        .Include(x => x._stock)
+                                        .Include(x => x._rating)
+                                        .FirstOrDefault(s => s._storeName == storeName));
             }
                    
             return stores;
@@ -729,11 +760,11 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             RegisteredDAL registeredDAL = context.RegisteredDALs
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                                .Include(x => x._adminMessages)
-                                                    .Include(x => x._notifications).FirstOrDefault(s => s._username == receiverUsername); ;
+                                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                            .Include(x => x._adminMessages)
+                                                            .Include(x => x._notifications).FirstOrDefault(s => s._username == receiverUsername); ;
             if (registeredDAL == null)
                 throw new Exception($"there is no user with username: {receiverUsername} in db");
             AdminMessageToRegisteredDAL msg = new AdminMessageToRegisteredDAL(receiverUsername, senderUsername, title, message);
@@ -751,11 +782,11 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             RegisteredDAL reg = context.RegisteredDALs
-                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                            .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
-                                            .Include(x => x._adminMessages)
-                                            .Include(x => x._notifications).FirstOrDefault(s => s._username == usernameReciever); ;
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
+                                                    .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                    .Include(x => x._adminMessages)
+                                                    .Include(x => x._notifications).FirstOrDefault(s => s._username == usernameReciever); ;
             if (usernameReciever == null)
                 throw new Exception($"there is no such user with uaername: {usernameReciever}");
             NotifyMessageDAL notifyMessageDAL = new NotifyMessageDAL(title, message, usernameReciever);
@@ -768,21 +799,18 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             return context.ComplaintDALs.Find(id);
         }
-
-
         private bool CommonVarInLists<T>(List<T> l1, List<T> l2)
         {
             MarketContext context = new MarketContext();
             List<T> res = l1.Where(x => l2.Contains(x)).ToList();
             return res.Any();       
         }
-        //add pp
-        //add dp
-        //add d
         public String GetRoleUsername(int roleid)
         {
             MarketContext context = new MarketContext();
-            SystemRoleDAL role = context.SystemRoleDALs.Include(r=> r._operationsWrappers).FirstOrDefault(r=> r.id == roleid);
+            SystemRoleDAL role = context.SystemRoleDALs
+                                                    .Include(r=> r._operationsWrappers)
+                                                    .FirstOrDefault(r=> r.id == roleid);
             if(role == null)
                 throw new Exception($"role id {roleid} was not found in the database.");
             return role._username;
@@ -791,7 +819,9 @@ namespace MarketWeb.Server.DataLayer
         public String GetRoleStoreName(int roleid)
         {
             MarketContext context = new MarketContext();
-            SystemRoleDAL role = context.SystemRoleDALs.Include(r => r._operationsWrappers).FirstOrDefault(r => r.id == roleid);
+            SystemRoleDAL role = context.SystemRoleDALs
+                                                    .Include(r => r._operationsWrappers)
+                                                    .FirstOrDefault(r => r.id == roleid);
             if (role == null)
                 throw new Exception($"role id {roleid} was not found in the database.");
             return role._storeName;
@@ -803,7 +833,7 @@ namespace MarketWeb.Server.DataLayer
             List<RegisteredDAL> regs = context.RegisteredDALs
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).ToList();
             foreach (RegisteredDAL registered in regs)
@@ -824,7 +854,7 @@ namespace MarketWeb.Server.DataLayer
             List<RegisteredDAL> regs = context.RegisteredDALs
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
-                                               .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).ToList();
             foreach (RegisteredDAL registered in regs)

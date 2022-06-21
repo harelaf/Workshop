@@ -20,6 +20,9 @@ namespace MarketWeb.Server.Domain
         {
             _stores = new Dictionary<String, Store>();
             _translator = new DalTRranslator();
+        }
+        public void load()
+        {
             if (!hasInitialized)
             {
                 _stores = _translator.StoreListDalToDomain(_dalController.GetAllActiveStores());
