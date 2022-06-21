@@ -637,7 +637,7 @@ namespace MarketWeb.Server.Domain
                 SendNotification(storeName, name, "Store Message: " + title, message);
 			}
         }
-
+        //there is no store in system with the given store name
         public void SendAdminMessageToRegisterd(string userToken, String UsernameReciever, String title, String message)
         {
             String errorMessage = null;
