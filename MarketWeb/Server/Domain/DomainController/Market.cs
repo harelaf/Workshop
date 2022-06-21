@@ -238,10 +238,10 @@ namespace MarketWeb.Server.Domain
                     }
                     if (amount_differnce > 0)// add item to cart and remove it from store stock
                         _storeManagement.ReserveItemFromStore(storeName, itemID, amount_differnce);
-                    else//remove item from cart and add to store stock
+                    else//remove item from cart and add to store stock[
                         _storeManagement.UnreserveItemInStore(storeName, item, -1 * amount_differnce);
-                    _VisitorManagement.UpdateItemInVisitorCart(VisitorToken, store, item, newQuantity, amount_differnce);
-                   
+                    _VisitorManagement.UpdateItemInVisitorCart(VisitorToken, store, item, newQuantity, -1*amount_differnce);
+
                 }
             }
         }
