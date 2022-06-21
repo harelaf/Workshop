@@ -472,7 +472,7 @@ namespace MarketWeb.Server.Domain
                 $"{Username}.";
             foreach (String name in names)
             {
-                SendNotification(storeName, name, title, message);
+                SendNotificationToStore(storeName, name, title, message);
             }
         }
 
@@ -504,7 +504,7 @@ namespace MarketWeb.Server.Domain
                 foreach (String name in names)
                 {
                     _VisitorManagement.RemoveRole(name, storeName);
-                    SendNotification(storeName, name, title, message);
+                    SendNotificationToStore(storeName, name, title, message);
                 }
                 _storeManagement.CloseStorePermanently(storeName);
             }
@@ -539,7 +539,7 @@ namespace MarketWeb.Server.Domain
                 $"{Username}.";
             foreach (String name in names)
             {
-                SendNotification(storeName, name, title, message);
+                SendNotificationToStore(storeName, name, title, message);
             }
         }
 
@@ -634,7 +634,7 @@ namespace MarketWeb.Server.Domain
             List<string> names = _storeManagement.GetStoreRolesByName(storeName);
             foreach (string name in names)
 			{
-                SendNotification(storeName, name, "Store Message: " + title, message);
+                SendNotificationToStore(storeName, name, "Store Message: " + title, message);
 			}
         }
         //there is no store in system with the given store name
@@ -665,7 +665,7 @@ namespace MarketWeb.Server.Domain
             SendNotification("Administration", UsernameReciever, "Admin Message: " + title, message);
 
         }
-        public void SendNotification(string storeName, string usernameReciever, String title, String message)
+        public void SendNotificationToStore(string storeName, string usernameReciever, String title, String message)
         {
             String errorMessage = null;
             if (!_VisitorManagement.IsRegistered(usernameReciever))
@@ -677,9 +677,12 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("SendMessageToRegisterd", errorMessage);
                 throw new Exception(errorMessage);
             }
-            int id = _dalController.SendNotification(storeName, usernameReciever, title, message);
-            _VisitorManagement.SendNotificationMessageToRegistered(usernameReciever, storeName ,title, message, id);
-            
+            SendNotification(storeName, usernameReciever, title, message); 
+        }
+        public void SendNotification(string Sender, string usernameReciever, String title, String message)
+        {
+            int id = _dalController.SendNotification(Sender, usernameReciever, title, message);
+            _VisitorManagement.SendNotificationMessageToRegistered(usernameReciever, Sender, title, message, id);
         }
         //1. admin: sender, reciver, msg, title
         //2. notify:reciver, msg, title, store,
@@ -707,7 +710,7 @@ namespace MarketWeb.Server.Domain
             }
             _VisitorManagement.SendStoreMessageReplyment(msg, replierUsername, receiverUsername ,reply);
             _dalController.AnswerStoreMesseage(msgID, storeName, reply, replierUsername);
-            SendNotification(storeName, receiverUsername, "Reply - "+ replierUsername, reply);
+            SendNotificationToStore(storeName, receiverUsername, "Reply - "+ replierUsername, reply);
         }
 
         public List<MessageToStore> GetStoreMessages(String authToken, String storeName)
@@ -759,7 +762,7 @@ namespace MarketWeb.Server.Domain
             ShoppingCart shoppingCartToDocument = await _VisitorManagement.PurchaseMyCart(VisitorToken, address, city, country, zip, purchaserName, paymentMethode, shipmentMethode, cardNumber, month, year, holder, ccv, id);
             //send to history
             _history.AddStoresPurchases(shoppingCartToDocument);
-            if (_VisitorManagement.IsVisitorLoggedin(VisitorToken)) { }
+            if (_VisitorManagement.IsVisitorLoggedin(VisitorToken)) 
                 _history.AddRegisterPurchases(shoppingCartToDocument, _VisitorManagement.GetRegisteredUsernameByToken(VisitorToken));
         }
 
