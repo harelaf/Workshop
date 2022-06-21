@@ -24,19 +24,6 @@ namespace MarketWeb.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ConditionDAL",
-                columns: table => new
-                {
-                    _id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    _negative = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConditionDAL", x => x._id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "itemDALs",
                 columns: table => new
                 {
@@ -77,7 +64,8 @@ namespace MarketWeb.Server.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     _itemID = table.Column<int>(type: "int", nullable: false),
-                    amount = table.Column<int>(type: "int", nullable: false)
+                    amount = table.Column<int>(type: "int", nullable: false),
+                    discountListJSON = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -149,33 +137,6 @@ namespace MarketWeb.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AtomicDiscountDAL",
-                columns: table => new
-                {
-                    _id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    _expiration = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PurchaseDetailsDALID = table.Column<int>(type: "int", nullable: true),
-                    _condition_id = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AtomicDiscountDAL", x => x._id);
-                    table.ForeignKey(
-                        name: "FK_AtomicDiscountDAL_ConditionDAL__condition_id",
-                        column: x => x._condition_id,
-                        principalTable: "ConditionDAL",
-                        principalColumn: "_id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AtomicDiscountDAL_PurchaseDetailsDAL_PurchaseDetailsDALID",
-                        column: x => x.PurchaseDetailsDALID,
-                        principalTable: "PurchaseDetailsDAL",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PurchasedCartDAL",
                 columns: table => new
                 {
@@ -222,6 +183,26 @@ namespace MarketWeb.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BidsOfVisitor",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    _bidder = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StoreDAL_storeName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BidsOfVisitor", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_BidsOfVisitor_StoreDALs_StoreDAL_storeName",
+                        column: x => x.StoreDAL_storeName,
+                        principalTable: "StoreDALs",
+                        principalColumn: "_storeName",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RateDAL",
                 columns: table => new
                 {
@@ -257,11 +238,18 @@ namespace MarketWeb.Server.Migrations
                     sbId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StoreDAL = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    _additionalDiscountsID = table.Column<int>(type: "int", nullable: true),
                     ShoppingCartDALscId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ShoppingBasketDAL", x => x.sbId);
+                    table.ForeignKey(
+                        name: "FK_ShoppingBasketDAL_PurchaseDetailsDAL__additionalDiscountsID",
+                        column: x => x._additionalDiscountsID,
+                        principalTable: "PurchaseDetailsDAL",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ShoppingBasketDAL_ShoppingCartDAL_ShoppingCartDALscId",
                         column: x => x.ShoppingCartDALscId,
@@ -389,6 +377,37 @@ namespace MarketWeb.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BidDAL",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    _bidder = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    _itemId = table.Column<int>(type: "int", nullable: false),
+                    _amount = table.Column<int>(type: "int", nullable: false),
+                    _biddedPrice = table.Column<double>(type: "float", nullable: false),
+                    _counterOffer = table.Column<double>(type: "float", nullable: false),
+                    BidsOfVisitorid = table.Column<int>(type: "int", nullable: true),
+                    ShoppingBasketDALsbId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BidDAL", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_BidDAL_BidsOfVisitor_BidsOfVisitorid",
+                        column: x => x.BidsOfVisitorid,
+                        principalTable: "BidsOfVisitor",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BidDAL_ShoppingBasketDAL_ShoppingBasketDALsbId",
+                        column: x => x.ShoppingBasketDALsbId,
+                        principalTable: "ShoppingBasketDAL",
+                        principalColumn: "sbId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PurchasedBasketDAL",
                 columns: table => new
                 {
@@ -413,20 +432,30 @@ namespace MarketWeb.Server.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StringData",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    data = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BidDALid = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StringData", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_StringData_BidDAL_BidDALid",
+                        column: x => x.BidDALid,
+                        principalTable: "BidDAL",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AdminMessageToRegisteredDAL_RegisteredDAL_username",
                 table: "AdminMessageToRegisteredDAL",
                 column: "RegisteredDAL_username");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AtomicDiscountDAL__condition_id",
-                table: "AtomicDiscountDAL",
-                column: "_condition_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AtomicDiscountDAL_PurchaseDetailsDALID",
-                table: "AtomicDiscountDAL",
-                column: "PurchaseDetailsDALID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BasketItemDAL_purchaseDetailsID",
@@ -437,6 +466,21 @@ namespace MarketWeb.Server.Migrations
                 name: "IX_BasketItemDAL_ShoppingBasketDALsbId",
                 table: "BasketItemDAL",
                 column: "ShoppingBasketDALsbId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BidDAL_BidsOfVisitorid",
+                table: "BidDAL",
+                column: "BidsOfVisitorid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BidDAL_ShoppingBasketDALsbId",
+                table: "BidDAL",
+                column: "ShoppingBasketDALsbId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BidsOfVisitor_StoreDAL_storeName",
+                table: "BidsOfVisitor",
+                column: "StoreDAL_storeName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotifyMessageDAL_RegisteredDAL_username",
@@ -485,6 +529,11 @@ namespace MarketWeb.Server.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ShoppingBasketDAL__additionalDiscountsID",
+                table: "ShoppingBasketDAL",
+                column: "_additionalDiscountsID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ShoppingBasketDAL_ShoppingCartDALscId",
                 table: "ShoppingBasketDAL",
                 column: "ShoppingCartDALscId");
@@ -498,15 +547,17 @@ namespace MarketWeb.Server.Migrations
                 name: "IX_StockItemDAL_StoreDAL_storeName",
                 table: "StockItemDAL",
                 column: "StoreDAL_storeName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StringData_BidDALid",
+                table: "StringData",
+                column: "BidDALid");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "AdminMessageToRegisteredDAL");
-
-            migrationBuilder.DropTable(
-                name: "AtomicDiscountDAL");
 
             migrationBuilder.DropTable(
                 name: "BasketItemDAL");
@@ -536,19 +587,13 @@ namespace MarketWeb.Server.Migrations
                 name: "StockItemDAL");
 
             migrationBuilder.DropTable(
-                name: "ConditionDAL");
-
-            migrationBuilder.DropTable(
-                name: "PurchaseDetailsDAL");
+                name: "StringData");
 
             migrationBuilder.DropTable(
                 name: "RegisteredDALs");
 
             migrationBuilder.DropTable(
                 name: "SystemRoleDALs");
-
-            migrationBuilder.DropTable(
-                name: "ShoppingBasketDAL");
 
             migrationBuilder.DropTable(
                 name: "StorePurchaseHistory");
@@ -558,6 +603,18 @@ namespace MarketWeb.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "itemDALs");
+
+            migrationBuilder.DropTable(
+                name: "BidDAL");
+
+            migrationBuilder.DropTable(
+                name: "BidsOfVisitor");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingBasketDAL");
+
+            migrationBuilder.DropTable(
+                name: "PurchaseDetailsDAL");
 
             migrationBuilder.DropTable(
                 name: "ShoppingCartDAL");
