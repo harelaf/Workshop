@@ -28,7 +28,7 @@ namespace MarketWeb.Server.DataLayer
         //public List<StoreOwnerDAL> _owners { get; set; }
         //public StoreFounderDAL _founder { get; set; }
         public StoreState _state { get; set; }
-        public IDictionary<string, List<BidDAL>> _biddedItems { get; set; }
+        public ICollection<BidsOfVisitor> _bidsOfVisitors{ get; set; }
         //[Required]
         //[ForeignKey("PurchasePolicyDAL")]
         //public PurchasePolicyDAL _purchasePolicy { get; set; }
@@ -46,7 +46,7 @@ namespace MarketWeb.Server.DataLayer
                         StoreState state, 
                         string purchasePolicyJSON, 
                         string discountPolicyJSON,
-                        IDictionary<string, List<BidDAL>> biddedItems)
+                        ICollection<BidsOfVisitor> bidsOfVisitors)
         {
             _storeName = storeName;
             _stock = stock;
@@ -54,7 +54,7 @@ namespace MarketWeb.Server.DataLayer
             _state = state;
             _purchasePolicyJSON = purchasePolicyJSON;
             _discountPolicyJSON = discountPolicyJSON;
-            _biddedItems = biddedItems;
+            _bidsOfVisitors = bidsOfVisitors;
         }
 
         public StoreDAL(string storeName, StoreState state)
@@ -68,7 +68,7 @@ namespace MarketWeb.Server.DataLayer
             //_messagesToStore = new List<MessageToStoreDAL>();
             _purchasePolicyJSON = "";
             _discountPolicyJSON = "";
-            _biddedItems = new Dictionary<string, List<BidDAL>>();
+            _bidsOfVisitors = new List<BidsOfVisitor>();
         }
 
         public StoreDAL()

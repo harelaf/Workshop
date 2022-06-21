@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MarketWeb.Server.DataLayer
@@ -6,24 +7,26 @@ namespace MarketWeb.Server.DataLayer
     public class BidDAL
     {
         [Key]
-        public string _bidder;
-        [Key]
-        public int _itemId;
+        public int id { get; set; }
         [Required]
-        public int _amount;
+        public string _bidder { get; set; }
         [Required]
-        public double _biddedPrice;
+        public int _itemId { get; set; }
         [Required]
-        public double _counterOffer;
-        public ISet<string> _acceptors;
+        public int _amount { get; set; }
+        [Required]
+        public double _biddedPrice { get; set; }
+        [Required]
+        public double _counterOffer { get; set; }
+        public ICollection<StringData> _acceptors { get; set; }
 
         public BidDAL(
             string bidder, 
             int itemId, 
             int amount, 
             double biddedPrice, 
-            double counterOffer, 
-            ISet<string> acceptors)
+            double counterOffer,
+            ICollection<StringData> acceptors)
         {
             _bidder = bidder;
             _itemId = itemId;
@@ -31,6 +34,9 @@ namespace MarketWeb.Server.DataLayer
             _biddedPrice = biddedPrice;
             _counterOffer = counterOffer;
             _acceptors = acceptors;
+        }
+        public BidDAL()
+        {
         }
     }
 }

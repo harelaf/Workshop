@@ -14,9 +14,9 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public ICollection<BasketItemDAL> _items { get; set; }
         public PurchaseDetailsDAL _additionalDiscounts { get; set; }
-        public List<BidDAL> _bids { get; set; }
+        public ICollection<BidDAL> _bids { get; set; }
 
-        public ShoppingBasketDAL(StoreDAL store, IDictionary<int, PurchaseDetailsDAL> items, PurchaseDetailsDAL additionalDiscounts, List<BidDAL> bids)
+        public ShoppingBasketDAL(StoreDAL store, IDictionary<int, PurchaseDetailsDAL> items, PurchaseDetailsDAL additionalDiscounts, ICollection<BidDAL> bids)
         {
             _store = store;
             _items = new List<BasketItemDAL>();
@@ -28,7 +28,7 @@ namespace MarketWeb.Server.DataLayer
             _bids = bids;
         }
 
-        public ShoppingBasketDAL(StoreDAL store, ICollection<BasketItemDAL> items, PurchaseDetailsDAL additionalDiscounts, List<BidDAL> bids)
+        public ShoppingBasketDAL(StoreDAL store, ICollection<BasketItemDAL> items, PurchaseDetailsDAL additionalDiscounts, ICollection<BidDAL> bids)
         {
             _store = store;
             _items = items;

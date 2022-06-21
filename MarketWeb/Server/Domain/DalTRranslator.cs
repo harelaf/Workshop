@@ -98,19 +98,20 @@ namespace MarketWeb.Server.Domain
             {
                 managers.Add(StoreManagerDomainToDal(manager));
             }
-            IDictionary<string, List<BidDAL>> biddedItems = new Dictionary<string, List<BidDAL>>();
+            ICollection<BidsOfVisitor> bidsOfVisitors = new List<BidsOfVisitor>();
             foreach(string bidder in store.BiddedItems.Keys)
             {
-                biddedItems[bidder] = new List<BidDAL>();
+                ICollection<BidDAL> currBidList = new List<BidDAL>();
                 foreach(Bid bid in store.BiddedItems[bidder])
                 {
-                    biddedItems[bidder].Add(BidDomainToDal(bid));
+                    currBidList.Add(BidDomainToDal(bid));
                 }
+                bidsOfVisitors.Add(new BidsOfVisitor(bidder, currBidList));
             }
             return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, 
                                                                         PrchasePolicyDomainToDal(store.GetPurchasePolicy()), 
                                                                         DiscountPolicyDomainToDal(store.GetDiscountPolicy()),
-                                                                        biddedItems);
+                                                                        bidsOfVisitors);
         }
 
         private String DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
@@ -282,12 +283,12 @@ namespace MarketWeb.Server.Domain
                 owners.Add(StoreOwnerDalToDomain(owner));
             }
             IDictionary<string, List<Bid>> biddedItems = new Dictionary<string, List<Bid>>();
-            foreach (string bidder in storeDAL._biddedItems.Keys)
+            foreach (BidsOfVisitor bov in storeDAL._bidsOfVisitors)
             {
-                biddedItems[bidder] = new List<Bid>();
-                foreach (BidDAL bid in storeDAL._biddedItems[bidder])
+                biddedItems[bov._bidder] = new List<Bid>();
+                foreach (BidDAL bid in bov._bids)
                 {
-                    biddedItems[bidder].Add(BidDalToDomain(bid));
+                    biddedItems[bov._bidder].Add(BidDalToDomain(bid));
                 }
             }
             return new Store(stock, purchasePolicy, discountPolicy, messagesToStore, rating
@@ -391,7 +392,10 @@ namespace MarketWeb.Server.Domain
 
         private Bid BidDalToDomain(BidDAL bid)
         {
-            return new Bid(bid._bidder, bid._itemId, bid._amount, bid._biddedPrice, bid._counterOffer, bid._acceptors);
+            ISet<string> acceptors = new HashSet<string>();
+            foreach(StringData acceptor in bid._acceptors)
+                acceptors.Add(acceptor.data);
+            return new Bid(bid._bidder, bid._itemId, bid._amount, bid._biddedPrice, bid._counterOffer, acceptors);
         }
 
         private DiscountDetails<T> PurchaseDetailsDALToDomain<T>(PurchaseDetailsDAL value) where T : AtomicDiscount
@@ -706,13 +710,16 @@ namespace MarketWeb.Server.Domain
 
         private BidDAL BidDomainToDal(Bid bid)
         {
+            ICollection<StringData> acceptors = new List<StringData>();
+            foreach(string str in bid.Acceptors)
+                acceptors.Add(new StringData(str));
             return new BidDAL(
                 bid.Bidder, 
                 bid.ItemID, 
                 bid.Amount, 
                 bid.BiddedPrice, 
                 bid.CounterOffer, 
-                bid.Acceptors);
+                acceptors);
         }
 
         private PurchaseDetailsDAL PurchaseDetailsDomainToDal<T>(int itemID, DiscountDetails<T> discountDetails) where T : AtomicDiscount
