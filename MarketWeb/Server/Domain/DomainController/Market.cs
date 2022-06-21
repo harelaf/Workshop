@@ -30,9 +30,6 @@ namespace MarketWeb.Server.Domain
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
             _notificationHub = notificationHub;
-           
-            _dalTRranslator = new DalTRranslator();
-
             // Calling RestartSystem after creating this object is important.
         }
 
@@ -80,6 +77,10 @@ namespace MarketWeb.Server.Domain
             _VisitorManagement.InitializeAdmin(adminUsername, adminPassword);
             _VisitorManagement.AdminStart(adminUsername, adminPassword);
 
+            //translator:
+            _dalTRranslator = new DalTRranslator();
+            DalTRranslator.StoreManagement = _storeManagement;
+            _storeManagement.load();
         }
 
         /// add\update basket eof store with item and amount.

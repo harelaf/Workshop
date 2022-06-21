@@ -9,6 +9,8 @@ namespace MarketWeb.Server.Domain
 {
     public class DalTRranslator
     {
+        public static StoreManagement StoreManagement;
+
         public ShoppingCartDAL CartDomainToDal(ShoppingCart cartDomain)
         {
             ICollection<ShoppingBasketDAL> baskets = new List<ShoppingBasketDAL>();
@@ -384,11 +386,17 @@ namespace MarketWeb.Server.Domain
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
             IDictionary<Item, DiscountDetails<AtomicDiscount>> items = new Dictionary<Item, DiscountDetails<AtomicDiscount>>();
+            Store store = StoreManagement.GetActiveStore(basketDAL._store._storeName);
+            if(store == null)
+            {
+                store = StoreDalToDomain(basketDAL._store);
+            }
             foreach(KeyValuePair<int, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
             {
-                items.Add(ItemDalToDomain(DalController.GetInstance().GetItem(i_a.Key)), PurchaseDetailsDALToDomain(i_a.Value));
+                Item item = store.GetItem(i_a.Key);
+                items.Add(item, PurchaseDetailsDALToDomain(i_a.Value));
             }
-            return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items);
+            return new ShoppingBasket(store, items);
         }
 
         private DiscountDetails<AtomicDiscount> PurchaseDetailsDALToDomain(PurchaseDetailsDAL value)
