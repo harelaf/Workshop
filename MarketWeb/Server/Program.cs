@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace MarketWeb.Server
 {
-    public class Program
+    public class Programs
     {
         public static void Main(string[] args)
         {

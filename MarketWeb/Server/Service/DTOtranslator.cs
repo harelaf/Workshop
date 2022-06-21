@@ -373,8 +373,11 @@ namespace MarketWeb.Service
                 ItemDTO dto = toDTO(entry.Key, shoppingBasket.Store().StoreName);
                 items[entry.Key.ItemID] = new Tuple<ItemDTO, DiscountDetailsDTO>(dto, toDTO(shoppingBasket, entry.Value, entry.Key._price));
             }
-            foreach (NumericDiscount dis in shoppingBasket.AdditionalDiscounts.DiscountList)
-                additionalDiscounts.Add(toDTO(dis));
+            if (shoppingBasket.AdditionalDiscounts.DiscountList != null)
+            {
+                foreach (NumericDiscount dis in shoppingBasket.AdditionalDiscounts.DiscountList)
+                    additionalDiscounts.Add(toDTO(dis));
+            }
             return new ShoppingBasketDTO(shoppingBasket.Store().StoreName, items, additionalDiscounts, biddedItems);
         }
 
