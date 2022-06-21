@@ -11,30 +11,6 @@ namespace MarketWeb.Server.Domain
     {
         public static StoreManagement StoreManagement;
 
-        public ShoppingCartDAL CartDomainToDal(ShoppingCart cartDomain)
-        {
-            ICollection<ShoppingBasketDAL> baskets = new List<ShoppingBasketDAL>();
-            foreach (ShoppingBasket basketDomain in cartDomain._shoppingBaskets)
-                baskets.Add(BasketDomainToDal(basketDomain));
-            return new ShoppingCartDAL(baskets);
-        }
-        public ShoppingBasketDAL BasketDomainToDal(ShoppingBasket basketDomain)
-        {
-            IDictionary<int, PurchaseDetailsDAL> items = new Dictionary<int, PurchaseDetailsDAL>();
-            foreach (Item item in basketDomain._items.Keys)
-                items.Add(item.ItemID, PurchaseDetailsToDal(item.ItemID, basketDomain._items[item]));
-            return new ShoppingBasketDAL(StoreDomainToDal(basketDomain._store), items);
-        }
-
-        private PurchaseDetailsDAL PurchaseDetailsToDal(int itemID, DiscountDetails<AtomicDiscount> discountDetails)
-        {
-            List<AtomicDiscountDAL> disList = new List<AtomicDiscountDAL>();
-            foreach (AtomicDiscount dis in discountDetails.DiscountList)
-                disList.Add(AtomicDiscountDomainToDal(dis));
-            PurchaseDetailsDAL details = new PurchaseDetailsDAL(itemID, discountDetails.Amount, disList);
-            return details;
-        }
-
         private AtomicDiscountDAL AtomicDiscountDomainToDal(AtomicDiscount dis)
         {
             if (dis == null)
@@ -413,7 +389,7 @@ namespace MarketWeb.Server.Domain
             foreach(KeyValuePair<int, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
             {
                 Item item = store.GetItem(i_a.Key);
-                items.Add(item, PurchaseDetailsDALToDomain(i_a.Value));
+                items.Add(item, PurchaseDetailsDALToDomain<AtomicDiscount>(i_a.Value));
             }
             DiscountDetails<NumericDiscount> additionalDiscounts = PurchaseDetailsDALToDomain<NumericDiscount>(basketDAL._additionalDiscounts);
             List<Bid> bids = new List<Bid>();

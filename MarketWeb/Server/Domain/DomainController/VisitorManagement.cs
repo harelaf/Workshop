@@ -574,7 +574,7 @@ namespace MarketWeb.Server.Domain
                 else
                 {
                     _dalController.RemoveItemFromCart(item.ItemID, store.StoreName, username, amount,
-                        _dalTRranslator.BasketDomainToDal(shoppingBasket));
+                        _dalTRranslator.ShoppingBasketDomainToDAL(shoppingBasket));
                 }
             }
             return amount;
