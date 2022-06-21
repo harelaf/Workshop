@@ -54,7 +54,9 @@ namespace MarketWeb.Server.DataLayer
             _state = state;
             _purchasePolicyJSON = purchasePolicyJSON;
             _discountPolicyJSON = discountPolicyJSON;
-            _bidsOfVisitors = bidsOfVisitors;
+            if(bidsOfVisitors != null)
+                _bidsOfVisitors = bidsOfVisitors;
+            else _bidsOfVisitors = new List<BidsOfVisitor>();
         }
 
         public StoreDAL(string storeName, StoreState state)
@@ -72,7 +74,15 @@ namespace MarketWeb.Server.DataLayer
         }
 
         public StoreDAL()
-        {
+        { 
+            _stock = new List<StockItemDAL>();
+            _rating = new List<RateDAL>();
+            //_managers = new List<StoreManagerDAL>();
+            //_owners = new List<StoreOwnerDAL>();
+            //_messagesToStore = new List<MessageToStoreDAL>();
+            _purchasePolicyJSON = "";
+            _discountPolicyJSON = "";
+            _bidsOfVisitors = new List<BidsOfVisitor>();
         }
     }
 }
