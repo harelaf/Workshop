@@ -134,7 +134,13 @@ namespace MarketWeb.Server.DataLayer
             }
             else
             {
-                user._cart._shoppingBaskets.Add(shoppingBasket);
+                ShoppingBasketDAL toAdd = new ShoppingBasketDAL();
+                toAdd._items = shoppingBasket._items;
+                toAdd._store  = context.StoreDALs
+                                                .Include(x => x._stock)
+                                                .Include(x => x._rating)
+                                                .FirstOrDefault(s => s._storeName == storeName); 
+                user._cart._shoppingBaskets.Add(toAdd);
             }
             context.SaveChanges();
         }

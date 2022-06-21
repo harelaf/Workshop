@@ -36,7 +36,7 @@ namespace MarketWeb.Server.Domain
                 updateItemQuantity(item, amount + Items[GetItem(item.ItemID)].Amount);
                 return;
             }
-            else _items[GetItem(item.ItemID)] = new DiscountDetails<AtomicDiscount>(amount);
+            else _items[item] = new DiscountDetails<AtomicDiscount>(amount);
             if (!Store().GetPurchasePolicy().checkPolicyConditions(this))
             {
                 _items.Remove(item);
