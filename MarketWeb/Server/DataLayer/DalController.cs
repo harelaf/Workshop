@@ -129,7 +129,7 @@ namespace MarketWeb.Server.DataLayer
 
             if (user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).Any())
             {
-                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).First();
+                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
                 toModify._items = shoppingBasket._items;
             }
             else
@@ -156,7 +156,7 @@ namespace MarketWeb.Server.DataLayer
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
 
-            ShoppingBasketDAL toRemove = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).First();
+            ShoppingBasketDAL toRemove = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
             if (shoppingBasket == null)//remove basket
             {
                 user._cart._shoppingBaskets.Remove(toRemove);
@@ -218,7 +218,7 @@ namespace MarketWeb.Server.DataLayer
 
             if (user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).Any())
             {
-                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).First();
+                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
                 toModify._items = shoppingBasketDAL._items;
             }
             else
@@ -329,14 +329,14 @@ namespace MarketWeb.Server.DataLayer
         public void RemoveStoreOwner(String ownerUsername, String storeName)
         {
             MarketContext context = new MarketContext();
-            StoreOwnerDAL owner = context.storeOwnerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName)).First();
+            StoreOwnerDAL owner = context.storeOwnerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName)).FirstOrDefault();
             context.SystemRoleDALs.Remove(owner);
             context.SaveChanges();
         }
         public void RemoveStoreManager(String managerUsername, String storeName)
         {
             MarketContext context = new MarketContext();
-            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName)).First();
+            StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName)).FirstOrDefault();
             context.SystemRoleDALs.Remove(manager);
             context.SaveChanges();
         }
@@ -353,8 +353,12 @@ namespace MarketWeb.Server.DataLayer
                 description, category);
 
             context.itemDALs.Add(item);
-            item = context.itemDALs.OrderBy(x => x._itemID).Last();
-            storeDAL._stock.Add(new StockItemDAL(item._itemID, quantity));
+            context.SaveChanges();
+            context = new MarketContext();
+            context.StoreDALs.Include(x => x._stock)
+                             .Include(x => x._rating)
+                             .FirstOrDefault(s => s._storeName == storeName)
+                             ._stock.Add(new StockItemDAL(item._itemID, quantity));
             context.SaveChanges();
             return item._itemID;
         }
@@ -576,7 +580,7 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             StoreManagerDAL manager = context.storeManagerDALs
                                                         .Include(r => r._operationsWrappers)
-                                                        .Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
+                                                        .Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).FirstOrDefault();
 
             manager._operations.Remove(op);
             manager._operationsWrappers.Remove(manager._operationsWrappers.Find(x => x.op.Equals(op)));
@@ -588,7 +592,7 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             StoreManagerDAL manager = context.storeManagerDALs
                                                         .Include(r => r._operationsWrappers)
-                                                        .Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).First();
+                                                        .Where((r) => (r._storeName == storeName) && (r._username == managerUsername)).FirstOrDefault();
             manager._operations.Add(op);
             manager._operationsWrappers.Add(new OperationWrapper(op));
             context.SaveChanges();
