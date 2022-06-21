@@ -154,12 +154,18 @@ namespace MarketWeb.Server.DataLayer
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
 
-            ICollection<ShoppingBasketDAL> shoppingBasketDALs = user._cart._shoppingBaskets;
-            if (shoppingBasketDALs.Where(b => b._store._storeName == storeName).Any())
-                shoppingBasketDALs.Remove(shoppingBasketDALs.Where(b => b._store._storeName == storeName).FirstOrDefault());
-            shoppingBasketDALs.Add(shoppingBasket);
+            ShoppingBasketDAL toRemove = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).First();
+            if (shoppingBasket == null)//remove basket
+            {
+                user._cart._shoppingBaskets.Remove(toRemove);
+            }
+            else
+            {
+                toRemove._items = shoppingBasket._items;
+            }
+            context.Update(user);
             context.SaveChanges();
-
+            
             context = new MarketContext();
             StoreDAL storeDAL = context.StoreDALs.Include(x => x._stock).Include(x => x._rating).FirstOrDefault(s => s._storeName == storeName);
             if (storeDAL == null)

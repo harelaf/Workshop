@@ -568,9 +568,14 @@ namespace MarketWeb.Server.Domain
             if (IsVisitorLoggedin(VisitorToken))
             {
                 string username = GetRegisteredUsernameByToken(VisitorToken);
-                _dalController.RemoveItemFromCart(item.ItemID, store.StoreName, username, amount,
-                    _dalTRranslator.BasketDomainToDal(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)));
-
+                ShoppingBasket shoppingBasket = Visitor.ShoppingCart.GetShoppingBasket(store.StoreName);
+                if (shoppingBasket == null)
+                    _dalController.RemoveItemFromCart(item.ItemID, store.StoreName, username, amount, null);
+                else
+                {
+                    _dalController.RemoveItemFromCart(item.ItemID, store.StoreName, username, amount,
+                        _dalTRranslator.BasketDomainToDal(shoppingBasket));
+                }
             }
             return amount;
         }
