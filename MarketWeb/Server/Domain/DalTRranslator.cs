@@ -98,9 +98,19 @@ namespace MarketWeb.Server.Domain
             {
                 managers.Add(StoreManagerDomainToDal(manager));
             }
+            IDictionary<string, List<BidDAL>> biddedItems = new Dictionary<string, List<BidDAL>>();
+            foreach(string bidder in store.BiddedItems.Keys)
+            {
+                biddedItems[bidder] = new List<BidDAL>();
+                foreach(Bid bid in store.BiddedItems[bidder])
+                {
+                    biddedItems[bidder].Add(BidDomainToDal(bid));
+                }
+            }
             return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, 
                                                                         PrchasePolicyDomainToDal(store.GetPurchasePolicy()), 
-                                                                        DiscountPolicyDomainToDal(store.GetDiscountPolicy()));
+                                                                        DiscountPolicyDomainToDal(store.GetDiscountPolicy()),
+                                                                        biddedItems);
         }
 
         private String DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
@@ -271,9 +281,17 @@ namespace MarketWeb.Server.Domain
             {
                 owners.Add(StoreOwnerDalToDomain(owner));
             }
-
+            IDictionary<string, List<Bid>> biddedItems = new Dictionary<string, List<Bid>>();
+            foreach (string bidder in storeDAL._biddedItems.Keys)
+            {
+                biddedItems[bidder] = new List<Bid>();
+                foreach (BidDAL bid in storeDAL._biddedItems[bidder])
+                {
+                    biddedItems[bidder].Add(BidDalToDomain(bid));
+                }
+            }
             return new Store(stock, purchasePolicy, discountPolicy, messagesToStore, rating
-                , managers, owners, founder,storeName ,state, new Dictionary<string, List<Bid>>());// bid!!!!!!!!!!!!!!!!!!!!
+                , managers, owners, founder,storeName ,state, biddedItems);
         }
 
         private DiscountPolicy DiscountPolicyDalToDomain(string discountPolicyJSON)

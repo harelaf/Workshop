@@ -26,6 +26,7 @@ namespace MarketWeb.Server.Domain
         private StoreState _state;
         // bidder (if registered -> username, else -> authentication token) to bids
         private IDictionary<String, List<Bid>> _biddedItems;
+        public IDictionary<String, List<Bid>> BiddedItems => _biddedItems;
         private Dictionary<String, List<String>> _standbyOwners;
 
         public String StoreName => _storeName;
