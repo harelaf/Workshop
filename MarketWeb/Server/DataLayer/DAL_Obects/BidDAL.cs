@@ -35,6 +35,19 @@ namespace MarketWeb.Server.DataLayer
             _counterOffer = counterOffer;
             _acceptors = acceptors;
         }
+        public BidDAL(
+            string bidder,
+            int itemId,
+            int amount,
+            double biddedPrice)
+        {
+            _bidder = bidder;
+            _itemId = itemId;
+            _amount = amount;
+            _biddedPrice = biddedPrice;
+            _counterOffer = -1;
+            _acceptors = new List<StringData>();
+        }
         public BidDAL()
         {
         }

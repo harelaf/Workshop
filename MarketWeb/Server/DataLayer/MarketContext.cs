@@ -6,6 +6,8 @@ namespace MarketWeb.Server.DataLayer
     public class MarketContext: DbContext
     {
         public DbSet<StoreDAL> StoreDALs { get; set; }
+        public DbSet<BidDAL> BidDAL { get; set; }
+        public DbSet<BidsOfVisitor> BidOfVisitor { get; set; }
         public DbSet<RegisteredDAL> RegisteredDALs { get; set; }
         public DbSet<ComplaintDAL> ComplaintDALs { get; set; }
         public DbSet<StorePurchasedBasketDAL> StorePurchaseHistory { get; set; }
@@ -21,7 +23,7 @@ namespace MarketWeb.Server.DataLayer
         public static string initialcatalog { get; set; } = "";
         public static string userid { get; set; } = "";
         public static string password { get; set; } = "";
-        //public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
+        public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
 
         public MarketContext()
         {
@@ -32,7 +34,7 @@ namespace MarketWeb.Server.DataLayer
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            string connectionStr = $"Data Source={datasource};Initial Catalog={initialcatalog};User Id={userid};Password={password}";
+            //string connectionStr = $"Data Source={datasource};Initial Catalog={initialcatalog};User Id={userid};Password={password}";
             //connectionStr = "Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;";
             options.UseSqlServer(connectionStr);
         }

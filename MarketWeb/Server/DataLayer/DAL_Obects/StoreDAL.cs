@@ -19,7 +19,6 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public ICollection<StockItemDAL> _stock { get; set; }
 
-        [ForeignKey("RatingDAL")]
         [Required]
         public string _discountPolicyJSON { get; set; }
         [Required]

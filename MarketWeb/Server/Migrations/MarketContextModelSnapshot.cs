@@ -129,7 +129,7 @@ namespace MarketWeb.Server.Migrations
 
                     b.HasIndex("StoreDAL_storeName");
 
-                    b.ToTable("BidsOfVisitor");
+                    b.ToTable("BidOfVisitor");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.ComplaintDAL", b =>
