@@ -57,12 +57,12 @@ namespace MarketWeb.Server.Domain
             foreach (ShoppingBasket shoppingBasket in shoppingCart._shoppingBaskets)
             {
                 String storeName = shoppingBasket.Store().GetName();
-                _dalController.addStorePurchse(_dalTRranslator.BasketDomainToDal(shoppingBasket), DateTime.Now, storeName);
+                _dalController.addStorePurchse(_dalTRranslator.ShoppingBasketDomainToDAL(shoppingBasket), DateTime.Now, storeName);
             }
         }
         public void AddRegisterPurchases(ShoppingCart shoppingCart, String Username)
         {
-            _dalController.addRegisteredPurchse(_dalTRranslator.CartDomainToDal(shoppingCart), DateTime.Now, Username);
+            _dalController.addRegisteredPurchse(_dalTRranslator.ShoppingCartDomainToDAL(shoppingCart), DateTime.Now, Username);
         }
         public ICollection<Tuple<DateTime, ShoppingCart>> GetRegistreredPurchaseHistory(String Username)
         {

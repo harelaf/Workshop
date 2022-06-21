@@ -5,7 +5,7 @@ namespace MarketWeb.Server.Domain
 {
     public class Bid
     {
-        private String _bidder;
+        private string _bidder;
         private int _itemId;
         private int _amount;
         private double _biddedPrice;
@@ -29,6 +29,21 @@ namespace MarketWeb.Server.Domain
             _biddedPrice = biddedPrice;
             _counterOffer = -1;
             _acceptors = new HashSet<string>();
+        }
+        public Bid(
+            string bidder, 
+            int itemId, 
+            int amount, 
+            double biddedPrice, 
+            double counterOffer, 
+            ISet<string> acceptors)
+        {
+            _bidder = bidder;
+            _itemId = itemId;
+            _amount = amount;
+            _biddedPrice = biddedPrice;
+            _counterOffer = counterOffer;
+            _acceptors = acceptors;
         }
         public void AcceptBid(string userName)
         {

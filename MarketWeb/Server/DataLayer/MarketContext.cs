@@ -43,7 +43,7 @@ namespace MarketWeb.Server.DataLayer
             //builder.Entity<StoreDAL>().HasOne(e => e._purchasePolicy).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             //builder.Entity<StoreDAL>().HasOne(e => e._rating).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             builder.Entity<ItemDAL>().HasMany(x => x._rating).WithOne().OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<PurchaseDetailsDAL>().HasMany(x => x.discountList).WithOne().OnDelete(DeleteBehavior.ClientCascade);
+            //builder.Entity<PurchaseDetailsDAL>().HasMany(x => x.discountListJSON).WithOne().OnDelete(DeleteBehavior.ClientCascade);
 
 
             builder.Entity<ComplaintDAL>();

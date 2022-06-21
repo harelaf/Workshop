@@ -21,6 +21,12 @@ namespace MarketWeb.Server.Domain
             _items = items;
         }
 
+        public ShoppingBasket(Store store, IDictionary<Item, DiscountDetails<AtomicDiscount>> items, DiscountDetails<NumericDiscount> additionalDiscounts, List<Bid> biddedItems) : this(store, items)
+        {
+            _additionalDiscounts = additionalDiscounts;
+            _biddedItems = biddedItems;
+        }
+
         public ShoppingBasket(Store store)
         {
             _store = store;
@@ -36,7 +42,7 @@ namespace MarketWeb.Server.Domain
                 updateItemQuantity(item, amount + Items[GetItem(item.ItemID)].Amount);
                 return;
             }
-            else _items[GetItem(item.ItemID)] = new DiscountDetails<AtomicDiscount>(amount);
+            else _items[item] = new DiscountDetails<AtomicDiscount>(amount);
             if (!Store().GetPurchasePolicy().checkPolicyConditions(this))
             {
                 _items.Remove(item);

@@ -557,7 +557,7 @@ namespace MarketWeb.Server.Domain
             {
                 string username = GetRegisteredUsernameByToken(VisitorToken);
                 ShoppingBasket shoppingBasket = Visitor.ShoppingCart.GetShoppingBasket(store.StoreName);
-                _dalController.AddItemToCart(_dalTRranslator.BasketDomainToDal(shoppingBasket), store.StoreName, username, item.ItemID, amount);
+                _dalController.AddItemToCart(_dalTRranslator.ShoppingBasketDomainToDAL(shoppingBasket), store.StoreName, username, item.ItemID, amount);
             }
         }
 
@@ -569,7 +569,7 @@ namespace MarketWeb.Server.Domain
             {
                 string username = GetRegisteredUsernameByToken(VisitorToken);
                 _dalController.RemoveItemFromCart(item.ItemID, store.StoreName, username, amount,
-                    _dalTRranslator.BasketDomainToDal(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)));
+                    _dalTRranslator.ShoppingBasketDomainToDAL(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)));
 
             }
             return amount;
@@ -596,7 +596,7 @@ namespace MarketWeb.Server.Domain
             {
                 string username = GetRegisteredUsernameByToken(VisitorToken);
                 _dalController.UpdateQuantityOfItemInCart(item.ItemID, store.StoreName, newQuantity, username,
-                   _dalTRranslator.BasketDomainToDal(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)), amountdiff);
+                   _dalTRranslator.ShoppingBasketDomainToDAL(Visitor.ShoppingCart.GetShoppingBasket(store.StoreName)), amountdiff);
             }
         }
 

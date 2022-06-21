@@ -1,5 +1,4 @@
-﻿
-using MarketWeb.Server.Domain;
+﻿using MarketWeb.Server.Domain;
 using MarketWeb.Server.Service;
 using MarketWeb.Server.Domain.PolicyPackage;
 using MarketWeb.Shared;

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace MarketWeb.Server.DataLayer
 {
@@ -15,8 +13,10 @@ namespace MarketWeb.Server.DataLayer
         public StoreDAL _store { get; set; }
         [Required]
         public ICollection<BasketItemDAL> _items { get; set; }
+        public PurchaseDetailsDAL _additionalDiscounts { get; set; }
+        public List<BidDAL> _bids { get; set; }
 
-        public ShoppingBasketDAL(StoreDAL store, IDictionary<int, PurchaseDetailsDAL> items)
+        public ShoppingBasketDAL(StoreDAL store, IDictionary<int, PurchaseDetailsDAL> items, PurchaseDetailsDAL additionalDiscounts, List<BidDAL> bids)
         {
             _store = store;
             _items = new List<BasketItemDAL>();
@@ -24,12 +24,16 @@ namespace MarketWeb.Server.DataLayer
             {
                 _items.Add(new BasketItemDAL(i_p.Key, i_p.Value));
             }
+            _additionalDiscounts = additionalDiscounts;
+            _bids = bids;
         }
 
-        public ShoppingBasketDAL(StoreDAL store, ICollection<BasketItemDAL> items)
+        public ShoppingBasketDAL(StoreDAL store, ICollection<BasketItemDAL> items, PurchaseDetailsDAL additionalDiscounts, List<BidDAL> bids)
         {
             _store = store;
             _items = items;
+            _additionalDiscounts = additionalDiscounts;
+            _bids = bids;
         }
 
         public IDictionary<int, PurchaseDetailsDAL> ConvertToDictionary()
@@ -45,6 +49,8 @@ namespace MarketWeb.Server.DataLayer
         public ShoppingBasketDAL()
         {
             _items = new List<BasketItemDAL>();
+            _additionalDiscounts = new PurchaseDetailsDAL();
+            _bids = new List<BidDAL>();
         }
     }
 }

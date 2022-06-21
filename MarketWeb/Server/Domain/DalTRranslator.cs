@@ -9,30 +9,6 @@ namespace MarketWeb.Server.Domain
 {
     public class DalTRranslator
     {
-        public ShoppingCartDAL CartDomainToDal(ShoppingCart cartDomain)
-        {
-            ICollection<ShoppingBasketDAL> baskets = new List<ShoppingBasketDAL>();
-            foreach (ShoppingBasket basketDomain in cartDomain._shoppingBaskets)
-                baskets.Add(BasketDomainToDal(basketDomain));
-            return new ShoppingCartDAL(baskets);
-        }
-        public ShoppingBasketDAL BasketDomainToDal(ShoppingBasket basketDomain)
-        {
-            IDictionary<int, PurchaseDetailsDAL> items = new Dictionary<int, PurchaseDetailsDAL>();
-            foreach (Item item in basketDomain._items.Keys)
-                items.Add(item.ItemID, PurchaseDetailsToDal(item.ItemID, basketDomain._items[item]));
-            return new ShoppingBasketDAL(StoreDomainToDal(basketDomain._store), items);
-        }
-
-        private PurchaseDetailsDAL PurchaseDetailsToDal(int itemID, DiscountDetails<AtomicDiscount> discountDetails)
-        {
-            List<AtomicDiscountDAL> disList = new List<AtomicDiscountDAL>();
-            foreach (AtomicDiscount dis in discountDetails.DiscountList)
-                disList.Add(AtomicDiscountDomainToDal(dis));
-            PurchaseDetailsDAL details = new PurchaseDetailsDAL(itemID, discountDetails.Amount, disList);
-            return details;
-        }
-
         private AtomicDiscountDAL AtomicDiscountDomainToDal(AtomicDiscount dis)
         {
             if (dis == null)
@@ -386,17 +362,29 @@ namespace MarketWeb.Server.Domain
             IDictionary<Item, DiscountDetails<AtomicDiscount>> items = new Dictionary<Item, DiscountDetails<AtomicDiscount>>();
             foreach(KeyValuePair<int, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
             {
-                items.Add(ItemDalToDomain(DalController.GetInstance().GetItem(i_a.Key)), PurchaseDetailsDALToDomain(i_a.Value));
+                items.Add(ItemDalToDomain(DalController.GetInstance().GetItem(i_a.Key)), PurchaseDetailsDALToDomain<AtomicDiscount>(i_a.Value));
             }
-            return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items);
+            DiscountDetails<NumericDiscount> additionalDiscounts = PurchaseDetailsDALToDomain<NumericDiscount>(basketDAL._additionalDiscounts);
+            List<Bid> bids = new List<Bid>();
+            foreach (BidDAL bid in basketDAL._bids)
+                bids.Add(BidDalToDomain(bid));
+            return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items, additionalDiscounts, bids);
         }
 
-        private DiscountDetails<AtomicDiscount> PurchaseDetailsDALToDomain(PurchaseDetailsDAL value)
+        private Bid BidDalToDomain(BidDAL bid)
         {
-            ISet<AtomicDiscount> disList = new HashSet<AtomicDiscount>();
-            foreach (AtomicDiscountDAL dis in value.discountList)
-                disList.Add(AtomicDiscountDalToDomain(dis));
-            DiscountDetails<AtomicDiscount> details = new DiscountDetails<AtomicDiscount>(value.amount, disList);
+            return new Bid(bid._bidder, bid._itemId, bid._amount, bid._biddedPrice, bid._counterOffer, bid._acceptors);
+        }
+
+        private DiscountDetails<T> PurchaseDetailsDALToDomain<T>(PurchaseDetailsDAL value) where T : AtomicDiscount
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            ISet<T> disList = JsonConvert.DeserializeObject<HashSet<T>>(value.discountListJSON, settings);
+            DiscountDetails<T> details = new DiscountDetails<T>(value.amount, disList);
             return details;
         }
 
@@ -691,15 +679,34 @@ namespace MarketWeb.Server.Domain
             {
                 items.Add(i_a.Key.ItemID, PurchaseDetailsDomainToDal(i_a.Key.ItemID, i_a.Value));
             }
-            return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items);
+            PurchaseDetailsDAL additionalDiscounts = PurchaseDetailsDomainToDal(0, basket.AdditionalDiscounts);
+            List<BidDAL> bids = new List<BidDAL>();
+            foreach (Bid bid in basket.BiddedItems)
+                bids.Add(BidDomainToDal(bid));
+            return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items, additionalDiscounts, bids);
         }
 
-        private PurchaseDetailsDAL PurchaseDetailsDomainToDal(int itemID, DiscountDetails<AtomicDiscount> value)
+        private BidDAL BidDomainToDal(Bid bid)
         {
-            List<AtomicDiscountDAL> disList = new List<AtomicDiscountDAL>();
-            foreach (AtomicDiscount dis in value.DiscountList)
-                disList.Add(AtomicDiscountDomainToDal(dis));
-            return new PurchaseDetailsDAL(itemID, value.Amount, disList);
+            return new BidDAL(
+                bid.Bidder, 
+                bid.ItemID, 
+                bid.Amount, 
+                bid.BiddedPrice, 
+                bid.CounterOffer, 
+                bid.Acceptors);
+        }
+
+        private PurchaseDetailsDAL PurchaseDetailsDomainToDal<T>(int itemID, DiscountDetails<T> discountDetails) where T : AtomicDiscount
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+            String disListJSON = JsonConvert.SerializeObject(discountDetails.DiscountList, settings);
+            PurchaseDetailsDAL details = new PurchaseDetailsDAL(itemID, discountDetails.Amount, disListJSON);
+            return details;
         }
 
         public Dictionary<string, Store> StoreListDalToDomain(ICollection<StoreDAL> storeDALs)
@@ -715,7 +722,7 @@ namespace MarketWeb.Server.Domain
             string password = registered._password;
             string salt = registered._salt;
             DateTime birthDate = registered._birthDate;
-            ShoppingCartDAL cart = CartDomainToDal(registered.ShoppingCart);
+            ShoppingCartDAL cart = ShoppingCartDomainToDAL(registered.ShoppingCart);
             ICollection<AdminMessageToRegisteredDAL> adminMessages = new List<AdminMessageToRegisteredDAL>();
             foreach (AdminMessageToRegistered adminMessage in registered.AdminMessages)
             {

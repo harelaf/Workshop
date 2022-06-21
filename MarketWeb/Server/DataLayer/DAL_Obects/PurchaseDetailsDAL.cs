@@ -14,18 +14,18 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public int amount { get; set; }
         [Required]
-        public List<AtomicDiscountDAL> discountList { get; set; }
+        public string discountListJSON { get; set; }
 
-        public PurchaseDetailsDAL(int ItemID, int amount, List<AtomicDiscountDAL> discountList)
+        public PurchaseDetailsDAL(int ItemID, int amount, string discountListJSON)
         {
             _itemID = ItemID;
             this.amount = amount;
-            this.discountList = discountList;
+            this.discountListJSON = discountListJSON;
         }
 
         public PurchaseDetailsDAL()
         {
-            discountList = new List<AtomicDiscountDAL>();
+            discountListJSON = "";
         }
     }
 }
