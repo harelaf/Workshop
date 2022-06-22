@@ -6,7 +6,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class SearchCategoryCondition : SearchablePriceableCondition
     {
-        public SearchCategoryCondition(string keyWord, int minAmount, int maxAmount, bool negative) : base(keyWord, minAmount, maxAmount, negative) { }
+        public SearchCategoryCondition(string keyWord, int minValue, int maxValue, bool toNegative) : base(keyWord, minValue, maxValue, toNegative) { }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
             return checkNegative(IsInRange(searchablePriceable.SearchCategoryAmount(_keyWord), _minValue, _maxValue));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace MarketWeb.Server.Domain.PolicyPackage
 {
@@ -12,6 +13,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         {
             _discounts = new PlusDiscount(new List<Discount>());
         }
+        [JsonConstructor]
         public DiscountPolicy(DiscountPolicy policy)
         {
             _discounts = policy._discounts;

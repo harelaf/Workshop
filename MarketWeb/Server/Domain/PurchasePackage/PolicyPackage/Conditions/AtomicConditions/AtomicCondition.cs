@@ -6,7 +6,8 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public abstract class AtomicCondition : Condition
     {
-        protected AtomicCondition(bool negative) : base(negative)
+
+        protected AtomicCondition(bool toNegative) : base(toNegative)
         {
         }
 

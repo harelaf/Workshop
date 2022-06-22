@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,11 +7,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class AndComposition : ComposedCondition
     {
-        public AndComposition(bool negative) : base(negative)
+        public AndComposition(bool toNegative) : base(toNegative)
         {
         }
-
-        public AndComposition(bool negative, List<Condition> conditions) : base(negative, conditions)
+        [JsonConstructor]
+        public AndComposition(bool toNegative, List<Condition> conditionList) : base(toNegative, conditionList)
         {
         }
 

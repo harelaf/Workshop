@@ -11,7 +11,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         protected int _minValue, _maxValue;
         public int MinValue => _minValue;
         public int MaxValue => _maxValue;
-        public SearchablePriceableCondition(String keyWord, int minValue, int maxValue, bool negative) : base(negative)
+        public SearchablePriceableCondition(String keyWord, int minValue, int maxValue, bool toNegative) : base(toNegative)
         {
             _keyWord = keyWord;
             _minValue = minValue;

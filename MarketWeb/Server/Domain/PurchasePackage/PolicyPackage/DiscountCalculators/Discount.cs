@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,6 +10,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         private Condition _condition; 
         public Condition Condition => _condition;
 
+        [JsonConstructor]
         protected Discount(Condition condition)
         {
             _condition = condition;

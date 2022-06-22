@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -16,6 +17,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         { 
             return newLine(indent) + "Expired on: " + _expiration.ToString();
         }
+        [JsonConstructor]
         protected AtomicDiscount(Condition condition, DateTime expiration) : base(condition)
         {
             _expiration = expiration;

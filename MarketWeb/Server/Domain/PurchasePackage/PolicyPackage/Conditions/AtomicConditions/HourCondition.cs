@@ -28,7 +28,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
             }
         }
         
-        public HourCondition(int minHour, int maxHour, bool negative) : base(negative)
+        public HourCondition(int minHour, int maxHour, bool toNegative) : base(toNegative)
         {
             MaxHour = maxHour;
             MinHour = minHour;

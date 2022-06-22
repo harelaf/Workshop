@@ -13,9 +13,9 @@ namespace MarketWeb.Server.Domain.PolicyPackage
             private set { _toNegative = value; }
         }
 
-        protected Condition(bool negative)
+        protected Condition(bool toNegative)
         {
-            _toNegative = negative;
+            _toNegative = toNegative;
         }
         protected String newLine(int indent)
         {

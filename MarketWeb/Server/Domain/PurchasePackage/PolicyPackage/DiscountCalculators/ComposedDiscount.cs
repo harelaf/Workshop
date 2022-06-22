@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,10 +18,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
                 _discountList = value;
             }
         }
-        public ComposedDiscount(List<Discount> discounts, Condition condition) : base(condition)
+        [JsonConstructor]
+        public ComposedDiscount(List<Discount> discountList, Condition condition) : base(condition)
         {
             lock(DiscountList){
-                _discountList = discounts;
+                _discountList = discountList;
             }
         }
         public ComposedDiscount(List<Discount> discounts) : base()

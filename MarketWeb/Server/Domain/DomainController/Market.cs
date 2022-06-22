@@ -1519,7 +1519,7 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("GetStandbyOwnersInStore", errorMessage);
                 throw new Exception(errorMessage);
             }
-            return _storeManagement.GetStandbyOwnersInStore(storeName); ;
+            return _storeManagement.GetStandbyOwnersInStore(storeName); 
         }
     }
 }

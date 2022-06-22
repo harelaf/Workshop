@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,14 +10,14 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         protected List<Condition> _ConditionList;
         public List<Condition> ConditionList => _ConditionList;
 
-        protected ComposedCondition(bool negative) : base(negative)
+        protected ComposedCondition(bool toNegative) : base(toNegative)
         {
             _ConditionList = new List<Condition>();
         }
-
-        protected ComposedCondition(bool negative, List<Condition> conditions) : base(negative)
+        [JsonConstructor]
+        protected ComposedCondition(bool toNegative, List<Condition> conditionList) : base(toNegative)
         {
-            _ConditionList = conditions;
+            _ConditionList = conditionList;
         }
 
         public void AddConditionToComposition(Condition condition)

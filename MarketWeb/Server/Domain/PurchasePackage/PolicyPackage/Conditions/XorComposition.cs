@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,11 +7,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class XorComposition : ComposedCondition
     {
-        public XorComposition(bool negative) : base(negative)
+        public XorComposition(bool toNegative) : base(toNegative)
         {
         }
-
-        public XorComposition(bool negative, List<Condition> conditions) : base(negative, conditions)
+        [JsonConstructor]
+        public XorComposition(bool toNegative, List<Condition> conditionList) : base(toNegative, conditionList)
         {
         }
 

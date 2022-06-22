@@ -6,7 +6,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class PriceableCondition : SearchablePriceableCondition
     {
-        public PriceableCondition(string keyWord, int minAmount, int maxAmount, bool negative) : base(keyWord, minAmount, maxAmount, negative)
+        public PriceableCondition(string keyWord, int minValue, int maxValue, bool toNegative) : base(keyWord, minValue, maxValue, toNegative)
         {
         }
 

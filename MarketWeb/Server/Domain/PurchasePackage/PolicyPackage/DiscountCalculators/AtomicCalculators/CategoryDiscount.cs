@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,12 +13,13 @@ namespace MarketWeb.Server.Domain.PolicyPackage
             get { return _category; }
             private set { _category = value; }
         }
-        public CategoryDiscount(double percentage_to_subtract, String category, Condition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration)
+        [JsonConstructor]
+        public CategoryDiscount(double percentageToSubtract, String category, Condition condition, DateTime expiration) : base(percentageToSubtract, condition, expiration)
         {
             _category = category;
         }
 
-        public CategoryDiscount(double percentage_to_subtract, String category, DateTime expiration) : base(percentage_to_subtract, expiration)
+        public CategoryDiscount(double percentageToSubtract, String category, DateTime expiration) : base(percentageToSubtract, expiration)
         {
             _category = category;
         }

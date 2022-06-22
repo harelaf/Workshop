@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,9 +7,9 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class PlusDiscount : ComposedDiscount
     {
-        public PlusDiscount(List<Discount> discounts) : base(discounts){}
-
-        public PlusDiscount(List<Discount> discounts, Condition condition) : base(discounts, condition){}
+        public PlusDiscount(List<Discount> discountsList) : base(discountsList) {}
+        [JsonConstructor]
+        public PlusDiscount(List<Discount> discountsList, Condition condition) : base(discountsList, condition){}
 
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {

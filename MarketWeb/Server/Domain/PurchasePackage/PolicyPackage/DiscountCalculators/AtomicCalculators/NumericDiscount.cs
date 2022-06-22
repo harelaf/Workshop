@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,7 +18,8 @@ namespace MarketWeb.Server.Domain.PolicyPackage
                 _price_to_subtract = value;
             }
         }
-        public NumericDiscount(double priceToSubtract, Condition _condition, DateTime expiration) : base(_condition, expiration)
+        [JsonConstructor]
+        public NumericDiscount(double priceToSubtract, Condition condition, DateTime expiration) : base(condition, expiration)
         {
             _price_to_subtract = priceToSubtract;
         }

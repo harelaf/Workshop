@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,9 +7,9 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class AllProductsDiscount : PercentageDiscount
     {
-        public AllProductsDiscount(double percentage_to_subtract, DateTime expiration) : base(percentage_to_subtract, expiration){}
-
-        public AllProductsDiscount(double percentage_to_subtract, Condition _condition, DateTime expiration) : base(percentage_to_subtract, _condition, expiration){}
+        public AllProductsDiscount(double percentageToSubtract, DateTime expiration) : base(percentageToSubtract, expiration){}
+        [JsonConstructor]
+        public AllProductsDiscount(double percentageToSubtract, Condition condition, DateTime expiration) : base(percentageToSubtract, condition, expiration){}
 
         public override string GetDiscountString(int indent)
         {

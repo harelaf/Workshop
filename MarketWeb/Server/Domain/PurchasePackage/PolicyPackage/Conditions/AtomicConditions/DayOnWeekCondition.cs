@@ -8,10 +8,10 @@ namespace MarketWeb.Server.Domain.PolicyPackage
     {
         protected DayOfWeek _dayOnWeek; //between 
         public String DayOnWeek => _dayOnWeek.ToString();
-        
-        public DayOnWeekCondition(String day, bool negative) : base(negative)
+ 
+        public DayOnWeekCondition(String dayOnWeek, bool toNegative) : base(toNegative)
         {
-            _dayOnWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), day);
+            _dayOnWeek = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), dayOnWeek);
         }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {

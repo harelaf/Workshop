@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,11 +7,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class OrComposition : ComposedCondition
     {
-        public OrComposition(bool negative) : base(negative)
+        public OrComposition(bool toNegative) : base(toNegative)
         {
         }
-
-        public OrComposition(bool negative, List<Condition> conditions) : base(negative, conditions)
+        [JsonConstructor]
+        public OrComposition(bool toNegative, List<Condition> conditionList) : base(toNegative, conditionList)
         {
         }
         public override bool Check(ISearchablePriceable searchablePriceable)

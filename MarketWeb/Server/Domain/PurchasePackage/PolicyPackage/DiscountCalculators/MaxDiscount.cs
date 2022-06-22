@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,8 +7,9 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class MaxDiscount : ComposedDiscount
     {
-        public MaxDiscount(List<Discount> _discountsList) : base(_discountsList){}
-        public MaxDiscount(List<Discount> discounts, Condition condition) : base(discounts, condition){}
+        public MaxDiscount(List<Discount> discountsList) : base(discountsList){}
+        [JsonConstructor]
+        public MaxDiscount(List<Discount> discountsList, Condition condition) : base(discountsList, condition){}
         public override string GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
         {
             Discount maxDis = GetMaxDiscount(searchablePriceable);

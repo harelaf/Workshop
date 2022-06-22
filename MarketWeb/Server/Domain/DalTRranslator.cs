@@ -338,6 +338,15 @@ namespace MarketWeb.Server.Domain
                 Formatting = Formatting.Indented
             };
             return JsonConvert.DeserializeObject<DiscountPolicy>(discountPolicyJSON, settings);
+            /*
+              PlusDiscount plusDiscount =  JsonConvert.DeserializeObject<PlusDiscount>(discountPolicyJSON, settings);
+            DiscountPolicy discountPolicy = new DiscountPolicy();
+            foreach(Discount d in plusDiscount.DiscountList)
+            {
+                discountPolicy.AddDiscount(d);
+            }
+            return discountPolicy;
+             */
         }
 
         private PurchasePolicy PurchasePolicyDalToDomain(string purchasePolicyJSON)

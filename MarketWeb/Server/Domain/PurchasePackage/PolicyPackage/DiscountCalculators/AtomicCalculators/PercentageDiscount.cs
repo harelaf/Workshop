@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,15 +18,15 @@ namespace MarketWeb.Server.Domain.PolicyPackage
                 _percentage_to_subtract = value;
             }
         }
-
-        public PercentageDiscount(double percentage_to_subtract, Condition _condition, DateTime expiration) : base(_condition, expiration)
+        [JsonConstructor]
+        public PercentageDiscount(double percentageToSubtract, Condition condition, DateTime expiration) : base(condition, expiration)
         {
-            _percentage_to_subtract = percentage_to_subtract;
+            _percentage_to_subtract = percentageToSubtract;
         }
 
-        public PercentageDiscount(double percentage_to_subtract, DateTime expiration) : base(expiration)
+        public PercentageDiscount(double percentageToSubtract, DateTime expiration) : base(expiration)
         {
-            _percentage_to_subtract = percentage_to_subtract;
+            _percentage_to_subtract = percentageToSubtract;
         }
         public override double calcPriceFromCurrPrice(ISearchablePriceable searchablePriceable, double currPrice)
         {
