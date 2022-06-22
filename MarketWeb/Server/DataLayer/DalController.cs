@@ -508,7 +508,7 @@ namespace MarketWeb.Server.DataLayer
         public void RateItem(int itemID, String storeName, int rating, String review, string userName)
         {
             MarketContext context = new MarketContext();
-            context.itemDALs.Find(itemID)._rating.Add(new RateDAL(userName, rating, review));
+            context.itemDALs.Include(x => x._rating).FirstOrDefault(x => x._itemID==itemID)._rating.Add(new RateDAL(userName, rating, review));
             context.SaveChanges();
         }
         public void RateStore(String storeName, int rating, String review, string userName)
@@ -527,7 +527,7 @@ namespace MarketWeb.Server.DataLayer
         public ItemDAL GetItem(int itemID)
         {
             MarketContext context = new MarketContext();
-            return context.itemDALs.Where(x => x._itemID == itemID).FirstOrDefault();
+            return context.itemDALs.Include(x=> x._rating).FirstOrDefault(x => x._itemID == itemID);
         }
         public int SendMessageToStore(String storeName, String title, String message, string sender)
         {
@@ -555,11 +555,12 @@ namespace MarketWeb.Server.DataLayer
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._items).ThenInclude(x => x.purchaseDetails)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
                                                                                 .FirstOrDefault(s => s.userName == userName);
-            if (reg_history == null)
-                return null;
-            foreach (PurchasedCartDAL cart in reg_history._PurchasedCarts)
+            if (reg_history != null)
             {
-                history.Add(new Tuple<DateTime, ShoppingCartDAL>(cart._purchaseDate, cart._PurchasedCart));
+                foreach (PurchasedCartDAL cart in reg_history._PurchasedCarts)
+                {
+                    history.Add(new Tuple<DateTime, ShoppingCartDAL>(cart._purchaseDate, cart._PurchasedCart));
+                }
             }
             return history;
         }
@@ -572,17 +573,19 @@ namespace MarketWeb.Server.DataLayer
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._items).ThenInclude(x => x.purchaseDetails)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
                                                                                 .FirstOrDefault(s => s.userName == userName);
-            if (reg_history == null)
-                return null;
-            foreach (PurchasedCartDAL purchasedCart in reg_history._PurchasedCarts)
+            if (reg_history != null)
             {
-                ShoppingCartDAL cart = purchasedCart._PurchasedCart;
-                foreach(ShoppingBasketDAL purchasedBasket in cart._shoppingBaskets)
+                foreach (PurchasedCartDAL purchasedCart in reg_history._PurchasedCarts)
                 {
-                    if (purchasedBasket._storeName == storeName)
-                        history.Add(new Tuple<DateTime, ShoppingBasketDAL>(purchasedCart._purchaseDate, purchasedBasket));
+                    ShoppingCartDAL cart = purchasedCart._PurchasedCart;
+                    foreach(ShoppingBasketDAL purchasedBasket in cart._shoppingBaskets)
+                    {
+                        if (purchasedBasket._storeName == storeName)
+                            history.Add(new Tuple<DateTime, ShoppingBasketDAL>(purchasedCart._purchaseDate, purchasedBasket));
+                    }
                 }
             }
+            
             return history;
         }
         public bool DidRegisterPurchasedInStore(string userName, string storeName)
@@ -698,11 +701,12 @@ namespace MarketWeb.Server.DataLayer
                                                                             .Include(x => x._PurchasedBaskets).ThenInclude(x => x._PurchasedBasket).ThenInclude(x => x._items).ThenInclude(x => x.purchaseDetails)
                                                                             .Include(x => x._PurchasedBaskets).ThenInclude(x => x._PurchasedBasket).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
                                                                             .FirstOrDefault(s => s._storeName == storeName);
-            if (store_basket == null)
-                return null;
-            foreach (PurchasedBasketDAL basket in store_basket._PurchasedBaskets)
+            if (store_basket != null)
             {
-                history.Add(new Tuple<DateTime, ShoppingBasketDAL>(basket._purchaseDate, basket._PurchasedBasket));
+                foreach (PurchasedBasketDAL basket in store_basket._PurchasedBaskets)
+                {
+                    history.Add(new Tuple<DateTime, ShoppingBasketDAL>(basket._purchaseDate, basket._PurchasedBasket));
+                }
             }
             return history;
         }
@@ -711,6 +715,39 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             StoreDAL store = GetStoreDAL(context, storeName);
             store._state = StoreState.Closed;
+            context.SaveChanges();
+
+            context = new MarketContext();
+            StoreFounderDAL founderDAL = context.StoreFounderDALs.Include(x => x._operationsWrappers).FirstOrDefault(x => x._storeName == storeName);
+            context.SystemRoleDALs.Remove(founderDAL);
+            context.SaveChanges();
+
+            context = new MarketContext();
+            List<StoreManagerDAL> managers = new List<StoreManagerDAL>();
+            List<StoreManagerDAL> allManagers = context.storeManagerDALs.Include(x=> x._operationsWrappers).ToList();
+            foreach (StoreManagerDAL manager in allManagers)
+            {
+                if(manager._storeName == storeName)
+                    managers.Add(manager);
+            }
+            foreach (StoreManagerDAL manager in managers)
+            {
+                context.SystemRoleDALs.Remove(manager);
+            }
+            context.SaveChanges();
+
+            context = new MarketContext();
+            List<StoreOwnerDAL> owners = new List<StoreOwnerDAL>();
+            List<StoreOwnerDAL> allOwners = context.storeOwnerDALs.Include(x => x._operationsWrappers).ToList();
+            foreach (StoreOwnerDAL owner in allOwners)
+            {
+                if (owner._storeName == storeName)
+                    owners.Add(owner);
+            }
+            foreach (StoreOwnerDAL owner in owners)
+            {
+                context.SystemRoleDALs.Remove(owner);
+            }
             context.SaveChanges();
         }
         public ICollection<ComplaintDAL> GetRegisterdComplaints()

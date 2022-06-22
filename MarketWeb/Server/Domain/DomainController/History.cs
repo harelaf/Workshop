@@ -43,9 +43,9 @@ namespace MarketWeb.Server.Domain
         public List<Tuple<DateTime, ShoppingBasket>> GetStorePurchaseHistory(String storeName)
         {
             List<Tuple<DateTime, ShoppingBasket>> tuples = _dalTRranslator.PurchasedBasketDalToDomain(_dalController.GetStorePurchasesHistory(storeName));
-            if (tuples == null)
+            if (tuples == null || tuples.Count == 0 )
             {
-                String errorMessage = $"There is purchase history for {storeName} yet.";
+                String errorMessage = $"There is no purchase history for {storeName} yet.";
                 LogErrorMessage("GetStorePurchaseHistory", errorMessage);
                 throw new Exception(errorMessage);
             }
@@ -68,7 +68,7 @@ namespace MarketWeb.Server.Domain
         {
             ICollection<Tuple<DateTime, ShoppingCart>> history =
                 _dalTRranslator.PurchasedCartDalToDomain(_dalController.GetMyPurchasesHistory(Username));
-            if (history == null)
+            if (history == null || history.Count==0)
             {
                 String errorMessage = $"Purchase History of Visitor: {Username} is Empty. Visitor has'nt purchased yet.";
                 LogErrorMessage("GetRegistreredPurchaseHistory", errorMessage);
