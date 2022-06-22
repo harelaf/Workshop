@@ -107,16 +107,16 @@ namespace MarketWeb.Server.DataLayer
 
             context = new MarketContext();
             RegisteredDAL user = GetRegisteredDAL(context, userName);
-            if (user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).Any())
+            if (user._cart._shoppingBaskets.Where(b => b._storeName == storeName).Any())
             {
-                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
+                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._storeName == storeName).FirstOrDefault();
                 toModify._items = shoppingBasket._items;
             }
             else
             {
                 ShoppingBasketDAL toAdd = new ShoppingBasketDAL();
                 toAdd._items = shoppingBasket._items;
-                toAdd._store = GetStoreDAL(context, storeName);
+                toAdd._storeName = storeName;
                 user._cart._shoppingBaskets.Add(toAdd);
             }
             context.SaveChanges();
@@ -127,7 +127,7 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             RegisteredDAL user = GetRegisteredDAL(context, userName);
             
-            ShoppingBasketDAL toRemove = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
+            ShoppingBasketDAL toRemove = user._cart._shoppingBaskets.Where(b => b._storeName == storeName).FirstOrDefault();
             if (shoppingBasket == null)//remove basket
             {
                 user._cart._shoppingBaskets.Remove(toRemove);
@@ -157,7 +157,7 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             RegisteredDAL user = GetRegisteredDAL(context, userName);
 
-            ShoppingBasketDAL toRemove = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
+            ShoppingBasketDAL toRemove = user._cart._shoppingBaskets.Where(b => b._storeName == storeName).FirstOrDefault();
             if (shoppingBasket == null)//remove basket
             {
                 user._cart._shoppingBaskets.Remove(toRemove);
@@ -181,9 +181,7 @@ namespace MarketWeb.Server.DataLayer
         {
             RegisteredDAL reg =  context.RegisteredDALs
                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(x => x.purchaseDetails)
-                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
-                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
                                 .Include(x => x._adminMessages)
                                 .Include(x => x._notifications)
@@ -228,9 +226,9 @@ namespace MarketWeb.Server.DataLayer
             if (user == null)
                 throw new Exception($"user: {userName} not in system");
 
-            if (user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).Any())
+            if (user._cart._shoppingBaskets.Where(b => b._storeName == storeName).Any())
             {
-                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._store._storeName == storeName).FirstOrDefault();
+                ShoppingBasketDAL toModify = user._cart._shoppingBaskets.Where(b => b._storeName == storeName).FirstOrDefault();
                 toModify._items = shoppingBasketDAL._items;
             }
             else
@@ -245,7 +243,6 @@ namespace MarketWeb.Server.DataLayer
         public void addStorePurchase(ShoppingBasketDAL basket, DateTime date, string storename)
         {
             MarketContext context = new MarketContext();
-            basket._store = GetStoreInformation(storename);
             if (!context.StorePurchaseHistory.Where(x => x._storeName == storename).Any())
             {
                 StorePurchasedBasketDAL storePurchasedBasketDAL = new StorePurchasedBasketDAL();
@@ -273,15 +270,6 @@ namespace MarketWeb.Server.DataLayer
             registeredDAL._cart = new ShoppingCartDAL();
             context.SaveChanges();
 
-
-            context = new MarketContext();
-            foreach (ShoppingBasketDAL basket in cart._shoppingBaskets)
-            {
-                basket._store = context.StoreDALs
-                                            .Include(x => x._stock)
-                                            .Include(x => x._rating)
-                                            .FirstOrDefault(s => s._storeName == basket._store._storeName);
-            }
             context = new MarketContext();
             RegisteredPurchasedCartDAL registeredPurchasedCartDAL = context.RegisteredPurchaseHistory
                                                                                .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._additionalDiscounts)
@@ -302,9 +290,7 @@ namespace MarketWeb.Server.DataLayer
             PurchasedCart._purchaseDate = date;
             //registeredPurchasedCartDAL._PurchasedCarts.Add(PurchasedCart);
 
-            context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._store).ThenInclude(s => s._stock)
-                                             .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._store).ThenInclude(s => s._rating)
-                                             .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._additionalDiscounts)
+            context.RegisteredPurchaseHistory.Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._additionalDiscounts)
                                              .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._items).ThenInclude(x => x.purchaseDetails)
                                              .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
                                              .FirstOrDefault(s => s.userName == userName)._PurchasedCarts.Add(PurchasedCart);
@@ -565,8 +551,6 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             List<Tuple<DateTime, ShoppingCartDAL>> history = new List<Tuple<DateTime, ShoppingCartDAL>>();
             RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory
-                                                                                .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._store).ThenInclude(s => s._stock)
-                                                                                .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._store).ThenInclude(s => s._rating)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._additionalDiscounts)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._items).ThenInclude(x => x.purchaseDetails)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
@@ -584,8 +568,6 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             List<Tuple<DateTime, ShoppingBasketDAL>> history = new List<Tuple<DateTime, ShoppingBasketDAL>>();
             RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory
-                                                                                .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._store).ThenInclude(s => s._stock)
-                                                                                .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._store).ThenInclude(s => s._rating)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._additionalDiscounts)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._items).ThenInclude(x => x.purchaseDetails)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
@@ -597,7 +579,7 @@ namespace MarketWeb.Server.DataLayer
                 ShoppingCartDAL cart = purchasedCart._PurchasedCart;
                 foreach(ShoppingBasketDAL purchasedBasket in cart._shoppingBaskets)
                 {
-                    if (purchasedBasket._store._storeName == storeName)
+                    if (purchasedBasket._storeName == storeName)
                         history.Add(new Tuple<DateTime, ShoppingBasketDAL>(purchasedCart._purchaseDate, purchasedBasket));
                 }
             }
@@ -607,8 +589,6 @@ namespace MarketWeb.Server.DataLayer
         {
             MarketContext context = new MarketContext();
             RegisteredPurchasedCartDAL reg_history = context.RegisteredPurchaseHistory
-                                                                                .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._store).ThenInclude(s => s._stock)
-                                                                                .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._store).ThenInclude(s => s._rating)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._additionalDiscounts)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._items).ThenInclude(x => x.purchaseDetails)
                                                                                 .Include(x => x._PurchasedCarts).ThenInclude(x => x._PurchasedCart).ThenInclude(x => x._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
@@ -621,7 +601,7 @@ namespace MarketWeb.Server.DataLayer
                 ShoppingCartDAL cart = purchasedCart._PurchasedCart;
                 foreach (ShoppingBasketDAL purchasedBasket in cart._shoppingBaskets)
                 {
-                    if (purchasedBasket._store._storeName == storeName)
+                    if (purchasedBasket._storeName == storeName)
                         return true;
                 }
             }
@@ -714,8 +694,6 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             List<Tuple<DateTime, ShoppingBasketDAL>> history = new List<Tuple<DateTime, ShoppingBasketDAL>>();
             StorePurchasedBasketDAL store_basket = context.StorePurchaseHistory
-                                                                            .Include(x => x._PurchasedBaskets).ThenInclude(x => x._PurchasedBasket).ThenInclude(x => x._store).ThenInclude(s => s._stock)
-                                                                            .Include(x => x._PurchasedBaskets).ThenInclude(x => x._PurchasedBasket).ThenInclude(x => x._store).ThenInclude(s => s._rating)
                                                                             .Include(x => x._PurchasedBaskets).ThenInclude(x => x._PurchasedBasket).ThenInclude(x => x._additionalDiscounts)
                                                                             .Include(x => x._PurchasedBaskets).ThenInclude(x => x._PurchasedBasket).ThenInclude(x => x._items).ThenInclude(x => x.purchaseDetails)
                                                                             .Include(x => x._PurchasedBaskets).ThenInclude(x => x._PurchasedBasket).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
@@ -860,9 +838,7 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             List<RegisteredDAL> regs = context.RegisteredDALs
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).ToList();
@@ -883,9 +859,7 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             List<RegisteredDAL> regs = context.RegisteredDALs
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._stock)
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
-                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._store).ThenInclude(x => x._rating)
                                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
                                                 .Include(x => x._adminMessages)
                                                 .Include(x => x._notifications).ToList();
@@ -943,7 +917,7 @@ namespace MarketWeb.Server.DataLayer
             bool found = false;
             foreach (ShoppingBasketDAL basket in reg._cart._shoppingBaskets)
             {
-                if (basket._store._storeName == myStore._storeName)
+                if (basket._storeName == myStore._storeName)
                 {
                     found = true;
                     basket._bids.Add(new BidDAL(bidder, itemID, amount, price));
@@ -954,7 +928,7 @@ namespace MarketWeb.Server.DataLayer
             {
                 List<BidDAL> lst = new List<BidDAL>();
                 lst.Add(new BidDAL(bidder, itemID, amount, price));
-                reg._cart._shoppingBaskets.Add(new ShoppingBasketDAL(myStore, new List<BasketItemDAL>(), new PurchaseDetailsDAL(), lst));
+                reg._cart._shoppingBaskets.Add(new ShoppingBasketDAL(myStore._storeName, new List<BasketItemDAL>(), new PurchaseDetailsDAL(), lst));
             }
             BidsOfVisitor bov = myStore._bidsOfVisitors.FirstOrDefault(x => x._bidder == bidder);
             if (bov != null)

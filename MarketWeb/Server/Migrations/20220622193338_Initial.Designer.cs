@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketWeb.Server.Migrations
 {
     [DbContext(typeof(MarketContext))]
-    [Migration("20220622142311_Initial")]
+    [Migration("20220622193338_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -435,18 +435,16 @@ namespace MarketWeb.Server.Migrations
                     b.Property<int?>("ShoppingCartDALscId")
                         .HasColumnType("int");
 
-                    b.Property<string>("StoreDAL")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int?>("_additionalDiscountsID")
                         .HasColumnType("int");
+
+                    b.Property<string>("_storeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("sbId");
 
                     b.HasIndex("ShoppingCartDALscId");
-
-                    b.HasIndex("StoreDAL");
 
                     b.HasIndex("_additionalDiscountsID");
 
@@ -715,19 +713,11 @@ namespace MarketWeb.Server.Migrations
                         .WithMany("_shoppingBaskets")
                         .HasForeignKey("ShoppingCartDALscId");
 
-                    b.HasOne("MarketWeb.Server.DataLayer.StoreDAL", "_store")
-                        .WithMany()
-                        .HasForeignKey("StoreDAL")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", "_additionalDiscounts")
                         .WithMany()
                         .HasForeignKey("_additionalDiscountsID");
 
                     b.Navigation("_additionalDiscounts");
-
-                    b.Navigation("_store");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.StockItemDAL", b =>
