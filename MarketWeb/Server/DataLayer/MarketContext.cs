@@ -24,12 +24,15 @@ namespace MarketWeb.Server.DataLayer
         public static string userid { get; set; } = "";
         public static string password { get; set; } = "";
         public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
-
+        private bool testMode;
         public MarketContext()
         {
-            
+            this.testMode = testMode;
         }
-
+        public override int SaveChanges()
+        {
+            return testMode ? 0 : base.SaveChanges();
+        }
         // The following configures EF to create a Sqlite database file in the
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
@@ -65,5 +68,6 @@ namespace MarketWeb.Server.DataLayer
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
+
     }
 }

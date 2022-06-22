@@ -41,6 +41,9 @@ namespace AcceptanceTest
             marketAPI.OpenNewStore(store_founder_token, storeName);
         }
 
+        [TestCleanup]
+
+
         [TestMethod]
         public void TestAddManager_2VisitorsAddingDiffRolesSamePerson_oneIsFailed()
         {

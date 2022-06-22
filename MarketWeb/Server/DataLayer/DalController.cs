@@ -1012,6 +1012,41 @@ namespace MarketWeb.Server.DataLayer
                 throw new Exception($"no bids in this store for this visitor.");
             }
             context.SaveChanges();
+            
+        }
+        public void deleteData()
+        {
+            MarketContext context = new MarketContext();
+            List<string> tableNames = new List<string>
+            {
+                "AdminMessageToRegisteredDAL",
+                "BasketItemDAL",
+                "ComplaintDALs",
+                "MessageToStoreDALs",
+                "NotifyMessageDAL",
+                "OperationWrapper",
+                "PurchasedBasketDAL",
+                "PurchasedCartDAL",
+                "RateDAL",
+                "StockItemDAL",
+                "StringData",
+                "RegisteredDALs",
+                "SystemRoleDALs",
+                "StorePurchaseHistory",
+                "RegisteredPurchaseHistory",
+                "itemDALs",
+                "BidDAL",
+                "OwnerAcceptors",
+                "BidOfVisitor",
+                "ShoppingBasketDAL",
+                "PurchaseDetailsDAL",
+                "ShoppingCartDAL",
+                "StoreDALs"
+            };
+            foreach(string tableName in tableNames)
+                context.Database.ExecuteSqlRaw($"ALTER TABLE TableName NOCHECK CONSTRAINT all;" +
+                    $"DELETE FROM {tableName};" +
+                    $"ALTER TABLE TableName CHECK CONSTRAINT all;");
         }
     }
 }
