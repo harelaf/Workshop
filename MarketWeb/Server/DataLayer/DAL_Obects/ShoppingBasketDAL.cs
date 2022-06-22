@@ -10,13 +10,13 @@ namespace MarketWeb.Server.DataLayer
         public int sbId { get; set; }
         [Required]
         [ForeignKey("StoreDAL")]
-        public StoreDAL _store { get; set; }
+        public string _store { get; set; }
         [Required]
         public ICollection<BasketItemDAL> _items { get; set; }
         public PurchaseDetailsDAL _additionalDiscounts { get; set; }
         public ICollection<BidDAL> _bids { get; set; }
 
-        public ShoppingBasketDAL(StoreDAL store, IDictionary<int, PurchaseDetailsDAL> items, PurchaseDetailsDAL additionalDiscounts, ICollection<BidDAL> bids)
+        public ShoppingBasketDAL(string store, IDictionary<int, PurchaseDetailsDAL> items, PurchaseDetailsDAL additionalDiscounts, ICollection<BidDAL> bids)
         {
             _store = store;
             _items = new List<BasketItemDAL>();
@@ -28,7 +28,7 @@ namespace MarketWeb.Server.DataLayer
             _bids = bids;
         }
 
-        public ShoppingBasketDAL(StoreDAL store, ICollection<BasketItemDAL> items, PurchaseDetailsDAL additionalDiscounts, ICollection<BidDAL> bids)
+        public ShoppingBasketDAL(string store, ICollection<BasketItemDAL> items, PurchaseDetailsDAL additionalDiscounts, ICollection<BidDAL> bids)
         {
             _store = store;
             _items = items;

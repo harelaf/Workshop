@@ -381,10 +381,10 @@ namespace MarketWeb.Server.Domain
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
             IDictionary<Item, DiscountDetails<AtomicDiscount>> items = new Dictionary<Item, DiscountDetails<AtomicDiscount>>();
-            Store store = StoreManagement.GetActiveStore(basketDAL._store._storeName);
+            Store store = StoreManagement.GetActiveStore(basketDAL._store);
             if(store == null)
             {
-                store = StoreDalToDomain(basketDAL._store);
+                store = StoreDalToDomain(DalController.GetInstance().GetStoreInformation(basketDAL._store));
             }
             foreach(KeyValuePair<int, PurchaseDetailsDAL> i_a in basketDAL.ConvertToDictionary())
             {
@@ -395,7 +395,7 @@ namespace MarketWeb.Server.Domain
             List<Bid> bids = new List<Bid>();
             foreach (BidDAL bid in basketDAL._bids)
                 bids.Add(BidDalToDomain(bid));
-            return new ShoppingBasket(StoreDalToDomain(basketDAL._store), items, additionalDiscounts, bids);
+            return new ShoppingBasket(store, items, additionalDiscounts, bids);
         }
 
         private Bid BidDalToDomain(BidDAL bid)
@@ -713,7 +713,7 @@ namespace MarketWeb.Server.Domain
             List<BidDAL> bids = new List<BidDAL>();
             foreach (Bid bid in basket.BiddedItems)
                 bids.Add(BidDomainToDal(bid));
-            return new ShoppingBasketDAL(StoreDomainToDal(basket._store), items, additionalDiscounts, bids);
+            return new ShoppingBasketDAL(basket._store.StoreName, items, additionalDiscounts, bids);
         }
 
         private BidDAL BidDomainToDal(Bid bid)
