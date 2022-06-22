@@ -145,7 +145,9 @@ namespace MarketWeb.Server.Domain
         internal void AddAcceptedBidToCart(string visitorToken, Store store, int itemId, int amount)
         {
             Visitor Visitor = GetVisitorVisitor(visitorToken);
-            Visitor.AddAcceptedBidToCart(store, itemId, amount, store.GetBidAcceptedPrice(visitorToken, itemId, amount));
+            if(IsVisitorAGuest(visitorToken))
+                Visitor.AddAcceptedBidToCart(store, itemId, amount, store.GetBidAcceptedPrice(visitorToken, itemId, amount));
+            else Visitor.AddAcceptedBidToCart(store, itemId, amount, store.GetBidAcceptedPrice(((Registered)Visitor).Username, itemId, amount));
         }
 
         /// <summary>
@@ -583,7 +585,21 @@ namespace MarketWeb.Server.Domain
         internal int RemoveAcceptedBidFromCart(string authToken, int itemID, String storeName)
         {
             Visitor Visitor = GetVisitorVisitor(authToken);
-            return Visitor.RemoveAcceptedBidFromCart(itemID, storeName);
+            int amount = Visitor.RemoveAcceptedBidFromCart(itemID, storeName);
+            if (IsVisitorLoggedin(authToken))
+            {
+                string username = GetRegisteredUsernameByToken(authToken);
+                ShoppingBasket shoppingBasket = Visitor.ShoppingCart.GetShoppingBasket(storeName);
+                if (shoppingBasket == null)
+                    _dalController.RemoveAcceptedBidFromCart(itemID, storeName, username, amount, null);
+                else
+                {
+                    _dalController.RemoveAcceptedBidFromCart(itemID, storeName, username, amount,
+                        _dalTRranslator.ShoppingBasketDomainToDAL(shoppingBasket));
+                }
+            }
+            return amount;
+
         }
 
         public void UpdateItemInVisitorCart(String VisitorToken, Store store, Item item, int newQuantity, int amountdiff)

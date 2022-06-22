@@ -28,6 +28,7 @@ namespace MarketWeb.Server.DataLayer
         //public StoreFounderDAL _founder { get; set; }
         public StoreState _state { get; set; }
         public ICollection<BidsOfVisitor> _bidsOfVisitors{ get; set; }
+        public ICollection<OwnerAcceptors> _standbyOwners { get; set; }
         //[Required]
         //[ForeignKey("PurchasePolicyDAL")]
         //public PurchasePolicyDAL _purchasePolicy { get; set; }
@@ -45,7 +46,8 @@ namespace MarketWeb.Server.DataLayer
                         StoreState state, 
                         string purchasePolicyJSON, 
                         string discountPolicyJSON,
-                        ICollection<BidsOfVisitor> bidsOfVisitors)
+                        ICollection<BidsOfVisitor> bidsOfVisitors,
+                        ICollection<OwnerAcceptors> standbyOwners)
         {
             _storeName = storeName;
             _stock = stock;
@@ -56,6 +58,9 @@ namespace MarketWeb.Server.DataLayer
             if(bidsOfVisitors != null)
                 _bidsOfVisitors = bidsOfVisitors;
             else _bidsOfVisitors = new List<BidsOfVisitor>();
+            if (standbyOwners != null)
+                _standbyOwners  = standbyOwners;
+            else _standbyOwners = new List<OwnerAcceptors>();
         }
 
         public StoreDAL(string storeName, StoreState state)
@@ -70,6 +75,7 @@ namespace MarketWeb.Server.DataLayer
             _purchasePolicyJSON = "";
             _discountPolicyJSON = "";
             _bidsOfVisitors = new List<BidsOfVisitor>();
+            _standbyOwners = new List<OwnerAcceptors>();
         }
 
         public StoreDAL()

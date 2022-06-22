@@ -110,10 +110,23 @@ namespace MarketWeb.Server.Domain
                 }
                 bidsOfVisitors.Add(new BidsOfVisitor(bidder, currBidList));
             }
+            ICollection<OwnerAcceptors> standbyOwners = new List<OwnerAcceptors>();
+            Dictionary<string, List<string>> standbyOwnersDict = store.GetStandbyOwnersInStore();
+            foreach (string newOwner in standbyOwnersDict.Keys)
+            {
+                ICollection<StringData> acceptors = new List<StringData>();
+                string appointer = standbyOwnersDict[newOwner][0];
+                foreach (string acceptor in standbyOwnersDict[newOwner])
+                {
+                    if(acceptor != appointer)
+                        acceptors.Add(new StringData(acceptor));
+                }
+                standbyOwners.Add(new OwnerAcceptors(newOwner, acceptors, appointer));
+            }
             return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, 
-                                                                        PrchasePolicyDomainToDal(store.GetPurchasePolicy()), 
+                                                                        PurchasePolicyDomainToDal(store.GetPurchasePolicy()), 
                                                                         DiscountPolicyDomainToDal(store.GetDiscountPolicy()),
-                                                                        bidsOfVisitors);
+                                                                        bidsOfVisitors, standbyOwners);
         }
 
         private String DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
@@ -127,7 +140,7 @@ namespace MarketWeb.Server.Domain
             return JsonConvert.SerializeObject(discountPolicy, settings);
         }
 
-        private String PrchasePolicyDomainToDal(PurchasePolicy purchasePolicy)
+        private String PurchasePolicyDomainToDal(PurchasePolicy purchasePolicy)
         {
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
@@ -285,16 +298,32 @@ namespace MarketWeb.Server.Domain
                 owners.Add(StoreOwnerDalToDomain(owner));
             }
             IDictionary<string, List<Bid>> biddedItems = new Dictionary<string, List<Bid>>();
-            foreach (BidsOfVisitor bov in storeDAL._bidsOfVisitors)
+            if (storeDAL._bidsOfVisitors != null)
             {
-                biddedItems[bov._bidder] = new List<Bid>();
-                foreach (BidDAL bid in bov._bids)
+                foreach (BidsOfVisitor bov in storeDAL._bidsOfVisitors)
                 {
-                    biddedItems[bov._bidder].Add(BidDalToDomain(bid));
+                    biddedItems[bov._bidder] = new List<Bid>();
+                    foreach (BidDAL bid in bov._bids)
+                    {
+                        biddedItems[bov._bidder].Add(BidDalToDomain(bid));
+                    }
+                }
+            }
+            Dictionary<string, List<string>> standbyOwners = new Dictionary<string, List<string>>();
+            if(storeDAL._standbyOwners != null)
+            {
+                foreach (OwnerAcceptors oe in storeDAL._standbyOwners)
+                {
+                    standbyOwners[oe._newOwner] = new List<string>();
+                    standbyOwners[oe._newOwner].Add(oe._appointer);
+                    foreach (StringData acceptor in oe._acceptors)
+                    {
+                        standbyOwners[oe._newOwner].Add(acceptor.data);
+                    }
                 }
             }
             return new Store(stock, purchasePolicy, discountPolicy, messagesToStore, rating
-                , managers, owners, founder,storeName ,state, biddedItems);
+                , managers, owners, founder,storeName ,state, biddedItems, standbyOwners);
         }
 
         private DiscountPolicy DiscountPolicyDalToDomain(string discountPolicyJSON)
@@ -401,9 +430,12 @@ namespace MarketWeb.Server.Domain
         private Bid BidDalToDomain(BidDAL bid)
         {
             ISet<string> acceptors = new HashSet<string>();
-            foreach(StringData acceptor in bid._acceptors)
-                acceptors.Add(acceptor.data);
-            return new Bid(bid._bidder, bid._itemId, bid._amount, bid._biddedPrice, bid._counterOffer, acceptors);
+            if (bid._acceptors != null)
+            {
+                foreach (StringData acceptor in bid._acceptors)
+                    acceptors.Add(acceptor.data);
+            }
+            return new Bid(bid._bidder, bid._itemId, bid._amount, bid._biddedPrice, bid._counterOffer, acceptors, bid._acceptedByAll);
         }
 
         private DiscountDetails<T> PurchaseDetailsDALToDomain<T>(PurchaseDetailsDAL value) where T : AtomicDiscount
@@ -414,6 +446,8 @@ namespace MarketWeb.Server.Domain
                 Formatting = Formatting.Indented
             };
             ISet<T> disList = JsonConvert.DeserializeObject<HashSet<T>>(value.discountListJSON, settings);
+            if(disList == null)
+                disList = new HashSet<T>();
             DiscountDetails<T> details = new DiscountDetails<T>(value.amount, disList);
             return details;
         }
@@ -727,7 +761,8 @@ namespace MarketWeb.Server.Domain
                 bid.Amount, 
                 bid.BiddedPrice, 
                 bid.CounterOffer, 
-                acceptors);
+                acceptors,
+                bid.AcceptedByAll);
         }
 
         private PurchaseDetailsDAL PurchaseDetailsDomainToDal<T>(int itemID, DiscountDetails<T> discountDetails) where T : AtomicDiscount

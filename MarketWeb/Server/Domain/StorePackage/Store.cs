@@ -37,7 +37,19 @@ namespace MarketWeb.Server.Domain
             return _state == StoreState.Active;
         }
 
-        public Store(Stock stock, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy, List<MessageToStore> messagesToStore, Rating rating, List<StoreManager> managers, List<StoreOwner> owners, StoreFounder founder, string storeName, StoreState state, IDictionary<string, List<Bid>> biddedItems)
+        public Store(
+            Stock stock, 
+            PurchasePolicy purchasePolicy, 
+            DiscountPolicy discountPolicy, 
+            List<MessageToStore> messagesToStore, 
+            Rating rating, 
+            List<StoreManager> managers, 
+            List<StoreOwner> owners, 
+            StoreFounder founder, 
+            string storeName, 
+            StoreState state, 
+            IDictionary<string, List<Bid>> biddedItems, 
+            Dictionary<string, List<string>> standbyOwners)
         {
             _stock = stock;
             _purchasePolicy = purchasePolicy;
@@ -50,6 +62,7 @@ namespace MarketWeb.Server.Domain
             _storeName = storeName;
             _state = state;
             _biddedItems = biddedItems;
+            _standbyOwners = standbyOwners;
         }
 
         public Store(String storeName, StoreFounder founder, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)
