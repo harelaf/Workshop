@@ -36,7 +36,8 @@ namespace MarketWeb.Server.Domain
             int amount, 
             double biddedPrice, 
             double counterOffer, 
-            ISet<string> acceptors)
+            ISet<string> acceptors,
+            bool acceptedByAll)
         {
             _bidder = bidder;
             _itemId = itemId;
@@ -44,6 +45,7 @@ namespace MarketWeb.Server.Domain
             _biddedPrice = biddedPrice;
             _counterOffer = counterOffer;
             _acceptors = acceptors;
+            AcceptedByAll = acceptedByAll;
         }
         public void AcceptBid(string userName)
         {

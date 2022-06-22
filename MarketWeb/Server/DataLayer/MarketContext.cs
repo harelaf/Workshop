@@ -6,6 +6,8 @@ namespace MarketWeb.Server.DataLayer
     public class MarketContext: DbContext
     {
         public DbSet<StoreDAL> StoreDALs { get; set; }
+        public DbSet<BidDAL> BidDAL { get; set; }
+        public DbSet<BidsOfVisitor> BidOfVisitor { get; set; }
         public DbSet<RegisteredDAL> RegisteredDALs { get; set; }
         public DbSet<ComplaintDAL> ComplaintDALs { get; set; }
         public DbSet<StorePurchasedBasketDAL> StorePurchaseHistory { get; set; }

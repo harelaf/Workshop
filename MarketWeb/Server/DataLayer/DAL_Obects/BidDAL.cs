@@ -18,7 +18,9 @@ namespace MarketWeb.Server.DataLayer
         public double _biddedPrice { get; set; }
         [Required]
         public double _counterOffer { get; set; }
+        //[Required]
         public ICollection<StringData> _acceptors { get; set; }
+        public bool _acceptedByAll { get; set; }
 
         public BidDAL(
             string bidder, 
@@ -26,7 +28,8 @@ namespace MarketWeb.Server.DataLayer
             int amount, 
             double biddedPrice, 
             double counterOffer,
-            ICollection<StringData> acceptors)
+            ICollection<StringData> acceptors,
+            bool acceptedByAll)
         {
             _bidder = bidder;
             _itemId = itemId;
@@ -34,6 +37,21 @@ namespace MarketWeb.Server.DataLayer
             _biddedPrice = biddedPrice;
             _counterOffer = counterOffer;
             _acceptors = acceptors;
+            _acceptedByAll = acceptedByAll;
+        }
+        public BidDAL(
+            string bidder,
+            int itemId,
+            int amount,
+            double biddedPrice)
+        {
+            _bidder = bidder;
+            _itemId = itemId;
+            _amount = amount;
+            _biddedPrice = biddedPrice;
+            _counterOffer = -1;
+            _acceptors = new List<StringData>();
+            _acceptedByAll = false;
         }
         public BidDAL()
         {

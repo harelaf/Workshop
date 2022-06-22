@@ -177,6 +177,7 @@ namespace MarketWeb.Server.Domain
         public void markAcceptedBidAsUsed(string bidder, string storeName, int itemID)
         {
             GetStore(storeName).markAcceptedBidAsUsed(bidder, itemID);
+            //_dalController.markB
         }
 
         public void OpenNewStore(StoreFounder founder, String storeName, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy)

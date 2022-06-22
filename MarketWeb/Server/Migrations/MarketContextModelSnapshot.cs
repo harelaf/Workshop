@@ -86,6 +86,9 @@ namespace MarketWeb.Server.Migrations
                     b.Property<int?>("ShoppingBasketDALsbId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("_acceptedByAll")
+                        .HasColumnType("bit");
+
                     b.Property<int>("_amount")
                         .HasColumnType("int");
 
@@ -129,7 +132,7 @@ namespace MarketWeb.Server.Migrations
 
                     b.HasIndex("StoreDAL_storeName");
 
-                    b.ToTable("BidsOfVisitor");
+                    b.ToTable("BidOfVisitor");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.ComplaintDAL", b =>
@@ -264,6 +267,31 @@ namespace MarketWeb.Server.Migrations
                     b.HasIndex("SystemRoleDALid");
 
                     b.ToTable("OperationWrapper");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.OwnerAcceptors", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("StoreDAL_storeName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("_appointer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("_newOwner")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("StoreDAL_storeName");
+
+                    b.ToTable("OwnerAcceptors");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", b =>
@@ -499,6 +527,9 @@ namespace MarketWeb.Server.Migrations
                     b.Property<int?>("BidDALid")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OwnerAcceptorsid")
+                        .HasColumnType("int");
+
                     b.Property<string>("data")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -506,6 +537,8 @@ namespace MarketWeb.Server.Migrations
                     b.HasKey("id");
 
                     b.HasIndex("BidDALid");
+
+                    b.HasIndex("OwnerAcceptorsid");
 
                     b.ToTable("StringData");
                 });
@@ -618,6 +651,13 @@ namespace MarketWeb.Server.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade);
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.OwnerAcceptors", b =>
+                {
+                    b.HasOne("MarketWeb.Server.DataLayer.StoreDAL", null)
+                        .WithMany("_standbyOwners")
+                        .HasForeignKey("StoreDAL_storeName");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchasedBasketDAL", b =>
                 {
                     b.HasOne("MarketWeb.Server.DataLayer.StorePurchasedBasketDAL", null)
@@ -701,6 +741,10 @@ namespace MarketWeb.Server.Migrations
                     b.HasOne("MarketWeb.Server.DataLayer.BidDAL", null)
                         .WithMany("_acceptors")
                         .HasForeignKey("BidDALid");
+
+                    b.HasOne("MarketWeb.Server.DataLayer.OwnerAcceptors", null)
+                        .WithMany("_acceptors")
+                        .HasForeignKey("OwnerAcceptorsid");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.BidDAL", b =>
@@ -716,6 +760,11 @@ namespace MarketWeb.Server.Migrations
             modelBuilder.Entity("MarketWeb.Server.DataLayer.ItemDAL", b =>
                 {
                     b.Navigation("_rating");
+                });
+
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.OwnerAcceptors", b =>
+                {
+                    b.Navigation("_acceptors");
                 });
 
             modelBuilder.Entity("MarketWeb.Server.DataLayer.RegisteredDAL", b =>
@@ -747,6 +796,8 @@ namespace MarketWeb.Server.Migrations
                     b.Navigation("_bidsOfVisitors");
 
                     b.Navigation("_rating");
+
+                    b.Navigation("_standbyOwners");
 
                     b.Navigation("_stock");
                 });

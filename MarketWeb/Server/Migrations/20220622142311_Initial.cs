@@ -183,7 +183,7 @@ namespace MarketWeb.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BidsOfVisitor",
+                name: "BidOfVisitor",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
@@ -193,9 +193,30 @@ namespace MarketWeb.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BidsOfVisitor", x => x.id);
+                    table.PrimaryKey("PK_BidOfVisitor", x => x.id);
                     table.ForeignKey(
-                        name: "FK_BidsOfVisitor_StoreDALs_StoreDAL_storeName",
+                        name: "FK_BidOfVisitor_StoreDALs_StoreDAL_storeName",
+                        column: x => x.StoreDAL_storeName,
+                        principalTable: "StoreDALs",
+                        principalColumn: "_storeName",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OwnerAcceptors",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    _newOwner = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    _appointer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StoreDAL_storeName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OwnerAcceptors", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_OwnerAcceptors_StoreDALs_StoreDAL_storeName",
                         column: x => x.StoreDAL_storeName,
                         principalTable: "StoreDALs",
                         principalColumn: "_storeName",
@@ -387,6 +408,7 @@ namespace MarketWeb.Server.Migrations
                     _amount = table.Column<int>(type: "int", nullable: false),
                     _biddedPrice = table.Column<double>(type: "float", nullable: false),
                     _counterOffer = table.Column<double>(type: "float", nullable: false),
+                    _acceptedByAll = table.Column<bool>(type: "bit", nullable: false),
                     BidsOfVisitorid = table.Column<int>(type: "int", nullable: true),
                     ShoppingBasketDALsbId = table.Column<int>(type: "int", nullable: true)
                 },
@@ -394,9 +416,9 @@ namespace MarketWeb.Server.Migrations
                 {
                     table.PrimaryKey("PK_BidDAL", x => x.id);
                     table.ForeignKey(
-                        name: "FK_BidDAL_BidsOfVisitor_BidsOfVisitorid",
+                        name: "FK_BidDAL_BidOfVisitor_BidsOfVisitorid",
                         column: x => x.BidsOfVisitorid,
-                        principalTable: "BidsOfVisitor",
+                        principalTable: "BidOfVisitor",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -439,7 +461,8 @@ namespace MarketWeb.Server.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     data = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BidDALid = table.Column<int>(type: "int", nullable: true)
+                    BidDALid = table.Column<int>(type: "int", nullable: true),
+                    OwnerAcceptorsid = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -448,6 +471,12 @@ namespace MarketWeb.Server.Migrations
                         name: "FK_StringData_BidDAL_BidDALid",
                         column: x => x.BidDALid,
                         principalTable: "BidDAL",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StringData_OwnerAcceptors_OwnerAcceptorsid",
+                        column: x => x.OwnerAcceptorsid,
+                        principalTable: "OwnerAcceptors",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -478,8 +507,8 @@ namespace MarketWeb.Server.Migrations
                 column: "ShoppingBasketDALsbId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BidsOfVisitor_StoreDAL_storeName",
-                table: "BidsOfVisitor",
+                name: "IX_BidOfVisitor_StoreDAL_storeName",
+                table: "BidOfVisitor",
                 column: "StoreDAL_storeName");
 
             migrationBuilder.CreateIndex(
@@ -491,6 +520,11 @@ namespace MarketWeb.Server.Migrations
                 name: "IX_OperationWrapper_SystemRoleDALid",
                 table: "OperationWrapper",
                 column: "SystemRoleDALid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OwnerAcceptors_StoreDAL_storeName",
+                table: "OwnerAcceptors",
+                column: "StoreDAL_storeName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchasedBasketDAL__PurchasedBasketsbId",
@@ -552,6 +586,11 @@ namespace MarketWeb.Server.Migrations
                 name: "IX_StringData_BidDALid",
                 table: "StringData",
                 column: "BidDALid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StringData_OwnerAcceptorsid",
+                table: "StringData",
+                column: "OwnerAcceptorsid");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -608,7 +647,10 @@ namespace MarketWeb.Server.Migrations
                 name: "BidDAL");
 
             migrationBuilder.DropTable(
-                name: "BidsOfVisitor");
+                name: "OwnerAcceptors");
+
+            migrationBuilder.DropTable(
+                name: "BidOfVisitor");
 
             migrationBuilder.DropTable(
                 name: "ShoppingBasketDAL");

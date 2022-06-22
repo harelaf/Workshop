@@ -126,7 +126,8 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             Store store = _storeManagement.GetStore(storeName);
-            String bidder = _VisitorManagement.IsVisitorAGuest(VisitorToken) ? VisitorToken : _VisitorManagement.GetRegisteredUsernameByToken(VisitorToken);
+            bool isAGuest = _VisitorManagement.IsVisitorAGuest(VisitorToken);
+            String bidder = isAGuest ? VisitorToken : _VisitorManagement.GetRegisteredUsernameByToken(VisitorToken);
             lock (store)
             {
                 if (!_storeManagement.isStoreActive(storeName))
@@ -142,9 +143,12 @@ namespace MarketWeb.Server.Domain
                     Item copy = new Item(item.ItemID, item.Name, item._price, item.Description, item.Category);
                     try
                     {
-                        copy.SetPrice(_storeManagement.GetBidAcceptedPrice(bidder, storeName, itemID, amount));
+                        double price = _storeManagement.GetBidAcceptedPrice(bidder, storeName, itemID, amount);
+                        copy.SetPrice(price);
                         _VisitorManagement.AddAcceptedBidToCart(VisitorToken, store, itemID, amount);
                         _storeManagement.markAcceptedBidAsUsed(bidder, storeName, itemID);
+                        if(!isAGuest)
+                            _dalController.AddAcceptedBidToCart(bidder, _dalTRranslator.StoreDomainToDal(store), itemID, amount, price);
                     }
                     catch (Exception ex)
                     {
@@ -1282,6 +1286,7 @@ namespace MarketWeb.Server.Domain
             }
             String bidder = _VisitorManagement.IsVisitorLoggedin(authToken) ? _VisitorManagement.GetRegisteredUsernameByToken(authToken) : authToken;
             _storeManagement.BidItemInStore(storeName, itemId, amount, newPrice, bidder);
+            _dalController.BidItemInStore(bidder, storeName, itemId, amount, newPrice);
             String title = $"A New Bid In '{storeName}'!";
             String message = $"a visitor entered a new bid for item id '{itemId}' at the '{storeName}' store.";
             List<String> involvedUsernames = _storeManagement.GetUsernamesWithPermissionInStore(storeName, Operation.STOCK_EDITOR);
@@ -1307,7 +1312,9 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AcceptBid", errorMessage);
                 throw new Exception(errorMessage);
             }
-            if(_storeManagement.AcceptBid(storeName, acceptor, itemId, bidder))
+            bool success = _storeManagement.AcceptBid(storeName, acceptor, itemId, bidder);
+            _dalController.AcceptBid(storeName, acceptor, itemId, bidder, success);
+            if (success)
             {
                 String title = $"Your Bid Got Respond!";
                 String message = $"your bid for item id '{itemId}' at the '{storeName}' store has an answer.";
@@ -1336,7 +1343,9 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("CounterOfferBid", errorMessage);
                 throw new Exception(errorMessage);
             }
-            if (_storeManagement.CounterOfferBid(storeName, acceptor, itemId, bidder, counterOffer))
+            bool success = _storeManagement.CounterOfferBid(storeName, acceptor, itemId, bidder, counterOffer);
+            _dalController.CounterOffer(storeName, acceptor, itemId, bidder, counterOffer, success);
+            if (success)
             {
                 String title = $"Your Bid Got Respond!";
                 String message = $"your bid for item id '{itemId}' at the '{storeName}' store has an answer.";
@@ -1365,6 +1374,7 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             _storeManagement.RejectBid(storeName, rejector, itemId, bidder);
+            _dalController.RejectBid(storeName, rejector, itemId, bidder);
             String title = $"Your Bid Got Rejected!";
             String message = $"your bid for item id '{itemId}' at the '{storeName}' store is not approved.";
             if (_VisitorManagement.IsRegistered(bidder))
@@ -1433,7 +1443,10 @@ namespace MarketWeb.Server.Domain
                 }
                 StoreOwner newOwner = new StoreOwner(ownerUsername, storeName, appointerUsername);
                 if (_storeManagement.AddStoreOwnerForTestPurposes(newOwner, storeName) != null)
+                {
                     _VisitorManagement.AddRole(ownerUsername, newOwner);
+                    //_dalController.AddStoreOwner(ownerUsername, storeName, appointerUsername);
+                }
             }
             else
             {
@@ -1460,7 +1473,12 @@ namespace MarketWeb.Server.Domain
             if (ownerRole != null)
             {
                 _VisitorManagement.AddRole(newOwner, ownerRole);
+                _dalController.AddStoreOwner(ownerRole.Username, ownerRole.StoreName, ownerRole.Appointer);
                 return true;
+            }
+            else
+            {
+                _dalController.AcceptOwnerAppointment(newOwner, storeName, acceptor);
             }
             return false;
                 
@@ -1485,6 +1503,7 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             _storeManagement.RejectOwnerAppointment(storeName, rejector, newOwner);
+            _dalController.RejectOwnerAppointment(storeName, newOwner);
         }
         internal Dictionary<string, List<string>> GetStandbyOwnersInStore(string authToken, string storeName)
         {

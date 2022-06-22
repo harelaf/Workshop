@@ -57,7 +57,7 @@ namespace MarketWeb.Server.Domain
             foreach (ShoppingBasket shoppingBasket in shoppingCart._shoppingBaskets)
             {
                 String storeName = shoppingBasket.Store().GetName();
-                _dalController.addStorePurchse(_dalTRranslator.ShoppingBasketDomainToDAL(shoppingBasket), DateTime.Now, storeName);
+                _dalController.addStorePurchase(_dalTRranslator.ShoppingBasketDomainToDAL(shoppingBasket), DateTime.Now, storeName);
             }
         }
         public void AddRegisterPurchases(ShoppingCart shoppingCart, String Username)
