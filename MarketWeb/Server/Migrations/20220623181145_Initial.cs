@@ -38,6 +38,7 @@ namespace MarketWeb.Server.Migrations
                 {
                     table.PrimaryKey("PK_itemDALs", x => x._itemID);
                 });
+
             migrationBuilder.CreateTable(
                 name: "MessageToStoreDALs",
                 columns: table => new
@@ -583,7 +584,6 @@ namespace MarketWeb.Server.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            
             migrationBuilder.DropTable(
                 name: "AdminMessageToRegisteredDAL");
 
