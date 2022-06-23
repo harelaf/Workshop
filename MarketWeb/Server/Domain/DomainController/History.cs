@@ -12,11 +12,13 @@ namespace MarketWeb.Server.Domain
         //private IDictionary<String, List<Tuple<DateTime, ShoppingCart>>> _registeredPurchaseHistory; //Username:String
         private DalTRranslator _dalTRranslator;
         private DalController _dalController = DalController.GetInstance();
-        public History()
+        Market _market;
+        public History(Market market)
         {
             //_storePurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingBasket>>>();
             //_registeredPurchaseHistory = new Dictionary<String, List<Tuple<DateTime,ShoppingCart>>>();
             _dalTRranslator = new DalTRranslator();
+            _market = market;
         }
 
         public bool CheckIfVisitorPurchasedInStore(String Username, String storeName)
@@ -58,7 +60,23 @@ namespace MarketWeb.Server.Domain
             {
                 String storeName = shoppingBasket.Store().GetName();
                 _dalController.addStorePurchase(_dalTRranslator.ShoppingBasketDomainToDAL(shoppingBasket), DateTime.Now, storeName);
+
+                List<StoreOwner> storeOwners = _market._storeManagement.getStoreOwners(storeName);
+                List<String> storeOwnerNames = new List<String>();
+                for (int i = 0; i < storeOwners.Count; i++)
+                {
+                    storeOwnerNames.Add(storeOwners[i].Username);
+                }
+                StoreFounder storeFounder = _market._storeManagement.getStoreFounder(storeName);
+                storeOwnerNames.Add(storeFounder.Username);
+                String title = $"Store: {storeName} - Purchase: [{DateTime.Now}].";
+                String message = $"A purchase was made for {shoppingBasket.getActualPrice()}$";
+                foreach (String name in storeOwnerNames)
+                {
+                    _market.SendNotification(storeName, name, title, message);
+                }
             }
+
         }
         public void AddRegisterPurchases(ShoppingCart shoppingCart, String Username)
         {
