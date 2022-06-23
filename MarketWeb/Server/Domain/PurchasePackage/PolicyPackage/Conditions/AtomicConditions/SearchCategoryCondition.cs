@@ -9,11 +9,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         public SearchCategoryCondition(string keyWord, int minValue, int maxValue, bool toNegative) : base(keyWord, minValue, maxValue, toNegative) { }
         public override bool Check(ISearchablePriceable searchablePriceable)
         {
-            return checkNegative(IsInRange(searchablePriceable.SearchCategoryAmount(_keyWord), _minValue, _maxValue));
+            return checkNegative(IsInRange(searchablePriceable.SearchCategoryAmount(KeyWord), MinValue, MaxValue));
         }
         public override String GetConditionString(int indent)
         {
-            return $"{(ToNegative ? "(NOT) " : "")}The cost of {_keyWord} products is between {_minValue} and {_maxValue}.";
+            return $"{(ToNegative ? "(NOT) " : "")}The cost of {KeyWord} products is {RangeDescription()}.";
         }
     }
 }

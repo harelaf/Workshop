@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MarketWeb.Server.DataLayer
 {
@@ -24,14 +26,27 @@ namespace MarketWeb.Server.DataLayer
         public static string userid { get; set; } = "";
         public static string password { get; set; } = "";
         public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
-        private bool testMode;
+        public static bool testMode { get; set; } = false;
         public MarketContext()
         {
-            this.testMode = false;
         }
         public override int SaveChanges()
         {
-            return testMode ? DisposeAndGetZero() : base.SaveChanges();
+            int result = base.SaveChanges();
+            if (testMode)
+            {
+                List<string> tableNames = new List<string>();
+                this.ChangeTracker.DetectChanges(); // Not sure we need to call this, but should be cheap enough in test and will be more reliable.
+                foreach (var entry in this.ChangeTracker.Entries().Where(e => e.State == EntityState.Added))
+                {
+                    tableNames.Add(entry.Metadata.GetTableName());
+                }
+                foreach (string tableName in tableNames)
+                    this.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} NOCHECK CONSTRAINT ALL;" +
+                        $"DELETE FROM {tableName};" +
+                        $"ALTER TABLE {tableName} CHECK CONSTRAINT ALL;");
+            }
+            return result;
         }
         private int DisposeAndGetZero()
         {
