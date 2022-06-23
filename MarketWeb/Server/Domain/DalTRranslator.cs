@@ -124,9 +124,9 @@ namespace MarketWeb.Server.Domain
                 standbyOwners.Add(new OwnerAcceptors(newOwner, acceptors, appointer));
             }
             return new StoreDAL(storeName, stock, messagesToStoreDAL, rating, managers, owners, founder, state, 
-                                                                        PurchasePolicyDomainToDal(store.GetPurchasePolicy()), 
-                                                                        DiscountPolicyDomainToDal(store.GetDiscountPolicy()),
-                                                                        bidsOfVisitors, standbyOwners);
+                                                            PurchasePolicyDomainToDal(store.GetPurchasePolicy()), 
+                                                            DiscountPolicyDomainToDal(store.GetDiscountPolicy()),
+                                                            bidsOfVisitors, standbyOwners);
         }
 
         private String DiscountPolicyDomainToDal(DiscountPolicy discountPolicy)
@@ -136,7 +136,6 @@ namespace MarketWeb.Server.Domain
                 TypeNameHandling = TypeNameHandling.Auto,
                 Formatting = Formatting.Indented
             };
-
             return JsonConvert.SerializeObject(discountPolicy, settings);
         }
 

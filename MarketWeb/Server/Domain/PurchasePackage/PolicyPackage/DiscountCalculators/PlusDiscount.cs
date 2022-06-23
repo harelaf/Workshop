@@ -7,9 +7,9 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class PlusDiscount : ComposedDiscount
     {
-        public PlusDiscount(List<Discount> discountsList) : base(discountsList) {}
+        public PlusDiscount(List<Discount> discountList) : base(discountList) {}
         [JsonConstructor]
-        public PlusDiscount(List<Discount> discountsList, Condition condition) : base(discountsList, condition){}
+        public PlusDiscount(List<Discount> discountList, Condition condition) : base(discountList, condition){}
 
         public override double GetTotalDiscount(ISearchablePriceable searchablePriceable)
         {

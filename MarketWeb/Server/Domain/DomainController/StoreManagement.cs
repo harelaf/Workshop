@@ -285,26 +285,27 @@ namespace MarketWeb.Server.Domain
 
         public void AddStoreDiscount(String storeName, Discount discount)
         {
-            GetActiveStore(storeName).AddDiscount(discount);
-
+            Store store = GetActiveStore(storeName);
+            store.AddDiscount(discount);
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
                 Formatting = Formatting.Indented
             };
-            _dalController.EditStoreDiscountPolicy(storeName, JsonConvert.SerializeObject(discount, settings));
+            _dalController.EditStoreDiscountPolicy(storeName, JsonConvert.SerializeObject(store.GetDiscountPolicy(), settings));
         }
 
         public void AddStorePurchasePolicy(string storeName, Condition condition)
         {
-            GetStore(storeName).AddConditionToPurchasePolicy(condition);
+            Store store = GetActiveStore(storeName);
+            store.AddConditionToPurchasePolicy(condition);
 
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
                 Formatting = Formatting.Indented
             };
-            _dalController.EditStorePurchasePolicy(storeName, JsonConvert.SerializeObject(condition, settings));
+            _dalController.EditStorePurchasePolicy(storeName, JsonConvert.SerializeObject(store.GetPurchasePolicy(), settings));
         }
 
         public bool AddStoreManager(StoreManager newManager, string storeName)
@@ -427,11 +428,13 @@ namespace MarketWeb.Server.Domain
         public void ResetStoreDiscountPolicy(string storeName)
         {
             GetStore(storeName).ResetDiscountPolicy();
+            _dalController.ResetStoreDiscountPolicy(storeName);
         }
 
         public void ResetStorePurchasePolicy(string storeName)
         {
             GetStore(storeName).ResetPurchasePolicy();
+            _dalController.ResetStorePurchasePolicy(storeName);
         }
 
         public List<string> GetDiscountPolicyStrings(string storeName)

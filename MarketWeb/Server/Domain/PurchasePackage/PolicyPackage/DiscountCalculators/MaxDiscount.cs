@@ -7,9 +7,9 @@ namespace MarketWeb.Server.Domain.PolicyPackage
 {
     public class MaxDiscount : ComposedDiscount
     {
-        public MaxDiscount(List<Discount> discountsList) : base(discountsList){}
+        public MaxDiscount(List<Discount> discountList) : base(discountList){}
         [JsonConstructor]
-        public MaxDiscount(List<Discount> discountsList, Condition condition) : base(discountsList, condition){}
+        public MaxDiscount(List<Discount> discountList, Condition condition) : base(discountList, condition){}
         public override string GetActualDiscountString(ISearchablePriceable searchablePriceable, int indent)
         {
             Discount maxDis = GetMaxDiscount(searchablePriceable);

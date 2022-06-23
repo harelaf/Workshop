@@ -27,11 +27,16 @@ namespace MarketWeb.Server.DataLayer
         private bool testMode;
         public MarketContext()
         {
-            this.testMode = testMode;
+            this.testMode = false;
         }
         public override int SaveChanges()
         {
-            return testMode ? 0 : base.SaveChanges();
+            return testMode ? DisposeAndGetZero() : base.SaveChanges();
+        }
+        private int DisposeAndGetZero()
+        {
+            base.Dispose();
+            return 0;
         }
         // The following configures EF to create a Sqlite database file in the
         // special "local" folder for your platform.

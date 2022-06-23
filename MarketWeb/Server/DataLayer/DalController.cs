@@ -363,6 +363,23 @@ namespace MarketWeb.Server.DataLayer
             context.storeOwnerDALs.Add(storeOwner);
             context.SaveChanges();
         }
+
+        public void ResetStorePurchasePolicy(string storeName)
+        {
+            MarketContext context = new MarketContext();
+            StoreDAL storeDAL = GetStoreDAL(context, storeName);
+            storeDAL._purchasePolicyJSON = "";
+            context.SaveChanges();
+        }
+
+        public void ResetStoreDiscountPolicy(string storeName)
+        {
+            MarketContext context = new MarketContext();
+            StoreDAL storeDAL = GetStoreDAL(context, storeName);
+            storeDAL._discountPolicyJSON = "";
+            context.SaveChanges();
+        }
+
         /// <summary>
         /// only update the acceptors-table. not add to owners-table even if accepted by all.
         /// if you want to add an actual owner, call AddStoreOwner.

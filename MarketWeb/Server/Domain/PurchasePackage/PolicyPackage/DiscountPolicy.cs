@@ -14,6 +14,10 @@ namespace MarketWeb.Server.Domain.PolicyPackage
             _discounts = new PlusDiscount(new List<Discount>());
         }
         [JsonConstructor]
+        public DiscountPolicy(PlusDiscount discounts)
+        {
+            _discounts = discounts;
+        }
         public DiscountPolicy(DiscountPolicy policy)
         {
             _discounts = policy._discounts;
