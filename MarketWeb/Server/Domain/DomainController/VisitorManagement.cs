@@ -340,7 +340,7 @@ namespace MarketWeb.Server.Domain
             }
             
             Registered registered = _dalTRranslator.RegisteredDALToDomain(_dalController.GetRegistered(Username));
-            if (registered != null && _loggedinVisitorsTokens.Values.Contains(registered))
+            if (registered != null && _loggedinVisitorsTokens.Values.Where(x => x.Username == registered.Username).Count() > 0)
                 errorMessage = $"Visitor: {Username} is already logged in to the system.";
             else if (registered == null ||  // Visitor with the Username doesn't exists
                     !registered.Login(password))// Login details incorrect
