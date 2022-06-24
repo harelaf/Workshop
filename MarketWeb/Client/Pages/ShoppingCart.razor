@@ -134,7 +134,7 @@ else
 
 @code {
     private bool LoadedData = false;
-    private ShoppingCartDTO cart = new ShoppingCartDTO(new List<ShoppingBasketDTO>());
+    private ShoppingCartDTO cart = new ShoppingCartDTO(new List<ShoppingBasketDTO>(), 0);
     private Models.UpdateItemQuantityInCartModel UpdateItemQuantityInCartModel = new Models.UpdateItemQuantityInCartModel();
 
     private async void UpdateItemQuantityInCartForm(string storeName, int itemID)

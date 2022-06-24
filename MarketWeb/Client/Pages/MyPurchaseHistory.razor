@@ -37,6 +37,7 @@
                         <th>Product Name</th>
                         <th>Amount</th>
                         <th>Price Per Unit</th>
+                        <th>Make Complaint</th>
                     </tr>
                     @foreach (int itemID in basket.Items.Keys)
                     {
@@ -44,6 +45,18 @@
                             <th>@basket.Items[itemID].Item1.Name</th>
                             <th>@basket.Items[itemID].Item2.Amount</th>
                             <th>$@basket.Items[itemID].Item1.Price</th>
+                            <th>
+                                <EditForm Model="@AddComplaintModel">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label>Message</label>
+                                        <InputText @bind-Value="AddComplaintModel.Message" class="form-control" />
+                                    </div>
+                                    <button class="btn btn-primary" @onclick="() => AddComplaintForm(cart.Scid)">
+                                        Send Complaint
+                                    </button>
+                                </EditForm>
+                            </th>
                         </tr>
                     }
                 </table>
@@ -59,6 +72,7 @@ else
 
 @code {
     private Models.MyPurchaseHistoryModel model = new Models.MyPurchaseHistoryModel();
+    private Models.AddComplaintModel AddComplaintModel = new Models.AddComplaintModel();
     private bool loading = false;
     private List<Tuple<DateTime, ShoppingCartDTO>> purchasedCartDTOs = new List<Tuple<DateTime, ShoppingCartDTO>>();
     private string username = "";
@@ -91,7 +105,28 @@ else
         {
             StateHasChanged();
         }
-
     }
 
+    public async void AddComplaintForm(int cartid)
+    {
+        AlertService.Clear();
+        try
+        {
+            Response res = await marketAPIClient.AddComplaint(cartid, AddComplaintModel.Message);
+            if (res.ErrorOccured)
+            {
+                throw new Exception(res.ErrorMessage);
+            }
+        }
+        catch (Exception e)
+        {
+            AlertService.Error(e.Message, true, true);
+            StateHasChanged();
+        }
+        finally
+        {
+            AddComplaintModel = new Models.AddComplaintModel();
+            StateHasChanged();
+        }
+    }
 }

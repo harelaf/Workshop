@@ -432,7 +432,7 @@ namespace MarketWeb.Service
             ICollection<ShoppingBasketDTO> _DTObaskets = new List<ShoppingBasketDTO>();
             foreach (ShoppingBasket basket in shoppingCart._shoppingBaskets)
                 _DTObaskets.Add(toDTO(basket));
-            return new ShoppingCartDTO(_DTObaskets);
+            return new ShoppingCartDTO(_DTObaskets, shoppingCart.Scid);
         }
         public StockDTO toDTO(Stock stock, String storeName)
         {

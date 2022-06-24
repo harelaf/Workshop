@@ -92,6 +92,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response<List<String>>> GetUsernamesWithInventoryPermissionInStore(String storeName);
         public Task<Response> AddAcceptedBidToCart(int ItemId, String StoreName, int Amount);
         public Task<Response<List<BidDTO>>> GetVisitorBidsAtStore(String StoreName);
+        public Task<Response> AddComplaint(int cartid, String Message);
     }
 
     public class MarketAPIClient : IMarketAPIClient
@@ -986,6 +987,18 @@ namespace MarketWeb.Client.Connect
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response<List<BidDTO>> res = await _httpService.Post<Response<List<BidDTO>>>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response> AddComplaint(int cartid, String Message)
+        {
+            const string url = "api/market/FileComplaint";
+            var param = new Dictionary<string, string>() {
+                { "cartID", cartid.ToString() },
+                { "message", Message }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+            Response res = await _httpService.Post<Response>(newUrl, null);
             return res;
         }
     }

@@ -413,7 +413,7 @@ namespace MarketWeb.Server.Domain
             {
                 baskets.Add(ShoppingBasketDALToDomain(basketDAL));
             }
-            return new ShoppingCart(baskets);
+            return new ShoppingCart(baskets, cartDAL.scId);
         }
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
