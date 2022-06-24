@@ -252,12 +252,12 @@ namespace MarketWeb.Server.Domain
                 messageToStore.Message, messageToStore.Title, messageToStore.Reply, messageToStore.Replier, messageToStore.StoreName);
         }
 
-        public ICollection<PopulationStatistics> PopulationStatisticsListDalToDomain(ICollection<PopulationStatisticsDAL> populationStatisticsListDAL)
+        public ICollection<PopulationStatistics> PopulationStatisticsListDalToDomain(Dictionary<PopulationSection,int> statistics, DateTime dateTime)
         {
             ICollection<PopulationStatistics> populationStatisticsDomain = new List<PopulationStatistics>();
-            foreach(PopulationStatisticsDAL populationStatisticsDAL in populationStatisticsListDAL)
+            foreach(KeyValuePair<PopulationSection,int> populationStatisticsDAL in statistics)
             {
-                populationStatisticsDomain.Add(new PopulationStatistics(populationStatisticsDAL._section, populationStatisticsDAL._visitDay, populationStatisticsDAL._count));
+                populationStatisticsDomain.Add(new PopulationStatistics(populationStatisticsDAL.Key, dateTime, populationStatisticsDAL.Value));
             }
             return populationStatisticsDomain;
 
@@ -802,6 +802,7 @@ namespace MarketWeb.Server.Domain
                 stores.Add(storeDAL._storeName,StoreDalToDomain(storeDAL));
             return stores;
         }
+        /*
         public RegisteredDAL RegisteredDomainToDAL(Registered registered)
         {
             string username = registered.Username;
@@ -830,12 +831,12 @@ namespace MarketWeb.Server.Domain
                 roles.Add(SystemRoleDomainToDal(role));
             }
             RegisteredDAL reg = new RegisteredDAL(username, password, salt, cart, birthDate, null, roles, 
-                adminMessages, notifications, repliedMessages);
+                adminMessages, notifications, repliedMessages, );
             ICollection<ComplaintDAL> filedComplaints = new List<ComplaintDAL>();
             foreach (KeyValuePair<int, Complaint> id_complaint in registered.FiledComplaints)
                 filedComplaints.Add(ComplaintDomainToDal(id_complaint.Value));
             return reg;
-        }
+        }*/
 
         public ComplaintDAL ComplaintDomainToDal(Complaint value)
         {

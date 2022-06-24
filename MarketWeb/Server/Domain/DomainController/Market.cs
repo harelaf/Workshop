@@ -956,7 +956,7 @@ namespace MarketWeb.Server.Domain
         public String EnterSystem() // Generating token and returning it
         { //II.1.1
             String token =  _VisitorManagement.EnterSystem();
-            _dalController.AddVisitToPopulationStatistics(PopulationSection.GUESTS, DateTime.Now);
+            _dalController.AddVisitToPopulationStatistics(null, DateTime.Now);
             return token;
         }
 
@@ -1541,7 +1541,7 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
            
-            return _dalTRranslator.PopulationStatisticsListDalToDomain(_dalController.GetDailyPopulationStatistics(dateTime));
+            return _dalTRranslator.PopulationStatisticsListDalToDomain(_dalController.GetDailyPopulationStatistics(dateTime), dateTime);
         }
     }
 }

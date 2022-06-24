@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketWeb.Server.Migrations
 {
     [DbContext(typeof(MarketContext))]
-    [Migration("20220624111943_Initial")]
+    [Migration("20220624150232_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -303,11 +303,8 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("_count")
-                        .HasColumnType("int");
-
-                    b.Property<int>("_section")
-                        .HasColumnType("int");
+                    b.Property<string>("_userNane")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("_visitDay")
                         .HasColumnType("datetime2");
@@ -424,6 +421,9 @@ namespace MarketWeb.Server.Migrations
 
                     b.Property<string>("_password")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("_populationSection")
+                        .HasColumnType("int");
 
                     b.Property<string>("_salt")
                         .HasColumnType("nvarchar(max)");

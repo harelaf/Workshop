@@ -301,11 +301,8 @@ namespace MarketWeb.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("_count")
-                        .HasColumnType("int");
-
-                    b.Property<int>("_section")
-                        .HasColumnType("int");
+                    b.Property<string>("_userNane")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("_visitDay")
                         .HasColumnType("datetime2");
@@ -422,6 +419,9 @@ namespace MarketWeb.Server.Migrations
 
                     b.Property<string>("_password")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("_populationSection")
+                        .HasColumnType("int");
 
                     b.Property<string>("_salt")
                         .HasColumnType("nvarchar(max)");

@@ -787,11 +787,10 @@ namespace MarketWeb.Server.Domain
                 LogErrorMessage("AddRegisteredToPopulationStatistics", errorMessage);
                 throw new Exception(errorMessage);
             }
-            PopulationSection populationSection = GetRegisteredSection(registered);
 
-            _dalController.AddVisitToPopulationStatistics(populationSection, now);
+            _dalController.AddVisitToPopulationStatistics(username, now);
         }
-
+        /*
         internal PopulationSection GetRegisteredSection(Registered registered)
         {
             if (registered.Roles == null || registered.Roles.Count == 0)
@@ -802,6 +801,6 @@ namespace MarketWeb.Server.Domain
                 return PopulationSection.STORE_OWNERS_NOT_ADMIN;
             //else:
             return PopulationSection.STORE_MANAGERS_ONLY;
-        }
+        }*/
     }
 }

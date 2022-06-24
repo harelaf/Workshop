@@ -63,9 +63,8 @@ namespace MarketWeb.Server.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    _section = table.Column<int>(type: "int", nullable: false),
-                    _visitDay = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    _count = table.Column<int>(type: "int", nullable: false)
+                    _userNane = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    _visitDay = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -184,7 +183,8 @@ namespace MarketWeb.Server.Migrations
                     _password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     _salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CartDAL = table.Column<int>(type: "int", nullable: false),
-                    _birthDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    _birthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    _populationSection = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -12,13 +12,10 @@ namespace MarketWeb.Server.DataLayer
 
         [Key]
         public int id { get; set; }
-        [Required]
-        public PopulationSection _section { get; set; }
+
+        public string _userNane { get; set; } // for guest-> null. for registered-> username
 
         [Required]
         public DateTime _visitDay { get; set; }
-
-        [Required]
-        public int _count { get; set; } 
     }
 }
