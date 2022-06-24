@@ -144,7 +144,7 @@
     {
         AlertService.Clear();
 
-       NavigationManager.NavigateTo($"/Statistics/{getPopulationStatisticsModel.date}");
+       NavigationManager.NavigateTo($"/Statistics/{getPopulationStatisticsModel.date.Day}/{getPopulationStatisticsModel.date.Month}/{getPopulationStatisticsModel.date.Year}");
     }
 
     private async void SendAdminMessageForm()

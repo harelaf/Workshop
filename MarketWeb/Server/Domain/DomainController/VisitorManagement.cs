@@ -49,6 +49,7 @@ namespace MarketWeb.Server.Domain
                 return;
             Register(username, password, DEFAULT_BIRTH_DATE);
             _dalController.AppointSystemAdmin(username);
+            _dalController.ResetGuestStatisticsAfterRestart(DateTime.Now);
         }
         // TODO: There's GOT to be a better way to do these constructors.
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())

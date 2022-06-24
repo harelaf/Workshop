@@ -103,7 +103,7 @@ namespace AcceptanceTest
                 adminToken =  marketAPI.Login(token, adminUsername, pass).Value;
             }
 
-            Response<ICollection<PopulationStatisticsDTO>> res = marketAPI.GetDailyPopulationStatistics(adminToken, now);
+            Response<ICollection<PopulationStatisticsDTO>> res = marketAPI.GetDailyPopulationStatistics(adminToken, now.Day, now.Month, now.Year);
             if (res.ErrorOccured)
                 Assert.Fail("shouldn't fail");
             ICollection<PopulationStatisticsDTO> statisticsDTOs = res.Value;

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using MarketWeb.Server.DataLayer;
 
 namespace MarketWeb.Service
 {
@@ -1668,14 +1669,14 @@ namespace MarketWeb.Service
             return response;
         }
         [HttpPost("GetDailyPopulationStatistics")]
-        public Response<ICollection<PopulationStatisticsDTO>> GetDailyPopulationStatistics([FromHeader] String Authorization, DateTime dateTime)
+        public Response<ICollection<PopulationStatisticsDTO>> GetDailyPopulationStatistics([FromHeader] String Authorization, int day, int month, int year)
         {
             Response<ICollection<PopulationStatisticsDTO>> response;
             try
             {
                 String authToken = parseAutherization(Authorization);
-                _logger.Info($"Get Daily Population Statistics called with parameters: authToken={authToken}, dateTime={dateTime}.");
-                ICollection<PopulationStatistics> domainStatiscs = _market.GetDailyPopulationStatistics(authToken, dateTime);
+                _logger.Info($"Get Daily Population Statistics called with parameters: authToken={authToken}, dateTime={new DateTime(year, month, day)}.");
+                ICollection<PopulationStatistics> domainStatiscs = _market.GetDailyPopulationStatistics(authToken, new DateTime(year, month, day));
                 DTOtranslator translator = new DTOtranslator();
                 ICollection<PopulationStatisticsDTO> statisticsDTOs = new List<PopulationStatisticsDTO>();
                 foreach(PopulationStatistics populationStatistics in domainStatiscs)

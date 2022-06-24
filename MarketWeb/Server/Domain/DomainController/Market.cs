@@ -82,8 +82,9 @@ namespace MarketWeb.Server.Domain
             _storeManagement.load();
 
             _history = new History(this);
-            _dalController.ResetGuestStatisticsAfterRestart(DateTime.Now);
+            
         }
+
 
         /// add\update basket eof store with item and amount.
         /// update store stock: itemAmount- amount

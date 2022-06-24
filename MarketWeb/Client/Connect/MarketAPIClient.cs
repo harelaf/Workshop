@@ -92,7 +92,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response<List<String>>> GetUsernamesWithInventoryPermissionInStore(String storeName);
         public Task<Response> AddAcceptedBidToCart(int ItemId, String StoreName, int Amount);
         public Task<Response<List<BidDTO>>> GetVisitorBidsAtStore(String StoreName);
-        public Task<Response<ICollection<PopulationStatisticsDTO>>> GetDailyPopulationStatistics(DateTime dateTime);
+        public Task<Response<ICollection<PopulationStatisticsDTO>>> GetDailyPopulationStatistics(int day, int month, int year);
     }
 
     public class MarketAPIClient : IMarketAPIClient
@@ -990,11 +990,13 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response<ICollection<PopulationStatisticsDTO>>> GetDailyPopulationStatistics(DateTime dateTime)
+        public async Task<Response<ICollection<PopulationStatisticsDTO>>> GetDailyPopulationStatistics(int day, int month, int year)
         {
             const string url = "api/market/GetDailyPopulationStatistics";
             var param = new Dictionary<string, string>() {
-                { "dateTime", dateTime.ToString() }
+                { "day", day.ToString() },
+                { "month", month.ToString() },
+                { "year", year.ToString() }
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 

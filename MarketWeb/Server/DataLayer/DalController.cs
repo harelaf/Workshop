@@ -98,11 +98,12 @@ namespace MarketWeb.Server.DataLayer
                                                                                                            x._visitDay.Month == date.Month &&
                                                                                                            x._visitDay.Day == date.Day &&
                                                                                                            x._section.Equals(PopulationSection.GUESTS))).FirstOrDefault();
-            if (populationStatisticsDAL == null)
+            if (populationStatisticsDAL != null)
             {
-               throw new Exception("guest statistics can't be null after initialization.");
+                //throw new Exception("guest statistics can't be null after initialization.");
+                populationStatisticsDAL._count --;
             }
-            populationStatisticsDAL._count = 0;
+            
 
             context.SaveChanges();
             
@@ -1123,7 +1124,10 @@ namespace MarketWeb.Server.DataLayer
                 context.SaveChanges();
                 context = new MarketContext();
             }
-            populationStatisticsDAL._count++;
+            context.PopulationStatisticsDALs.Where(x => (x._visitDay.Year == date.Year &&
+                                                         x._visitDay.Month == date.Month &&
+                                                         x._visitDay.Day == date.Day &&
+                                                         x._section.Equals(section))).FirstOrDefault()._count++;
 
             context.SaveChanges();
             if (!section.Equals(PopulationSection.GUESTS))// remove from guest:

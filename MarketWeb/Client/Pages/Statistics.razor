@@ -1,14 +1,10 @@
-﻿<h3>Statistics</h3>
-
-@code {
-
-}
-@page "/Statistics/{date:DateTime}"
+﻿@page "/Statistics/{day:int}/{month:int}/{year:int}"
 @using MarketWeb.Client.Connect
 @using MarketWeb.Client.Helpers
 @using MarketWeb.Client.Services
 @using MarketWeb.Shared
 @using MarketWeb.Shared.DTO
+@using System.Globalization
 @inject IMarketAPIClient marketAPIClient
 @inject IHttpService httpService
 @inject IAlertService AlertService
@@ -28,7 +24,7 @@
 </style>
 
 <h1 class="display-4">Population Statistics on @{
-                    date.ToString("dd/MM/yyyy");
+                    date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);;
                 } Page</h1>
 <br />
 <br />
@@ -43,17 +39,17 @@
 
     @foreach (PopulationStatisticsDTO populationStatisticsDTO in statistics)
     {
-        total++;
+        total+= populationStatisticsDTO._count;
         if (populationStatisticsDTO._section.Equals(PopulationSection.GUESTS))
-            guestCount++;
+            guestCount = populationStatisticsDTO._count;
         else if (populationStatisticsDTO._section.Equals(PopulationSection.ADMIN))
-            adminCount++;
+            adminCount = populationStatisticsDTO._count;
         else if (populationStatisticsDTO._section.Equals(PopulationSection.STORE_OWNERS_NOT_ADMIN))
-            ownerCount++;
+            ownerCount = populationStatisticsDTO._count;
         else if (populationStatisticsDTO._section.Equals(PopulationSection.STORE_MANAGERS_ONLY))
-            managerCount++;
+            managerCount = populationStatisticsDTO._count;
         else
-            registeredCount++;
+            registeredCount = populationStatisticsDTO._count;
     }
     <h4><b>Entrances By Guests :</b>   <u>@guestCount</u></h4>
     <br />
@@ -66,9 +62,7 @@
     <h4><b>Entrances By Administration Members :</b>   <u>@adminCount</u></h4>
     <br />
     <br />
-    <h3><u><b> Total Entrances Number on @{
-                    date.ToString("dd/MM/yyyy");
-                } :</b>   @total</u> </h3>
+    <h3><u><b> Total Entrances Number :</b>   @total</u> </h3>
 
 
 }
@@ -78,7 +72,10 @@ else
 }
 
 @code {
-    [Parameter] public DateTime date { get; set; }
+    [Parameter] public int day { get; set; }
+    [Parameter] public int month { get; set; }
+    [Parameter] public int year { get; set; }
+    public DateTime date { get; set; }
     ICollection<PopulationStatisticsDTO> statistics = new List<PopulationStatisticsDTO>();
 
    
@@ -87,10 +84,10 @@ else
     {
         // reset alerts on submit
         AlertService.Clear();
-
+        date = new DateTime(year, month, day);
         try
         {
-            Response<ICollection<PopulationStatisticsDTO>> response = await marketAPIClient.GetDailyPopulationStatistics(date);
+            Response<ICollection<PopulationStatisticsDTO>> response = await marketAPIClient.GetDailyPopulationStatistics(date.Day, date.Month, date.Year);
             if (response.ErrorOccured)
             {
                 throw new Exception(response.ErrorMessage);
