@@ -294,6 +294,27 @@ namespace MarketWeb.Server.Migrations
                     b.ToTable("OwnerAcceptors");
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.PopulationStatisticsDAL", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("_count")
+                        .HasColumnType("int");
+
+                    b.Property<int>("_section")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("_visitDay")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("id");
+
+                    b.ToTable("PopulationStatisticsDALs");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", b =>
                 {
                     b.Property<int>("ID")

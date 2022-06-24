@@ -90,6 +90,24 @@ namespace MarketWeb.Server.DataLayer
                 throw new Exception("no such register in db");
             }
         }
+
+        internal void ResetGuestStatisticsAfterRestart(DateTime date)
+        {
+            MarketContext context = new MarketContext();
+            PopulationStatisticsDAL populationStatisticsDAL = context.PopulationStatisticsDALs.Where(x => (x._visitDay.Year == date.Year &&
+                                                                                                           x._visitDay.Month == date.Month &&
+                                                                                                           x._visitDay.Day == date.Day &&
+                                                                                                           x._section.Equals(PopulationSection.GUESTS))).FirstOrDefault();
+            if (populationStatisticsDAL == null)
+            {
+               throw new Exception("guest statistics can't be null after initialization.");
+            }
+            populationStatisticsDAL._count = 0;
+
+            context.SaveChanges();
+            
+        }
+
         public void AddItemToCart(ShoppingBasketDAL shoppingBasket, String storeName, string userName, int itemID, int amount)
         {
             MarketContext context = new MarketContext();

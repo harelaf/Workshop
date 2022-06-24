@@ -58,6 +58,21 @@ namespace MarketWeb.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PopulationStatisticsDALs",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    _section = table.Column<int>(type: "int", nullable: false),
+                    _visitDay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    _count = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PopulationStatisticsDALs", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PurchaseDetailsDAL",
                 columns: table => new
                 {
@@ -601,6 +616,9 @@ namespace MarketWeb.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "OperationWrapper");
+
+            migrationBuilder.DropTable(
+                name: "PopulationStatisticsDALs");
 
             migrationBuilder.DropTable(
                 name: "PurchasedBasketDAL");
