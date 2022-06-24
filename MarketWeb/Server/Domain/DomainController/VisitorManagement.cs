@@ -544,10 +544,11 @@ namespace MarketWeb.Server.Domain
                 throw new Exception($"No complaint with the ID {complaintID}.");
             complaint.Reply(reply);
             _dalController.ReplyToComplaint(complaintID, reply);
-
+            String title = "An admin has replied to one of your complaints.";
+            String message = "View it in your profile.";
+            int id = _dalController.SendAdminMessage(complaint.GetComplainer(), admin.Username, title, message);
+            SendAdminMessageToRegistered(complaint.GetComplainer(), "", title, message, id);
         }
-
-
 
         // ===================================== CART OPERATIONS =====================================
 

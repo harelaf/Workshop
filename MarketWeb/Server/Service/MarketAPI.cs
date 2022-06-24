@@ -1055,7 +1055,6 @@ namespace MarketWeb.Service
             Response response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Reply To Complaint called with parameters: authToken={authToken}, complaintID={complaintID}, reply={reply}.");
                 _market.ReplyToComplaint(authToken, complaintID, reply);

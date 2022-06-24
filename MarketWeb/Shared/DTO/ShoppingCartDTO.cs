@@ -11,10 +11,6 @@ namespace MarketWeb.Shared.DTO
         public ICollection<ShoppingBasketDTO> Baskets => _DTObaskets;
         private int scid;
         public int Scid => scid;
-        public ShoppingCartDTO(ICollection<ShoppingBasketDTO> basketDTOs)
-        {
-            _DTObaskets = basketDTOs == null ? new List<ShoppingBasketDTO>() : basketDTOs;
-        }
         public ShoppingCartDTO(ICollection<ShoppingBasketDTO> basketDTOs, int scid)
         {
             _DTObaskets = basketDTOs == null ? new List<ShoppingBasketDTO>() : basketDTOs;

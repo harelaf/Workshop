@@ -37,7 +37,7 @@
                         <th>Product Name</th>
                         <th>Amount</th>
                         <th>Price Per Unit</th>
-                        <th>Make Complaint</th>
+                        <th>File Complaint</th>
                     </tr>
                     @foreach (int itemID in basket.Items.Keys)
                     {
@@ -53,7 +53,7 @@
                                         <InputText @bind-Value="AddComplaintModel.Message" class="form-control" />
                                     </div>
                                     <button class="btn btn-primary" @onclick="() => AddComplaintForm(cart.Scid)">
-                                        Send Complaint
+                                        File Complaint
                                     </button>
                                 </EditForm>
                             </th>
@@ -117,6 +117,7 @@ else
             {
                 throw new Exception(res.ErrorMessage);
             }
+            AlertService.Info("Complaint filed successfully!");
         }
         catch (Exception e)
         {

@@ -661,9 +661,9 @@ namespace MarketWeb.Server.Domain
                 msgDAL._message, msgDAL._reply, msgDAL._replierFromStore, msgDAL.mid);
         }
         public Complaint ComplaintDalToDomain(ComplaintDAL complaintDAL)
-        {//int id, Registered complainer, int cartID, string message
+        {
             return new Complaint(complaintDAL._id,complaintDAL._complainer
-                , complaintDAL._cartID, complaintDAL._message);
+                , complaintDAL._cartID, complaintDAL._message, complaintDAL._response);
         }
         public SystemRole SystemRoleDalToDomain(SystemRoleDAL systemRoleDAL)
         {
