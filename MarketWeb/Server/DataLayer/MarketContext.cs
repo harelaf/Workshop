@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,32 +27,36 @@ namespace MarketWeb.Server.DataLayer
         public static string userid { get; set; } = "";
         public static string password { get; set; } = "";
         public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
+        public string localConnectionStr { get; set; } = "Data Source=Application.db;Cache=Shared";
         public static bool testMode { get; set; } = false;
+        public static ISet<string> tableNames = new HashSet<string>();
         public MarketContext()
         {
         }
         public override int SaveChanges()
         {
-            int result = base.SaveChanges();
+            //return testMode ? 0 : base.SaveChanges();
             if (testMode)
             {
-                List<string> tableNames = new List<string>();
+                //IEnumerable<EntityEntry> entries = this.ChangeTracker.Entries();
                 this.ChangeTracker.DetectChanges(); // Not sure we need to call this, but should be cheap enough in test and will be more reliable.
-                foreach (var entry in this.ChangeTracker.Entries().Where(e => e.State == EntityState.Added))
+                foreach(var entry in this.ChangeTracker.Entries().Where(x => x.State == EntityState.Added))
                 {
                     tableNames.Add(entry.Metadata.GetTableName());
                 }
-                foreach (string tableName in tableNames)
-                    this.Database.ExecuteSqlRaw($"ALTER TABLE {tableName} NOCHECK CONSTRAINT ALL;" +
-                        $"DELETE FROM {tableName};" +
-                        $"ALTER TABLE {tableName} CHECK CONSTRAINT ALL;");
             }
-            return result;
+            return base.SaveChanges();
         }
-        private int DisposeAndGetZero()
+        public void DisposeAllData()
         {
-            base.Dispose();
-            return 0;
+            if (testMode)
+            {
+                foreach (string tableName in tableNames)
+                    this.Database.ExecuteSqlRaw($"PRAGMA foreign_keys = 0;" +
+                        $"DELETE FROM {tableName};" +
+                        $"PRAGMA foreign_keys = 1;");
+                tableNames = new HashSet<string>();
+            }
         }
         // The following configures EF to create a Sqlite database file in the
         // special "local" folder for your platform.
@@ -59,7 +64,10 @@ namespace MarketWeb.Server.DataLayer
         {
             //string connectionStr = $"Data Source={datasource};Initial Catalog={initialcatalog};User Id={userid};Password={password}";
             //connectionStr = "Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;";
-            options.UseSqlServer(connectionStr);
+            if (!testMode)
+                options.UseSqlServer(connectionStr);
+            else
+                options.UseSqlite(localConnectionStr);
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

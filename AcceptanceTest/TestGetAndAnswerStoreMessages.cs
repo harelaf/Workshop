@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,18 @@ namespace AcceptanceTest
         string storeName = "Krusty Krab";
         string username_founder = "SpongeBob SquarePants";
         string username_reviewer = "Mr. Depp";
-        string guest_token;
-        string registered_token_founder;
-        string registered_token_reviewer;
+        string guest_token = "";
+        string registered_token_founder = "";
+        string registered_token_reviewer = "";
         string title = "ThankYou Note";
         string messageBody = "very helpful customer service workers and great products.";
 
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize]
         public void setup()

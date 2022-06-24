@@ -1,4 +1,5 @@
-﻿using MarketWeb.Server.Domain;
+﻿using MarketWeb.Server.DataLayer;
+using MarketWeb.Server.Domain;
 using MarketWeb.Service;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
@@ -20,15 +21,17 @@ namespace AcceptanceTest
         MarketAPI marketAPI = new MarketAPI(null, null);
         String storeName = "test's Shop";
         //String storeName_outSystem = "bla";
-        String guest_VisitorToken;
-        String store_founder_token;
-        String store_founder_name;
-        int itemID_inStock_1;
-        int itemAmount_inSttock_1;
-        int itemID_inStock_2;
-        int itemAmount_inSttock_2;
-        int itemID_outStock = 1111111;
+        String? guest_VisitorToken;
+        String? store_founder_token;
+        String? store_founder_name;
         DateTime dob = new DateTime(2001, 7, 30);
+
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize()]
         public void setup()
@@ -121,7 +124,6 @@ namespace AcceptanceTest
             String ownerUsername2 = "new owner2";
             String managerUsername3 = "new manager3";
             String password = "123456789";
-            bool doubleCheck = false;
             String store_owner_token1 = (marketAPI.EnterSystem()).Value;// guest
             marketAPI.Register(store_owner_token1, ownerUsername1, password, dob);
             String store_owner_token2 = (marketAPI.EnterSystem()).Value;// guest

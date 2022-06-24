@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using MarketWeb.Service;
 using MarketWeb.Shared;
@@ -11,10 +12,9 @@ namespace AcceptanceTest
         MarketAPI marketAPI = new MarketAPI(null, null);
         String storeName = "test's Shop";
         //String storeName_outSystem = "bla";
-        String guest_VisitorToken;
-        String store_founder_token;
-        String store_founder_name;
-        DateTime expiration = DateTime.Now.AddDays(1);
+        String? guest_VisitorToken;
+        String? store_founder_token;
+        String? store_founder_name;
         int itemID = 1;
         double itemprice = 10;
         String itemDesc = "Yummy";
@@ -30,6 +30,12 @@ namespace AcceptanceTest
         String paymentMethod = "Alien Technology";
         String shipmentMethod = "Spacecraft";
 
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize]
         public void setup()
@@ -53,8 +59,8 @@ namespace AcceptanceTest
             Response res2 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, 5);
             Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
 
-            //Response res3 = marketAPI.PurchaseMyCart(guest_VisitorToken, address, city, country, zip, name, paymentMethod, shipmentMethod).Result;
-            //Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
+            Response res3 = marketAPI.PurchaseMyCart(guest_VisitorToken, address, city, country, zip, name, paymentMethod, shipmentMethod).Result;
+            Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
         }
 
         [TestMethod]
@@ -90,8 +96,8 @@ namespace AcceptanceTest
             Response res2 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, 5);
             Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
 
-            //Response res3 = marketAPI.PurchaseMyCart(guest_VisitorToken, address, city, country, zip, name, paymentMethod, shipmentMethod).Result;
-            //Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
+            Response res3 = marketAPI.PurchaseMyCart(guest_VisitorToken, address, city, country, zip, name, paymentMethod, shipmentMethod).Result;
+            Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
         }
 
         [TestMethod]

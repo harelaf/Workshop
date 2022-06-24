@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Collections.Generic;
 using System;
@@ -14,8 +15,8 @@ namespace AcceptanceTest
     {
         MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName_inSystem = "afik's Shop";
-        string guest_VisitorToken;
-        string registered_VisitorToken;
+        string? guest_VisitorToken;
+        string? registered_VisitorToken;
         int itemID_inStock_1;
         int itemAmount_inSttock_1;
         int itemID_inStock_2;
@@ -25,6 +26,13 @@ namespace AcceptanceTest
         int itemAmount_inRegCart = 10;
         int itemAmount_inGuestCart = 10;
         DateTime dob = new DateTime(2001, 7, 30);
+
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize()]
         public void setup()
@@ -196,7 +204,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestUpdateQuantotyOfItemInCart_2VisitorsIncreaseAmountInCart()//UPDATE FILE: threads- both Visitors try to decrease amount of item-> last in stock
         {
-            int iterations = 10000;
+            int iterations = 100;
             int tot_amountInStock = iterations + 2; 
             int newItenID = 3;
             marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, newItenID, "new", 53.3, "", "", tot_amountInStock);

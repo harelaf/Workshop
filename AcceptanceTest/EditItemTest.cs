@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Collections.Generic;
 using System;
@@ -15,14 +16,20 @@ namespace AcceptanceTest
     {
         MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName_inSystem = "Shefa Issachar";
-        string storeName_outSystem = "bla";
-        string guest_VisitorToken;
-        string registered_VisitorToken;
+        string? guest_VisitorToken;
+        string? registered_VisitorToken;
         int itemID_inStock_1;
         int itemAmount_inSttock_1;
         int itemID_inStock_2;
         int itemAmount_inSttock_2;
         int itemID_outStock = 1111111;
+
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize()]
         public void setup()

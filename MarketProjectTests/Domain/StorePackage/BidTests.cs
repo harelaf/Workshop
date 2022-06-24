@@ -1,4 +1,5 @@
-﻿using MarketWeb.Server.Domain;
+﻿using MarketWeb.Server.DataLayer;
+using MarketWeb.Server.Domain;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,13 @@ namespace MarketProjectTests.Domain.Tests
         private int amount;
         private double biddedPrice;
 
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
+        
         [TestInitialize]
         public void setup()
         {

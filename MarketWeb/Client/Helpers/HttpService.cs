@@ -95,7 +95,7 @@ namespace MarketWeb.Client.Helpers
 
         private async Task sendRequest(HttpRequestMessage request)
         {
-            await addJwtHeader(request);
+            addJwtHeader(request);
 
             // send request
             using var response = await _httpClient.SendAsync(request);
@@ -112,7 +112,7 @@ namespace MarketWeb.Client.Helpers
 
         private async Task<T> sendRequest<T>(HttpRequestMessage request)
         {
-            await addJwtHeader(request);
+            addJwtHeader(request);
             
             // send request
             using var response = await _httpClient.SendAsync(request);
@@ -132,7 +132,7 @@ namespace MarketWeb.Client.Helpers
             });
         }
 
-        private async Task addJwtHeader(HttpRequestMessage request)
+        private void addJwtHeader(HttpRequestMessage request)
         {
             // add jwt auth header if user is logged in and request is to the api url
             var isApiUrl = !request.RequestUri.IsAbsoluteUri;

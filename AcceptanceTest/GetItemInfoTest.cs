@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarketWeb.Server.DataLayer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,13 @@ namespace AcceptanceTest
         int itemID_inStock_2;
         int itemAmount_inSttock_2;
         int itemID_outStock = 1111111;
+
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize()]
         public void setup()

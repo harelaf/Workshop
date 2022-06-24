@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using MarketWeb.Service;
 using MarketWeb.Shared;
@@ -11,15 +12,21 @@ namespace AcceptanceTest
         MarketAPI marketAPI = new MarketAPI(null, null);
         String storeName = "test's Shop";
         //String storeName_outSystem = "bla";
-        String guest_VisitorToken;
-        String store_founder_token;
-        String store_founder_name;
+        String? guest_VisitorToken;
+        String? store_founder_token;
+        String? store_founder_name;
         DateTime expiration = DateTime.Now.AddDays(1);
         int itemID = 1;
         String itemName = "item";
         String category = "category";
         DateTime bDay = new DateTime(1992, 8, 4);
 
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize]
         public void setup()

@@ -36,6 +36,12 @@ namespace MarketWeb.Server.DataLayer
             MarketContext.password = password;
 
         }
+        
+        public void Cleanup()
+        {
+            new MarketContext().DisposeAllData();
+        }
+
         public static void InitializeContext(string _datasource, string _initialcatalog, string _userid, string _password)
         {
             datasource = _datasource;

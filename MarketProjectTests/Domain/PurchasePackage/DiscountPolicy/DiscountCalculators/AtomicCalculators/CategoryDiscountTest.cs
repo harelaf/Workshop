@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,6 +22,12 @@ namespace MarketProject.Domain.PurchasePackage.PolicyPackage.Tests
 		ShoppingBasket basket;
 		Item item;
 
+		DalController dc = DalController.GetInstance(true);
+		[TestCleanup()]
+		public void cleanup()
+		{
+			dc.Cleanup();
+		}
 		[TestInitialize]
 		public void setup()
 		{

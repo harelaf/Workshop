@@ -6,6 +6,7 @@ using MarketWeb.Server.Domain;
 using MarketWeb.Service;
 using MarketWeb.Shared;
 using MarketWeb.Shared.DTO;
+using MarketWeb.Server.DataLayer;
 
 namespace AcceptanceTest
 {
@@ -15,13 +16,20 @@ namespace AcceptanceTest
         MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName_inSystem = "afik's Shop";
         string storeName_outSystem = "bla";
-        string guest_VisitorToken;
-        string registered_VisitorToken;
+        string? guest_VisitorToken;
+        string? registered_VisitorToken;
         int itemID_inStock_1;
         int itemAmount_inSttock_1;
         int itemID_inStock_2;
         int itemAmount_inSttock_2;
         int itemID_outStock = 1111111;
+
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize()]
         public void setup()
@@ -44,7 +52,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void TestAddItemToCart_2VisitorsAddingLastItemInStock()
         {
-            int iterations = 10000;
+            int iterations = 100;
             marketAPI.UpdateStockQuantityOfItem(registered_VisitorToken, storeName_inSystem, itemID_inStock_1, iterations);
             Thread thread1 = new Thread(() => {
                 for (int i = 0; i < iterations; i++)

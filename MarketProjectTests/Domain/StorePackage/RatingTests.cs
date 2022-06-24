@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MarketProject.Domain;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,13 @@ namespace MarketProject.Domain.Tests
     [TestClass()]
     public class RatingTests
     {
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
+        
         [TestMethod()]
         public void AddRating_VisitorHasntRatedYet_ReturnsTrue()
         {

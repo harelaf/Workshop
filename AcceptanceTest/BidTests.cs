@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MarketWeb.Service;
 using MarketWeb.Shared.DTO;
 using MarketWeb.Shared;
+using MarketWeb.Server.DataLayer;
 
 namespace AcceptanceTest
 {
@@ -17,18 +18,25 @@ namespace AcceptanceTest
         MarketAPI marketAPI = new MarketAPI(null, null);
         string storeName = "Bidding Shop";
         //string storeName_outSystem = "bla";
-        string bidder_VisitorToken;
-        string owner1_token;
+        string bidder_VisitorToken = "";
+        string owner1_token = "";
         string owner1_username = "owner1";
         int itemId1;
         int amount1;
         int itemId2;
         int amount2;
-        //int itemID_outStock = 1111111;
+
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize()]
         public void setup()
         {
+            //marketAPI = new MarketAPI(null, null);
             DateTime dob = new DateTime(2001, 7, 30);
             bidder_VisitorToken = (marketAPI.EnterSystem()).Value;
             owner1_token = (marketAPI.EnterSystem()).Value;// guest
@@ -67,7 +75,8 @@ namespace AcceptanceTest
             ISet<string> acceptors = res.Value[0].Acceptors;
             Assert.IsTrue(acceptors.Contains(owner1_username));
             List<string> lst = marketAPI.GetUsernamesWithInventoryPermissionInStore(owner1_token, storeName).Value;
-            Assert.IsTrue(lst.Count == 1 && lst.Contains(owner1_username));
+            Assert.AreEqual(lst.Count, 1);
+            Assert.IsTrue(lst.Contains(owner1_username));
             Assert.IsTrue(res.Value[0].AcceptedByAll);
         }
         [TestMethod]

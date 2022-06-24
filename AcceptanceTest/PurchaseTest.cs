@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using MarketWeb.Server.Domain;
 using MarketWeb.Service;
@@ -30,6 +31,13 @@ namespace AcceptanceTest
         public static readonly string shippingMethode_mock_true = "mock_true";
         public static readonly string paymentMethode_mock_false = "mock_false";
         public static readonly string paymentMethode_mock_true = "mock_true";
+
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
 
         [TestInitialize()]
         public void setup()

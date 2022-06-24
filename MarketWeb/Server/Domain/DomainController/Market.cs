@@ -270,7 +270,6 @@ namespace MarketWeb.Server.Domain
             StoreFounder founder = new StoreFounder(Username, storeName);
             _VisitorManagement.AddRole(Username, founder);
             _storeManagement.OpenNewStore(founder, storeName, purchasePolicy, discountPolicy);
-            _dalController.OpenNewStore(storeName, Username);
         }
 
         public Store GetStoreInformation(String authToken, String storeName)

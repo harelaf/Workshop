@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MarketWeb.Server.DataLayer;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MarketProject.Domain;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,19 @@ namespace MarketProject.Domain.Tests
     {
         VisitorManagement VisitorManagement;
         DateTime dob = new DateTime(2001, 7, 30);
+        
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
+        
         [TestInitialize]
         public void setup()
         {
             VisitorManagement = new VisitorManagement();
         }
-
-
 
         // ============================= REGISTER =============================
 

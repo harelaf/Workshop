@@ -190,6 +190,7 @@ namespace MarketWeb.Server.Domain
             }
             Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
             _stores[storeName] = newStore;
+            _dalController.OpenNewStore(storeName, founder.Username);
         }
 
         public bool CheckStoreNameExists(String storeName)

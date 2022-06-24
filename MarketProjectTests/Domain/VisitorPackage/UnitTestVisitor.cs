@@ -1,3 +1,4 @@
+using MarketWeb.Server.DataLayer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MarketProject.Domain;
 using System;
@@ -17,6 +18,13 @@ namespace MarketProject.Domain.Tests
         Store store;
         Item item1;
 
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
+        
         [TestInitialize]
         public void setup()
         {
