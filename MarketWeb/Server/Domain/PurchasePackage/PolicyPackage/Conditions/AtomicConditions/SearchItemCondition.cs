@@ -13,7 +13,7 @@ namespace MarketWeb.Server.Domain.PolicyPackage
         }
         public override String GetConditionString(int indent)
         {
-            return $"{(ToNegative ? "(NOT) " : "")}The cost of {_keyWord} is between {_minValue} and {_maxValue}.";
+            return $"{(ToNegative ? "(NOT) " : "")}The cost of {KeyWord} is {RangeDescription()}.";
         }
     }
 }

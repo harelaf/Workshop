@@ -17,5 +17,11 @@ namespace MarketWeb.Server.Domain.PolicyPackage
             _minValue = minValue;
             _maxValue = maxValue;
         }
+        protected string RangeDescription()
+        {
+            if(MaxValue < 0)
+                return $"over {MinValue}";
+            return $"between {MinValue} and {MaxValue}";
+        }
     }
 }

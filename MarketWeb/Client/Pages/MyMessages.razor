@@ -74,35 +74,11 @@ else
         }
     </table>
 }
-<br />
-<h2>Notifications From Store:</h2>
-@if (notifyMSG.Count == 0)
-{
-    <p>No store notifications to display.</p>
-}
-else
-{
-    <table style="width:100%" class="table">
-        <tr>
-            <th style="width:20%"><h4>Store Name</h4></th>
-            <th style="width:20%"><h4>Title</h4></th>
-            <th style="width:60%"><h4>Message</h4></th>
-        </tr>
-        @foreach (NotifyMessageDTO message in notifyMSG)
-        {
-            <tr>
-                <th style="width:20%">@message.StoreName</th>
-                <th style="width:20%">@message.Title</th>
-                <th style="width:60%">@message.Message</th>
-            </tr>
-        }
-    </table>
-}
+
 @code {
     private Models.MyMessagesModel model = new Models.MyMessagesModel();
     private ICollection<AdminMessageToRegisteredDTO> adminMSG = new List<AdminMessageToRegisteredDTO>();
     private ICollection<MessageToStoreDTO> storeMSG = new List<MessageToStoreDTO>();
-    private ICollection<NotifyMessageDTO>  notifyMSG = new List<NotifyMessageDTO>();
     private string username = "";
 
 
@@ -114,21 +90,15 @@ else
             Response<RegisteredDTO> response_user = await marketAPIClient.GetVisitorInformation();
             Response<ICollection<AdminMessageToRegisteredDTO>> res_adminMSG = await marketAPIClient.GetRegisteredMessagesFromAdmin();
             Response<ICollection<MessageToStoreDTO>> res_storeMSG = await marketAPIClient.GetRegisterAnsweredStoreMessages();
-            Response<ICollection<NotifyMessageDTO>> res_notifyMSG = await marketAPIClient.GetRegisteredMessagesNotofication();
             if (response_user.ErrorOccured)
                 throw new Exception(response_user.ErrorMessage);
             if (res_adminMSG.ErrorOccured)
                 throw new Exception(res_adminMSG.ErrorMessage);
             if (res_storeMSG.ErrorOccured)
                 throw new Exception(res_storeMSG.ErrorMessage);
-            if (res_notifyMSG.ErrorOccured)
-                throw new Exception(res_notifyMSG.ErrorMessage);
+            
             username = response_user.Value.Username;
             adminMSG = res_adminMSG.Value;
-            storeMSG = res_storeMSG.Value;
-            notifyMSG= res_notifyMSG.Value;
-
-
 
         }
         catch(Exception e)

@@ -66,10 +66,10 @@ namespace MarketWeb.Server.Domain
                 errorMessage = "Purchase failed: Shipping services refuse to provide your cart.";
             }
             //relaseCart:
-            if(errorMessage != "")
-            {
-                cartToPurchase.RelaseItemsOfCart();
-            }
+            //if(errorMessage != "")
+            //{
+            //    cartToPurchase.RelaseItemsOfCart();
+            //}
             LogErrorMessage("Purchase", errorMessage);
             throw new Exception(errorMessage);
         }

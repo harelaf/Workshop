@@ -70,7 +70,6 @@ namespace MarketWeb.Server.Domain
 
             _storeManagement = new StoreManagement();
             _VisitorManagement = new VisitorManagement();
-            _history = new History();
             _VisitorManagement.SetNotificationHub(_notificationHub);
 
             // Initialize admin
@@ -81,6 +80,8 @@ namespace MarketWeb.Server.Domain
             _dalTRranslator = new DalTRranslator();
             DalTRranslator.StoreManagement = _storeManagement;
             _storeManagement.load();
+
+            _history = new History(this);
         }
 
         /// add\update basket eof store with item and amount.

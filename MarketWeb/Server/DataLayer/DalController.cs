@@ -10,19 +10,26 @@ namespace MarketWeb.Server.DataLayer
     public class DalController
     {
         private static DalController instance = null;
+        private static readonly Object s_lock = new Object();
         private static string datasource;
         private static string initialcatalog;
         private static string userid;
         private static string password;
-        public static DalController GetInstance()
+        public static DalController GetInstance(bool testMode = false)
         {
             if (instance == null)
-                instance = new DalController();
+            {
+                lock(s_lock)
+                {
+                    if(instance == null)
+                        instance = new DalController(testMode);
+                }
+            }
             return instance;
         }
-        private DalController()
+        private DalController(bool testMode)
         {
-            
+            MarketContext.testMode = testMode;
             MarketContext.datasource = datasource;
             MarketContext.initialcatalog = initialcatalog;
             MarketContext.userid = userid;
@@ -1086,40 +1093,6 @@ namespace MarketWeb.Server.DataLayer
             }
             context.SaveChanges();
             
-        }
-        public void deleteData()
-        {
-            MarketContext context = new MarketContext();
-            List<string> tableNames = new List<string>
-            {
-                "AdminMessageToRegisteredDAL",
-                "BasketItemDAL",
-                "ComplaintDALs",
-                "MessageToStoreDALs",
-                "NotifyMessageDAL",
-                "OperationWrapper",
-                "PurchasedBasketDAL",
-                "PurchasedCartDAL",
-                "RateDAL",
-                "StockItemDAL",
-                "StringData",
-                "RegisteredDALs",
-                "SystemRoleDALs",
-                "StorePurchaseHistory",
-                "RegisteredPurchaseHistory",
-                "itemDALs",
-                "BidDAL",
-                "OwnerAcceptors",
-                "BidOfVisitor",
-                "ShoppingBasketDAL",
-                "PurchaseDetailsDAL",
-                "ShoppingCartDAL",
-                "StoreDALs"
-            };
-            foreach(string tableName in tableNames)
-                context.Database.ExecuteSqlRaw($"ALTER TABLE TableName NOCHECK CONSTRAINT all;" +
-                    $"DELETE FROM {tableName};" +
-                    $"ALTER TABLE TableName CHECK CONSTRAINT all;");
         }
     }
 }
