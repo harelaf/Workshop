@@ -1667,6 +1667,31 @@ namespace MarketWeb.Service
             }
             return response;
         }
+        [HttpPost("GetDailyPopulationStatistics")]
+        public Response<ICollection<PopulationStatisticsDTO>> GetDailyPopulationStatistics([FromHeader] String Authorization, DateTime dateTime)
+        {
+            Response<ICollection<PopulationStatisticsDTO>> response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Get Daily Population Statistics called with parameters: authToken={authToken}, dateTime={dateTime}.");
+                ICollection<PopulationStatistics> domainStatiscs = _market.GetDailyPopulationStatistics(authToken, dateTime);
+                DTOtranslator translator = new DTOtranslator();
+                ICollection<PopulationStatisticsDTO> statisticsDTOs = new List<PopulationStatisticsDTO>();
+                foreach(PopulationStatistics populationStatistics in domainStatiscs)
+                {
+                    statisticsDTOs.Add(translator.toDTO(populationStatistics));
+                }
+                response = new Response<ICollection<PopulationStatisticsDTO>>(statisticsDTOs);
+                _logger.Info($"SUCCESSFULY executed Get Daily Population Statistics.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<PopulationStatisticsDTO>>(e); 
+                _logger.Error(e.Message);
+            }
+            return response;
+        }
         public void LoadData()
         {
             String username1 = "username1";

@@ -1087,6 +1087,53 @@ namespace MarketWeb.Server.DataLayer
             context.SaveChanges();
             
         }
+        public void AddVisitToPopulationStatistics(PopulationSection section, DateTime date)
+        {
+            //assumption: every user firat was guest. so when guest logges in, we remove him from the guest ount
+            MarketContext context = new MarketContext();
+            PopulationStatisticsDAL populationStatisticsDAL = context.PopulationStatisticsDALs.Where(x=> ( x._visitDay.Year==date.Year   &&
+                                                                                                           x._visitDay.Month==date.Month && 
+                                                                                                           x._visitDay.Day==date.Day     && 
+                                                                                                           x._section.Equals(section) ) ).FirstOrDefault();
+            if(populationStatisticsDAL == null)
+            {
+                populationStatisticsDAL = new PopulationStatisticsDAL();
+                populationStatisticsDAL._visitDay = date;
+                populationStatisticsDAL._section = section;
+                populationStatisticsDAL._count = 0;
+                context.PopulationStatisticsDALs.Add(populationStatisticsDAL);
+                context.SaveChanges();
+                context = new MarketContext();
+            }
+            populationStatisticsDAL._count++;
+
+            context.SaveChanges();
+            if (!section.Equals(PopulationSection.GUESTS))// remove from guest:
+            {
+                context = new MarketContext();
+                context.PopulationStatisticsDALs.Where(x => (x._visitDay.Year == date.Year &&
+                                                             x._visitDay.Month == date.Month &&
+                                                             x._visitDay.Day == date.Day &&
+                                                             x._section.Equals(PopulationSection.GUESTS))).FirstOrDefault()._count--;
+                context.SaveChanges();
+            }
+        }
+
+        public ICollection<PopulationStatisticsDAL> GetDailyPopulationStatistics(DateTime date)
+        {
+            //assumption: every user firat was guest. so when guest logges in, we remove him from the guest ount
+            MarketContext context = new MarketContext();
+            ICollection<PopulationStatisticsDAL> populationStatisticsDALs = context.PopulationStatisticsDALs.Where(x => (x._visitDay.Year == date.Year &&
+                                                                                                           x._visitDay.Month == date.Month &&
+                                                                                                           x._visitDay.Day == date.Day )).ToList();
+            if (populationStatisticsDALs == null)
+            {
+               populationStatisticsDALs = new List<PopulationStatisticsDAL>();
+            }
+
+            return populationStatisticsDALs;
+
+        }
         public void deleteData()
         {
             MarketContext context = new MarketContext();

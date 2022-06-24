@@ -252,6 +252,16 @@ namespace MarketWeb.Server.Domain
                 messageToStore.Message, messageToStore.Title, messageToStore.Reply, messageToStore.Replier, messageToStore.StoreName);
         }
 
+        public ICollection<PopulationStatistics> PopulationStatisticsListDalToDomain(ICollection<PopulationStatisticsDAL> populationStatisticsListDAL)
+        {
+            ICollection<PopulationStatistics> populationStatisticsDomain = new List<PopulationStatistics>();
+            foreach(PopulationStatisticsDAL populationStatisticsDAL in populationStatisticsListDAL)
+            {
+                populationStatisticsDomain.Add(new PopulationStatistics(populationStatisticsDAL._section, populationStatisticsDAL._visitDay, populationStatisticsDAL._count));
+            }
+            return populationStatisticsDomain;
+
+        }
         public ItemDAL ItemDomainToDal(Item itemDomain)
         {
             return new ItemDAL(itemDomain.ItemID,RatingDomainToDal(itemDomain.Rating), itemDomain.Name,

@@ -1,0 +1,109 @@
+﻿<h3>Statistics</h3>
+
+@code {
+
+}
+@page "/Statistics/{date:DateTime}"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+    h1 {
+        text-align: center;
+    }
+    h3 {
+        text-align: center;
+    }
+    h4 {
+        text-align: center;
+    }
+</style>
+
+<h1 class="display-4">Population Statistics on @{
+                    date.ToString("dd/MM/yyyy");
+                } Page</h1>
+<br />
+<br />
+ @if (statistics.Count > 0)
+ {
+    int guestCount = 0;
+    int registeredCount = 0;
+    int adminCount = 0;
+    int ownerCount = 0;
+    int managerCount = 0;
+    int total = 0;
+
+    @foreach (PopulationStatisticsDTO populationStatisticsDTO in statistics)
+    {
+        total++;
+        if (populationStatisticsDTO._section.Equals(PopulationSection.GUESTS))
+            guestCount++;
+        else if (populationStatisticsDTO._section.Equals(PopulationSection.ADMIN))
+            adminCount++;
+        else if (populationStatisticsDTO._section.Equals(PopulationSection.STORE_OWNERS_NOT_ADMIN))
+            ownerCount++;
+        else if (populationStatisticsDTO._section.Equals(PopulationSection.STORE_MANAGERS_ONLY))
+            managerCount++;
+        else
+            registeredCount++;
+    }
+    <h4><b>Entrances By Guests :</b>   <u>@guestCount</u></h4>
+    <br />
+    <h4><b>Entrances By Registered With No Roles :</b>   <u>@registeredCount</u></h4>
+    <br />
+    <h4><b>Entrances By Store Managers Who Don't Own Any Store  :</b>   <u>@managerCount</u></h4>
+    <br />
+    <h4><b>Entrances By Store Owners :</b>   <u>@ownerCount</u></h4>
+    <br />
+    <h4><b>Entrances By Administration Members :</b>   <u>@adminCount</u></h4>
+    <br />
+    <br />
+    <h3><u><b> Total Entrances Number on @{
+                    date.ToString("dd/MM/yyyy");
+                } :</b>   @total</u> </h3>
+
+
+}
+else
+{
+    <h2> There Were No Entrances To Market at This Day!</h2>
+}
+
+@code {
+    [Parameter] public DateTime date { get; set; }
+    ICollection<PopulationStatisticsDTO> statistics = new List<PopulationStatisticsDTO>();
+
+   
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+
+        try
+        {
+            Response<ICollection<PopulationStatisticsDTO>> response = await marketAPIClient.GetDailyPopulationStatistics(date);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            else
+            {
+                statistics = response.Value;
+            }
+        }
+        catch (Exception e)
+        {
+            NavigationManager.NavigateTo($"/Administration");
+            AlertService.Error(e.Message);
+        }
+    }
+}

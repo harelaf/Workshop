@@ -92,6 +92,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response<List<String>>> GetUsernamesWithInventoryPermissionInStore(String storeName);
         public Task<Response> AddAcceptedBidToCart(int ItemId, String StoreName, int Amount);
         public Task<Response<List<BidDTO>>> GetVisitorBidsAtStore(String StoreName);
+        public Task<Response<ICollection<PopulationStatisticsDTO>>> GetDailyPopulationStatistics(DateTime dateTime);
     }
 
     public class MarketAPIClient : IMarketAPIClient
@@ -986,6 +987,18 @@ namespace MarketWeb.Client.Connect
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response<List<BidDTO>> res = await _httpService.Post<Response<List<BidDTO>>>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response<ICollection<PopulationStatisticsDTO>>> GetDailyPopulationStatistics(DateTime dateTime)
+        {
+            const string url = "api/market/GetDailyPopulationStatistics";
+            var param = new Dictionary<string, string>() {
+                { "dateTime", dateTime.ToString() }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+
+            Response<ICollection<PopulationStatisticsDTO>> res = await _httpService.Post<Response<ICollection<PopulationStatisticsDTO>>>(newUrl, null);
             return res;
         }
     }

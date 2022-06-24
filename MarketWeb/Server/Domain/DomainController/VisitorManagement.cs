@@ -99,7 +99,9 @@ namespace MarketWeb.Server.Domain
             {
                 return _loggedinVisitorsTokens.Values.Where(r => r.Username == Username).FirstOrDefault();
             }
-            return _dalTRranslator.RegisteredDALToDomain(_dalController.GetRegistered(Username));
+            if(_dalController.IsUsernameExists(Username))
+                return _dalTRranslator.RegisteredDALToDomain(_dalController.GetRegistered(Username));
+            return null;
         }
         public Registered GetLoggedinRegistered(string token)
         {
@@ -773,6 +775,32 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             return _dalTRranslator.ComplaintsListDalToDomain(_dalController.GetRegisterdComplaints());
+        }
+
+        internal void AddRegisteredToPopulationStatistics(string username, DateTime now)
+        {
+            Registered registered = GetRegisteredVisitor(username);
+            if(registered == null)
+            {
+                string errorMessage = $"'{username}' visitor is not permitted this operation.";
+                LogErrorMessage("AddRegisteredToPopulationStatistics", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            PopulationSection populationSection = GetRegisteredSection(registered);
+
+            _dalController.AddVisitToPopulationStatistics(populationSection, now);
+        }
+
+        internal PopulationSection GetRegisteredSection(Registered registered)
+        {
+            if (registered.Roles == null || registered.Roles.Count == 0)
+                return PopulationSection.REGISTERED_NO_ROLES;
+            if (registered.IsAdmin)
+                return PopulationSection.ADMIN;
+            if (registered.IsOwner)
+                return PopulationSection.STORE_OWNERS_NOT_ADMIN;
+            //else:
+            return PopulationSection.STORE_MANAGERS_ONLY;
         }
     }
 }
