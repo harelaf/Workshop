@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using MarketWeb.Server.DataLayer;
 
 namespace MarketWeb.Service
 {
@@ -1664,6 +1665,31 @@ namespace MarketWeb.Service
             catch (Exception e)
             {
                 response = new Response<Dictionary<string, List<string>>>(e); _logger.Error(e.Message);
+            }
+            return response;
+        }
+        [HttpPost("GetDailyPopulationStatistics")]
+        public Response<ICollection<PopulationStatisticsDTO>> GetDailyPopulationStatistics([FromHeader] String Authorization, int day, int month, int year)
+        {
+            Response<ICollection<PopulationStatisticsDTO>> response;
+            try
+            {
+                String authToken = parseAutherization(Authorization);
+                _logger.Info($"Get Daily Population Statistics called with parameters: authToken={authToken}, dateTime={new DateTime(year, month, day)}.");
+                ICollection<PopulationStatistics> domainStatiscs = _market.GetDailyPopulationStatistics(authToken, new DateTime(year, month, day));
+                DTOtranslator translator = new DTOtranslator();
+                ICollection<PopulationStatisticsDTO> statisticsDTOs = new List<PopulationStatisticsDTO>();
+                foreach(PopulationStatistics populationStatistics in domainStatiscs)
+                {
+                    statisticsDTOs.Add(translator.toDTO(populationStatistics));
+                }
+                response = new Response<ICollection<PopulationStatisticsDTO>>(statisticsDTOs);
+                _logger.Info($"SUCCESSFULY executed Get Daily Population Statistics.");
+            }
+            catch (Exception e)
+            {
+                response = new Response<ICollection<PopulationStatisticsDTO>>(e); 
+                _logger.Error(e.Message);
             }
             return response;
         }

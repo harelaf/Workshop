@@ -91,6 +91,22 @@ namespace MarketWeb.Server.Domain
             } 
         }
 
+        public bool IsOwner
+
+        {
+            get
+            {
+                foreach (SystemRole role in _roles)
+                {
+                    if (role.GetType() == typeof(StoreOwner))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
         public Registered(string Username, string password, DateTime birthDate)
         {
             _adminMessages = new List<AdminMessageToRegistered>();

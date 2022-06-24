@@ -58,6 +58,20 @@ namespace MarketWeb.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PopulationStatisticsDALs",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    _userNane = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    _visitDay = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PopulationStatisticsDALs", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PurchaseDetailsDAL",
                 columns: table => new
                 {
@@ -169,7 +183,8 @@ namespace MarketWeb.Server.Migrations
                     _password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     _salt = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CartDAL = table.Column<int>(type: "int", nullable: false),
-                    _birthDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    _birthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    _populationSection = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -601,6 +616,9 @@ namespace MarketWeb.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "OperationWrapper");
+
+            migrationBuilder.DropTable(
+                name: "PopulationStatisticsDALs");
 
             migrationBuilder.DropTable(
                 name: "PurchasedBasketDAL");

@@ -97,6 +97,22 @@ namespace MarketWeb.Server.DataLayer
                 throw new Exception("no such register in db");
             }
         }
+
+        internal void ResetGuestStatisticsAfterRestart(DateTime date)
+        {
+            MarketContext context = new MarketContext();
+            PopulationStatisticsDAL populationStatisticsDAL = context.PopulationStatisticsDALs.Where(x => (x._visitDay.Year == date.Year &&
+                                                                                                           x._visitDay.Month == date.Month &&
+                                                                                                           x._visitDay.Day == date.Day &&
+                                                                                                           x._userNane == null)).FirstOrDefault();
+            if (populationStatisticsDAL != null)
+            {
+                context.PopulationStatisticsDALs.Remove(populationStatisticsDAL);
+                context.SaveChanges();
+            }
+ 
+        }
+
         public void AddItemToCart(ShoppingBasketDAL shoppingBasket, String storeName, string userName, int itemID, int amount)
         {
             MarketContext context = new MarketContext();
@@ -321,6 +337,20 @@ namespace MarketWeb.Server.DataLayer
             founder._storeName = storeName;
             context.StoreFounderDALs.Add(founder);
             context.SaveChanges();
+            //update population section:
+            context = new MarketContext();
+            RegisteredDAL registeredDAL = context.RegisteredDALs
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
+                                                .Include(x => x._adminMessages)
+                                                .Include(x => x._notifications).FirstOrDefault(x=> x._username == founderName);
+            if(registeredDAL != null && !registeredDAL._populationSection.Equals(PopulationSection.ADMIN))
+            {
+                registeredDAL._populationSection = PopulationSection.STORE_OWNERS_NOT_ADMIN;
+                context.SaveChanges();
+            }
+            
         }
 
         internal List<MessageToStoreDAL> GetOpenMessagesToStoreByStoreName(string storeName)
@@ -357,7 +387,21 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             StoreManagerDAL storeManager = new StoreManagerDAL(appointer, managerUsername, storeName);
             context.storeManagerDALs.Add(storeManager);
-            context.SaveChanges();  
+            context.SaveChanges();
+            //set population section
+            context = new MarketContext();
+            RegisteredDAL registeredDAL = context.RegisteredDALs
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
+                                                .Include(x => x._adminMessages)
+                                                .Include(x => x._notifications).FirstOrDefault(x => x._username == managerUsername);
+            if (registeredDAL != null && !registeredDAL._populationSection.Equals(PopulationSection.ADMIN) && !registeredDAL._populationSection.Equals(PopulationSection.STORE_OWNERS_NOT_ADMIN))
+            {
+                registeredDAL._populationSection = PopulationSection.STORE_MANAGERS_ONLY;
+                context.SaveChanges();
+            }
+
         }
         public void AddStoreOwner(String ownerUsername, String storeName, string appointer)
         {
@@ -369,6 +413,19 @@ namespace MarketWeb.Server.DataLayer
             StoreOwnerDAL storeOwner = new StoreOwnerDAL(appointer, ownerUsername, storeName);
             context.storeOwnerDALs.Add(storeOwner);
             context.SaveChanges();
+            //update population section:
+            context = new MarketContext();
+            RegisteredDAL registeredDAL = context.RegisteredDALs
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
+                                                .Include(x => x._adminMessages)
+                                                .Include(x => x._notifications).FirstOrDefault(x => x._username == ownerUsername);
+            if (registeredDAL != null && !registeredDAL._populationSection.Equals(PopulationSection.ADMIN))
+            {
+                registeredDAL._populationSection = PopulationSection.STORE_OWNERS_NOT_ADMIN;
+                context.SaveChanges();
+            }
         }
 
         public void ResetStorePurchasePolicy(string storeName)
@@ -434,6 +491,8 @@ namespace MarketWeb.Server.DataLayer
             StoreOwnerDAL owner = context.storeOwnerDALs.Include(r => r._operationsWrappers).Where(r => r._storeName == storeName && r._username == ownerUsername).FirstOrDefault();
             context.SystemRoleDALs.Remove(owner);
             context.SaveChanges();
+            UpdatePopulationSectionAfterRemoveOwnerOrFounder(ownerUsername);
+           
         }
         public void RemoveStoreManager(String managerUsername, String storeName)
         {
@@ -441,6 +500,8 @@ namespace MarketWeb.Server.DataLayer
             StoreManagerDAL manager = context.storeManagerDALs.Include(r => r._operationsWrappers).Where((r) => (r._storeName == storeName && r._username == managerUsername)).FirstOrDefault();
             context.SystemRoleDALs.Remove(manager);
             context.SaveChanges();
+            UpdatePopulationSectionAfterRemoveManager(managerUsername);
+           
         }
         public int AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity)
         {
@@ -743,12 +804,15 @@ namespace MarketWeb.Server.DataLayer
 
             context = new MarketContext();
             StoreFounderDAL founderDAL = context.StoreFounderDALs.Include(x => x._operationsWrappers).FirstOrDefault(x => x._storeName == storeName);
+            string founderName = founderDAL._username;
             context.SystemRoleDALs.Remove(founderDAL);
             context.SaveChanges();
+            UpdatePopulationSectionAfterRemoveOwnerOrFounder(founderName);
 
             context = new MarketContext();
             List<StoreManagerDAL> managers = new List<StoreManagerDAL>();
             List<StoreManagerDAL> allManagers = context.storeManagerDALs.Include(x=> x._operationsWrappers).ToList();
+            List<string> managersNames =  new List<string>();
             foreach (StoreManagerDAL manager in allManagers)
             {
                 if(manager._storeName == storeName)
@@ -757,12 +821,14 @@ namespace MarketWeb.Server.DataLayer
             foreach (StoreManagerDAL manager in managers)
             {
                 context.SystemRoleDALs.Remove(manager);
+                managersNames.Add(manager._username);
             }
             context.SaveChanges();
 
             context = new MarketContext();
             List<StoreOwnerDAL> owners = new List<StoreOwnerDAL>();
             List<StoreOwnerDAL> allOwners = context.storeOwnerDALs.Include(x => x._operationsWrappers).ToList();
+            List<string> ownersNames = new List<string>();
             foreach (StoreOwnerDAL owner in allOwners)
             {
                 if (owner._storeName == storeName)
@@ -771,8 +837,14 @@ namespace MarketWeb.Server.DataLayer
             foreach (StoreOwnerDAL owner in owners)
             {
                 context.SystemRoleDALs.Remove(owner);
+                ownersNames.Add(owner._username);
             }
             context.SaveChanges();
+
+            foreach(string managerName in ownersNames)
+                UpdatePopulationSectionAfterRemoveManager(managerName);
+            foreach(string ownerName in ownersNames)
+                UpdatePopulationSectionAfterRemoveOwnerOrFounder(ownerName);
         }
         public ICollection<ComplaintDAL> GetRegisterdComplaints()
         {
@@ -817,6 +889,17 @@ namespace MarketWeb.Server.DataLayer
             SystemAdminDAL systemAdminDAL = new SystemAdminDAL(adminUsername);
             context.SystemAdminDALs.Add(systemAdminDAL);
             context.SaveChanges();
+            context = new MarketContext();
+            RegisteredDAL registeredDAL = context.RegisteredDALs
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
+                                                .Include(x => x._adminMessages)
+                                                .Include(x => x._notifications).FirstOrDefault(x => x._username == adminUsername);
+           
+            registeredDAL._populationSection = PopulationSection.ADMIN;
+            context.SaveChanges();
+
         }
         public List<StoreDAL> GetStoresOfUser(string username)
         {
@@ -1093,6 +1176,145 @@ namespace MarketWeb.Server.DataLayer
             }
             context.SaveChanges();
             
+        }
+        public void AddVisitToPopulationStatistics(string user, DateTime date)
+        {
+            //assumption: every user firat was guest. so when guest logges in, we remove him from the guest ount
+            MarketContext context = new MarketContext();
+            PopulationStatisticsDAL populationStatisticsDAL = new PopulationStatisticsDAL();
+            populationStatisticsDAL._visitDay = new DateTime(date.Year, date.Month, date.Day);
+            populationStatisticsDAL._userNane = user;
+            context.PopulationStatisticsDALs.Add(populationStatisticsDAL);
+            if (user != null)
+                context.PopulationStatisticsDALs.Remove(context.PopulationStatisticsDALs.FirstOrDefault(x=>x._userNane==null));
+            context.SaveChanges();  
+        }
+
+        public Dictionary<PopulationSection, int> GetDailyPopulationStatistics(DateTime date)
+        {
+            Dictionary<PopulationSection, int> statistics= new Dictionary<PopulationSection, int>(){
+                
+                { PopulationSection.GUESTS, 0 },
+                { PopulationSection.REGISTERED_NO_ROLES, 0 },
+                { PopulationSection.STORE_MANAGERS_ONLY, 0 },
+                { PopulationSection.STORE_OWNERS_NOT_ADMIN, 0 },
+                { PopulationSection.ADMIN, 0 }
+            };
+            //assumption: every user firat was guest. so when guest logges in, we remove him from the guest ount
+            MarketContext context = new MarketContext();
+            ICollection<PopulationStatisticsDAL> populationStatisticsDALs = context.PopulationStatisticsDALs.Where(x => (x._visitDay.Year == date.Year &&
+                                                                                                                   x._visitDay.Month == date.Month &&
+                                                                                                                   x._visitDay.Year == date.Year )).ToList();
+            foreach (PopulationStatisticsDAL populationStatisticsDAL in populationStatisticsDALs)
+            {
+                if (populationStatisticsDAL._userNane == null)
+                    statistics[PopulationSection.GUESTS]++;
+                else if(IsAdmin(populationStatisticsDAL._userNane))
+                    statistics[PopulationSection.ADMIN]++;
+                else if (IsOwnerOrFounderOfSomeStore(populationStatisticsDAL._userNane))
+                    statistics[PopulationSection.STORE_OWNERS_NOT_ADMIN]++;
+                else if (IsManagerOfSomeStore(populationStatisticsDAL._userNane))
+                    statistics[PopulationSection.STORE_MANAGERS_ONLY]++;
+                else
+                    statistics[PopulationSection.REGISTERED_NO_ROLES]++;
+            }
+            return statistics;
+        }
+        public void deleteData()
+        {
+            MarketContext context = new MarketContext();
+            List<string> tableNames = new List<string>
+            {
+                "AdminMessageToRegisteredDAL",
+                "BasketItemDAL",
+                "ComplaintDALs",
+                "MessageToStoreDALs",
+                "NotifyMessageDAL",
+                "OperationWrapper",
+                "PurchasedBasketDAL",
+                "PurchasedCartDAL",
+                "RateDAL",
+                "StockItemDAL",
+                "StringData",
+                "RegisteredDALs",
+                "SystemRoleDALs",
+                "StorePurchaseHistory",
+                "RegisteredPurchaseHistory",
+                "itemDALs",
+                "BidDAL",
+                "OwnerAcceptors",
+                "BidOfVisitor",
+                "ShoppingBasketDAL",
+                "PurchaseDetailsDAL",
+                "ShoppingCartDAL",
+                "StoreDALs"
+            };
+            foreach(string tableName in tableNames)
+                context.Database.ExecuteSqlRaw($"ALTER TABLE TableName NOCHECK CONSTRAINT all;" +
+                    $"DELETE FROM {tableName};" +
+                    $"ALTER TABLE TableName CHECK CONSTRAINT all;");
+        }
+
+        private bool IsOwnerOrFounderOfSomeStore(string username)
+        {
+            MarketContext context = new MarketContext();
+            return  context.storeOwnerDALs.Include(r => r._operationsWrappers).Where(r => r._username == username).Any() 
+                || context.StoreFounderDALs.Include(r => r._operationsWrappers).Where(r => r._username == username).Any();
+
+        }
+        private bool IsManagerOfSomeStore(string username)
+        {
+            MarketContext context = new MarketContext();
+            return context.storeManagerDALs.Include(r => r._operationsWrappers).Where(r => r._username == username).Any();
+        }
+        private bool IsAdmin(string username)
+        {
+            MarketContext context = new MarketContext();
+            return context.SystemAdminDALs.Include(r => r._operationsWrappers).Where(r => r._username == username).Any();
+        }
+
+        private void UpdatePopulationSectionAfterRemoveManager(string managerUsername)
+        {
+            //check if population section has changed:
+            // if he is admin or owner of another store or manager of some store -> sections remains the same.
+            //else-> section = registered with no roles
+            if (IsAdmin(managerUsername) || IsOwnerOrFounderOfSomeStore(managerUsername) || IsManagerOfSomeStore(managerUsername))
+                return;
+            MarketContext context = new MarketContext();
+            RegisteredDAL registeredDAL = context.RegisteredDALs
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
+                                                .Include(x => x._adminMessages)
+                                                .Include(x => x._notifications).FirstOrDefault(x => x._username == managerUsername);
+
+            registeredDAL._populationSection = PopulationSection.REGISTERED_NO_ROLES;
+            context.SaveChanges();
+        }
+        private void UpdatePopulationSectionAfterRemoveOwnerOrFounder(string ownerUsername)
+        {
+            //check if population section has changed:
+            // if he is admin or owner of another store -> sections remains the same.
+            // else if is manager of some store- section = manager
+            //else-> section = registered with no roles
+            if (IsAdmin(ownerUsername) || IsOwnerOrFounderOfSomeStore(ownerUsername))
+                return;
+            PopulationSection newSection;
+            if (IsManagerOfSomeStore(ownerUsername))
+                newSection = PopulationSection.STORE_MANAGERS_ONLY;
+            else
+                newSection = PopulationSection.REGISTERED_NO_ROLES;
+
+            MarketContext context = new MarketContext();
+            RegisteredDAL registeredDAL = context.RegisteredDALs
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
+                                                .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
+                                                .Include(x => x._adminMessages)
+                                                .Include(x => x._notifications).FirstOrDefault(x => x._username == ownerUsername);
+
+            registeredDAL._populationSection = newSection;
+            context.SaveChanges();
         }
     }
 }

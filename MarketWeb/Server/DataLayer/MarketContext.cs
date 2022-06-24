@@ -21,6 +21,7 @@ namespace MarketWeb.Server.DataLayer
         public DbSet<StoreManagerDAL> storeManagerDALs { get; set; }
         public DbSet<StoreOwnerDAL> storeOwnerDALs { get; set; }
         public DbSet<ItemDAL> itemDALs { get; set; }
+        public DbSet<PopulationStatisticsDAL> PopulationStatisticsDALs { get; set; }
         public static string datasource { get; set; } = "";
         public static string initialcatalog { get; set; } = "";
         public static string userid { get; set; } = "";
@@ -71,7 +72,7 @@ namespace MarketWeb.Server.DataLayer
             builder.Entity<ItemDAL>().HasMany(x => x._rating).WithOne().OnDelete(DeleteBehavior.Cascade);
             //builder.Entity<PurchaseDetailsDAL>().HasMany(x => x.discountListJSON).WithOne().OnDelete(DeleteBehavior.ClientCascade);
 
-
+            builder.Entity<PopulationStatisticsDAL>();
             builder.Entity<ComplaintDAL>();
             builder.Entity<MessageToStoreDAL>();
             builder.Entity<StorePurchasedBasketDAL>();

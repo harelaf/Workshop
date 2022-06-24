@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketWeb.Server.Migrations
 {
     [DbContext(typeof(MarketContext))]
-    [Migration("20220623181145_Initial")]
+    [Migration("20220624150232_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -296,6 +296,24 @@ namespace MarketWeb.Server.Migrations
                     b.ToTable("OwnerAcceptors");
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.PopulationStatisticsDAL", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("_userNane")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("_visitDay")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("id");
+
+                    b.ToTable("PopulationStatisticsDALs");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", b =>
                 {
                     b.Property<int>("ID")
@@ -403,6 +421,9 @@ namespace MarketWeb.Server.Migrations
 
                     b.Property<string>("_password")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("_populationSection")
+                        .HasColumnType("int");
 
                     b.Property<string>("_salt")
                         .HasColumnType("nvarchar(max)");

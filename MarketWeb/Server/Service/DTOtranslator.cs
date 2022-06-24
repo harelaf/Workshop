@@ -509,5 +509,10 @@ namespace MarketWeb.Service
                 bid.AcceptedByAll
                 );
         }
+
+        internal PopulationStatisticsDTO toDTO(PopulationStatistics populationStatistics)
+        {
+            return new PopulationStatisticsDTO(populationStatistics._section, populationStatistics._visitDay, populationStatistics._count);
+        }
     }
 }

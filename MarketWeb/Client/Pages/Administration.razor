@@ -67,12 +67,27 @@
         <button type="submit" class="btn btn-primary">Send Message</button>
     </EditForm>
 </div>
+<br />
+<div>
+<h5>View Daily Entrance Statistics: </h5>
+<EditForm Model="@getPopulationStatisticsModel" OnValidSubmit="GetStatistics">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Date: </label>
+        <InputDate @bind-Value="getPopulationStatisticsModel.date" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">
+        Get Statistics
+    </button>
+</EditForm>
+</div>
+ 
 
 @code {
     private Models.DeleteUserModel DeleteUserModel = new Models.DeleteUserModel();
     private Models.ViewStorePurchaseHistoryModel ViewStorePurchaseHistoryModel = new Models.ViewStorePurchaseHistoryModel();
     private Models.SendAdminMessageModel SendAdminMessageModel = new Models.SendAdminMessageModel();
-
+    private Models.GetPopulationStatisticsModel getPopulationStatisticsModel = new Models.GetPopulationStatisticsModel();
     private async void DeleteUserForm()
     {
         // reset alerts on submit
@@ -124,6 +139,12 @@
         {
             NavigationManager.NavigateTo("/Complaints");
         }
+    }
+    private async void GetStatistics()
+    {
+        AlertService.Clear();
+
+       NavigationManager.NavigateTo($"/Statistics/{getPopulationStatisticsModel.date.Day}/{getPopulationStatisticsModel.date.Month}/{getPopulationStatisticsModel.date.Year}");
     }
 
     private async void SendAdminMessageForm()

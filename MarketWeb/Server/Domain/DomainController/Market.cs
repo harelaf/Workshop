@@ -82,7 +82,9 @@ namespace MarketWeb.Server.Domain
             _storeManagement.load();
 
             _history = new History(this);
+            
         }
+
 
         /// add\update basket eof store with item and amount.
         /// update store stock: itemAmount- amount
@@ -912,7 +914,9 @@ namespace MarketWeb.Server.Domain
         public String Login(String authToken, String Username, String password)
         {
             // TODO: Transfer cart?
-            return _VisitorManagement.Login(authToken, Username, password);
+            string token = _VisitorManagement.Login(authToken, Username, password);
+            _VisitorManagement.AddRegisteredToPopulationStatistics(Username, DateTime.Now);
+            return token;
         }
 
         /// <summary>
@@ -951,7 +955,9 @@ namespace MarketWeb.Server.Domain
 
         public String EnterSystem() // Generating token and returning it
         { //II.1.1
-            return _VisitorManagement.EnterSystem();
+            String token =  _VisitorManagement.EnterSystem();
+            _dalController.AddVisitToPopulationStatistics(null, DateTime.Now);
+            return token;
         }
 
         public void ExitSystem(String authToken) // Removing cart and token assigned to guest
@@ -1521,6 +1527,21 @@ namespace MarketWeb.Server.Domain
                 throw new Exception(errorMessage);
             }
             return _storeManagement.GetStandbyOwnersInStore(storeName); 
+        }
+
+        public ICollection<PopulationStatistics> GetDailyPopulationStatistics(string authToken, DateTime dateTime)
+        {
+            CheckIsVisitorLoggedIn(authToken, "GetStandbyOwnersInStore");
+            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
+
+            if (!_VisitorManagement.CheckAccess(Username, null, Operation.PERMENENT_CLOSE_STORE))
+            {
+                string  errorMessage = $"Visitor is not an admin.";
+                LogErrorMessage("GetDailyPopulationStatistics", errorMessage);
+                throw new Exception(errorMessage);
+            }
+           
+            return _dalTRranslator.PopulationStatisticsListDalToDomain(_dalController.GetDailyPopulationStatistics(dateTime), dateTime);
         }
     }
 }
