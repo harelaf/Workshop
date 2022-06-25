@@ -1204,7 +1204,7 @@ namespace MarketWeb.Server.DataLayer
             MarketContext context = new MarketContext();
             ICollection<PopulationStatisticsDAL> populationStatisticsDALs = context.PopulationStatisticsDALs.Where(x => (x._visitDay.Year == date.Year &&
                                                                                                                    x._visitDay.Month == date.Month &&
-                                                                                                                   x._visitDay.Year == date.Year )).ToList();
+                                                                                                                   x._visitDay.Day == date.Day )).ToList();
             foreach (PopulationStatisticsDAL populationStatisticsDAL in populationStatisticsDALs)
             {
                 if (populationStatisticsDAL._userNane == null)
