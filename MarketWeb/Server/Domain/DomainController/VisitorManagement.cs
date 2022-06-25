@@ -49,6 +49,7 @@ namespace MarketWeb.Server.Domain
                 return;
             Register(username, password, DEFAULT_BIRTH_DATE);
             _dalController.AppointSystemAdmin(username);
+            _dalController.ResetGuestStatisticsAfterRestart(DateTime.Now);
         }
         // TODO: There's GOT to be a better way to do these constructors.
         public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
@@ -99,7 +100,9 @@ namespace MarketWeb.Server.Domain
             {
                 return _loggedinVisitorsTokens.Values.Where(r => r.Username == Username).FirstOrDefault();
             }
-            return _dalTRranslator.RegisteredDALToDomain(_dalController.GetRegistered(Username));
+            if(_dalController.IsUsernameExists(Username))
+                return _dalTRranslator.RegisteredDALToDomain(_dalController.GetRegistered(Username));
+            return null;
         }
         public Registered GetLoggedinRegistered(string token)
         {
@@ -340,7 +343,7 @@ namespace MarketWeb.Server.Domain
             }
             
             Registered registered = _dalTRranslator.RegisteredDALToDomain(_dalController.GetRegistered(Username));
-            if (registered != null && _loggedinVisitorsTokens.Values.Contains(registered))
+            if (registered != null && _loggedinVisitorsTokens.Values.Where(x => x.Username == registered.Username).Count() > 0)
                 errorMessage = $"Visitor: {Username} is already logged in to the system.";
             else if (registered == null ||  // Visitor with the Username doesn't exists
                     !registered.Login(password))// Login details incorrect
@@ -544,10 +547,11 @@ namespace MarketWeb.Server.Domain
                 throw new Exception($"No complaint with the ID {complaintID}.");
             complaint.Reply(reply);
             _dalController.ReplyToComplaint(complaintID, reply);
-
+            String title = "An admin has replied to one of your complaints.";
+            String message = "View it in your profile.";
+            int id = _dalController.SendAdminMessage(complaint.GetComplainer(), admin.Username, title, message);
+            SendAdminMessageToRegistered(complaint.GetComplainer(), "", title, message, id);
         }
-
-
 
         // ===================================== CART OPERATIONS =====================================
 
@@ -774,5 +778,30 @@ namespace MarketWeb.Server.Domain
             }
             return _dalTRranslator.ComplaintsListDalToDomain(_dalController.GetRegisterdComplaints());
         }
+
+        internal void AddRegisteredToPopulationStatistics(string username, DateTime now)
+        {
+            Registered registered = GetRegisteredVisitor(username);
+            if(registered == null)
+            {
+                string errorMessage = $"'{username}' visitor is not permitted this operation.";
+                LogErrorMessage("AddRegisteredToPopulationStatistics", errorMessage);
+                throw new Exception(errorMessage);
+            }
+
+            _dalController.AddVisitToPopulationStatistics(username, now);
+        }
+        /*
+        internal PopulationSection GetRegisteredSection(Registered registered)
+        {
+            if (registered.Roles == null || registered.Roles.Count == 0)
+                return PopulationSection.REGISTERED_NO_ROLES;
+            if (registered.IsAdmin)
+                return PopulationSection.ADMIN;
+            if (registered.IsOwner)
+                return PopulationSection.STORE_OWNERS_NOT_ADMIN;
+            //else:
+            return PopulationSection.STORE_MANAGERS_ONLY;
+        }*/
     }
 }
