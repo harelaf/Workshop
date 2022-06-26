@@ -43,14 +43,13 @@ namespace AcceptanceTest
             marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
-            itemId = 100;
             itemName = "Krabby Patty";
             itemPrice = 5.0;
             itemDescription = "Yummy";
             itemCategory = "Hamburger";
             itemQuantity = 1000;
             newQuantity = 500;
-            marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemId, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
+            itemId = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity).Value;
         }
 
         [TestMethod]
