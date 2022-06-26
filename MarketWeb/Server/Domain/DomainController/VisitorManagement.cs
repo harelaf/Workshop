@@ -120,7 +120,7 @@ namespace MarketWeb.Server.Domain
             String errorMessage;
             if (!IsVisitorLoggedin(token))
             {
-                //errorMessage = "No registered Visitor with the given token.";
+                errorMessage = "No registered Visitor with the given token.";
                 //LogErrorMessage("GetRegisteredUsernameByToken", errorMessage);
                 throw new Exception(errorMessage);
             }
