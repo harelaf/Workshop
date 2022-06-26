@@ -29,7 +29,7 @@ namespace MarketWeb.Server.DataLayer
         public static string password { get; set; } = "";
         public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
         public string localConnectionStr { get; set; } = "Data Source=Application.db;Cache=Shared";
-        public static bool testMode { get; set; } = false;
+        public static bool testMode { get; set; } = false;//true; 
         public static ISet<string> tableNames = new HashSet<string>();
         public MarketContext()
         {
@@ -63,7 +63,7 @@ namespace MarketWeb.Server.DataLayer
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            //string connectionStr = $"Data Source={datasource};Initial Catalog={initialcatalog};User Id={userid};Password={password}";
+            string connectionStr = $"Data Source={datasource};Initial Catalog={initialcatalog};User Id={userid};Password={password}";
             //connectionStr = "Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;";
             if (!testMode)
                 options.UseSqlServer(connectionStr);
