@@ -60,7 +60,7 @@ namespace AcceptanceTest
         public void happy_CloseStoreSuccess()
         {
             Response response = marketAPI.CloseStore(registered_token_founder, storeName_inSystem);
-            Assert.IsFalse(response.ErrorOccured);
+            Assert.IsFalse(response.ErrorOccured, response.ErrorMessage);
 
             Response<StoreDTO> response1 = marketAPI.GetStoreInformation(registered_token_founder, storeName_inSystem);
             Assert.IsFalse(response1.ErrorOccured);

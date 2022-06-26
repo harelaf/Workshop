@@ -19,6 +19,7 @@ namespace AcceptanceTest
         string username_founder = "SpongeBob SquarePants";
         string guest_token = "";
         string registered_token_founder = "";
+        int itemid;
 
         DalController dc = DalController.GetInstance(true);
         [TestCleanup()]
@@ -35,7 +36,7 @@ namespace AcceptanceTest
             marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
-            marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 100);
+            itemid = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, "Krabby Patty", 5.0, "Yummy", "Food", 100).Value;
             marketAPI.CloseStore(registered_token_founder, storeName_inSystem);
         }
 
@@ -67,10 +68,10 @@ namespace AcceptanceTest
 
             Response<RegisteredDTO> response2 = marketAPI.GetVisitorInformation(registered_token_founder);
             Assert.IsFalse(response2.ErrorOccured);
-            Assert.AreEqual(response2.Value.NotificationsCount(), 2); //1 for CloseStore + 1 for ReopenStore
+            Assert.AreEqual(2, response2.Value.NotificationsCount()); //1 for CloseStore + 1 for ReopenStore
 
-            Response response3 = marketAPI.AddItemToCart(registered_token_founder, 1, storeName_inSystem, 2);
-            Assert.IsFalse(response3.ErrorOccured);
+            Response response3 = marketAPI.AddItemToCart(registered_token_founder, itemid, storeName_inSystem, 2);
+            Assert.IsFalse(response3.ErrorOccured, response3.ErrorMessage);
         }
     }
 }

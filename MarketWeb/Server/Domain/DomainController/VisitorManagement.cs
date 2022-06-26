@@ -736,6 +736,7 @@ namespace MarketWeb.Server.Domain
                 {
                     _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
                 }
+                registered.SendNotificationMsg(notifyMessage);
             }
         }
         internal void SendNotificationMessageToVisitor(string authToken, string storeName, string title, string message)
