@@ -578,7 +578,14 @@ namespace MarketProject.Domain.Tests
 
             VisitorManagement.Register(managerUsername, password, dob);
             VisitorManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
-            Assert.ThrowsException<Exception>(() => VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op));
+            try
+            {
+                VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
 
         [TestMethod]

@@ -46,14 +46,6 @@ namespace MarketProject.Domain.Tests
         {
             int rating = 10;
             String review = "I LOVE KRABS";
-            try
-            {
-                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
 
             try
             {
@@ -87,7 +79,7 @@ namespace MarketProject.Domain.Tests
             int newQuantity = 15;
             try
             {
-                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
+                //_storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
                 _storeManagement.AddItemToStoreStockTest(storeName, itemId, Username, price, description, category, quantity);
             }
             catch (Exception)
@@ -137,15 +129,6 @@ namespace MarketProject.Domain.Tests
         {
             try
             {
-                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-
-            try
-            {
                 _storeManagement.AddItemToStoreStockTest(storeName, itemId, Username, price, description, category, quantity);
             }
             catch (Exception)
@@ -172,7 +155,7 @@ namespace MarketProject.Domain.Tests
         {
             try
             {
-                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
+                //_storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
                 _storeManagement.AddItemToStoreStockTest(storeName, itemId,  Username, price, description, category, quantity);
             }
             catch (Exception)
@@ -195,15 +178,6 @@ namespace MarketProject.Domain.Tests
         {
             String title = "reservation";
             String message = "Hey, I want to reserve a place for 6 diners today at 20:30.";
-
-            try
-            {
-                _storeManagement.OpenNewStore(new StoreFounder("founder", storeName), storeName, null, null);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
 
             try
             {
