@@ -15,7 +15,7 @@ namespace MarketWeb.Server.DataLayer
         private static string initialcatalog;
         private static string userid;
         private static string password;
-        public static DalController GetInstance(bool testMode = false)
+        public static DalController GetInstance(bool testMode = true)
         {
             if (instance == null)
             {
