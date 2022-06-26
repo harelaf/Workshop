@@ -77,14 +77,14 @@ namespace AcceptanceTest
         [TestMethod]
         public void happy_reviewerSendMessageAndTheFounderReply()
         {
-            String answerBody = "weare here for you 24/5.5";
+            String answerBody = "we are here for you 24/5.5";
             Response response = marketAPI.SendMessageToStore(registered_token_reviewer, storeName, title, messageBody);
             Response<List<MessageToStoreDTO>> response2 = marketAPI.GetStoreMessages(registered_token_founder, storeName);
             if (!response2.ErrorOccured)
             {
                 MessageToStoreDTO messageObj = response2.Value[0];
                 response2.Value.RemoveAt(0);
-                Response response3 = marketAPI.AnswerStoreMesseage(registered_token_founder, messageObj.SenderUsername,80, storeName, answerBody);
+                Response response3 = marketAPI.AnswerStoreMesseage(registered_token_founder, messageObj.SenderUsername, messageObj.Id, storeName, answerBody);
                 Assert.IsFalse(response3.ErrorOccured);
                 Response<ICollection<MessageToStoreDTO>> res = marketAPI.GetRegisterAnsweredStoreMessages(registered_token_reviewer);
                 if (!res.ErrorOccured)
