@@ -51,7 +51,7 @@ namespace AcceptanceTest
             itemDescription = "Yummy";
             itemCategory = "Hamburger";
             itemQuantity = 1000;
-            marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemId, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
+            marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
         }
 
         [TestMethod]

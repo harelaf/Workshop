@@ -35,7 +35,7 @@ namespace AcceptanceTest
             marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
-            marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 100);
+            marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, "Krabby Patty", 5.0, "Yummy", "Food", 100);
             marketAPI.CloseStore(registered_token_founder, storeName_inSystem);
         }
 

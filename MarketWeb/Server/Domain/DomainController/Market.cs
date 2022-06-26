@@ -351,36 +351,7 @@ namespace MarketWeb.Server.Domain
                 }
             }
         }
-        public void AddItemToStoreStock(String authToken, String storeName, int id,  String name, double price, String description, String category, int quantity)
-        {
-            String errorMessage = null;
-            CheckIsVisitorLoggedIn(authToken, "AddItemToStoreStock");
-            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            Store store = _storeManagement.GetActiveStore(storeName);
-            lock (store)
-            {
-                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
-                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
-                else if (storeName.Equals(""))
-                    errorMessage = "Invalid Input: Blank store name.";
-                else if (price < 0)
-                    errorMessage = "Invalid Input: Price has to be at least 0.";
-                else if (name.Equals(""))
-                    errorMessage = "Invalid Input: Blank item name.";
-                else if (quantity < 0)
-                    errorMessage = "Invalid Input: Quantity has to be at least 0.";
-                if (errorMessage != null)
-                {
-                    LogErrorMessage("AddItemToStoreStock", errorMessage);
-                    throw new Exception(errorMessage);
-                }
-                lock (store.Stock)
-                {
-                    _storeManagement.AddItemToStoreStockTest(storeName, id,  name, price, description, category, quantity);
-                }
-            }
-        }
-
+       
 
         public void RemoveItemFromStore(String authToken, String storeName, int itemID)
         {

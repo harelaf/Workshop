@@ -41,7 +41,7 @@ namespace AcceptanceTest
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
             itemID_inStock_1 = 111; itemAmount_inSttock_1 = 150;
             itemID_inStock_2 = 222; itemAmount_inSttock_2 = 30;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_1,
+            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
                 "Leben", 1.6, "", "Diary", itemAmount_inSttock_1);
             //marketAPI.AddItemToStoreStock(guest_VisitorToken, storeName_inSystem, itemID_inStock_2,
                 //"Tomatoes Juice", 4.2, "", "Drinks", itemAmount_inSttock_2);

@@ -53,8 +53,8 @@ namespace AcceptanceTest
             String cond = "";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, cond, dis);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
-            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
+            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken,itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
             Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
@@ -85,7 +85,7 @@ namespace AcceptanceTest
             String discount = $"ItemPercentage_{itemName}_{percentage_to_subtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, and_condition, discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
            
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
@@ -118,7 +118,7 @@ namespace AcceptanceTest
             String discount = $"ItemPercentage_{itemName}_{percentage_to_subtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, and_condition, discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
@@ -155,7 +155,7 @@ namespace AcceptanceTest
             String max_discount = $"(MAX {item_discount} {category_discount} {numeric_discount})";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, and_condition, max_discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
@@ -193,7 +193,7 @@ namespace AcceptanceTest
             String item_discount = $"ItemPercentage_{itemName}_{percentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, xor_condition, item_discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
@@ -231,7 +231,7 @@ namespace AcceptanceTest
             String item_discount = $"ItemPercentage_{itemName}_{percentageToSubtract}_{expiration.Year}_{expiration.Month}_{expiration.Day}";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, xor_condition, item_discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
@@ -269,7 +269,7 @@ namespace AcceptanceTest
             String max_discount = $"(MAX {plus_discount} {big_item_discount})";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, item_condition, max_discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
@@ -307,7 +307,7 @@ namespace AcceptanceTest
             String max_discount = $"(MAX {plus_discount} {big_item_discount})";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, item_condition, max_discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
@@ -351,7 +351,7 @@ namespace AcceptanceTest
             String max_discount = $"(MAX {plus_discount} {big_item_discount})";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, xor_condition, max_discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
@@ -395,7 +395,7 @@ namespace AcceptanceTest
             String max_discount = $"(MAX {plus_discount} {big_item_discount})";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, xor_condition, max_discount);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, price, desc, category, quantity);
+            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);

@@ -46,7 +46,7 @@ namespace AcceptanceTest
             marketAPI.Register(store_founder_token, store_founder_name, "123456789", bDay);
             store_founder_token = (marketAPI.Login(store_founder_token, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(store_founder_token, storeName);
-            marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemID, itemName, itemprice, itemDesc, category, 100);
+            marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, itemprice, itemDesc, category, 100);
         }
 
         [TestMethod]

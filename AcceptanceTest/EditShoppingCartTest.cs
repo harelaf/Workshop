@@ -44,9 +44,9 @@ namespace AcceptanceTest
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
             itemID_inStock_1 = 1; itemAmount_inSttock_1 = 20;
             itemID_inStock_2 = 2; itemAmount_inSttock_2 = 50;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_1,
+            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
                 "banana", 3.5, "", "fruit", itemAmount_inSttock_1 + 10);
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_2,
+            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
                 "banana2", 3.5, "", "fruit", itemAmount_inSttock_2 + 10);
             itemId_inRegCart = itemID_inStock_1;
             itemId_inGuestCart = itemID_inStock_2;
@@ -207,7 +207,7 @@ namespace AcceptanceTest
             int iterations = 100;
             int tot_amountInStock = iterations + 2; 
             int newItenID = 3;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, newItenID, "new", 53.3, "", "", tot_amountInStock);
+            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, "new", 53.3, "", "", tot_amountInStock);
             marketAPI.AddItemToCart(registered_VisitorToken, newItenID, storeName_inSystem, 1);
             marketAPI.AddItemToCart(guest_VisitorToken, newItenID, storeName_inSystem, 1);
             Thread thread1 = new Thread(() => {
