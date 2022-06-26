@@ -27,8 +27,8 @@ namespace AcceptanceTest
         String country = "The Sun";
         String zip = "Milky Way";
         String name = "Peter Griffin";
-        String paymentMethod = "Alien Technology";
-        String shipmentMethod = "Spacecraft";
+        String paymentMethod = "WSIE";
+        String shipmentMethod = "WSEP";
 
         DalController dc = DalController.GetInstance(true);
         [TestCleanup()]

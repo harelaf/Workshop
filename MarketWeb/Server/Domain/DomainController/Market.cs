@@ -322,7 +322,7 @@ namespace MarketWeb.Server.Domain
             _storeManagement.RateStore(Username, storeName, rating, review);
         }
 
-        public void AddItemToStoreStock(String authToken, String storeName, String name, double price, String description, String category, int quantity)
+        public int AddItemToStoreStock(String authToken, String storeName, String name, double price, String description, String category, int quantity)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "AddItemToStoreStock");
@@ -347,7 +347,7 @@ namespace MarketWeb.Server.Domain
                 }
                 lock (store.Stock)
                 {
-                    _storeManagement.AddItemToStoreStock(storeName, name, price, description, category, quantity);
+                    return _storeManagement.AddItemToStoreStock(storeName, name, price, description, category, quantity);
                 }
             }
         }

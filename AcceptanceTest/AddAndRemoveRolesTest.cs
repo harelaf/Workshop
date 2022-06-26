@@ -140,16 +140,22 @@ namespace AcceptanceTest
             List<StoreOwnerDTO> lst_o;
             //act
             Response response1 = marketAPI.AddStoreOwnerForTestPurposes(store_founder_token, ownerUsername1, storeName);
+            if (response1.ErrorOccured)
+                Assert.Fail("response1 " + response1.ErrorMessage);
             Response response2 = marketAPI.AddStoreOwnerForTestPurposes(store_founder_token, ownerUsername2, storeName);
+            if (response2.ErrorOccured)
+                Assert.Fail("response1 " + response2.ErrorMessage);
             Response response3 = marketAPI.AddStoreManager(store_owner_token2, managerUsername3, storeName);
-            
+            if (response3.ErrorOccured)
+                Assert.Fail("response1 " + response3.ErrorMessage);
+
             lst_m = marketAPI.GetStoreManagers(store_founder_token, storeName).Value;
             Assert.IsNotNull(lst_m);
             Assert.AreEqual(1, lst_m.Count);
             lst_o = marketAPI.GetStoreOwners(store_founder_token, storeName).Value;
             Assert.IsNotNull(lst_o);
             Assert.AreEqual(2, lst_o.Count);
-            //Response response3_fire = marketAPI.RemoveStoreManager(store_owner_token2, managerUsername3, storeName);
+            Response response3_fire = marketAPI.RemoveStoreManager(store_owner_token2, managerUsername3, storeName);
             Response response1_fire = marketAPI.RemoveStoreOwner(store_founder_token, ownerUsername1, storeName);
             Response response2_fire = marketAPI.RemoveStoreOwner(store_founder_token, ownerUsername2, storeName);
             

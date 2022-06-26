@@ -39,10 +39,10 @@ namespace AcceptanceTest
             marketAPI.Register(registered_VisitorToken, "Issachar Shkedi", "123456", new DateTime(1963, 3, 12));
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "Issachar Shkedi", "123456")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
-            itemID_inStock_1 = 111; itemAmount_inSttock_1 = 150;
-            itemID_inStock_2 = 222; itemAmount_inSttock_2 = 30;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
-                "Leben", 1.6, "", "Diary", itemAmount_inSttock_1);
+            itemAmount_inSttock_1 = 150;
+            itemAmount_inSttock_2 = 30;
+            itemID_inStock_1 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "Leben", 1.6, "", "Dairy", itemAmount_inSttock_1).Value;
             //marketAPI.AddItemToStoreStock(guest_VisitorToken, storeName_inSystem, itemID_inStock_2,
                 //"Tomatoes Juice", 4.2, "", "Drinks", itemAmount_inSttock_2);
         }
@@ -89,7 +89,7 @@ namespace AcceptanceTest
             Response response_reg = marketAPI.EditItemPrice(registered_VisitorToken, storeName_inSystem, itemID_inStock_1, 12.5);
             if (response_reg.ErrorOccured)
                 Assert.Fail("shouldn't have faild: item is in stock");
-            List<ItemDTO> items = marketAPI.GetItemInformation(registered_VisitorToken, "Leben", "Diary", "").Value;
+            List<ItemDTO> items = marketAPI.GetItemInformation(registered_VisitorToken, "Leben", "Dairy", "").Value;
             if (items != null)
             {
                 foreach (ItemDTO item in items)
@@ -132,7 +132,7 @@ namespace AcceptanceTest
             Response response_reg = marketAPI.EditItemDescription(registered_VisitorToken, storeName_inSystem, itemID_inStock_1, RandomString(52));
             if (response_reg.ErrorOccured)
                 Assert.Fail("shouldn't have faild: item is in stock");
-            List<ItemDTO> items = marketAPI.GetItemInformation(registered_VisitorToken, "Leben", "Diary", "").Value;
+            List<ItemDTO> items = marketAPI.GetItemInformation(registered_VisitorToken, "Leben", "Dairy", "").Value;
             if (items != null)
             {
                 foreach (ItemDTO item in items)

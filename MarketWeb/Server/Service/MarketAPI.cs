@@ -381,20 +381,20 @@ namespace MarketWeb.Service
             return response;
         }
         [HttpPost("AddItemToStoreStock")]
-        public Response AddItemToStoreStock([FromHeader] String Authorization, String storeName, String name, double price, String description, String category, int quantity)
+        public Response<int> AddItemToStoreStock([FromHeader] String Authorization, String storeName, String name, double price, String description, String category, int quantity)
         {//II.4.1
-            Response response;
+            Response<int> response;
             try
             {
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Add Item To Stock called with parameters: authToken={authToken}, storeName={storeName}, name={name}, price={price}, description={description}, category={category}, quantity={quantity}.");
-                _market.AddItemToStoreStock(authToken, storeName, name, price, description, category, quantity);
-                response = new Response();
+                int id = _market.AddItemToStoreStock(authToken, storeName, name, price, description, category, quantity);
+                response = new Response<int>(id);
                 _logger.Info($"SUCCESSFULY executed Add Item To Stock.");
             }
             catch (Exception e)
             {
-                response = new Response(e); _logger.Error(e.Message);
+                response = new Response<int>(e); _logger.Error(e.Message);
             }
             return response;
         }
@@ -1675,8 +1675,7 @@ namespace MarketWeb.Service
                 _logger.Error(e.Message);
             }
             return response;
-        }
-        
+        }       
     }
 }
 
