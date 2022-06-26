@@ -43,18 +43,20 @@
                         <td>@complaint.ComplainerUsername</td>
                         <td>@complaint.cartID</td>
                         <td>@complaint.Message</td>
-                        @if (complaint.Response != null && complaint.Response != "")
+                        @if (complaint.Response == null || complaint.Response == "")
                         {
-                            <EditForm Model="@ReplyToComplaintModel">
-                                <DataAnnotationsValidator />
-                                <div class="form-group">
-                                    <label>Your Response</label>'
-                                    <InputTextArea @bind-Value="ReplyToComplaintModel.Reply" class="form-control" />
-                                </div>
-                                <button class="btn btn-primary" @onclick="() => ReplyToComplaintForm(complaint.ID)">
-                                    Reply
-                                </button>
-                            </EditForm>
+                            <td>
+                                <EditForm Model="@ReplyToComplaintModel">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label>Your Response</label>
+                                        <InputText @bind-Value="ReplyToComplaintModel.Reply" class="form-control" />
+                                    </div>
+                                    <button class="btn btn-primary" @onclick="() => ReplyToComplaintForm(complaint.ID)">
+                                        Reply
+                                    </button>
+                                </EditForm>
+                            </td>
                         }
                         else
                         {
@@ -82,19 +84,19 @@
             }
             else
             {
-                AlertService.Info("Successfuly replied to message.");
                 NavigationManager.NavigateTo("");
                 NavigationManager.NavigateTo("/Complaints");
+                AlertService.Info("Successfuly replied to message.");
             }
         }
-		catch (Exception ex)
-		{
-			AlertService.Error(ex.Message);
-		}
-		finally
-		{
-			StateHasChanged();
-		}
+        catch (Exception ex)
+        {
+            AlertService.Error(ex.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
     protected override async Task OnInitializedAsync()

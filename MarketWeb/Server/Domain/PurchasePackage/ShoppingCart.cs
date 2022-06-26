@@ -8,6 +8,8 @@ namespace MarketWeb.Server.Domain
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public virtual ICollection<ShoppingBasket> _shoppingBaskets { get; set; }
+        private int scid;
+        public int Scid => scid;
 
         public ShoppingCart()
         {
@@ -16,6 +18,12 @@ namespace MarketWeb.Server.Domain
 
         public ShoppingCart(ICollection<ShoppingBasket> shoppingBaskets)
         {
+            _shoppingBaskets = shoppingBaskets;
+        }
+
+        public ShoppingCart(ICollection<ShoppingBasket> shoppingBaskets, int scid)
+        {
+            this.scid = scid;
             _shoppingBaskets = shoppingBaskets;
         }
 

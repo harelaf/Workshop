@@ -252,6 +252,16 @@ namespace MarketWeb.Server.Domain
                 messageToStore.Message, messageToStore.Title, messageToStore.Reply, messageToStore.Replier, messageToStore.StoreName);
         }
 
+        public ICollection<PopulationStatistics> PopulationStatisticsListDalToDomain(Dictionary<PopulationSection,int> statistics, DateTime dateTime)
+        {
+            ICollection<PopulationStatistics> populationStatisticsDomain = new List<PopulationStatistics>();
+            foreach(KeyValuePair<PopulationSection,int> populationStatisticsDAL in statistics)
+            {
+                populationStatisticsDomain.Add(new PopulationStatistics(populationStatisticsDAL.Key, dateTime, populationStatisticsDAL.Value));
+            }
+            return populationStatisticsDomain;
+
+        }
         public ItemDAL ItemDomainToDal(Item itemDomain)
         {
             return new ItemDAL(itemDomain.ItemID,RatingDomainToDal(itemDomain.Rating), itemDomain.Name,
@@ -413,7 +423,7 @@ namespace MarketWeb.Server.Domain
             {
                 baskets.Add(ShoppingBasketDALToDomain(basketDAL));
             }
-            return new ShoppingCart(baskets);
+            return new ShoppingCart(baskets, cartDAL.scId);
         }
         public ShoppingBasket ShoppingBasketDALToDomain(ShoppingBasketDAL basketDAL)
         {
@@ -661,9 +671,9 @@ namespace MarketWeb.Server.Domain
                 msgDAL._message, msgDAL._reply, msgDAL._replierFromStore, msgDAL.mid);
         }
         public Complaint ComplaintDalToDomain(ComplaintDAL complaintDAL)
-        {//int id, Registered complainer, int cartID, string message
+        {
             return new Complaint(complaintDAL._id,complaintDAL._complainer
-                , complaintDAL._cartID, complaintDAL._message);
+                , complaintDAL._cartID, complaintDAL._message, complaintDAL._response);
         }
         public SystemRole SystemRoleDalToDomain(SystemRoleDAL systemRoleDAL)
         {
@@ -792,6 +802,7 @@ namespace MarketWeb.Server.Domain
                 stores.Add(storeDAL._storeName,StoreDalToDomain(storeDAL));
             return stores;
         }
+        /*
         public RegisteredDAL RegisteredDomainToDAL(Registered registered)
         {
             string username = registered.Username;
@@ -820,12 +831,12 @@ namespace MarketWeb.Server.Domain
                 roles.Add(SystemRoleDomainToDal(role));
             }
             RegisteredDAL reg = new RegisteredDAL(username, password, salt, cart, birthDate, null, roles, 
-                adminMessages, notifications, repliedMessages);
+                adminMessages, notifications, repliedMessages, );
             ICollection<ComplaintDAL> filedComplaints = new List<ComplaintDAL>();
             foreach (KeyValuePair<int, Complaint> id_complaint in registered.FiledComplaints)
                 filedComplaints.Add(ComplaintDomainToDal(id_complaint.Value));
             return reg;
-        }
+        }*/
 
         public ComplaintDAL ComplaintDomainToDal(Complaint value)
         {

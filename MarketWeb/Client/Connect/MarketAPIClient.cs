@@ -92,6 +92,8 @@ namespace MarketWeb.Client.Connect
         public Task<Response<List<String>>> GetUsernamesWithInventoryPermissionInStore(String storeName);
         public Task<Response> AddAcceptedBidToCart(int ItemId, String StoreName, int Amount);
         public Task<Response<List<BidDTO>>> GetVisitorBidsAtStore(String StoreName);
+        public Task<Response> AddComplaint(int cartid, String Message);
+        public Task<Response<ICollection<PopulationStatisticsDTO>>> GetDailyPopulationStatistics(int day, int month, int year);
     }
 
     public class MarketAPIClient : IMarketAPIClient
@@ -986,6 +988,32 @@ namespace MarketWeb.Client.Connect
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
             Response<List<BidDTO>> res = await _httpService.Post<Response<List<BidDTO>>>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response> AddComplaint(int cartid, String Message)
+        {
+            const string url = "api/market/FileComplaint";
+            var param = new Dictionary<string, string>() {
+                { "cartID", cartid.ToString() },
+                { "message", Message }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+            Response res = await _httpService.Post<Response>(newUrl, null);
+            return res;
+        }
+
+        public async Task<Response<ICollection<PopulationStatisticsDTO>>> GetDailyPopulationStatistics(int day, int month, int year)
+        {
+            const string url = "api/market/GetDailyPopulationStatistics";
+            var param = new Dictionary<string, string>() {
+                { "day", day.ToString() },
+                { "month", month.ToString() },
+                { "year", year.ToString() }
+            };
+            var newUrl = QueryHelpers.AddQueryString(url, param);
+
+            Response<ICollection<PopulationStatisticsDTO>> res = await _httpService.Post<Response<ICollection<PopulationStatisticsDTO>>>(newUrl, null);
             return res;
         }
     }

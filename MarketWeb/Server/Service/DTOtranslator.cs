@@ -432,7 +432,7 @@ namespace MarketWeb.Service
             ICollection<ShoppingBasketDTO> _DTObaskets = new List<ShoppingBasketDTO>();
             foreach (ShoppingBasket basket in shoppingCart._shoppingBaskets)
                 _DTObaskets.Add(toDTO(basket));
-            return new ShoppingCartDTO(_DTObaskets);
+            return new ShoppingCartDTO(_DTObaskets, shoppingCart.Scid);
         }
         public StockDTO toDTO(Stock stock, String storeName)
         {
@@ -508,6 +508,11 @@ namespace MarketWeb.Service
                 originalPrice,
                 bid.AcceptedByAll
                 );
+        }
+
+        internal PopulationStatisticsDTO toDTO(PopulationStatistics populationStatistics)
+        {
+            return new PopulationStatisticsDTO(populationStatistics._section, populationStatistics._visitDay, populationStatistics._count);
         }
     }
 }
