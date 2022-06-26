@@ -832,7 +832,7 @@ else
 
     private async void AddItemForm()
     {
-        Response response = await _marketAPIClient.AddItemToStoreStock(StoreName,
+        Response<int> response = await _marketAPIClient.AddItemToStoreStock(StoreName,
                                                                        AddItemModel.Name,
                                                                        AddItemModel.Price,
                                                                        AddItemModel.Description,

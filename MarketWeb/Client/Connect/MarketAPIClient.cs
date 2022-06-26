@@ -40,7 +40,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response<Dictionary<string, List<string>>>> GetStandbyOwnersInStore(string storeName);
         public Task<Response> RemoveStoreOwner(String ownerUsername, String storeName);
         public Task<Response> RemoveStoreManager(String managerUsername, String storeName);
-        public Task<Response> AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity);
+        public Task<Response<int>> AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity);
         public Task<Response> RemoveItemFromStore(String storeName, int itemID);
         public Task<Response> UpdateStockQuantityOfItem(String storeName, int itemID, int newQuantity);
         public Task<Response> EditItemPrice(String storeName, int itemID, double newPrice);
@@ -382,7 +382,7 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response> AddItemToStoreStock(string storeName, string name, double price, string description, string category, int quantity)
+        public async Task<Response<int>> AddItemToStoreStock(string storeName, string name, double price, string description, string category, int quantity)
         {
             const string url = "api/market/AddItemToStoreStock";
             var param = new Dictionary<string, string>() {
@@ -395,7 +395,7 @@ namespace MarketWeb.Client.Connect
             };
             var newUrl = QueryHelpers.AddQueryString(url, param);
 
-            Response res = await _httpService.Post<Response>(newUrl, null);
+            Response<int> res = await _httpService.Post<Response<int>>(newUrl, null);
             return res;
 
         }
