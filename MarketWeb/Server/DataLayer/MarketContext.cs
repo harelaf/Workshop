@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,8 +28,8 @@ namespace MarketWeb.Server.DataLayer
         public static string userid { get; set; } = "";
         public static string password { get; set; } = "";
         public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
-        public string localConnectionStr { get; set; } = "Data Source=Application.db;Cache=Shared";
-        public static bool testMode { get; set; } = false;
+        public string localConnectionStr { get; set; } = $"Data Source=C:\\Users\\{Environment.UserName}\\Desktop\\Application.db;Cache=Shared";
+        public static bool testMode { get; set; } = true;
         public static ISet<string> tableNames = new HashSet<string>();
         public MarketContext()
         {
@@ -49,12 +50,15 @@ namespace MarketWeb.Server.DataLayer
         }
         public void DisposeAllData()
         {
-            if (testMode)
+            if (testMode && tableNames.Count > 0)
             {
+                string sql = "PRAGMA foreign_keys = 0;";
                 foreach (string tableName in tableNames)
-                    this.Database.ExecuteSqlRaw($"PRAGMA foreign_keys = 0;" +
-                        $"DELETE FROM {tableName};" +
-                        $"PRAGMA foreign_keys = 1;");
+                    sql += $"DELETE FROM {tableName};";
+                sql += "PRAGMA foreign_keys = 1;";
+
+                this.Database.ExecuteSqlRaw(sql);
+
                 tableNames = new HashSet<string>();
             }
         }
@@ -78,7 +82,6 @@ namespace MarketWeb.Server.DataLayer
             //builder.Entity<StoreDAL>().HasOne(e => e._rating).WithOne().OnDelete(DeleteBehavior.ClientCascade);
             builder.Entity<ItemDAL>().HasMany(x => x._rating).WithOne().OnDelete(DeleteBehavior.Cascade);
             //builder.Entity<PurchaseDetailsDAL>().HasMany(x => x.discountListJSON).WithOne().OnDelete(DeleteBehavior.ClientCascade);
-
 
             builder.Entity<ComplaintDAL>();
             builder.Entity<MessageToStoreDAL>();

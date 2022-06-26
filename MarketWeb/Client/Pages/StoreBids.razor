@@ -25,27 +25,27 @@
         str += $"{Index++}. {username}.\n";
     <p style="white-space:pre-wrap;">@str</p> 
 }
-<h2>Bid Table</h2>
-<br />
-<p>the prices are per item</p>
-<div>
-    <table class="table" style="white-space:pre-wrap; width:100%" id="@StoreName">
-        <thead>
-            <tr>
-                <th>Item ID</th>
-                <th>Amount</th>
-                <th>Original Price</th>
-                <th>Bid</th>
-                <th>Counter Offer</th>
-                <th>Respond</th>
-                <th>Status</th>
-                <th>View Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if(bids != null && bids.Count > 0)
-            {
-                foreach(BidDTO bid in bids)
+@if(bids != null && bids.Count > 0)
+{
+    <h2>Bid Table</h2>
+    <br />
+    <p>the prices are per item</p>
+    <div>
+        <table class="table" style="white-space:pre-wrap; width:100%" id="@StoreName">
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Amount</th>
+                    <th>Original Price</th>
+                    <th>Bid</th>
+                    <th>Counter Offer</th>
+                    <th>Respond</th>
+                    <th>Status</th>
+                    <th>View Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(BidDTO bid in bids)
                 {
                     String status = bid.AcceptedByAll ? "ACCEPTED BY ALL" : "IN PROGRESS";
                     <tr>
@@ -97,14 +97,14 @@
                         }
                     }
                 }
-            }
-            else
-            {
-                <h2>no bids here.</h2>
-            }
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <h2>no bids here.</h2>
+}
 
 @code {
     [Parameter] public string StoreName { get; set; }

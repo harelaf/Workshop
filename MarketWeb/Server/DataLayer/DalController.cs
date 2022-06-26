@@ -87,7 +87,15 @@ namespace MarketWeb.Server.DataLayer
         public bool IsUsernameExists(string username)
         {
             MarketContext context = new MarketContext();
-            return context.RegisteredDALs.Find(username) != null;
+            bool ans;
+            try
+            {
+                ans = context.RegisteredDALs.Find(username) != null;
+                return ans;
+            }
+            catch(Exception) { }
+            
+            return true;
         }
         public void RemoveRegisteredVisitor(string username) 
         {
