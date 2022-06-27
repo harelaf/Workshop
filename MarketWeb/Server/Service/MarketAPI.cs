@@ -87,7 +87,11 @@ namespace MarketWeb.Service
             return headerValue.Parameter;
         }
 
-
+        public static void ResetInits()
+        {
+            useConfigurationFile = true;
+            useInitializationFile = true;
+        }
         
 
         /// <summary>
