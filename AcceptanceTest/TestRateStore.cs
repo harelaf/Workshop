@@ -22,6 +22,7 @@ namespace AcceptanceTest
         string guest_userToken = "";
         string registered_userToken = "";
         string review = "";
+        int itemid;
         int ratingInRange;
         public static readonly string paymentMethode_mock_flase = "mock_false";
         public static readonly string paymentMethode_mock_true = "mock_true";
@@ -43,7 +44,7 @@ namespace AcceptanceTest
             marketAPI.Register(registered_userToken, username, "123456789", new DateTime(1992, 8, 4));
             registered_userToken = (marketAPI.Login(registered_userToken, username, "123456789")).Value;
             marketAPI.OpenNewStore(registered_userToken, storeName_inSystem);
-            marketAPI.AddItemToStoreStock(registered_userToken, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 5);
+            itemid = marketAPI.AddItemToStoreStock(registered_userToken, storeName_inSystem, "Krabby Patty", 5.0, "Yummy", "Food", 5).Value;
             review = "I LOVE KRABBY PATTIES";
             ratingInRange = 5;
         }
@@ -73,7 +74,7 @@ namespace AcceptanceTest
         [TestMethod]
         public void happy_RateStoreSuccess()
         {
-            Response response1 = marketAPI.AddItemToCart(registered_userToken, 1, storeName_inSystem, 1);
+            Response response1 = marketAPI.AddItemToCart(registered_userToken, itemid, storeName_inSystem, 1);
             Assert.IsFalse(response1.ErrorOccured);
 
             Response response2 = marketAPI.PurchaseMyCart(registered_userToken, "City Center", "Jerusalem", "Israel", "123456", username, paymentMethode_mock_true, shippingMethode_mock_true).Result;

@@ -37,8 +37,10 @@ namespace MarketWeb.Server.DataLayer
 
         }
         
+        // Only call this function from the tests!
         public void Cleanup()
         {
+            MarketContext.testMode = true;
             new MarketContext().DisposeAllData();
         }
 
@@ -87,7 +89,15 @@ namespace MarketWeb.Server.DataLayer
         public bool IsUsernameExists(string username)
         {
             MarketContext context = new MarketContext();
-            return context.RegisteredDALs.Find(username) != null;
+            bool ans;
+            try
+            {
+                ans = context.RegisteredDALs.Find(username) != null;
+                return ans;
+            }
+            catch(Exception) { }
+            
+            return true;
         }
         public void RemoveRegisteredVisitor(string username) 
         {
@@ -213,6 +223,7 @@ namespace MarketWeb.Server.DataLayer
                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
                                 .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
                                 .Include(x => x._adminMessages)
+                                //.Include(x => x.
                                 .Include(x => x._notifications)
                                 .FirstOrDefault(s => s._username == userName);
             if (reg == null)
@@ -387,7 +398,39 @@ namespace MarketWeb.Server.DataLayer
             }
             return returnMessages;
         }
+        //internal void AddRole(StoreOwnerDAL role)
+        //{
+        //    throw new NotImplementedException();
+        //}
+        //internal void AddRole(StoreManagerDAL role)
+        //{
+        //    MarketContext context = new MarketContext();
+        //    StoreManagerDAL storeManager = new StoreManagerDAL(role._appointer, role._username, role._storeName);
+        //    context.storeManagerDALs.Add(storeManager);
+        //    context.SaveChanges();
+        //    //set population section
+        //    context = new MarketContext();
+        //    RegisteredDAL registeredDAL = context.RegisteredDALs
+        //                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._items).ThenInclude(i => i.purchaseDetails)
+        //                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
+        //                                        .Include(x => x._cart).ThenInclude(c => c._shoppingBaskets).ThenInclude(b => b._additionalDiscounts)
+        //                                        .Include(x => x._adminMessages)
+        //                                        .Include(x => x._notifications).FirstOrDefault(x => x._username == role._username);
+        //    if (registeredDAL != null && !registeredDAL._populationSection.Equals(PopulationSection.ADMIN) && !registeredDAL._populationSection.Equals(PopulationSection.STORE_OWNERS_NOT_ADMIN))
+        //    {
+        //        registeredDAL._populationSection = PopulationSection.STORE_MANAGERS_ONLY;
+        //        context.SaveChanges();
+        //    }
 
+        //}
+        //internal void AddRole(StoreFounderDAL systemRoleDAL)
+        //{
+        //    throw new NotImplementedException();
+        //}
+        //internal void AddRole(SystemAdminDAL systemRoleDAL)
+        //{
+        //    throw new NotImplementedException();
+        //}
         public void AddStoreManager(String managerUsername, String storeName, string appointer)
         {
             MarketContext context = new MarketContext();
@@ -407,7 +450,6 @@ namespace MarketWeb.Server.DataLayer
                 registeredDAL._populationSection = PopulationSection.STORE_MANAGERS_ONLY;
                 context.SaveChanges();
             }
-
         }
         public void AddStoreOwner(String ownerUsername, String storeName, string appointer)
         {

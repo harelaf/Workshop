@@ -20,6 +20,7 @@ namespace AcceptanceTest
         string storeName_outSystem = "Chum Bucket";
         string username_founder = "SpongeBob SquarePants";
         string guest_token = "";
+        int itemid;
         DateTime dob = new DateTime(2001, 7, 30);
         string registered_token_founder = "";
         DateTime bDay = new DateTime(1992, 8, 4);
@@ -39,7 +40,7 @@ namespace AcceptanceTest
             marketAPI.Register(registered_token_founder, username_founder, "123456789", dob);
             registered_token_founder = (marketAPI.Login(registered_token_founder, username_founder, "123456789")).Value;
             marketAPI.OpenNewStore(registered_token_founder, storeName_inSystem);
-            marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, 1, "Krabby Patty", 5.0, "Yummy", "Food", 100);
+            itemid = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, "Krabby Patty", 5.0, "Yummy", "Food", 100).Value;
         }
 
         [TestMethod]
@@ -60,7 +61,7 @@ namespace AcceptanceTest
         public void happy_CloseStoreSuccess()
         {
             Response response = marketAPI.CloseStore(registered_token_founder, storeName_inSystem);
-            Assert.IsFalse(response.ErrorOccured);
+            Assert.IsFalse(response.ErrorOccured, response.ErrorMessage);
 
             Response<StoreDTO> response1 = marketAPI.GetStoreInformation(registered_token_founder, storeName_inSystem);
             Assert.IsFalse(response1.ErrorOccured);
@@ -72,7 +73,7 @@ namespace AcceptanceTest
             Assert.IsFalse(response2.ErrorOccured);
             Assert.AreEqual(response2.Value.NotificationsCount(), 1);
 
-            Response response3 = marketAPI.AddItemToCart(registered_token_founder, 1, storeName_inSystem, 2);
+            Response response3 = marketAPI.AddItemToCart(registered_token_founder, itemid, storeName_inSystem, 2);
             Assert.IsTrue(response3.ErrorOccured);
         }
     }

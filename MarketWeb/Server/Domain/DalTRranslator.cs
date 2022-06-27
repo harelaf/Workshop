@@ -620,6 +620,20 @@ namespace MarketWeb.Server.Domain
             return new XorComposition(cond._negative, condList);
         }
 
+        //internal SystemRoleDAL SystemRoleTranslateToDal(SystemRole role)
+        //{
+        //    Type type = role.GetType();
+        //    if (type == typeof(StoreOwner))
+        //        return SystemRoleDomainToDal((StoreOwner)role);
+        //    else if (type == typeof(StoreManager))
+        //        return SystemRoleDomainToDal((StoreManager)role);
+        //    else if (type == typeof(StoreFounder))
+        //        return SystemRoleDomainToDal((StoreFounder)role);
+        //    else if (type == typeof(SystemAdmin))
+        //        return SystemRoleDomainToDal((SystemAdmin)role);
+        //    else throw new Exception("not implemented translation.");
+        //}
+
         public Registered RegisteredDALToDomain(RegisteredDAL registeredDAL)
         {
             string username = registeredDAL._username;

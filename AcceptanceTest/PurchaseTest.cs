@@ -47,12 +47,12 @@ namespace AcceptanceTest
             marketAPI.Register(registered_VisitorToken, "afik", "123456789", dob);
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
-            itemID_inStock_1 = 1; itemAmount_inSttock_1 = 20;
-            itemID_inStock_2 = 2; itemAmount_inSttock_2 = 50;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_1,
-                "banana", 3.5, "", "fruit", itemAmount_inSttock_1 + 10);
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_2,
-                "banana2", 3.5, "", "fruit", itemAmount_inSttock_2 + 10);
+            itemAmount_inSttock_1 = 20;
+            itemAmount_inSttock_2 = 50;
+            itemID_inStock_1 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "banana", 3.5, "", "fruit", itemAmount_inSttock_1 + 10).Value;
+            itemID_inStock_2 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "banana2", 3.5, "", "fruit", itemAmount_inSttock_2 + 10).Value;
             itemId_inRegCart = itemID_inStock_1;
             itemId_inGuestCart = itemID_inStock_2;
         }
@@ -119,7 +119,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
            
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase+ itemAmount_inGuestCart);
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase);
 
         }
 
@@ -144,7 +144,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
 
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase + itemAmount_inGuestCart);
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase );
 
         }
 
@@ -169,7 +169,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
 
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase + itemAmount_inGuestCart);
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase );
 
         }
 
@@ -263,7 +263,7 @@ namespace AcceptanceTest
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase );
 
         }
 
@@ -292,7 +292,7 @@ namespace AcceptanceTest
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase );
 
         }
 
@@ -321,7 +321,7 @@ namespace AcceptanceTest
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase);
 
         }
 

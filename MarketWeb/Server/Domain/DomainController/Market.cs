@@ -322,7 +322,7 @@ namespace MarketWeb.Server.Domain
             _storeManagement.RateStore(Username, storeName, rating, review);
         }
 
-        public void AddItemToStoreStock(String authToken, String storeName, String name, double price, String description, String category, int quantity)
+        public int AddItemToStoreStock(String authToken, String storeName, String name, double price, String description, String category, int quantity)
         {
             String errorMessage = null;
             CheckIsVisitorLoggedIn(authToken, "AddItemToStoreStock");
@@ -347,40 +347,11 @@ namespace MarketWeb.Server.Domain
                 }
                 lock (store.Stock)
                 {
-                    _storeManagement.AddItemToStoreStock(storeName, name, price, description, category, quantity);
+                    return _storeManagement.AddItemToStoreStock(storeName, name, price, description, category, quantity);
                 }
             }
         }
-        public void AddItemToStoreStock(String authToken, String storeName, int id,  String name, double price, String description, String category, int quantity)
-        {
-            String errorMessage = null;
-            CheckIsVisitorLoggedIn(authToken, "AddItemToStoreStock");
-            String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            Store store = _storeManagement.GetActiveStore(storeName);
-            lock (store)
-            {
-                if (!_storeManagement.isStoreActive(storeName) && !_VisitorManagement.CheckAccess(Username, storeName, Operation.MANAGE_INVENTORY))
-                    errorMessage = $"Store {storeName} is currently inactive and Visitor is not the owner.";
-                else if (storeName.Equals(""))
-                    errorMessage = "Invalid Input: Blank store name.";
-                else if (price < 0)
-                    errorMessage = "Invalid Input: Price has to be at least 0.";
-                else if (name.Equals(""))
-                    errorMessage = "Invalid Input: Blank item name.";
-                else if (quantity < 0)
-                    errorMessage = "Invalid Input: Quantity has to be at least 0.";
-                if (errorMessage != null)
-                {
-                    LogErrorMessage("AddItemToStoreStock", errorMessage);
-                    throw new Exception(errorMessage);
-                }
-                lock (store.Stock)
-                {
-                    _storeManagement.AddItemToStoreStockTest(storeName, id,  name, price, description, category, quantity);
-                }
-            }
-        }
-
+       
 
         public void RemoveItemFromStore(String authToken, String storeName, int itemID)
         {
@@ -790,6 +761,7 @@ namespace MarketWeb.Server.Domain
         private void RecRemoveStoreOwner(string appointer, string ownerApointee, string storeName)
         {
             Tuple<List<string>, List<string>> owners_managers = _storeManagement.RemoveStoreOwner(ownerApointee, storeName, appointer);
+            _dalController.RemoveStoreOwner(ownerApointee, storeName);
             _VisitorManagement.RemoveRole(ownerApointee, storeName);
             List<string> managers = owners_managers.Item2;
             foreach (string manager in managers)
@@ -829,7 +801,7 @@ namespace MarketWeb.Server.Domain
 
         internal void AppointSystemAdmin(String authToken, String adminUsername)
         {
-            String registered = _VisitorManagement.GetRegisteredUsernameByToken(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
+            String registered = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(registered,null, Operation.APPOINT_SYSTEM_ADMIN))
             {
                 _VisitorManagement.AppointSystemAdmin(adminUsername);
@@ -925,7 +897,9 @@ namespace MarketWeb.Server.Domain
         /// <param name="authToken"> The token of the Visitor to log out.</param>
         public String Logout(String authToken)
         {
-            return _VisitorManagement.Logout(authToken);
+            string token = _VisitorManagement.Logout(authToken);
+            _dalController.AddVisitToPopulationStatistics(null, DateTime.Now);
+            return token;
         }
 
         /// <summary>
@@ -979,7 +953,10 @@ namespace MarketWeb.Server.Domain
                 throw new Exception("there is no such user in system as: " + managerUsername);
             }
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
+            {
                 _VisitorManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
+                _dalController.AddManagerPermission(managerUsername, storeName, op);
+            }
             else
             {
                 throw new Exception("you don't have permission to modify manager permission...");
@@ -1530,7 +1507,7 @@ namespace MarketWeb.Server.Domain
 
         public ICollection<PopulationStatistics> GetDailyPopulationStatistics(string authToken, DateTime dateTime)
         {
-            CheckIsVisitorLoggedIn(authToken, "GetStandbyOwnersInStore");
+            CheckIsVisitorLoggedIn(authToken, "GetDailyPopulationStatistics");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
 
             if (!_VisitorManagement.CheckAccess(Username, null, Operation.PERMENENT_CLOSE_STORE))

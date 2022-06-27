@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,9 +28,9 @@ namespace MarketWeb.Server.DataLayer
         public static string initialcatalog { get; set; } = "";
         public static string userid { get; set; } = "";
         public static string password { get; set; } = "";
-        public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
-        public string localConnectionStr { get; set; } = "Data Source=Application.db;Cache=Shared";
-        public static bool testMode { get; set; } = true;
+        //public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
+        public string localConnectionStr { get; set; } = $"Data Source=Application.db;Cache=Shared";
+        public static bool testMode { get; set; } = false;
         public static ISet<string> tableNames = new HashSet<string>();
         public MarketContext()
         {
@@ -50,12 +51,15 @@ namespace MarketWeb.Server.DataLayer
         }
         public void DisposeAllData()
         {
-            if (testMode)
+            if (testMode && tableNames.Count > 0)
             {
+                string sql = "PRAGMA foreign_keys = 0;";
                 foreach (string tableName in tableNames)
-                    this.Database.ExecuteSqlRaw($"PRAGMA foreign_keys = 0;" +
-                        $"DELETE FROM {tableName};" +
-                        $"PRAGMA foreign_keys = 1;");
+                    sql += $"DELETE FROM {tableName};";
+                sql += "PRAGMA foreign_keys = 1;";
+
+                this.Database.ExecuteSqlRaw(sql);
+
                 tableNames = new HashSet<string>();
             }
         }
@@ -63,7 +67,7 @@ namespace MarketWeb.Server.DataLayer
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            //string connectionStr = $"Data Source={datasource};Initial Catalog={initialcatalog};User Id={userid};Password={password}";
+            string connectionStr = $"Data Source={datasource};Initial Catalog={initialcatalog};User Id={userid};Password={password}";
             //connectionStr = "Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;";
             if (!testMode)
                 options.UseSqlServer(connectionStr);

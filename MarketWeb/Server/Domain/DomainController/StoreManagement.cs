@@ -233,11 +233,12 @@ namespace MarketWeb.Server.Domain
             return store.isActive();
         }
 
-        public void AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity)
+        public int AddItemToStoreStock(String storeName, String name, double price, String description, String category, int quantity)
         {
             Store store = GetActiveStore(storeName);
             int id = _dalController.AddItemToStoreStock(storeName, name, price, description, category, quantity);
             store.AddItemToStoreStock(id, name, price, description, category, quantity);
+            return id;
         }
         public void AddItemToStoreStockTest(String storeName, int id, String name,  double price, String description, String category, int quantity)
         {
@@ -324,7 +325,6 @@ namespace MarketWeb.Server.Domain
         {
             Store store = GetActiveStore(storeName);
             Tuple<List<string>, List<string>> tuple= store.RemoveStoreOwner(ownerUsername, appointerUsername);
-            _dalController.RemoveStoreOwner(ownerUsername, storeName);
             return tuple;
         }
 
