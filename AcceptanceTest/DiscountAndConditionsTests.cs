@@ -16,7 +16,7 @@ namespace AcceptanceTest
         String? store_founder_token;
         String? store_founder_name;
         DateTime expiration = DateTime.Now.AddDays(1);
-        int itemID = 1;
+        int itemID;
         String itemName = "item";
         String category = "category";
         DateTime bDay = new DateTime(1992, 8, 4);
@@ -53,11 +53,12 @@ namespace AcceptanceTest
             String cond = "";
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, cond, dis);
-            Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
-            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
-
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
+
+            Response<int> res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
             Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
+            itemID = res2.Value;
+            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
             Assert.IsFalse(res3.ErrorOccured, "res3 " + res3.ErrorMessage);
 
             //act
