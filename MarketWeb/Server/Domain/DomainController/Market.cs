@@ -586,15 +586,7 @@ namespace MarketWeb.Server.Domain
         {
             String errorMessage = null;
             CheckIsVisitorAVisitor(authToken, "GetItemInformation");
-           
-            String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
-            if (!_VisitorManagement.IsRegistered(appointerUsername))
-                errorMessage = "Visitor " + appointerUsername + " not found in system";
-            if (errorMessage != null)
-            {
-                LogErrorMessage("GetItemInformation", errorMessage);
-                throw new Exception(errorMessage);
-            }
+
             return _storeManagement.GetItemInformation(itemName, itemCategory, keyWord);
         }
 

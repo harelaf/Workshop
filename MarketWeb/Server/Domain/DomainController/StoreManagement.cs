@@ -145,7 +145,7 @@ namespace MarketWeb.Server.Domain
             Dictionary<string, List<Item>> filteredItems = new Dictionary<string, List<Item>>();
             foreach (String storeName in allStoresWithStock.Keys)
             {
-                Stock stock = _stores[storeName].Stock;
+                Stock stock = allStoresWithStock[storeName].Stock;
                 List<Item> cur_items = new List<Item>();
                 foreach (KeyValuePair<Item, int> pair in stock.Items)
                 {
