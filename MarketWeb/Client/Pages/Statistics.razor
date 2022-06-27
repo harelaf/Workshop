@@ -1,0 +1,119 @@
+﻿@page "/Statistics/{day:int}/{month:int}/{year:int}"
+@using MarketWeb.Client.Connect
+@using MarketWeb.Client.Helpers
+@using MarketWeb.Client.Services
+@using MarketWeb.Shared
+@using MarketWeb.Shared.DTO
+@using System.Globalization
+@using System.Web.Helpers
+@inject IMarketAPIClient marketAPIClient
+@inject IHttpService httpService
+@inject IAlertService AlertService
+@inject NavigationManager NavigationManager
+
+@layout MainLayout
+<style>
+    h1 {
+        text-align: center;
+    }
+    h3 {
+        text-align: center;
+    }
+    h4 {
+        text-align: center;
+    }
+</style>
+
+<h1 class="display-4">Population Statistics on @{
+                    date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);;
+                } Page</h1>
+<br />
+<br />
+ @if (loading) 
+{
+    <span class="spinner-border spinner-border-sm mr-1"></span>
+}
+else
+{
+    @if (statistics.Count > 0)
+    {
+        int guestCount = 0;
+        int registeredCount = 0;
+        int adminCount = 0;
+        int ownerCount = 0;
+        int managerCount = 0;
+        int total = 0;
+
+        @foreach (PopulationStatisticsDTO populationStatisticsDTO in statistics)
+        {
+            total+= populationStatisticsDTO._count;
+            if (populationStatisticsDTO._section.Equals(PopulationSection.GUESTS))
+                guestCount = populationStatisticsDTO._count;
+            else if (populationStatisticsDTO._section.Equals(PopulationSection.ADMIN))
+                adminCount = populationStatisticsDTO._count;
+            else if (populationStatisticsDTO._section.Equals(PopulationSection.STORE_OWNERS_NOT_ADMIN))
+                ownerCount = populationStatisticsDTO._count;
+            else if (populationStatisticsDTO._section.Equals(PopulationSection.STORE_MANAGERS_ONLY))
+                managerCount = populationStatisticsDTO._count;
+            else
+                registeredCount = populationStatisticsDTO._count;
+        }
+
+        <h4><b>Entrances By Guests :</b>   <u>@guestCount</u></h4>
+        <br />
+        <h4><b>Entrances By Registered With No Roles :</b>   <u>@registeredCount</u></h4>
+        <br />
+        <h4><b>Entrances By Store Managers Who Don't Own Any Store  :</b>   <u>@managerCount</u></h4>
+        <br />
+        <h4><b>Entrances By Store Owners :</b>   <u>@ownerCount</u></h4>
+        <br />
+        <h4><b>Entrances By Administration Members :</b>   <u>@adminCount</u></h4>
+        <br />
+        <br />
+        <h3><u><b> Total Entrances Number :</b>   @total</u> </h3>
+
+
+    }
+    else
+    {
+        <h2> There Were No Entrances To Market at This Day!</h2>
+    }
+}
+
+
+@code {
+    [Parameter] public int day { get; set; }
+    [Parameter] public int month { get; set; }
+    [Parameter] public int year { get; set; }
+    public DateTime date { get; set; }
+    ICollection<PopulationStatisticsDTO> statistics = new List<PopulationStatisticsDTO>();
+    private bool loading;
+   
+
+    protected override async Task OnInitializedAsync()
+    {
+        // reset alerts on submit
+        AlertService.Clear();
+        loading = true;
+        date = new DateTime(year, month, day);
+        try
+        {
+            Response<ICollection<PopulationStatisticsDTO>> response = await marketAPIClient.GetDailyPopulationStatistics(date.Day, date.Month, date.Year);
+            if (response.ErrorOccured)
+            {
+                throw new Exception(response.ErrorMessage);
+            }
+            else
+            {
+                statistics = response.Value;
+            }
+            loading = false;
+        }
+        catch (Exception e)
+        {
+            loading = false;
+            NavigationManager.NavigateTo($"/Administration");
+            AlertService.Error(e.Message);
+        }
+    }
+}

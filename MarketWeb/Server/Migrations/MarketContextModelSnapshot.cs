@@ -281,6 +281,23 @@ namespace MarketWeb.Server.Migrations
                     b.ToTable("OwnerAcceptors");
                 });
 
+            modelBuilder.Entity("MarketWeb.Server.DataLayer.PopulationStatisticsDAL", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("_userNane")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("_visitDay")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("id");
+
+                    b.ToTable("PopulationStatisticsDALs");
+                });
+
             modelBuilder.Entity("MarketWeb.Server.DataLayer.PurchaseDetailsDAL", b =>
                 {
                     b.Property<int>("ID")
@@ -386,6 +403,9 @@ namespace MarketWeb.Server.Migrations
 
                     b.Property<string>("_password")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("_populationSection")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("_salt")
                         .HasColumnType("TEXT");

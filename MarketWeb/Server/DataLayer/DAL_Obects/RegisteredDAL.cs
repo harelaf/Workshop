@@ -21,6 +21,8 @@ namespace MarketWeb.Server.DataLayer
         [Required]
         public ICollection<NotifyMessageDAL> _notifications { get; set; }
 
+        public PopulationSection _populationSection { get; set; }
+
         public RegisteredDAL()
         {
             _adminMessages = new List<AdminMessageToRegisteredDAL>();
@@ -29,7 +31,9 @@ namespace MarketWeb.Server.DataLayer
             // Empty constructor for some reason?
         }
 
-        public RegisteredDAL(string username, string password, string salt, ShoppingCartDAL cart, DateTime birthDate, ICollection<ComplaintDAL> filedComplaints, ICollection<SystemRoleDAL> roles, ICollection<AdminMessageToRegisteredDAL> adminMessages, ICollection<NotifyMessageDAL> notifications, ICollection<MessageToStoreDAL> repliedMessages)
+        public RegisteredDAL(string username, string password, string salt, ShoppingCartDAL cart, DateTime birthDate,
+            ICollection<ComplaintDAL> filedComplaints, ICollection<SystemRoleDAL> roles, ICollection<AdminMessageToRegisteredDAL> adminMessages,
+            ICollection<NotifyMessageDAL> notifications, ICollection<MessageToStoreDAL> repliedMessages, PopulationSection populationSection)
         {
             _username = username;
             _password = password;
@@ -38,6 +42,7 @@ namespace MarketWeb.Server.DataLayer
             _birthDate = birthDate;
             _adminMessages = adminMessages;
             _notifications = notifications;
+            _populationSection = populationSection;
         }
 
         public RegisteredDAL(string username, string password, string salt, DateTime birthDate)
@@ -49,6 +54,7 @@ namespace MarketWeb.Server.DataLayer
             _cart = new ShoppingCartDAL();
             _adminMessages = new List<AdminMessageToRegisteredDAL>();
             _notifications = new List<NotifyMessageDAL>();
+            _populationSection = PopulationSection.REGISTERED_NO_ROLES;
         }
     }
 }
