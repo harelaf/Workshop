@@ -292,7 +292,6 @@ namespace MarketWeb.Server.Domain
             {
                 if (_storeManagement.isStoreActive(storeName))
                     return store;
-
                 else
                 {
                     String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);

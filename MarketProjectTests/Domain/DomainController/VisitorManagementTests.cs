@@ -26,7 +26,7 @@ namespace MarketProject.Domain.Tests
         [TestInitialize]
         public void setup()
         {
-            VisitorManagement = new VisitorManagement();
+            VisitorManagement = new VisitorManagement(true);
         }
 
         // ============================= REGISTER =============================
@@ -57,7 +57,7 @@ namespace MarketProject.Domain.Tests
         [TestMethod()]
         public void Register_InvalidPassword_ThrowsException()
         {
-            VisitorManagement VisitorManagement = new VisitorManagement();
+            VisitorManagement VisitorManagement = new VisitorManagement(true);
             String Username = "Test";
             String password = ""; // Password obviously cannot be empty string
             Assert.ThrowsException<Exception>(() => VisitorManagement.Register(Username, password, dob));
@@ -81,8 +81,7 @@ namespace MarketProject.Domain.Tests
             Guest guest = new Guest(guestToken);
             Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
             visitorsGuestsTokens.Add(guestToken, guest);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, visitorsGuestsTokens);
-
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, visitorsGuestsTokens, true);
 
             String token = vm.Login(guestToken, Username, password);
 
@@ -103,7 +102,7 @@ namespace MarketProject.Domain.Tests
             Guest guest = new Guest(guestToken);
             Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
             visitorsGuestsTokens.Add(guestToken, guest);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, visitorsGuestsTokens);
+            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, visitorsGuestsTokens, true);
 
 
             Assert.ThrowsException<Exception>(() => VisitorManagement.Login(guestToken, triedUsername, password));
@@ -122,7 +121,7 @@ namespace MarketProject.Domain.Tests
             Guest guest = new Guest(guestToken);
             Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
             visitorsGuestsTokens.Add(guestToken, guest);
-            VisitorManagement VisitorManagement = new VisitorManagement();
+            VisitorManagement VisitorManagement = new VisitorManagement(true);
 
 
             Assert.ThrowsException<Exception>(() => VisitorManagement.Login(guestToken, Username, triedPassword));
@@ -143,7 +142,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
 
             Assert.IsTrue(VisitorManagement.IsVisitorLoggedin(authToken));
@@ -168,7 +167,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
 
             Assert.IsTrue(VisitorManagement.IsVisitorLoggedin(authToken));
@@ -193,7 +192,7 @@ namespace MarketProject.Domain.Tests
             Registered registered = VisitorManagement.GetRegisteredVisitor(Username);
             //Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             //registeredVisitors.Add(Username, registered);
-            //VisitorManagement vm = new VisitorManagement(registeredVisitors);
+            //VisitorManagement vm = new VisitorManagement(registeredVisitors, true);
 
             Assert.IsTrue(VisitorManagement.IsRegistered(Username));
 
@@ -207,7 +206,7 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             DateTime bDay = new DateTime(1992, 8, 4);
-            VisitorManagement VisitorManagement = new VisitorManagement();
+            VisitorManagement VisitorManagement = new VisitorManagement(true);
 
 
             Assert.ThrowsException<Exception>(() => VisitorManagement.RemoveRegisteredVisitor(Username));
@@ -226,7 +225,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
             Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
             Assert.IsTrue(vm.IsVisitorLoggedin(authToken));
@@ -253,7 +252,7 @@ namespace MarketProject.Domain.Tests
             registered.AddRole(systemAdmin);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors);
+            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, true);
 
             VisitorManagement.AdminStart(Username, password);
 
@@ -270,7 +269,7 @@ namespace MarketProject.Domain.Tests
             Registered registered = new Registered(Username, password, dob);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors);
+            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, true);
 
             VisitorManagement.AdminStart(Username, password);
 
@@ -296,7 +295,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
             Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
             Assert.IsTrue(vm.IsVisitorLoggedin(authToken));
@@ -324,7 +323,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
             Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
             Assert.IsTrue(vm.IsVisitorLoggedin(authToken));
@@ -351,7 +350,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
             //Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
             Assert.IsTrue(VisitorManagement.IsVisitorLoggedin(authToken));
@@ -392,7 +391,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(adminUsername, admin);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
             VisitorManagement.FileComplaint(authToken, cartId, message);
 
@@ -433,7 +432,7 @@ namespace MarketProject.Domain.Tests
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, admin);
             loggedInTokens.Add(authToken2, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
             
 
@@ -489,7 +488,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(adminUsername, admin);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, admin);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens, true);
 
 
             Assert.ThrowsException<Exception>(() => VisitorManagement.ReplyToComplaint(authToken, complaintId, response));
@@ -512,7 +511,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(managerUsername, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
             vm.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
             Assert.ThrowsException<NullReferenceException>(() => vm.RemoveManagerPermission(appointer, managerUsername, storeName, op));
         }
@@ -534,7 +533,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(managerUsername, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
             vm.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => vm.RemoveManagerPermission("other name", managerUsername, storeName, op));
         }
@@ -556,7 +555,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(managerUsername, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
             vm.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => vm.RemoveManagerPermission(appointer, managerUsername, storeName, op));
         }
@@ -580,7 +579,7 @@ namespace MarketProject.Domain.Tests
                 registeredVisitors.Add(managerUsername, registered);
                 Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
                 loggedInTokens.Add(authToken, registered);
-                VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+                VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
                 vm.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
                 vm.AddManagerPermission(appointer, managerUsername, storeName, op);
             }
@@ -607,7 +606,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(managerUsername, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
             vm.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => vm.AddManagerPermission("other name", managerUsername, storeName, op));
         }
@@ -629,7 +628,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(managerUsername, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
             vm.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
             try
             {
@@ -659,7 +658,7 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(managerUsername, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens, true);
             vm.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
             Assert.ThrowsException<Exception>(() => vm.AddManagerPermission(appointer, managerUsername, storeName, op));
         }
