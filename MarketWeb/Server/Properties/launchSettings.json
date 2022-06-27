@@ -18,7 +18,6 @@
     },
     "MarketWeb.Server": {
       "commandName": "Project",
-      "workingDirectory": "C:\\Users\\avish\\Documents\\cs\\Assignments\\workshop\\AcceptanceTest\\bin\\Debug\\net6.0",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

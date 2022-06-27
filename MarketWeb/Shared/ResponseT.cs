@@ -22,5 +22,10 @@ namespace MarketWeb.Shared
         {
             this.Value = value;
         }
+
+        public static implicit operator Response<T>(Response<Dictionary<string, string>> v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

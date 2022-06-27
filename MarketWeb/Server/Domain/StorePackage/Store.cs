@@ -11,7 +11,7 @@ namespace MarketWeb.Server.Domain
     public class Store
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-		private Stock _stock;
+		internal Stock _stock { get; set; }
         public Stock Stock => _stock;
         private PurchasePolicy _purchasePolicy;
         private DiscountPolicy _discountPolicy;
@@ -23,7 +23,7 @@ namespace MarketWeb.Server.Domain
         private List<StoreOwner> _owners;
         private StoreFounder _founder;
         private String _storeName;
-        private StoreState _state;
+        internal StoreState _state { get; set; }
         // bidder (if registered -> username, else -> authentication token) to bids
         private IDictionary<String, List<Bid>> _biddedItems;
         public IDictionary<String, List<Bid>> BiddedItems => _biddedItems;

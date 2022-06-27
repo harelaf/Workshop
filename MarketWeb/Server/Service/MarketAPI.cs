@@ -1094,26 +1094,21 @@ namespace MarketWeb.Service
             return response;
         }
         [HttpGet("GetAllActiveStores")]
-        public Response<List<StoreDTO>> GetAllActiveStores([FromHeader] String Authorization)
+        public Response<Dictionary<string,string>> GetAllActiveStores([FromHeader] String Authorization)
         {
-            Response<List<StoreDTO>> response;
+            Response<Dictionary<string, string>> response;
             try
             {
 
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Get All Active Stores called with parameters: authToken={authToken}.");
-                List<Store> stores = _market.GetAllActiveStores(authToken);
-                List<StoreDTO> storesDTO = new List<StoreDTO>();
-                foreach (Store store in stores)
-                {
-                    storesDTO.Add(new DTOtranslator().toDTO(store));
-                }
-                response = new Response<List<StoreDTO>>(storesDTO);
+                Dictionary<string, string> stores = _market.GetAllActiveStores(authToken);
+                response = new Response<Dictionary<string, string>>(stores);
                 _logger.Info($"SUCCESSFULY executed Get All Active Stores.");
             }
             catch (Exception e)
             {
-                response = new Response<List<StoreDTO>>(e); _logger.Error(e.Message);
+                response = new Response<Dictionary<string, string>>(e); _logger.Error(e.Message);
             }
             return response;
         }

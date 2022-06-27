@@ -78,6 +78,7 @@ namespace MarketWeb.Server.Domain
             ConditionDAL cond = ConditionDomainToDal(dis.Condition);
             return new PlusDiscountDAL(disList, cond);
         }
+
         public StoreDAL StoreDomainToDal(Store store)
         {
             String storeName = store.StoreName;
@@ -277,7 +278,18 @@ namespace MarketWeb.Server.Domain
             }
             return rateSet;
         }
-
+        public Store StoreDalToDomainWithStock(StoreDAL storeDAL)
+        {
+            if(storeDAL == null)
+                return null;
+            Stock stock = StockDalToDomain(storeDAL._stock);
+            String storeName = storeDAL._storeName;
+            StoreState state = storeDAL._state;
+            Store s = new Store(storeName, null, null, null);
+            s._state = state;
+            s._stock = stock;
+            return s;
+        }
         public Store StoreDalToDomain(StoreDAL storeDAL)
         {
             Stock stock = StockDalToDomain(storeDAL._stock);

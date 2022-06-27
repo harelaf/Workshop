@@ -585,7 +585,8 @@ namespace MarketWeb.Server.Domain
         public IDictionary<string, List<Item>> GetItemInformation(String authToken, String itemName, String itemCategory, String keyWord)
         {
             String errorMessage = null;
-            CheckIsVisitorLoggedIn(authToken, "GetItemInformation");
+            CheckIsVisitorAVisitor(authToken, "GetItemInformation");
+           
             String appointerUsername = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (!_VisitorManagement.IsRegistered(appointerUsername))
                 errorMessage = "Visitor " + appointerUsername + " not found in system";
@@ -993,7 +994,7 @@ namespace MarketWeb.Server.Domain
             return _storeManagement.GetStoresByName(stores);
         }
 
-        public List<Store> GetAllActiveStores(String authToken)
+        public Dictionary<string, string> GetAllActiveStores(String authToken)
         {
             //NotifyMessageDTO notification = new NotifyMessageDTO("Store", "Title", "You did GetAllActiveStores", "ReceiverUsername", 0);
             //log.Info($"Sending notification to :{authToken}");
