@@ -1,5 +1,6 @@
 ﻿using AcceptanceTest.DSL;
 using AcceptanceTest.DSL.Drivers;
+using MarketWeb.Server.DataLayer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,13 @@ namespace AcceptanceTest.AcceptanceTests.Direct
     [TestClass()]
     public class GuestAcceptanceTest : DirectAcceptanceTest
     {
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
+
         // ================================= Use Case 1 - Enter System =================================
         [TestMethod()]
         public void EnterSystem_Happy()

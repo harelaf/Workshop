@@ -1,5 +1,6 @@
 ﻿using AcceptanceTest.DSL;
 using AcceptanceTest.DSL.Drivers;
+using MarketWeb.Server.DataLayer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,15 @@ using System.Threading.Tasks;
 namespace AcceptanceTest.AcceptanceTests.Direct
 {
     [TestClass()]
-
     public class SystemAdminAcceptanceTest : DirectAcceptanceTest
     {
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
+
         // ================================= Use Case ? - Remove Registered Visitor =================================
         [TestMethod()]
         [Priority(1)]

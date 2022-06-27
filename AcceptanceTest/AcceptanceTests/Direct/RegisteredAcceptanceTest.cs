@@ -1,5 +1,6 @@
 ﻿using AcceptanceTest.DSL;
 using AcceptanceTest.DSL.Drivers;
+using MarketWeb.Server.DataLayer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,14 @@ namespace AcceptanceTest.AcceptanceTests.Direct
     [TestClass()]
     public class RegisteredAcceptanceTest : DirectAcceptanceTest
     {
+
+        DalController dc = DalController.GetInstance(true);
+        [TestCleanup()]
+        public void cleanup()
+        {
+            dc.Cleanup();
+        }
+
         // ================================= Use Case 15 - Exit System =================================
         [TestMethod()]
         public void ExitSystem_Happy()
