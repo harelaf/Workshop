@@ -119,7 +119,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
            
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase+ itemAmount_inGuestCart);
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase);
 
         }
 
@@ -144,7 +144,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
 
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase + itemAmount_inGuestCart);
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase );
 
         }
 
@@ -169,7 +169,7 @@ namespace AcceptanceTest
                 Assert.AreEqual(0, store_purchasedBasket.Count);
 
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase + itemAmount_inGuestCart);
+            Assert.AreEqual(amount_of_item_after_guest_faild_purchase, amount_of_item_before_guest_faild_purchase );
 
         }
 
@@ -263,7 +263,7 @@ namespace AcceptanceTest
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase );
 
         }
 
@@ -292,7 +292,7 @@ namespace AcceptanceTest
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase );
 
         }
 
@@ -321,7 +321,7 @@ namespace AcceptanceTest
             if(Visitor_history != null)
                 Assert.AreEqual(0, Visitor_history.Count);
             //check if stock was refilled:
-            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase + itemAmount_inRegCart);
+            Assert.AreEqual(amount_of_item_after_reg_faild_purchase, amount_of_item_before_reg_faild_purchase);
 
         }
 
