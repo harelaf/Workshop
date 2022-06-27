@@ -41,6 +41,26 @@ namespace MarketProject.Domain.Tests
             price = 5.0;
         }
 
+        [TestMethod]
+        public void checkStoreExists_returnsTrue()
+        {
+            try
+            {
+                Store store = _storeManagement.GetActiveStore(storeName);
+                Assert.IsNotNull(store);
+            }
+            catch(Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void openNewStore_openWithSameName_throwsException()
+        {
+            Assert.ThrowsException<Exception>(() => _storeManagement.OpenNewStore(new StoreFounder("avishay", storeName), storeName, new PurchasePolicy(), new DiscountPolicy()));
+        }
+
         [TestMethod()]
         public void RateStore_StoreExists_NoException()
         {
