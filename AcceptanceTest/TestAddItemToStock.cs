@@ -55,14 +55,14 @@ namespace AcceptanceTest
         [TestMethod]
         public void sad_UserDoesntHavePermission()
         {
-            Response response = marketAPI.AddItemToStoreStock(guest_token, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
+            Response<int> response = marketAPI.AddItemToStoreStock(guest_token, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
             Assert.IsTrue(response.ErrorOccured);
         }
 
         [TestMethod]
         public void sad_StoreDoesntExist()
         {
-            Response response = marketAPI.AddItemToStoreStock(guest_token, storeName_outSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
+            Response<int> response = marketAPI.AddItemToStoreStock(guest_token, storeName_outSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
             Assert.IsTrue(response.ErrorOccured);
         }
 
@@ -70,24 +70,24 @@ namespace AcceptanceTest
         public void sad_PriceOutOfRange()
         {
             double priceOutOfRange = -100;
-            Response response = marketAPI.AddItemToStoreStock(guest_token, storeName_inSystem, itemName, priceOutOfRange, itemDescription, itemCategory, itemQuantity);
+            Response<int> response = marketAPI.AddItemToStoreStock(guest_token, storeName_inSystem, itemName, priceOutOfRange, itemDescription, itemCategory, itemQuantity);
             Assert.IsTrue(response.ErrorOccured);
         }
 
         [TestMethod]
         public void sad_ItemIdAlreadyTaken()
         {
-            Response response = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
+            Response<int> response = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
             Assert.IsFalse(response.ErrorOccured);
 
-            Response response1 = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
+            Response<int> response1 = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
             Assert.IsTrue(response1.ErrorOccured);
         }
 
         [TestMethod]
         public void happy_AddItemToStockSuccess()
         {
-            Response response = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
+            Response<int> response = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
             Assert.IsFalse(response.ErrorOccured);
         }
     }

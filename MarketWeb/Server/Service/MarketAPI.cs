@@ -397,8 +397,7 @@ namespace MarketWeb.Service
                 response = new Response<int>(e); _logger.Error(e.Message);
             }
             return response;
-        }
-        
+        }        
         [HttpPost("RemoveItemFromStore")]
         public Response RemoveItemFromStore([FromHeader] String Authorization, String storeName, int itemID)
         {//II.4.1

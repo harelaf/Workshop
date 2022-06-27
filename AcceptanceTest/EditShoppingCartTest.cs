@@ -42,12 +42,12 @@ namespace AcceptanceTest
             marketAPI.Register(registered_VisitorToken, "afik", "123456789", dob);
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
-            itemID_inStock_1 = 1; itemAmount_inSttock_1 = 20;
-            itemID_inStock_2 = 2; itemAmount_inSttock_2 = 50;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
-                "banana", 3.5, "", "fruit", itemAmount_inSttock_1 + 10);
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
-                "banana2", 3.5, "", "fruit", itemAmount_inSttock_2 + 10);
+            itemAmount_inSttock_1 = 20;
+            itemAmount_inSttock_2 = 50;
+            itemID_inStock_1 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "banana", 3.5, "", "fruit", itemAmount_inSttock_1 + 10).Value;
+            itemID_inStock_2 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "banana2", 3.5, "", "fruit", itemAmount_inSttock_2 + 10).Value;
             itemId_inRegCart = itemID_inStock_1;
             itemId_inGuestCart = itemID_inStock_2;
             marketAPI.AddItemToCart(registered_VisitorToken, itemId_inRegCart, storeName_inSystem, itemAmount_inRegCart);
@@ -205,9 +205,8 @@ namespace AcceptanceTest
         public void TestUpdateQuantotyOfItemInCart_2VisitorsIncreaseAmountInCart()//UPDATE FILE: threads- both Visitors try to decrease amount of item-> last in stock
         {
             int iterations = 100;
-            int tot_amountInStock = iterations + 2; 
-            int newItenID = 3;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, "new", 53.3, "", "", tot_amountInStock);
+            int tot_amountInStock = iterations + 2;
+            int newItenID = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, "new", 53.3, "", "", tot_amountInStock).Value;
             marketAPI.AddItemToCart(registered_VisitorToken, newItenID, storeName_inSystem, 1);
             marketAPI.AddItemToCart(guest_VisitorToken, newItenID, storeName_inSystem, 1);
             Thread thread1 = new Thread(() => {

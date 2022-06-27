@@ -41,12 +41,12 @@ namespace AcceptanceTest
             marketAPI.Register(registered_VisitorToken, "Issachar Shkedi", "123456", new DateTime(1963, 3, 12));
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "Issachar Shkedi", "123456")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
-            itemID_inStock_1 = 111; itemAmount_inSttock_1 = 150;
-            itemID_inStock_2 = 222; itemAmount_inSttock_2 = 30;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
-                "Leben", 1.6, "Basic product", "Diary", itemAmount_inSttock_1);
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
-                "Tomatoes Juice", 4.2, "500ml bottle", "Drinks", itemAmount_inSttock_2);
+            itemAmount_inSttock_1 = 150;
+            itemAmount_inSttock_2 = 30;
+            itemID_inStock_1 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "Leben", 1.6, "Basic product", "Diary", itemAmount_inSttock_1).Value;
+            itemID_inStock_2 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "Tomatoes Juice", 4.2, "500ml bottle", "Drinks", itemAmount_inSttock_2).Value;
         }
 
         [TestMethod]

@@ -43,12 +43,13 @@ namespace AcceptanceTest
             marketAPI.Register(owner1_token, owner1_username, "123456789", dob);
             owner1_token = (marketAPI.Login(owner1_token, owner1_username, "123456789")).Value;// reg
             marketAPI.OpenNewStore(owner1_token, storeName);
-            itemId1 = 1; amount1 = 20;
-            itemId2 = 2; amount2 = 50;
-            marketAPI.AddItemToStoreStock(owner1_token, storeName,
-                "banana", 3.5, "", "fruit", amount1);
-            marketAPI.AddItemToStoreStock(owner1_token, storeName,
-                "banana2", 3.5, "", "fruit", amount2);
+            amount1 = 20;
+            amount2 = 50;
+            itemId1 = marketAPI.AddItemToStoreStock(owner1_token, storeName,
+                "banana", 3.5, "", "fruit", amount1).Value;
+            itemId2 = marketAPI.AddItemToStoreStock(owner1_token, storeName,
+                "banana2", 3.5, "", "fruit", amount2).Value;
+
         }
         [TestMethod]
         public void bidItem_bidAndCheck_success()

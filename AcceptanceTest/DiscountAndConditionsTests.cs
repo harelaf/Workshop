@@ -54,7 +54,7 @@ namespace AcceptanceTest
 
             Response res1 = marketAPI.AddStoreDiscount(store_founder_token, storeName, cond, dis);
             Response res2 = marketAPI.AddItemToStoreStock(store_founder_token, storeName, itemName, price, desc, category, quantity);
-            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken,itemID, storeName, amount);
+            Response res3 = marketAPI.AddItemToCart(guest_VisitorToken, itemID, storeName, amount);
 
             Assert.IsFalse(res1.ErrorOccured, "res1 " + res1.ErrorMessage);
             Assert.IsFalse(res2.ErrorOccured, "res2 " + res2.ErrorMessage);
