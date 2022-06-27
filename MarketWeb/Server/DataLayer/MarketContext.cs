@@ -29,7 +29,7 @@ namespace MarketWeb.Server.DataLayer
         public static string password { get; set; } = "";
         public string connectionStr { get; set; } = $"Data Source=34.159.230.231;Initial Catalog=marketdb;User Id=sqlserver;Password=WorkshopSadna20a;"; //Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True";
         public string localConnectionStr { get; set; } = "Data Source=Application.db;Cache=Shared";
-        public static bool testMode { get; set; } = false;
+        public static bool testMode { get; set; } = true;
         public static ISet<string> tableNames = new HashSet<string>();
         public MarketContext()
         {
