@@ -800,7 +800,7 @@ namespace MarketWeb.Server.Domain
 
         internal void AppointSystemAdmin(String authToken, String adminUsername)
         {
-            String registered = _VisitorManagement.GetRegisteredUsernameByToken(_VisitorManagement.GetRegisteredUsernameByToken(authToken));
+            String registered = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
             if (_VisitorManagement.CheckAccess(registered,null, Operation.APPOINT_SYSTEM_ADMIN))
             {
                 _VisitorManagement.AppointSystemAdmin(adminUsername);
@@ -896,7 +896,9 @@ namespace MarketWeb.Server.Domain
         /// <param name="authToken"> The token of the Visitor to log out.</param>
         public String Logout(String authToken)
         {
-            return _VisitorManagement.Logout(authToken);
+            string token = _VisitorManagement.Logout(authToken);
+            _dalController.AddVisitToPopulationStatistics(null, DateTime.Now);
+            return token;
         }
 
         /// <summary>

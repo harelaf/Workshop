@@ -21,6 +21,7 @@ namespace MarketWeb.Server.Domain
             roles.Add(Operation.SYSTEM_STATISTICS);
             roles.Add(Operation.STORE_HISTORY_INFO);
             roles.Add(Operation.STORE_INFORMATION);
+            roles.Add(Operation.APPOINT_SYSTEM_ADMIN);
             return roles;
         }
 
