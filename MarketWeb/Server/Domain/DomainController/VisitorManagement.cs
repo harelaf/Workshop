@@ -30,16 +30,17 @@ namespace MarketWeb.Server.Domain
         private DalTRranslator _dalTRranslator = new DalTRranslator();
         private DalController _dalController = DalController.GetInstance();
         protected NotificationHub _notificationHub;
-
+        private bool _testMode = false;
         // ===================================== CONSTRUCTORS =====================================
 
-        public VisitorManagement() : this(new Dictionary<String, Registered>()) { 
-
+        public VisitorManagement(bool testMode = false) : this(new Dictionary<String, Registered>()) {
+            _testMode = testMode;
         }
-        public VisitorManagement(Dictionary<string, Registered> regs, Dictionary<String, Guest> visitorsGuestsTokens)
+        public VisitorManagement(Dictionary<string, Registered> regs, Dictionary<String, Guest> visitorsGuestsTokens, bool testMode = false)
         {
             _loggedinVisitorsTokens = regs;
             _visitorsGuestsTokens = visitorsGuestsTokens;
+            _testMode = testMode;
         }
 
         public void InitializeAdmin(String username, String password)
@@ -51,28 +52,27 @@ namespace MarketWeb.Server.Domain
             _dalController.ResetGuestStatisticsAfterRestart(DateTime.Now);
         }
         // TODO: There's GOT to be a better way to do these constructors.
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors) : this(registeredVisitors, new Dictionary<string,Registered>())
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, bool testMode = false) : this(registeredVisitors, new Dictionary<string,Registered>(), testMode)
         {
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
         }
 
-
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens): this(registeredVisitors, loggedinVisitorsTokens, new Dictionary<String, Guest>())
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, bool testMode = false) : this(registeredVisitors, loggedinVisitorsTokens, new Dictionary<String, Guest>(), null, testMode)
         {
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
         }
 
-
-        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens, NotificationHub notificationHub = null) 
+        public VisitorManagement(IDictionary<String, Registered> registeredVisitors, IDictionary<String, Registered> loggedinVisitorsTokens, IDictionary<String, Guest> visitorsGuestsTokens, NotificationHub notificationHub = null, bool testMode = false) 
         {
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
             _notificationHub = notificationHub;
+            _testMode = testMode;
         }
 
         public void SetNotificationHub (NotificationHub notificationHub)
@@ -733,6 +733,7 @@ namespace MarketWeb.Server.Domain
             {
                 if (_notificationHub != null)
                 {
+
                     _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
                 }
                 registered.SendNotificationMsg(notifyMessage);

@@ -24,12 +24,14 @@ namespace MarketWeb.Server.Domain
         private DalTRranslator _dalTRranslator;
         private DalController _dalController;
         protected NotificationHub _notificationHub;
+        private bool _testMode = false;
 
-        public Market(NotificationHub notificationHub = null)
+        public Market(NotificationHub notificationHub = null, bool testMode = false)
         {
             _opNameToOp = new Dictionary<string, Operation>();
             setOPerationDictionary();
             _notificationHub = notificationHub;
+            _testMode = testMode;
             // Calling RestartSystem after creating this object is important.
         }
 
@@ -69,7 +71,7 @@ namespace MarketWeb.Server.Domain
             this._dalController = DalController.GetInstance();
 
             _storeManagement = new StoreManagement();
-            _VisitorManagement = new VisitorManagement();
+            _VisitorManagement = new VisitorManagement(_testMode);
             _VisitorManagement.SetNotificationHub(_notificationHub);
 
             // Initialize admin

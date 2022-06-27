@@ -32,7 +32,7 @@ namespace MarketWeb.Service
             {
                 _market = new Market();
                 testMode = true;
-                Server.DataLayer.DalController.GetInstance(true);
+                DalController.GetInstance(true);
                 // V This line causes the acceptance tests to be super slow! V
                 useConfigurationFile = true;
             }
