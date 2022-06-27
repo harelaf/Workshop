@@ -27,14 +27,13 @@ namespace MarketWeb.Server.Domain
         private IDictionary<String, Guest> _visitorsGuestsTokens;
 
         private static readonly DateTime DEFAULT_BIRTH_DATE = new DateTime(2000, 1, 1);
-        private DalTRranslator _dalTRranslator;
+        private DalTRranslator _dalTRranslator = new DalTRranslator();
         private DalController _dalController = DalController.GetInstance();
         protected NotificationHub _notificationHub;
 
         // ===================================== CONSTRUCTORS =====================================
 
         public VisitorManagement() : this(new Dictionary<String, Registered>()) { 
-            _dalTRranslator = new DalTRranslator();
 
         }
         public VisitorManagement(Dictionary<string, Registered> regs, Dictionary<String, Guest> visitorsGuestsTokens)
@@ -57,8 +56,6 @@ namespace MarketWeb.Server.Domain
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = new Dictionary<String, Registered>();
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
-            _dalTRranslator= new DalTRranslator();
-
         }
 
 
@@ -67,8 +64,6 @@ namespace MarketWeb.Server.Domain
             //_registeredVisitors = registeredVisitors;
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = new Dictionary<String, Guest>();
-            _dalTRranslator = new DalTRranslator();
-
         }
 
 
@@ -78,8 +73,6 @@ namespace MarketWeb.Server.Domain
             _loggedinVisitorsTokens = loggedinVisitorsTokens;
             _visitorsGuestsTokens = visitorsGuestsTokens;
             _notificationHub = notificationHub;
-            _dalTRranslator = new DalTRranslator();
-
         }
 
         public void SetNotificationHub (NotificationHub notificationHub)
@@ -545,7 +538,12 @@ namespace MarketWeb.Server.Domain
             Complaint complaint = _dalTRranslator.ComplaintDalToDomain(_dalController.GetComplaint(complaintID));
             if(complaint == null)
                 throw new Exception($"No complaint with the ID {complaintID}.");
-            complaint.Reply(reply);
+            string compToken = GetLoggedInToken(complaint._complainer);
+            Registered reg = compToken == null ? null : GetLoggedinRegistered(compToken);
+            if(reg != null)
+            {
+                reg.FiledComplaints[complaintID].Reply(reply);
+            }
             _dalController.ReplyToComplaint(complaintID, reply);
             String title = "An admin has replied to one of your complaints.";
             String message = "View it in your profile.";
@@ -659,8 +657,10 @@ namespace MarketWeb.Server.Domain
         public void AddRole(string Username, SystemRole role)
         {
             Registered Visitor = GetRegisteredVisitor(Username);
-            if (Visitor != null)
+            if (Visitor != null) 
+            { 
                 Visitor.AddRole(role);
+            }
             else
             {
                 throw new Exception("there is no register user in system with username: " + Username +". you can only appoint register user to store role.");
@@ -695,7 +695,6 @@ namespace MarketWeb.Server.Domain
         public void AddManagerPermission(String appointer, String managerUsername, String storeName, Operation op)
         {
             GetRegisteredVisitor(managerUsername).AddManagerPermission(appointer, storeName, op);
-            _dalController.AddManagerPermission(managerUsername, storeName, op);
         }
 
         internal void AppointSystemAdmin(string adminUsername)

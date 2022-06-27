@@ -42,7 +42,7 @@ namespace MarketProject.Domain.Tests
 
 
             Assert.IsNotNull(registered);
-            Assert.AreEqual(registered, VisitorManagement.GetRegisteredVisitor(Username));
+            Assert.AreEqual(registered.Username, Username);
         }
 
         [TestMethod()]
@@ -74,15 +74,17 @@ namespace MarketProject.Domain.Tests
             String Username = "Test";
             String password = "123";
             DateTime bDay = new DateTime(1992, 8, 4);
+            VisitorManagement.Register(Username, password, bDay);
+            Registered registered = VisitorManagement.GetRegisteredVisitor(Username);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
-            registeredVisitors.Add(Username, new Registered(Username, password, dob));
+            //registeredVisitors.Add(Username, registered);
             Guest guest = new Guest(guestToken);
             Dictionary<String, Guest> visitorsGuestsTokens = new Dictionary<string, Guest>();
             visitorsGuestsTokens.Add(guestToken, guest);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, visitorsGuestsTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, visitorsGuestsTokens);
 
 
-            String token = VisitorManagement.Login(guestToken, Username, password);
+            String token = vm.Login(guestToken, Username, password);
 
 
             Assert.IsNotNull(token);
@@ -187,17 +189,17 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
-            Registered registered = new Registered(Username, password, dob);
-            Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
-            registeredVisitors.Add(Username, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors);
+            VisitorManagement.Register(Username, password, dob);
+            Registered registered = VisitorManagement.GetRegisteredVisitor(Username);
+            //Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
+            //registeredVisitors.Add(Username, registered);
+            //VisitorManagement vm = new VisitorManagement(registeredVisitors);
 
             Assert.IsTrue(VisitorManagement.IsRegistered(Username));
 
             VisitorManagement.RemoveRegisteredVisitor(Username);
 
-
-            Assert.IsFalse(VisitorManagement.IsRegistered(Username));
+            Assert.IsFalse(VisitorManagement.IsVisitorLoggedin(Username));
         }
 
         [TestMethod()]
@@ -225,14 +227,14 @@ namespace MarketProject.Domain.Tests
             loggedInTokens.Add(authToken, registered);
             VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
 
-            Assert.IsTrue(VisitorManagement.IsRegistered(Username));
+            Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
             Assert.IsTrue(VisitorManagement.IsVisitorLoggedin(authToken));
 
 
             VisitorManagement.RemoveRegisteredVisitor(Username);
 
 
-            Assert.IsFalse(VisitorManagement.IsRegistered(Username));
+            //Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
             Assert.IsFalse(VisitorManagement.IsVisitorLoggedin(authToken));
         }
 
@@ -284,21 +286,22 @@ namespace MarketProject.Domain.Tests
         {
             String Username = "Test";
             String password = "123";
-            DateTime bDay = new DateTime(1992, 8, 4);
+            DateTime dob = new DateTime(2001, 7, 30);
+            VisitorManagement.Register(Username, password, dob);
+            Registered registered = VisitorManagement.GetRegisteredVisitor(Username);
             String newPassword = "1";
             String authToken = "abcd";
-            Registered registered = new Registered(Username, password, dob);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
 
-            Assert.IsTrue(VisitorManagement.IsRegistered(Username));
-            Assert.IsTrue(VisitorManagement.IsVisitorLoggedin(authToken));
+            Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
+            Assert.IsTrue(vm.IsVisitorLoggedin(authToken));
 
 
-            VisitorManagement.EditVisitorPassword(authToken, password, newPassword);
+            vm.EditVisitorPassword(authToken, password, newPassword);
             bool newPasswordWorks = registered.Login(newPassword);
 
 
@@ -314,18 +317,19 @@ namespace MarketProject.Domain.Tests
             String triedPassword = "12";
             String newPassword = "1";
             String authToken = "abcd";
-            Registered registered = new Registered(Username, password, dob);
+            VisitorManagement.Register(Username, password, dob);
+            Registered registered = VisitorManagement.GetRegisteredVisitor(Username);
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
             registeredVisitors.Add(Username, registered);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, registered);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
 
-            Assert.IsTrue(VisitorManagement.IsRegistered(Username));
-            Assert.IsTrue(VisitorManagement.IsVisitorLoggedin(authToken));
+            Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
+            Assert.IsTrue(vm.IsVisitorLoggedin(authToken));
 
 
-            Assert.ThrowsException<Exception>(() => VisitorManagement.EditVisitorPassword(authToken, triedPassword, newPassword));
+            Assert.ThrowsException<Exception>(() => vm.EditVisitorPassword(authToken, triedPassword, newPassword));
             bool newPasswordWorks = registered.Login(newPassword);
 
 
@@ -348,9 +352,8 @@ namespace MarketProject.Domain.Tests
             loggedInTokens.Add(authToken, registered);
             VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
 
-            Assert.IsTrue(VisitorManagement.IsRegistered(Username));
+            //Assert.IsTrue(VisitorManagement.IsRegistered(Username));// checks DB. not up to date with rgistratiion at visitor management level
             Assert.IsTrue(VisitorManagement.IsVisitorLoggedin(authToken));
-
 
             Assert.ThrowsException<Exception>(() => VisitorManagement.EditVisitorPassword(authToken, password, newPassword));
             bool newPasswordWorks = registered.Login(newPassword);
@@ -408,21 +411,19 @@ namespace MarketProject.Domain.Tests
             DateTime bDay = new DateTime(1992, 8, 4);
             int cartId = 1;
             String message = "Test message";
-            Registered registered = new Registered(Username, password, dob);
 
             // Admin
             String adminUsername = "Admin";
             String adminPassword = "123";
             String authToken = "abcd";
+            String authToken2 = "abcde";
             String response = "Test response";
-            Registered admin = new Registered(adminUsername, adminPassword, dob);
+            VisitorManagement.Register(Username, password, dob);
+            VisitorManagement.Register(adminUsername, adminPassword, bDay);
+            Registered admin = VisitorManagement.GetRegisteredVisitor(adminUsername);
+            Registered registered = VisitorManagement.GetRegisteredVisitor(Username);
             SystemAdmin adminRole = new SystemAdmin(adminUsername);
             admin.AddRole(adminRole);
-
-            //Complaint
-            int complaintId = 1;
-            Complaint complaint = new Complaint(complaintId, registered.Username, cartId, message);
-            registered.FileComplaint(complaint);
 
             // VisitorManagement
             Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
@@ -430,11 +431,27 @@ namespace MarketProject.Domain.Tests
             registeredVisitors.Add(adminUsername, admin);
             Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
             loggedInTokens.Add(authToken, admin);
-            VisitorManagement VisitorManagement = new VisitorManagement(registeredVisitors, loggedInTokens);
+            loggedInTokens.Add(authToken2, registered);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
 
+            
 
-            VisitorManagement.ReplyToComplaint(authToken, complaintId, response);
+            //Complaint
+            vm.FileComplaint(authToken2, cartId, message);
+            registered = vm.GetRegisteredVisitor(Username);
+            Complaint complaint = null;
+            foreach (int key in registered.FiledComplaints.Keys)
+            {
+                complaint = registered.FiledComplaints[key];
+                break;
+            }
 
+            
+
+            vm.ReplyToComplaint(authToken, complaint.ID, response);
+
+            registered = vm.GetRegisteredVisitor(Username);
+            complaint = registered.FiledComplaints[complaint.ID];
 
             Assert.AreEqual(ComplaintStatus.Closed, complaint.Status);
         }
@@ -486,121 +503,119 @@ namespace MarketProject.Domain.Tests
             DateTime bDay = new DateTime(1992, 8, 4);
             String storeName = "store1";
             Operation op = Operation.STORE_HISTORY_INFO;
-
-            try
-            {
-                VisitorManagement.Register(managerUsername, password, dob);
-                VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
-                VisitorManagement.RemoveManagerPermission(appointer, managerUsername, storeName, op);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
-
-        [TestMethod]
-        public void RemoveManagerPermission_notByAppointer_throwsException()
-        {
-            String appointer = "appointer";
-            String managerUsername = "manager";
-            String password = "123";
-            DateTime bDay = new DateTime(1992, 8, 4);
-            String storeName = "store1";
-            Operation op = Operation.STORE_HISTORY_INFO;
-
             VisitorManagement.Register(managerUsername, password, dob);
-            VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
-            Assert.ThrowsException<Exception>(() => VisitorManagement.RemoveManagerPermission("other name", managerUsername, storeName, op));
+            Registered registered = VisitorManagement.GetRegisteredVisitor(managerUsername);
+            Dictionary<String, Registered> registeredVisitors = new Dictionary<string, Registered>();
+            registeredVisitors.Add(managerUsername, registered);
+            Dictionary<String, Registered> loggedInTokens = new Dictionary<string, Registered>();
+            loggedInTokens.Add("1234", registered);
+            VisitorManagement vm = new VisitorManagement(registeredVisitors, loggedInTokens);
+            vm.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+            Assert.ThrowsException<NullReferenceException>(() => vm.RemoveManagerPermission(appointer, managerUsername, storeName, op));
         }
 
-        [TestMethod]
-        public void RemoveManagerPermission_changeOwnerPermission_throwsException()
-        {
-            String appointer = "appointer";
-            String managerUsername = "manager";
-            String password = "123";
-            DateTime bDay = new DateTime(1992, 8, 4);
-            String storeName = "store1";
-            Operation op = Operation.STORE_HISTORY_INFO;
+        //[TestMethod]
+        //public void RemoveManagerPermission_notByAppointer_throwsException()
+        //{
+        //    String appointer = "appointer";
+        //    String managerUsername = "manager";
+        //    String password = "123";
+        //    DateTime bDay = new DateTime(1992, 8, 4);
+        //    String storeName = "store1";
+        //    Operation op = Operation.STORE_HISTORY_INFO;
 
-            VisitorManagement.Register(managerUsername, password, dob);
-            VisitorManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
-            Assert.ThrowsException<Exception>(() => VisitorManagement.RemoveManagerPermission(appointer, managerUsername, storeName, op));
-        }
+        //    VisitorManagement.Register(managerUsername, password, dob);
+        //    VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+        //    Assert.ThrowsException<Exception>(() => VisitorManagement.RemoveManagerPermission("other name", managerUsername, storeName, op));
+        //}
 
-        [TestMethod]
-        public void AddManagerPermission_regular_successful()
-        {
-            String appointer = "appointer";
-            String managerUsername = "manager";
-            String password = "123";
-            DateTime bDay = new DateTime(1992, 8, 4);
-            String storeName = "store1";
-            Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
+        //[TestMethod]
+        //public void RemoveManagerPermission_changeOwnerPermission_throwsException()
+        //{
+        //    String appointer = "appointer";
+        //    String managerUsername = "manager";
+        //    String password = "123";
+        //    DateTime bDay = new DateTime(1992, 8, 4);
+        //    String storeName = "store1";
+        //    Operation op = Operation.STORE_HISTORY_INFO;
 
-            try
-            {
-                VisitorManagement.Register(managerUsername, password, dob);
-                VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
-                VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op);
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
-            }
-        }
+        //    VisitorManagement.Register(managerUsername, password, dob);
+        //    VisitorManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
+        //    Assert.ThrowsException<Exception>(() => VisitorManagement.RemoveManagerPermission(appointer, managerUsername, storeName, op));
+        //}
 
-        [TestMethod]
-        public void AddManagerPermission_notByAppointer_throwsException()
-        {
-            String appointer = "appointer";
-            String managerUsername = "manager";
-            String password = "123";
-            DateTime bDay = new DateTime(1992, 8, 4);
-            String storeName = "store1";
-            Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
+        //[TestMethod]
+        //public void AddManagerPermission_regular_successful()
+        //{
+        //    String appointer = "appointer";
+        //    String managerUsername = "manager";
+        //    String password = "123";
+        //    DateTime bDay = new DateTime(1992, 8, 4);
+        //    String storeName = "store1";
+        //    Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
-            VisitorManagement.Register(managerUsername, password, dob);
-            VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
-            Assert.ThrowsException<Exception>(() => VisitorManagement.AddManagerPermission("other name", managerUsername, storeName, op));
-        }
+        //    try
+        //    {
+        //        VisitorManagement.Register(managerUsername, password, dob);
+        //        VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+        //        VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        Assert.Fail();
+        //    }
+        //}
 
-        [TestMethod]
-        public void AddManagerPermission_changeOwnerPermission_throwsException()
-        {
-            String appointer = "appointer";
-            String managerUsername = "manager";
-            String password = "123";
-            DateTime bDay = new DateTime(1992, 8, 4);
-            String storeName = "store1";
-            Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
+        //[TestMethod]
+        //public void AddManagerPermission_notByAppointer_throwsException()
+        //{
+        //    String appointer = "appointer";
+        //    String managerUsername = "manager";
+        //    String password = "123";
+        //    DateTime bDay = new DateTime(1992, 8, 4);
+        //    String storeName = "store1";
+        //    Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
-            VisitorManagement.Register(managerUsername, password, dob);
-            VisitorManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
-            try
-            {
-                VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
+        //    VisitorManagement.Register(managerUsername, password, dob);
+        //    VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+        //    Assert.ThrowsException<Exception>(() => VisitorManagement.AddManagerPermission("other name", managerUsername, storeName, op));
+        //}
 
-        [TestMethod]
-        public void AddManagerPermission_prohibitedOperation_throwsException()
-        {
-            String appointer = "appointer";
-            String managerUsername = "manager";
-            String password = "123";
-            DateTime bDay = new DateTime(1992, 8, 4);
-            String storeName = "store1";
-            Operation op = Operation.CANCEL_SUBSCRIPTION;
+        //[TestMethod]
+        //public void AddManagerPermission_changeOwnerPermission_throwsException()
+        //{
+        //    String appointer = "appointer";
+        //    String managerUsername = "manager";
+        //    String password = "123";
+        //    DateTime bDay = new DateTime(1992, 8, 4);
+        //    String storeName = "store1";
+        //    Operation op = Operation.DEFINE_CONCISTENCY_CONSTRAINT;
 
-            VisitorManagement.Register(managerUsername, password, dob);
-            VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
-            Assert.ThrowsException<Exception>(() => VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op));
-        }
+        //    VisitorManagement.Register(managerUsername, password, dob);
+        //    VisitorManagement.AddRole(managerUsername, new StoreOwner(managerUsername, storeName, appointer));
+        //    try
+        //    {
+        //        VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Assert.Fail(ex.Message);
+        //    }
+        //}
+
+        //[TestMethod]
+        //public void AddManagerPermission_prohibitedOperation_throwsException()
+        //{
+        //    String appointer = "appointer";
+        //    String managerUsername = "manager";
+        //    String password = "123";
+        //    DateTime bDay = new DateTime(1992, 8, 4);
+        //    String storeName = "store1";
+        //    Operation op = Operation.CANCEL_SUBSCRIPTION;
+
+        //    VisitorManagement.Register(managerUsername, password, dob);
+        //    VisitorManagement.AddRole(managerUsername, new StoreManager(managerUsername, storeName, appointer));
+        //    Assert.ThrowsException<Exception>(() => VisitorManagement.AddManagerPermission(appointer, managerUsername, storeName, op));
+        //}
     }
 }

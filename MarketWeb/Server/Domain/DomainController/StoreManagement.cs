@@ -325,7 +325,6 @@ namespace MarketWeb.Server.Domain
         {
             Store store = GetActiveStore(storeName);
             Tuple<List<string>, List<string>> tuple= store.RemoveStoreOwner(ownerUsername, appointerUsername);
-            _dalController.RemoveStoreOwner(ownerUsername, storeName);
             return tuple;
         }
 
