@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MarketWeb.Server.Service;
 using MarketWeb.Service;
 using MarketWeb.Shared;
+using System.IO;
 
 namespace MarketWeb.Server.Domain
 {
@@ -731,9 +732,21 @@ namespace MarketWeb.Server.Domain
             string authToken = GetLoggedInToken(usernameReciever); 
             if (authToken != null)
             {
+                if (_testMode)
+                {
+                    string path = "testModeNotifications.txt";
+                    StreamWriter sw = new StreamWriter(path, true);
+                    sw.WriteLine($"[{DateTime.Now}]\n" +
+                        $"usernameReciever = {usernameReciever}.\n" +
+                        $"storeName = {storeName}.\n" +
+                        $"title = {title}.\n" +
+                        $"message = {message}.\n" +
+                        $" ****************** \n");
+                    //File.SetAttributes(path, FileAttributes.Hidden);
+                    sw.Close();
+                }
                 if (_notificationHub != null)
                 {
-
                     _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
                 }
                 registered.SendNotificationMsg(notifyMessage);

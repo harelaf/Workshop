@@ -30,7 +30,7 @@ namespace MarketWeb.Service
         {
             if (market == null)
             {
-                _market = new Market();
+                _market = new Market(null, true);
                 testMode = true;
                 DalController.GetInstance(true);
                 // V This line causes the acceptance tests to be super slow! V
@@ -1099,7 +1099,6 @@ namespace MarketWeb.Service
             Response<List<StoreDTO>> response;
             try
             {
-
                 String authToken = parseAutherization(Authorization);
                 _logger.Info($"Get All Active Stores called with parameters: authToken={authToken}.");
                 List<Store> stores = _market.GetAllActiveStores(authToken);
