@@ -43,33 +43,31 @@ namespace AcceptanceTest
             marketAPI.Register(owner1_token, owner1_username, "123456789", dob);
             owner1_token = (marketAPI.Login(owner1_token, owner1_username, "123456789")).Value;// reg
             marketAPI.OpenNewStore(owner1_token, storeName);
-            itemId1 = 1; amount1 = 20;
-            itemId2 = 2; amount2 = 50;
-            marketAPI.AddItemToStoreStock(owner1_token, storeName, itemId1,
-                "banana", 3.5, "", "fruit", amount1);
-            marketAPI.AddItemToStoreStock(owner1_token, storeName, itemId2,
-                "banana2", 3.5, "", "fruit", amount2);
+            amount1 = 20;
+            amount2 = 50;
+            itemId1 = marketAPI.AddItemToStoreStock(owner1_token, storeName,
+                "banana", 3.5, "", "fruit", amount1).Value;
+            itemId2 = marketAPI.AddItemToStoreStock(owner1_token, storeName,
+                "banana2", 3.5, "", "fruit", amount2).Value;
 
         }
         [TestMethod]
         public void bidItem_bidAndCheck_success()
         {
-            int itemId = 1;
             int amount = 100;
             double biddedPrice = 1.5;
-            marketAPI.BidItemInStore(bidder_VisitorToken, storeName, itemId, amount, biddedPrice);
+            marketAPI.BidItemInStore(bidder_VisitorToken, storeName, itemId1, amount, biddedPrice);
             List<BidDTO> bids = marketAPI.GetVisitorBidsAtStore(bidder_VisitorToken, storeName).Value;
-            Assert.IsTrue(bids != null && bids.Count > 0 && bids[0].ItemID == itemId && bids[0].Amount == amount);
+            Assert.IsTrue(bids != null && bids.Count > 0 && bids[0].ItemID == itemId1 && bids[0].Amount == amount);
             Assert.IsTrue(bids?[0].Acceptors.Count == 0);
         }
         [TestMethod]
         public void acceptBid_acceptBid_success()
         {
-            int itemId = 1;
             int amount = 100;
             double biddedPrice = 1.5;
-            marketAPI.BidItemInStore(bidder_VisitorToken, storeName, itemId, amount, biddedPrice);
-            marketAPI.AcceptBid(owner1_token, storeName, itemId, bidder_VisitorToken);
+            marketAPI.BidItemInStore(bidder_VisitorToken, storeName, itemId1, amount, biddedPrice);
+            marketAPI.AcceptBid(owner1_token, storeName, itemId1, bidder_VisitorToken);
             Response<List<BidDTO>> res = marketAPI.GetVisitorBidsAtStore(bidder_VisitorToken, storeName);
             Assert.IsFalse(res.ErrorOccured, res.ErrorMessage);
             ISet<string> acceptors = res.Value[0].Acceptors;

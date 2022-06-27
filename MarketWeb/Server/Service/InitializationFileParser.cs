@@ -356,12 +356,11 @@ namespace MarketWeb.Server.Service
         private void ParseAddItemToStoreStock(String args_)
         {
             String MethodName = "AddItemToStoreStock";
-            String[] args = ParseArgs(args_, MethodName, 8);
+            String[] args = ParseArgs(args_, MethodName, 7);
             int authIndex = ParseAuthIndex(args[0], MethodName);
-            int itemid = ParseInt(args[2], MethodName);
-            double price = ParseDouble(args[4], MethodName);
-            int quantity = ParseInt(args[7], MethodName);
-            Response response = api.AddItemToStoreStock(tokens[authIndex - 1], args[1], itemid, args[3], price, args[5], args[6], quantity);
+            double price = ParseDouble(args[3], MethodName);
+            int quantity = ParseInt(args[6], MethodName);
+            Response response = api.AddItemToStoreStock(tokens[authIndex - 1], args[1], args[2], price, args[4], args[5], quantity);
             if (response.ErrorOccured)
                 throw new Exception($"INITIALIZER: {MethodName} failed. {response.ErrorMessage}");
         }

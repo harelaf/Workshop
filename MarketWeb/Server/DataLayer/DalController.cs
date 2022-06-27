@@ -39,6 +39,7 @@ namespace MarketWeb.Server.DataLayer
         
         public void Cleanup()
         {
+            MarketContext.testMode = true;
             new MarketContext().DisposeAllData();
         }
 

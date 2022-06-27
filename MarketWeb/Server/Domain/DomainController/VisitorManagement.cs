@@ -121,7 +121,7 @@ namespace MarketWeb.Server.Domain
             if (!IsVisitorLoggedin(token))
             {
                 errorMessage = "No registered Visitor with the given token.";
-                LogErrorMessage("GetRegisteredUsernameByToken", errorMessage);
+                //LogErrorMessage("GetRegisteredUsernameByToken", errorMessage);
                 throw new Exception(errorMessage);
             }
             return _loggedinVisitorsTokens[token].Username;
@@ -736,6 +736,7 @@ namespace MarketWeb.Server.Domain
                 {
                     _notificationHub.SendNotification(authToken, (new DTOtranslator()).toDTO(notifyMessage));
                 }
+                registered.SendNotificationMsg(notifyMessage);
             }
         }
         internal void SendNotificationMessageToVisitor(string authToken, string storeName, string title, string message)

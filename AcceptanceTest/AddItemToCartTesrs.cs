@@ -40,12 +40,12 @@ namespace AcceptanceTest
             marketAPI.Register(registered_VisitorToken, "afik", "123456789", dob);
             registered_VisitorToken = (marketAPI.Login(registered_VisitorToken, "afik", "123456789")).Value;// reg
             marketAPI.OpenNewStore(registered_VisitorToken, storeName_inSystem);
-            itemID_inStock_1 = 1; itemAmount_inSttock_1 = 20;
-            itemID_inStock_2 = 2; itemAmount_inSttock_2 = 50;
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_1,
-                "banana", 3.5, "", "fruit", itemAmount_inSttock_1);
-            marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem, itemID_inStock_2,
-                "banana2", 3.5, "", "fruit", itemAmount_inSttock_2);
+            itemAmount_inSttock_1 = 20;
+            itemAmount_inSttock_2 = 50;
+            itemID_inStock_1 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "banana", 3.5, "", "fruit", itemAmount_inSttock_1).Value;
+            itemID_inStock_2 = marketAPI.AddItemToStoreStock(registered_VisitorToken, storeName_inSystem,
+                "banana2", 3.5, "", "fruit", itemAmount_inSttock_2).Value;
 
         }
 
@@ -53,7 +53,8 @@ namespace AcceptanceTest
         public void TestAddItemToCart_2VisitorsAddingLastItemInStock()
         {
             int iterations = 100;
-            marketAPI.UpdateStockQuantityOfItem(registered_VisitorToken, storeName_inSystem, itemID_inStock_1, iterations);
+            Response res = marketAPI.UpdateStockQuantityOfItem(registered_VisitorToken, storeName_inSystem, itemID_inStock_1, iterations);
+            Assert.IsFalse(res.ErrorOccured);
             Thread thread1 = new Thread(() => {
                 for (int i = 0; i < iterations; i++)
                     marketAPI.AddItemToCart(registered_VisitorToken, itemID_inStock_1, storeName_inSystem, 1);
@@ -82,8 +83,8 @@ namespace AcceptanceTest
             ShoppingCartDTO Visitor1Cart = r_1.Value;
             ShoppingCartDTO Visitor2Cart = r_2.Value;
 
-            totalAmountInCarts = Visitor1Cart.getAmountOfItemInCart(storeName_inSystem, 1) +
-                Visitor2Cart.getAmountOfItemInCart(storeName_inSystem, 1);
+            totalAmountInCarts = Visitor1Cart.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_1) +
+                Visitor2Cart.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_1);
 
             Assert.AreEqual(iterations, totalAmountInCarts);
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;
