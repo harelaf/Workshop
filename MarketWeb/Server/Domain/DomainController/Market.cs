@@ -761,6 +761,7 @@ namespace MarketWeb.Server.Domain
         private void RecRemoveStoreOwner(string appointer, string ownerApointee, string storeName)
         {
             Tuple<List<string>, List<string>> owners_managers = _storeManagement.RemoveStoreOwner(ownerApointee, storeName, appointer);
+            _dalController.RemoveStoreOwner(ownerApointee, storeName);
             _VisitorManagement.RemoveRole(ownerApointee, storeName);
             List<string> managers = owners_managers.Item2;
             foreach (string manager in managers)
@@ -952,7 +953,10 @@ namespace MarketWeb.Server.Domain
                 throw new Exception("there is no such user in system as: " + managerUsername);
             }
             if (_VisitorManagement.CheckAccess(appointerUsername, storeName, Operation.CHANGE_MANAGER_PREMISSIONS))
+            {
                 _VisitorManagement.AddManagerPermission(appointerUsername, managerUsername, storeName, op);
+                _dalController.AddManagerPermission(managerUsername, storeName, op);
+            }
             else
             {
                 throw new Exception("you don't have permission to modify manager permission...");
@@ -1503,7 +1507,7 @@ namespace MarketWeb.Server.Domain
 
         public ICollection<PopulationStatistics> GetDailyPopulationStatistics(string authToken, DateTime dateTime)
         {
-            CheckIsVisitorLoggedIn(authToken, "GetStandbyOwnersInStore");
+            CheckIsVisitorLoggedIn(authToken, "GetDailyPopulationStatistics");
             String Username = _VisitorManagement.GetRegisteredUsernameByToken(authToken);
 
             if (!_VisitorManagement.CheckAccess(Username, null, Operation.PERMENENT_CLOSE_STORE))

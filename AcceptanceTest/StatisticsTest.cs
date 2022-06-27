@@ -57,7 +57,6 @@ namespace AcceptanceTest
 
                 marketAPI.Register(token, admin + i, pass, dob);
                 adminUsernames.Add(admin + i);
-
             }
             string store = "store_";  
             for ( int i =0; i < iterations; i++)
@@ -79,11 +78,7 @@ namespace AcceptanceTest
             {
                 marketAPI.AppointSystemAdmin(adminToken, adminUsernames[i]);
             }
-            
         }
-
-        [TestCleanup]
-
 
         [TestMethod]
         public void TestStaticticsSucses()

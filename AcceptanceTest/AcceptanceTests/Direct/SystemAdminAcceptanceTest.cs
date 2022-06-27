@@ -15,6 +15,7 @@ namespace AcceptanceTest.AcceptanceTests.Direct
     {
         // ================================= Use Case ? - Remove Registered Visitor =================================
         [TestMethod()]
+        [Priority(1)]
         public void RemoveRegisteredVisitor_Happy()
         {
             // Precondition: Admin is logged in, Visitor to remove exists.

@@ -402,37 +402,51 @@
             Display Discount Policy
         </button>
         <br />
-        @if(discountStrList != null && discountStrList.Count > 0)
+        @if(discountStrList != null)
         {
-            <table class="table" style="white-space:pre-wrap; width:100%">
-                <tr>
-                    <th></th>
-                    <th>Discount</th>
-                </tr>
-                @for(int index = 0 ; index < discountStrList.Count ; index++)
-                {
+            if(discountStrList.Count > 0)
+            {
+                <table class="table" style="white-space:pre-wrap; width:100%">
                     <tr>
-                        <th>@(index + 1)</th>
-                        <th>@discountStrList[index]</th>
+                        <th></th>
+                        <th>Discount</th>
                     </tr>
-                }
-            </table>
+                    @for(int index = 0 ; index < discountStrList.Count ; index++)
+                    {
+                        <tr>
+                            <th>@(index + 1)</th>
+                            <th>@discountStrList[index]</th>
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <h4>this store has no discounts available!</h4>
+            }
         }
-        @if(purchaseStrList != null && purchaseStrList.Count > 0)
+        @if(purchaseStrList != null)
         {
-            <table class="table" style="white-space:pre-wrap; width:100%">
-                <tr>
-                    <th></th>
-                    <th>Condition</th>
-                </tr>
-                @for(int index = 0 ; index < purchaseStrList.Count ; index++)
-                {
+            if(purchaseStrList.Count > 0)
+            {
+                <table class="table" style="white-space:pre-wrap; width:100%">
                     <tr>
-                        <th>@(index + 1)</th>
-                        <th>@purchaseStrList[index]</th>
+                        <th></th>
+                        <th>Condition</th>
                     </tr>
-                }
-            </table>
+                    @for(int index = 0 ; index < purchaseStrList.Count ; index++)
+                    {
+                        <tr>
+                            <th>@(index + 1)</th>
+                            <th>@purchaseStrList[index]</th>
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <h4>there are no rules!!! go wild!</h4>   
+            }
         }
     </div>
 }
@@ -466,26 +480,22 @@ else
     private bool CanRespondToStoreBids { get; set; } = false;
     private bool CanChangeStoreAndDiscountPolicies { get; set; } = false;
     private bool StoreIsActive { get; set; } = true;
-    List<String> discountStrList = new List<String>();
-    List<String> purchaseStrList = new List<String>();
+    List<String> discountStrList = null;
+    List<String> purchaseStrList = null;
 
-    private async void OnValidSubmit()
-    {
-        // TODO
-    }
-    private async void ViewPurchaseHistory()
+    private void ViewPurchaseHistory()
     {
         // reset alerts on submit
         AlertService.Clear();
         NavigationManager.NavigateTo($"/StorePage/{StoreName}/purchases");
     }
-    private async void ViewStoreMessages()
+    private void ViewStoreMessages()
     {
         // reset alerts on submit
         AlertService.Clear();
         NavigationManager.NavigateTo($"/StorePage/{StoreName}/messages");
     }
-    private async void ViewStoreRoles()
+    private void ViewStoreRoles()
     {
         // reset alerts on submit
         AlertService.Clear();
@@ -872,7 +882,7 @@ else
     {
         // reset alerts on submit
         AlertService.Clear();
-        discountStrList.Clear();
+        discountStrList = null;
         try
         {
             Response<List<String>> response = await _marketAPIClient.GetPurchasePolicyStrings(StoreName);
@@ -898,7 +908,7 @@ else
     {
         // reset alerts on submit
         AlertService.Clear();
-        purchaseStrList.Clear();
+        purchaseStrList = null;
         try
         {
             Response<List<String>> response = await _marketAPIClient.GetDiscountPolicyStrings(StoreName);
