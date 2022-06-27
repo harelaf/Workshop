@@ -37,6 +37,7 @@ namespace MarketWeb.Server.DataLayer
 
         }
         
+        // Only call this function from the tests!
         public void Cleanup()
         {
             MarketContext.testMode = true;
