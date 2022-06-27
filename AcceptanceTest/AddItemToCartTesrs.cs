@@ -53,7 +53,8 @@ namespace AcceptanceTest
         public void TestAddItemToCart_2VisitorsAddingLastItemInStock()
         {
             int iterations = 100;
-            marketAPI.UpdateStockQuantityOfItem(registered_VisitorToken, storeName_inSystem, itemID_inStock_1, iterations);
+            Response res = marketAPI.UpdateStockQuantityOfItem(registered_VisitorToken, storeName_inSystem, itemID_inStock_1, iterations);
+            Assert.IsFalse(res.ErrorOccured);
             Thread thread1 = new Thread(() => {
                 for (int i = 0; i < iterations; i++)
                     marketAPI.AddItemToCart(registered_VisitorToken, itemID_inStock_1, storeName_inSystem, 1);
@@ -82,8 +83,8 @@ namespace AcceptanceTest
             ShoppingCartDTO Visitor1Cart = r_1.Value;
             ShoppingCartDTO Visitor2Cart = r_2.Value;
 
-            totalAmountInCarts = Visitor1Cart.getAmountOfItemInCart(storeName_inSystem, 1) +
-                Visitor2Cart.getAmountOfItemInCart(storeName_inSystem, 1);
+            totalAmountInCarts = Visitor1Cart.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_1) +
+                Visitor2Cart.getAmountOfItemInCart(storeName_inSystem, itemID_inStock_1);
 
             Assert.AreEqual(iterations, totalAmountInCarts);
             StoreDTO store = marketAPI.GetStoreInformation(registered_VisitorToken, storeName_inSystem).Value;

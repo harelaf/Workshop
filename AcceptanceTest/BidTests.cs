@@ -54,22 +54,20 @@ namespace AcceptanceTest
         [TestMethod]
         public void bidItem_bidAndCheck_success()
         {
-            int itemId = 1;
             int amount = 100;
             double biddedPrice = 1.5;
-            marketAPI.BidItemInStore(bidder_VisitorToken, storeName, itemId, amount, biddedPrice);
+            marketAPI.BidItemInStore(bidder_VisitorToken, storeName, itemId1, amount, biddedPrice);
             List<BidDTO> bids = marketAPI.GetVisitorBidsAtStore(bidder_VisitorToken, storeName).Value;
-            Assert.IsTrue(bids != null && bids.Count > 0 && bids[0].ItemID == itemId && bids[0].Amount == amount);
+            Assert.IsTrue(bids != null && bids.Count > 0 && bids[0].ItemID == itemId1 && bids[0].Amount == amount);
             Assert.IsTrue(bids?[0].Acceptors.Count == 0);
         }
         [TestMethod]
         public void acceptBid_acceptBid_success()
         {
-            int itemId = 1;
             int amount = 100;
             double biddedPrice = 1.5;
-            marketAPI.BidItemInStore(bidder_VisitorToken, storeName, itemId, amount, biddedPrice);
-            marketAPI.AcceptBid(owner1_token, storeName, itemId, bidder_VisitorToken);
+            marketAPI.BidItemInStore(bidder_VisitorToken, storeName, itemId1, amount, biddedPrice);
+            marketAPI.AcceptBid(owner1_token, storeName, itemId1, bidder_VisitorToken);
             Response<List<BidDTO>> res = marketAPI.GetVisitorBidsAtStore(bidder_VisitorToken, storeName);
             Assert.IsFalse(res.ErrorOccured, res.ErrorMessage);
             ISet<string> acceptors = res.Value[0].Acceptors;

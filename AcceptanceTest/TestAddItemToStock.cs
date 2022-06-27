@@ -74,6 +74,8 @@ namespace AcceptanceTest
             Assert.IsTrue(response.ErrorOccured);
         }
 
+        // This is a redudant test now, ids are assigned in the DAL.
+        /*
         [TestMethod]
         public void sad_ItemIdAlreadyTaken()
         {
@@ -83,6 +85,7 @@ namespace AcceptanceTest
             Response<int> response1 = marketAPI.AddItemToStoreStock(registered_token_founder, storeName_inSystem, itemName, itemPrice, itemDescription, itemCategory, itemQuantity);
             Assert.IsTrue(response1.ErrorOccured);
         }
+        */
 
         [TestMethod]
         public void happy_AddItemToStockSuccess()
