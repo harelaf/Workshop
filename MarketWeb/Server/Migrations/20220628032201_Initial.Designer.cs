@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketWeb.Server.Migrations
 {
     [DbContext(typeof(MarketContext))]
-    [Migration("20220628024825_Initial")]
+    [Migration("20220628032201_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
