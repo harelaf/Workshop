@@ -61,7 +61,7 @@ namespace AcceptanceTest
             authToken = marketAPI.Login(authToken, username, password).Value;
 
             // Assert Market is empty.
-            Response<List<StoreDTO>> res = marketAPI.GetAllActiveStores(authToken);
+            Response<Dictionary<string, string>> res = marketAPI.GetAllActiveStores(authToken);
             Assert.IsFalse(res.ErrorOccured);
             Assert.IsTrue(res.Value.Count == 0);
         }
@@ -91,10 +91,10 @@ namespace AcceptanceTest
             authToken = marketAPI.Login(authToken, username, password).Value;
 
             // Assert Market is correct.
-            Response<List<StoreDTO>> res = marketAPI.GetAllActiveStores(authToken);
+            Response<Dictionary<string, string>> res = marketAPI.GetAllActiveStores(authToken);
             Assert.IsFalse(res.ErrorOccured);
             Assert.IsTrue(res.Value.Count == 1);
-            Assert.AreEqual(storename, res.Value[0].StoreName);
+            Assert.IsTrue(res.Value.ContainsKey(storename));
 
             Response<StoreDTO> res1 = marketAPI.GetStoreInformation(authToken, storename);
             Assert.IsFalse(res1.ErrorOccured);
@@ -141,10 +141,10 @@ namespace AcceptanceTest
             authToken = marketAPI.Login(authToken, newuser, newpass).Value;
 
             // Assert Market is correct.
-            Response<List<StoreDTO>> res = marketAPI.GetAllActiveStores(authToken);
+            Response<Dictionary<string, string>> res = marketAPI.GetAllActiveStores(authToken);
             Assert.IsFalse(res.ErrorOccured);
             Assert.IsTrue(res.Value.Count == 1);
-            Assert.AreEqual(storename, res.Value[0].StoreName);
+            Assert.IsTrue(res.Value.ContainsKey(storename));
 
             Response<StoreDTO> res1 = marketAPI.GetStoreInformation(authToken, storename);
             Assert.IsFalse(res1.ErrorOccured);

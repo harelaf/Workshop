@@ -14,40 +14,53 @@ namespace MarketWeb.Server.Domain
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Dictionary<String, Store> _stores; //<storeName:String, Store>
         private DalTRranslator _translator;
+        private Dictionary<string, string> _storeName_StoreFounder;
         private DalController _dalController = DalController.GetInstance();
         private static bool hasInitialized = false;
         public StoreManagement()
         {
             _stores = new Dictionary<String, Store>();
             _translator = new DalTRranslator();
+            _storeName_StoreFounder = new Dictionary<string, string>();
+            load();
         }
         public void load()
         {
             if (!hasInitialized)
             {
-                _stores = _translator.StoreListDalToDomain(_dalController.GetAllActiveStores());
+                _storeName_StoreFounder = _dalController.GetAllActiveStores();
             }
             hasInitialized = true;
         }
 
         public Store GetActiveStore(String storeName)
         {
-            String errorMessage;
-            if (_stores.ContainsKey(storeName))
-                return _stores[storeName];
-            errorMessage = "Store '" + storeName + "' does not exists Or inActive.";
-            LogErrorMessage("GetStore", errorMessage);
-            throw new Exception(errorMessage);
+            String errorMessage = null;
+            Store store = GetStore(storeName);
+            if (store == null)
+                errorMessage = "Store '" + storeName + "' does not exists.";
+            else if (!store.State.Equals(StoreState.Active))
+                errorMessage = "Store '" + storeName + "' is inActive.";
+            if (errorMessage != null)
+            {
+                LogErrorMessage("GetActiveStore", errorMessage);
+                throw new Exception(errorMessage);
+            }
+            return store;
         }
         public Store GetStore(string storeName)
         {
+            if (!IsStoreExist(storeName))
+                return null;
             if (_stores.ContainsKey(storeName))
                 return _stores[storeName];
-            return _translator.StoreDalToDomain(_dalController.GetStoreInformation(storeName));
+            Store store = _translator.StoreDalToDomain(_dalController.GetStoreInformation(storeName));
+            _stores[storeName] = store;
+            return store;
         }
         public bool IsStoreExist(String storeName)
         {
-           return _stores.ContainsKey(storeName);
+            return _storeName_StoreFounder.ContainsKey(storeName);
         }
 
         public Item ReserveItemFromStore(String storeName, int itemID, int amount)
@@ -119,10 +132,22 @@ namespace MarketWeb.Server.Domain
 
         public IDictionary<string, List<Item>> GetItemInformation(String itemName, String itemCategory, String keyWord)
         {
-            Dictionary<string, List<Item>> filteredItems = new Dictionary<string, List<Item>>();
-            foreach (String storeName in _stores.Keys)
+            Dictionary<string, Store> allStoresWithStock = new Dictionary<string, Store>(_stores);
+            foreach (string storeName in _storeName_StoreFounder.Keys)
             {
-                Stock stock = _stores[storeName].Stock;
+                if (!allStoresWithStock.ContainsKey(storeName))
+                {
+                    Store s = _translator.StoreDalToDomainWithStock(_dalController.GetStoreWithStock(storeName));
+                    if (s == null)
+                        continue;
+                    allStoresWithStock[storeName] = s;
+                }
+
+            }
+            Dictionary<string, List<Item>> filteredItems = new Dictionary<string, List<Item>>();
+            foreach (String storeName in allStoresWithStock.Keys)
+            {
+                Stock stock = allStoresWithStock[storeName].Stock;
                 List<Item> cur_items = new List<Item>();
                 foreach (KeyValuePair<Item, int> pair in stock.Items)
                 {
@@ -190,6 +215,7 @@ namespace MarketWeb.Server.Domain
             }
             Store newStore = new Store(storeName, founder, purchasePolicy, discountPolicy);
             _stores[storeName] = newStore;
+            _storeName_StoreFounder[storeName] = founder.Username;
             _dalController.OpenNewStore(storeName, founder.Username);
         }
 
@@ -229,7 +255,7 @@ namespace MarketWeb.Server.Domain
         {
             if (!IsStoreExist(storeName))
                 return false;
-            Store store = GetActiveStore(storeName);
+            Store store = GetStore(storeName);
             return store.isActive();
         }
 
@@ -274,7 +300,7 @@ namespace MarketWeb.Server.Domain
             }
             store.ReopenStore();
             _dalController.ReopenStore(storeName);
-            _stores.Add(storeName,store);
+            _stores[storeName] = store;
         }
 
         public void CloseStorePermanently(String storeName)
@@ -349,10 +375,10 @@ namespace MarketWeb.Server.Domain
             return storeList;
         }
 
-        public List<Store> GetAllActiveStores(bool isAdmin)
+        public Dictionary<string, string> GetAllActiveStores(bool isAdmin)
         {
-            List<Store> storeList = new List<Store>();
-            /*foreach (KeyValuePair<string, Store> pair in _stores)
+            /*List<Store> storeList = new List<Store>();
+            foreach (KeyValuePair<string, Store> pair in _stores)
             {
                 bool isActive = (pair.Value.State == StoreState.Active);
                 if (isAdmin || isActive)
@@ -360,10 +386,11 @@ namespace MarketWeb.Server.Domain
                     storeList.Add(pair.Value);
                 }
             }
-            return storeList;*/
+            return storeList;
             foreach(Store store in _stores.Values)
                 storeList.Add(store);
-            return storeList;
+            return storeList;*/
+            return _storeName_StoreFounder;
         }
 
         public List<StoreManager> getStoreManagers(string storeName)

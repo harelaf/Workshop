@@ -51,19 +51,29 @@ namespace MarketWeb.Server.DataLayer
             userid = _userid;
             password = _password;
         }
-        public List<StoreDAL> GetAllActiveStores() 
+        public Dictionary<string, string> GetAllActiveStores()
         {
             MarketContext context = new MarketContext();
-            List<StoreDAL> stores= context.StoreDALs
-                                                .Include(x => x._stock)
-                                                .Include(x => x._bidsOfVisitors).ThenInclude(x => x._bids).ThenInclude(x => x._acceptors)
-                                                .Include(x => x._rating)
-                                                .Include(x => x._standbyOwners).ThenInclude(x => x._acceptors)
-                                                .Where(store => store._state == StoreState.Active).ToList();
-            if (stores == null)
-                return new List<StoreDAL>();
-            return stores; 
+            Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+            List<string> activeStores = context.StoreDALs.Where(store => store._state == StoreState.Active).Select(x => x._storeName).ToList();
+            foreach (string storeName in activeStores)
+            {
+                context = new MarketContext();
+                string founderNmae = context.StoreFounderDALs.Where(x => x._storeName == storeName).Select(x => x._username).FirstOrDefault();
+                keyValuePairs.Add(storeName, founderNmae);
+            }
+            return keyValuePairs;
         }
+
+        public StoreDAL GetStoreWithStock(string storeName)
+        {
+            MarketContext context = new MarketContext();
+            StoreDAL store = context.StoreDALs.Include(x => x._stock).FirstOrDefault(x => x._storeName.Equals(storeName));
+            if (store._state.Equals(StoreState.Active))
+                return store;
+            return null;
+        }
+
         public void Register(string Username, string password,string salt,  DateTime dob) 
         {
             MarketContext context = new MarketContext();

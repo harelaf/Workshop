@@ -21,7 +21,7 @@ namespace MarketWeb.Client.Connect
         public Task<Response<string>> Login(string username, string password);
         public Task<Response<String>> Login(LoginModel loginModel);
         public Task<Response> Logout();
-        public Task<Response<List<StoreDTO>>> GetAllActiveStores();
+        public Task<Response<Dictionary<string, string>>> GetAllActiveStores();
         public Task<Response> Register(string Username, string password, DateTime dob);
         public Task<Response> RemoveRegisteredVisitorAsync(String usr_toremove);
         public Task<Response> AddItemToCart(int itemID, String storeName, int amount);
@@ -786,9 +786,9 @@ namespace MarketWeb.Client.Connect
             return res;
         }
 
-        public async Task<Response<List<StoreDTO>>> GetAllActiveStores()
+        public async Task<Response<Dictionary<string, string>>> GetAllActiveStores()
         {
-            Response<List<StoreDTO>> res = await _httpService.Get<Response<List<StoreDTO>>>("api/market/GetAllActiveStores");
+            Response<Dictionary<string, string>> res = await _httpService.Get<Response<Dictionary<string, string>>>("api/market/GetAllActiveStores");
             return res;
         }
 

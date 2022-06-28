@@ -81,7 +81,7 @@ namespace MarketWeb.Server.Domain
             //translator:
             _dalTRranslator = new DalTRranslator();
             DalTRranslator.StoreManagement = _storeManagement;
-            _storeManagement.load();
+            //_storeManagement.load();
 
             _history = new History(this);
             
@@ -994,7 +994,7 @@ namespace MarketWeb.Server.Domain
             return _storeManagement.GetStoresByName(stores);
         }
 
-        public List<Store> GetAllActiveStores(String authToken)
+        public Dictionary<string, string> GetAllActiveStores(String authToken)
         {
             //NotifyMessageDTO notification = new NotifyMessageDTO("Store", "Title", "You did GetAllActiveStores", "ReceiverUsername", 0);
             //log.Info($"Sending notification to :{authToken}");
